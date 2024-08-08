@@ -15,9 +15,6 @@ from web.management.commands.add_v2_reference_data import (
     add_inactive_countries,
     add_region_to_existing_countries,
 )
-from web.management.commands.utils.add_template_data import (
-    add_user_management_email_templates,
-)
 from web.models import Constabulary, Exporter, Importer, UniqueReference, User
 from web.permissions import (
     constabulary_add_contact,
@@ -53,8 +50,9 @@ class Command(BaseCommand):
         add_region_to_existing_countries(self.stdout)
         add_inactive_countries()
         add_country_translations()
-        add_user_management_email_templates()
         call_command("set_icms_sites")
+
+        # TODO: Run update update_email_data command? Command also creates 2 necessary email templates
 
     def handle(self, *args: Any, **options: Any) -> None:
         skip_refs = options["skip_ref"]

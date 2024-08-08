@@ -38,7 +38,10 @@ class TestExportCaseEmails(AuthTestCase):
         gmp_file_pks = attachments.values_list("pk", flat=True).order_by("pk")
 
         assert list(case_email_file_pks) == list(gmp_file_pks)
-        assert case_email.subject == "Good Manufacturing Practice Application Enquiry"
+        assert (
+            case_email.subject
+            == f"Good manufacturing practice (GMP) application enquiry {app.reference}"
+        )
         assert (
             "We have received a Certificate of Good Manufacturing Practice application"
             in case_email.body
@@ -60,7 +63,7 @@ class TestExportCaseEmails(AuthTestCase):
             "to_address@example.com",  # /PS-IGNORE
             self.exp_template_id,
             personalisation={
-                "subject": "Good Manufacturing Practice Application Enquiry",
+                "subject": case_email.subject,
                 "body": case_email.body,
                 "icms_url": get_exporter_site_domain(),
                 "service_name": SiteName.EXPORTER.label,
@@ -84,8 +87,8 @@ class TestExportCaseEmails(AuthTestCase):
         )
 
         assert case_email.to == "to_address@example.com"  # /PS-IGNORE
-        assert case_email.subject == "Biocidal Product Enquiry"
-        assert "The application is for the following biocidal products" in case_email.body
+        assert case_email.subject == f"Biocidal product enquiry {app.reference}"
+        assert "The application is for biocidal products:" in case_email.body
 
 
 class TestImportCaseEmails(AuthTestCase):
@@ -108,7 +111,10 @@ class TestImportCaseEmails(AuthTestCase):
 
         assert case_email.to is None
         assert case_email.cc_address_list == ["cc_address@example.com"]  # /PS-IGNORE
-        assert case_email.subject == "Import Licence RFD Enquiry"
+        assert (
+            case_email.subject
+            == f"Import licence Registered Firearms Dealer (RFD) enquiry {app.reference}"
+        )
         assert "\ngoods_description value\n" in case_email.body
 
     def test_send_dfl_constabulary_email(self, fa_dfl_app_submitted, ilb_admin_user):
@@ -126,7 +132,7 @@ class TestImportCaseEmails(AuthTestCase):
             "to_address@example.com",  # /PS-IGNORE
             self.exp_template_id,
             personalisation={
-                "subject": "Import Licence RFD Enquiry",
+                "subject": case_email.subject,
                 "body": case_email.body,
                 "icms_url": get_importer_site_domain(),
                 "service_name": SiteName.IMPORTER.label,
@@ -147,7 +153,10 @@ class TestImportCaseEmails(AuthTestCase):
 
         assert case_email.to is None
         assert case_email.cc_address_list == ["cc_address@example.com"]  # /PS-IGNORE
-        assert case_email.subject == "Import Licence RFD Enquiry"
+        assert (
+            case_email.subject
+            == f"Import licence Registered Firearms Dealer (RFD) enquiry {app.reference}"
+        )
 
         assert (
             "\nFirearms, component parts thereof, or ammunition of any applicable"
@@ -166,7 +175,10 @@ class TestImportCaseEmails(AuthTestCase):
 
         assert case_email.to is None
         assert case_email.cc_address_list == ["cc_address@example.com"]  # /PS-IGNORE
-        assert case_email.subject == "Import Licence RFD Enquiry"
+        assert (
+            case_email.subject
+            == f"Import licence Registered Firearms Dealer (RFD) enquiry {app.reference}"
+        )
 
         assert (
             "\n111 x Section 1 goods to which Section 1 of the Firearms Act 1968, as amended, applies.\n"
@@ -186,5 +198,5 @@ class TestImportCaseEmails(AuthTestCase):
 
         assert case_email.to is None
         assert case_email.cc_address_list is None
-        assert case_email.subject == "Import Sanctions and Adhoc Licence"
+        assert case_email.subject == f"Import sanctions and adhoc licence {app.reference}"
         assert "\n1000 x Test Goods\n56.78 x More Commoditites\n" in case_email.body

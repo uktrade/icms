@@ -212,5 +212,6 @@ pdf_visual_regression_test:
 		web/tests/utils/pdf/test_visual_regression/test_import.py \
 		web/tests/utils/pdf/test_visual_regression/test_export.py
 
+# app: cfs | com | gmp | sil | dfl | oil | sanctions | wood | cover-letter
 create_benchmark_pdfs:
 	./web/tests/utils/pdf/test_visual_regression/generate_benchmark_pdfs/generate.sh ${app}

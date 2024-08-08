@@ -1,0 +1,1481 @@
+[
+    {
+        "model": "web.template",
+        "pk": 1,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.864Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "General Declaration of Truth",
+            "template_code": "IMA_GEN_DECLARATION",
+            "template_type": "DECLARATION",
+            "application_domain": "IMA",
+            "template_title": "Declaration of Truth",
+            "template_content": "I am the applicant for this licence or I am authorised to act on their behalf. I undertake that if a licence is granted it will be used solely to import goods which are the property of the applicant or lawfully in the custody of the applicant. I confirm that I am legally entitled to be in possession of any export licence presented with this application. I undertake to provide any information or documentation required in connection with this application or in connection with any transaction arising from the use of any licence granted in response to this application. I am aware that DIT may use information in this application for its administration of import policy and that the information may be passed for similar purposes to HM Revenue & Customs or any other UK enforcement agency. I, the undersigned, certify that the information provided in this application is true and given in good faith and that I am established in the United Kingdom.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 2,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.868Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "OPT Declaration",
+            "template_code": "IMA_OPT_DECLARATION",
+            "template_type": "DECLARATION",
+            "application_domain": "IMA",
+            "template_title": "Declaration of Truth",
+            "template_content": "I hereby declare that the particulars contained in this application are accurate and the documents attached are authentic and I submit the following documents:\n\n1.  contracts,\n\n2.  proof of origin of the goods temporarily exported, and\n\n3.  other documents to support this application (numbered).\n\nI also undertake:\n\nI.  to present at the request of the competent authorities any supplementary documentation or information they consider necessary to issue the prior authorisation and to accept, if need be, the control by the competent authorities of the stock records relating to the authorisation;\n\nII.  to retain such stock records for a period of three years from the end of the calendar year to the issue of the authorisation(s);\n\nIII.  to make clearly identifiable the goods temporarily exported and re-imported;\n\nIV.  to make available all other evidence or samples the competent authorities deem necessary to control the use of this authorisation; and\n\nV.  to return the prior authorisation at the latest within 15 days of the expiry period.\n\nI request the issue of a prior authorisation for the goods detailed in the application\n",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 3,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.869Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Wood Affidavit",
+            "template_code": "IMA_WD_DECLARATION",
+            "template_type": "DECLARATION",
+            "application_domain": "IMA",
+            "template_title": "Affidavit",
+            "template_content": "I, the undersigned, do hereby make the following declarations: \nAs regards my application for a quota authorisation, I commit to: \n(1) assign the products concerned to the prescribed processing within one year from the date on which the customs declaration for release for free circulation, containing the exact description of the goods and the TARIC codes, was accepted by the competent customs authorities; \n(2) keep adequate records in the Member State where the authorisation was granted enabling the Licence Office to carry out any checks which they consider necessary to ensure that the products are actually assigned to the prescribed processing, and to retain such records; \n(3) enable the Licence Office to trace the products concerned to their satisfaction in the premises of the undertaking concerned throughout their processing; \n(4) notify the Licence Office of all factors which may affect the authorisation. \nI, the undersigned, do hereby solemnly verify contents of my above affidavit are true and correct to my knowledge and no part of it is false.\n",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 4,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.870Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Firearms Section 5 EC Schedule",
+            "template_code": "SCHEDULE_FIREARMS_SEC5_EC",
+            "template_type": "LETTER_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Import licence no. [[LICENCE_NUMBER]] is not valid for firearms, ammunition and component parts transferred from the Community Area unless accompanied by a licence issued by the competent authority of the exporting Member State authorising the transfer of the firearms, ammunition and component parts to the UK or, in the case of a transfer by a firearms dealer who holds a valid open licence to transfer firearms, ammunition and component parts issued by the competent authorities in the Member State from which the firearms, ammunition and component parts are to be exported, a document relating to that open licence. The said transfer licence or document and this import licence must accompany the firearms, ammunition and component parts until they reach their destination in the UK.</p>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 5,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.871Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Shipped from EU Member State to UK under Directive 91/477/EEC (Section 5)",
+            "template_code": "COVER_FIREARMS_SEC5_EC",
+            "template_type": "LETTER_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Dear [[CONTACT_NAME]]</p><p align=\"justify\"><b>Transfers to the UK from the European Community - Import licence no. [[LICENCE_NUMBER]]</b></p><p align=\"left\">Your request for an import licence dated [[APPLICATION_SUBMITTED_DATE]], has been approved. Your import licence is attached. The expiry date of the import licence is [[LICENCE_END_DATE]]. and you may now transfer the Section 5 items listed on the import licence under EU Directive 91/477/EEC. The enclosed import licence is the UK prior consent under this Directive and should be presented to the competant authorities in the transferring Member State in order to obtain the transfer licence.</p><p align=\"left\">Your import licence is not valid unless accompanied by a transfer licence which you must obtain from [[COUNTRY_OF_CONSIGNMENT]], before transferring the items listed to the UK. The transfer licence and enclosed import licence must accompany the items listed until they reach their destination in the UK. If you are unable to obtain a transfer licence issued by the transferring Member State you should contact this office for advice before making the transfer.</p><p align=\"left\">It is a criminal offence to import Firearms into the UK which have not been proved in a C.I.P (the international proof governing body) approved Proof House, without giving written notification to the British Proof Authority within 7 days of their entry or submitting for proof within 28 days of their entry. It is also a criminal offence to export a firearm which is not marked with a valid Proof Mark. Exports of firearms and ammunition are subject to export controls. You will find detailed advice at https://www.gov.uk/beginners-guide-to-export-controls.</p><p align=\"justify\">This licence is only valid for section 5 goods when they are imported using a carrier authorised to carry Section 5 goods.</p>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 6,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.872Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Shipped from EU Member State to UK",
+            "template_code": "COVER_FIREARMS_SEC5_EC_OUTSIDE_DIRECTIVE",
+            "template_type": "LETTER_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Dear [[CONTACT_NAME]]</p><p align=\"justify\"><b>Transfers to the UK from the European Community - Import licence no. [[LICENCE_NUMBER]]</b></p><p align=\"left\">Your request for an import licence dated [[APPLICATION_SUBMITTED_DATE]], has been approved. Your import licence is attached. The expiry date of the import licence is [[LICENCE_END_DATE]]. and you may now transfer the items listed on the import licence to the UK.</p><p align=\"justify\">This licence is only valid if the firearm and its essential component parts (Barrel, frame, receiver (including both upper or lower receiver), slide, cylinder, bolt or breech block) are marked with name of manufacturer or brand, country or place of manufacturer, serial number and the year of manufacture (if not part of the serial number) and model (where feasible). If an essential component is too small to be fully marked it must at least be marked with a serial number or alpha-numeric or digital code. If the item is not marked as set out above you have 1 month from entry into the UK to comply with this requirement. If the item is being imported for deactivation, you have three months to either comply or have the item deactivated.</p><p align=\"justify\">Items must be marked using the Latin alphabet and the Arabic numeral system. The font size must be at least 1,6 mm unless the relevant component parts are too small to be marked to this size, in which case a smaller font size may be used.</p><p align=\"justify\">For frames or receivers made from a non-metallic material, the marking should be applied to a metal plate that is permanently embedded in the material of the frame or receiver in such a way that the plate cannot be easily or readily removed; and removing the plate would destroy a portion of the frame or receiver. Other techniques for marking such frames or receivers are permitted, provided those techniques ensure an equivalent level of clarity and permanence for the marking.</p><p align=\"left\">This licence is only valid for section 5 goods when they are imported using a carrier authorised to carry Section 5 goods.</p><p align=\"justify\">EU transfers falling within the provisions of Directives 91/477/EEC and 93/15/EEC must have a transfer licence issued by the sending Member State.</p><p align=\"justify\">Because of the Covid-19 outbreak, the Import Licensing Branch has taken the decision to stop printing firearms licences. You will receive a pdf which you can print out on plain white paper. If either an overseas or UK enforcement office queries the validity of this import licence, they can contact enquiries.ilb@trade.gov.uk and we will confirm the validity of the import licence for them.</p>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 7,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.872Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Shipped from outside the EU to UK",
+            "template_code": "COVER_FIREARMS_SEC5_NOT_EU",
+            "template_type": "LETTER_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Dear [[CONTACT_NAME]]</p><p align=\"justify\"><b>Import to the UK from Outside of the European Community Import licence no. [[LICENCE_NUMBER]].</b></p><p align=\"left\">Your request for an import licence on [[APPLICATION_SUBMITTED_DATE]] has been approved and has been placed in HM Revenue &amp; Customs CHIEF system. You will need to use the data on the attached notification to use your licence on CHIEF. The import licence is valid until [[LICENCE_END_DATE]]. and allows you to import the goods listed in the import licence originating in [[COUNTRY_OF_ORIGIN]] and consigned from [[COUNTRY_OF_CONSIGNMENT]], into the UK.</p><p align=\"left\">In respect of Section 5 items, the authority given to you under Section 5 of the Firearms Act 1968, as amended, limits the number of Section 5 weapons, ammunition and component parts which you may hold at any one time. It is an offence to be in breach of a condition of this authority.</p><p align=\"justify\">This licence is only valid if the firearm and its essential component parts (Barrel, frame, receiver (including both upper or lower receiver), slide, cylinder, bolt or breech block) are marked with name of manufacturer or brand, country or place of manufacturer, serial number and the year of manufacture (if not part of the serial number) and model (where feasible). If an essential component is too small to be fully marked it must at least be marked with a serial number or alpha-numeric or digital code. If the item is not marked as set out above you have 1 month from entry into the UK to comply with this requirement. If the item is being imported for deactivation, you have three months to either comply or have the item deactivated.</p><p align=\"justify\">Items must be marked using the Latin alphabet and the Arabic numeral system. The font size must be at least 1,6 mm unless the relevant component parts are too small to be marked to this size, in which case a smaller font size may be used.</p><p align=\"justify\">For frames or receivers made from a non-metallic material, the marking should be applied to a metal plate that is permanently embedded in the material of the frame or receiver in such a way that the plate cannot be easily or readily removed; and removing the plate would destroy a portion of the frame or receiver. Other techniques for marking such frames or receivers are permitted, provided those techniques ensure an equivalent level of clarity and permanence for the marking.</p><p align=\"left\">This licence is only valid for section 5 goods when they are imported using a carrier authorised to carry Section 5 goods.</p>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 8,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.874Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Imported into Northern Ireland (Section 5)",
+            "template_code": "COVER_FIREARMS_SEC5_N_IRELAND",
+            "template_type": "LETTER_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Dear [[CONTACT_NAME]]</p><p align=\"justify\"><b>Import of firearms to Northern Ireland from Outside of the European Community Import licence no. [[LICENCE_NUMBER]].</b></p><p align=\"left\">Your request for an import licence on [[APPLICATION_SUBMITTED_DATE]] has been approved and has been placed in HM Revenue &amp; Customs CHIEF system. You will need to use the data on the attached notification to use your licence on CHIEF. The import licence is valid until [[LICENCE_END_DATE]]. and allows you to import goods listed in the import licence, originating in [[COUNTRY_OF_ORIGIN]] and consigned from [[COUNTRY_OF_CONSIGNMENT]] into Northern Ireland.</p><p align=\"left\">The authority given to you under Article 45 of the Firearms (Northern Ireland) Order 2004, limits the number of Article 6(1) weapons, ammunition and component parts which you may hold at any one time. It is an offence to be in breach of this authority.</p><p align=\"left\">It is a criminal offence to import Firearms into the UK which have not been proved in a C.I.P (the international proof governing body) approved Proof House, without giving written notification to the British Proof Authority within 7 days of their entry or submitting for proof within 28 days of their entry. It is also a criminal offence to export a firearm which is not marked with a valid Proof Mark. Exports of firearms and ammunition are subject to export controls. You will find detailed advice at https://www.gov.uk/beginners-guide-to-export-controls.</p><p align=\"justify\">This licence is only valid for section 5 goods when they are imported using a carrier authorised to carry Section 5 goods.</p><p align=\"justify\">EU transfers falling within the provisions of Directives 91/477/EEC and 93/15/EEC must have a transfer licence issued by the sending Member State.</p><p align=\"justify\">This licence is only valid if the firearm and its essential component parts (Barrel, frame, receiver (including both upper or lower receiver), slide, cylinder, bolt or breech block) are marked with name of manufacturer or brand, country or place of manufacturer, serial number and the year of manufacture (if not part of the serial number) and model (where feasible). If an essential component is too small to be fully marked it must at least be marked with a serial number or alpha-numeric or digital code. If the item is not marked as set out above you have 1 month from entry into the UK to comply with this requirement. If the item is being imported for deactivation, you have three months to either comply or have the item deactivated.</p><p align=\"justify\">Items must be marked using the Latin alphabet and the Arabic numeral system. The font size must be at least 1,6 mm unless the relevant component parts are too small to be marked to this size, in which case a smaller font size may be used.</p><p align=\"justify\">For frames or receivers made from a non-metallic material, the marking should be applied to a metal plate that is permanently embedded in the material of the frame or receiver in such a way that the plate cannot be easily or readily removed; and removing the plate would destroy a portion of the frame or receiver. Other techniques for marking such frames or receivers are permitted, provided those techniques ensure an equivalent level of clarity and permanence for the marking.</p>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 9,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.875Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Firearms OIL Cover Letter",
+            "template_code": "COVER_FIREARMS_OIL",
+            "template_type": "LETTER_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Dear [[CONTACT_NAME]]</p><p align=\"justify\"><b>Import of firearms to the UK from outside of the European Community: </b><br/><b>Licence no. [[LICENCE_NUMBER]]</b></p><p align=\"left\">Your request for an Open Individual Import Licence, on [[APPLICATION_SUBMITTED_DATE]] has been approved and has been electronically placed in the HM Revenue &amp; Customs CDS system. You will need to use the data on the attached notification to use your licence on CDS.</p><p align=\"left\">This approval is valid until [[LICENCE_END_DATE]] and allows you to import firearms, component parts and/or ammunition, that fall to either Section 1 or Section 2 of the Firearms Act 1968 (as amended) originating in any country and consigned from any country into the UK.</p><p align=\"left\">The ban on the import and possession of certain handguns (the Firearms (Amendment) Act 1997 and the Firearms (Amendment)(No 2) Act 1997) only applies to mainland Britain. It does not apply to Northern Ireland or the Isle of Man.</p><p align=\"justify\">Please note that the change to import licensing requirements from 1 January is that imports of firearms and deactivated firearms into GB from the EU are treated the same as imports from non-EU countries into the UK.</p><p align=\"justify\">The import licensing requirements for transfers from the EU to Northern Ireland will remain unchanged under the terms of the Northern Ireland Protocol. This means that<u>,</u> subject to specified exclusions<u>,</u> shipments from the EU to Northern Ireland will continue to require a transfer licence issued by the transferring EU Member State.</p><p align=\"justify\">There is also no change to the import licensing requirements for imports from non-EU countries into the UK.</p><p align=\"justify\">Notices to Importers detailing the current import licensing controls are published on <u>www.gov.uk/guidance/import-controls#notices-to-importers</u></p>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 10,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.876Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Shipped from outside EU to UK (not Section 5)",
+            "template_code": "COVER_FIREARMS_OUTSIDE_EU",
+            "template_type": "LETTER_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Dear [[CONTACT_NAME]]</p><p align=\"justify\"><b>Import to the UK from Outside of the European Community - Import licence no. [[LICENCE_NUMBER]].</b></p><p align=\"left\">Your request for an import licence on [[APPLICATION_SUBMITTED_DATE]] has been approved and has been placed in HM Revenue &amp; Customs CHIEF system. You will need to use the data on the attached notification to use your licence on CHIEF. The import licence is valid until [[LICENCE_END_DATE]]. and allows you to import the goods listed in the import licence originating in [[COUNTRY_OF_ORIGIN]] and consigned from [[COUNTRY_OF_CONSIGNMENT]], into the UK.</p><p align=\"left\">It is a criminal offence to import Firearms into the UK which have not been proved in a C.I.P (the international proof governing body) approved Proof House, without giving written notification to the British Proof Authority within 7 days of their entry or submitting for proof within 28 days of their entry. It is also a criminal offence to export a firearm which is not marked with a valid Proof Mark. Exports of firearms and ammunition are subject to export controls. You will find detailed advice at https://www.gov.uk/beginners-guide-to-export-controls</p>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 11,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.877Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Stop Case Email",
+            "template_code": "STOP_CASE",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": "ICMS Case Reference [[CASE_REFERENCE]] Stopped",
+            "template_content": "Processing on ICMS Case Reference [[CASE_REFERENCE]] has been stopEmail enquiries.ilb@trade.gov.uk  if you believe this is in error or need more information.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 12,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.878Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Further Information Request email",
+            "template_code": "IMA_RFI",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": "[[CASE_REFERENCE]] Further Information Request",
+            "template_content": "Dear [[IMPORTER_NAME]],\n\nPlease can you [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED]\n\nPlease log on to your account and reply using the information request link now assigned to this request. Your request will be closed if you do not reply within 1 working day.\n\nEmail enquiries.ilb@trade.gov.uk if you have questions quoting: [[CASE_REFERENCE]].\n\nYours sincerely,\n\n[[CASE_OFFICER_NAME]]",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 13,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.878Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Application Update email",
+            "template_code": "IMA_APP_UPDATE",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": "[[CASE_REFERENCE]] Request for Application Update",
+            "template_content": "Dear [[IMPORTER_NAME]]\n\nPlease make the following amendments to your request:\n\n[DESCRIBE WHAT UPDATES ARE NEEDED]\n\nYou can only make the requested amendments using the update link found directly below the 'View Application' and 'Withdraw Application' links in the Actions column on the right hand side of your workbasket.\n\nAfter clicking on the update link, 'start changes' and then 'next' to progress through the screens until you are on the application screen. Make the changes and resubmit.\n\nYour request will be closed if the changes are not made within 1 working day.\n\nEmail importcontrols@trade.gov.uk if your application is sanction related, for all other application types please email enquiries.ilb@trade.gov.uk if you have questions, quoting  [[CASE_REFERENCE]].\n\nYours sincerely,\n\n[[CASE_OFFICER_NAME]]",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 14,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.879Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Licence Revocation email",
+            "template_code": "LICENCE_REVOKE",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": "ICMS Licence [[LICENCE_NUMBER]] Revoked",
+            "template_content": "Licence [[LICENCE_NUMBER]] has been revoked. Email enquiries.ilb@trade.gov.uk  if you believe this is in error or need more information.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 16,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.879Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Firearms Constabulary email",
+            "template_code": "IMA_CONSTAB_EMAIL",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": "Import Licence RFD Enquiry",
+            "template_content": "Dear Colleagues\n\n[[CASE_REFERENCE]] \n\nWe have received an import licence application from:\n[[IMPORTER_NAME]]\n[[IMPORTER_ADDRESS]]\n \nThe application is for:\n\n[[GOODS_DESCRIPTION]]\n\nGrateful if the Police can advise on the validity of the RFD/Firearms/Shotgun Certificate, and whether there are any objections to the issuing of the import licence.\n\nGrateful if Home Office can confirm use of obsolete calibre or any other Section 58(2) exemption and if there are any reasons why an import licence should not be issued. (delete if not applicable)\n \nGrateful if the Home Office can validate the Section 5 authority on the applicants ICMS account. (delete if not Section 5) \n\nGrateful if you can check the attached deactivation certificate and advise as to whether or not it is valid and matches your records. (DELETE IF NOT DEACTIVATED)\n\nPlease note that the import licence will not be issued until we have had your response/responses to this e-mail.\n\nThanks and best regards \n\n[[CASE_OFFICER_NAME]]\n[[CASE_OFFICER_EMAIL]]\n[[CASE_OFFICER_PHONE]]",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 17,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.880Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 1 (must be updated each year)",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Valid only for goods loaded onto the exporting means of transport, in the country of origin, on or before 31 December 2016",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 18,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.881Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 10",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Surveillance",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 19,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.881Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 11",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Free Circulation:  Valid only for goods accompanied by a valid T2 document or a document having equivalent effect",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 20,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.882Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 13",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Valid only for goods for re-export outside the EC.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 21,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.883Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Open Individual Licence endorsement",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "OPEN INDIVIDUAL LICENCE Not valid for goods originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation (including any previous name by which these territories have been known). \n\nThis licence is only valid if the firearm and its essential component parts (Barrel, frame, receiver (including both upper or lower receiver), slide, cylinder, bolt or breech block) are marked with name of manufacturer or brand, country or place of manufacturer, serial number and the  year of manufacture (if not part of the serial number) and model (where feasible). If an essential component is too small to be fully marked it must at least be marked with a serial number or alpha-numeric or digital code. If the item is not marked as set out above you have 1 month from entry into the UK to comply with this requirement. If the item is being imported for deactivation, you have three months to either comply or have the item deactivated.\nItems must be marked using the Latin alphabet and the Arabic numeral system. The font size must be at least 1,6 mm unless the relevant component parts are too small to be marked to this size, in which case a smaller font size may be used. \nFor frames or receivers made from a non-metallic material, the marking should be applied to a metal plate that is permanently embedded in the material of the frame or receiver in such a way that the plate cannot be easily or readily removed; and removing the plate would destroy a portion of the frame or receiver.  Other techniques for marking such frames or receivers are permitted, provided those techniques ensure an equivalent level of clarity and permanence for the marking.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 22,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.883Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 15",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Surveillance.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 23,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.884Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 16",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Not valid for goods entered to Inward Processing Relief.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 24,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.885Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 17",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Valid only for use on or after 1 July 1994",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 25,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.885Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 19",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Valid only for use on or after 1 June 2001",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 26,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.886Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 2 (must be updated each year)",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Valid only for use on or after 1 January 2016",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 27,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.887Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 20",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Valid only for fabrics woven on looms solely by hand or foot; for articles made from such fabrics and sewn exclusively by hand or for traditional folklore products made by hand as the case may be.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 28,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.888Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 21",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Folkloric: Valid only for traditional folklore products, made by hand",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 29,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.889Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 22",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Batik : Valid only for traditional batik fabrics and articles made from such fabrics whether sewn by hand or on a sewing machine operated by hand or foot",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 30,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.889Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 25",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Value, C.i.f., in euro  ,   ,    on licence application (Unit Price    .   euro per tonne)",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 31,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.890Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 28",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Valid for goods shipped on or before 28 October 2004",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 32,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.891Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Replacement licence ensorsement",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "This licence is issued in replacement of Import Licence No. <NUMBER>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 33,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.891Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Replacement for revoked licence endorsement",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "This licence is issued in replacement of the following licence, which has been revoked:- Import Licence No.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 34,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.892Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 32",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Valid only for goods of a quality lower than prime",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 35,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.894Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 34",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "This licence is a renewal of the following Import Licence no: <NUMBER>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 36,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.895Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 35",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Surveillance : This surveillance document has a tolerance of 5% on the quantity indicated in box 11.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 37,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.895Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 4",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Rate of Exchange to be applied is 1 Pound Sterling = (1/ECU RATE) euro. Therefore, the Pounds Sterling value of this licence is (ECU RATE * VALUE OF LICENCE)",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 38,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.897Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Firearms EU Transfer within Directive 91/477/EEC",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Your attention is drawn to the further conditions listed on the Schedule attached to this licence.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 39,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.898Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 45",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "This import licence is not valid for goods originating in or consigned from Serbia or Montenegro.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 40,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.900Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 46",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "This licence is not valid for the importation of goods which originate in, are consigned from, or have been transited through the areas of Bosnia-Herzegovina under the control of the Bosnian",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 41,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.901Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 47",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Serb forces.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 42,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.902Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 48",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "A further condition of this licence is that it must be returned to this Branch within 15 days of expiry if it is unused/partially unused",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 43,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.903Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 49",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "* and with technical features such as hermetic pads containing gas or fluid, mechanical components which absorb or neutralise impact or materials such as low-density polymers.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 44,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.904Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 5",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "This licence is equivalent to (QUANTITY) (UNITS)",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 45,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.904Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 50",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "A further condition of this licence is that it must be returned to this Branch within 10 working days of expiry.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 46,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.905Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 6",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Valid only for goods loaded onto the exporting means of transport, in the country of origin, on or before 6 January 2000",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 47,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.907Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 61",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Valid only for goods loaded onto the exporting means of transport, in the country of origin, on or after 1 January 2005",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 48,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.908Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 62",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Value, CIF, in Euro",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 49,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.908Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 7",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "A further condition of the issue of this import licence is that it may not be loaned or transferred, whether for a consideration or free of charge, by the person in whose name the document was issued.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 50,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.909Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 71",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Valid only for goods shipped from China between 11 June 2005 and 19 July 2005 inclusive",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 51,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.910Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 72",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Valid only for goods shipped from China before 11 June 2005",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 52,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.911Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 73",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "It is an offence to be in breach of your authority issued under the Firearms Act 1968, as amended, limiting the number of prohibited weapons & ammunition which you may possess at any one time.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 53,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.912Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 8",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "EXCEPTIONAL LICENCE",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 54,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.913Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Endorsement 9",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Short shipment: Quantity applied for has been reduced",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 55,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.914Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Firearms Sanctions COO (AC or AY)",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Not valid for items originating in Iran, North Korea, Libya, Syria, Belarus or the Russian Federation (including any previous name by which these territories have been known).",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 56,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.915Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Firearms Sanctions COC (AY)",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Not valid for items consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation (including any previous name by which these territories have been known).",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 57,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.916Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Firearms Sanctions COO & COC (AC & AY)",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation (including any previous name by which these territories have been known).",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 58,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.916Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Proof House",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "This licence is issued subject to the following conditions: It is not valid for goods originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation. No person can use the licence without the permission of the Proof Master; the Proof House must record any permissions that it has granted; the Proof House must record details of every importation made against licence upon its arrival at the Proof House; and the Proof House must permit the proper officer of HM Revenue and Customs to inspect any records relating to importations made using the licence.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 59,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.917Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Case reopening email",
+            "template_code": "CASE_REOPEN",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": "Case Reopened: [[CASE_REFERENCE]]",
+            "template_content": "ILB has reopened case reference [[CASE_REFERENCE]] and will resume processing on this case. Please email enquiries.ilb@trade.gov.uk for further information.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 60,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.918Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Publish Mailshot Email",
+            "template_code": "PUBLISH_MAILSHOT",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": "New Mailshot",
+            "template_content": "A new mailshot has been published and is available to view from your workbasket.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 61,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.919Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Retract Mailshot Email",
+            "template_code": "RETRACT_MAILSHOT",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": "Retracted Mailshot",
+            "template_content": "A published mailshot has been retracted.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 62,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.920Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Proof House",
+            "template_code": "COVER_FIREARMS_PROOF_HOUSE",
+            "template_type": "LETTER_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Dear [[CONTACT_NAME]]</p><p align=\"justify\"><b>The importation into the UK from outside the EU and the transfer from the EU to the UK of firearms, component parts thereof and ammunition - Import licence no. </b><b>[[LICENCE_NUMBER]]</b></p><p align=\"justify\">Your request for an import licence dated [[APPLICATION_SUBMITTED_DATE]], has been approved. Your import licence is attached. The expiry date of the import licence is [[LICENCE_END_DATE]].</p><p align=\"justify\">It is a criminal offence to import Firearms into the UK which have not been proved in a C.I.P (the international proof governing body) approved Proof House, without giving written notification to the British Proof Authority within 7 days of their entry or submitting for proof within 28 days of their entry. It is also a criminal offence to export a firearm which is not marked with a valid Proof Mark. Exports of firearms and ammunition are subject to export controls. You will find detailed advice at https://www.gov.uk/beginners-guide-to-export-controls.</p><p align=\"justify\">This licence is only valid for section 5 goods when they are imported using a carrier authorised to carry Section 5 goods. </p><p align=\"justify\">EU transfers falling within the provisions of Directives 91/477/EEC and 93/15/EEC must have a transfer licence issued by the sending Member State.</p>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 63,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.921Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Anti-personnel Mines",
+            "template_code": "COVER_FIREARMS_ANTI_PERSONNEL_MINES",
+            "template_type": "LETTER_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Dear [[CONTACT_NAME]]</p><p align=\"justify\"><b>Importation of Inert Anti-personnel Mines - Import Licence Number: </b><b>[[LICENCE_NUMBER]]</b></p><p align=\"justify\">Your request for an import licence dated [[APPLICATION_SUBMITTED_DATE]], has been approved. The import licence is valid until [[LICENCE_END_DATE]] and allows you to import the goods listed in the import licence originating in [[COUNTRY_OF_ORIGIN]] and consigned from [[COUNTRY_OF_CONSIGNMENT]], into the UK.</p><p align=\"justify\">The licence has been issued because you hold authority of the Secretary of State for Defence under Section 4 of the Landmines Act 1988 to possess. You are reminded of the conditions set out in that authority.</p><p align=\"justify\">You are also reminded that you have a responsibility to comply with any legislation relating to explosives, if relevant, and that this import licence does not replace this responsibility. If need be you should contact the Health and Safety Executive for further advice.</p><p align=\"justify\">You are also reminded that the movement of the landmines from the port to their final destination is also covered by the provisions of the Landmines Act 1998 and must be carried out by suitably authorised persons.</p><p align=\"justify\">The Ministry of Defence requested that you include details of your UK mine holdings in due course.</p>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 64,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.922Z",
+            "end_datetime": null,
+            "is_active": false,
+            "template_name": "Russian Sanctions",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "This licence has been issued for imports from the Russian Federation where the appplicant has proven that the goods meet the terms of the derogation specified in Article 2 of EU Council Decision 2014/512/CFSP, covering goods subject to a contract concluded and paid for before 1 August 2014.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 65,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.923Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Royal Gibraltar Police",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "It is a condition of this import licence that the goods be transferred upon arrival in the UK, in the presence of an officer of Sussex Police, to an authorised representative of LGC Laboratories Ltd. The authorised representative will be responsible for the security of the goods from the point of their importation until their exportation to Gibraltar.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 69,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.923Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "HSE Enquiry Email",
+            "template_code": "CA_HSE_EMAIL",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "CA",
+            "template_title": "Biocidal Product Enquiry",
+            "template_content": "Dear Colleagues\n\n[[CASE_REFERENCE]] \n\nWe have received a [[APPLICATION_TYPE]] application from:\n[[EXPORTER_NAME]]\n[[EXPORTER_ADDRESS]]\n[[CONTACT_EMAIL]]\n          \nThe application is for the following countries:\n          \n[[CERT_COUNTRIES]]\n\nThe application is for the following biocidal products:\n\n[[SELECTED_PRODUCTS]]\n\nGrateful for your guidance on the items listed.\n\nThanks and best regards\n\n[[CASE_OFFICER_NAME]]\n[[CASE_OFFICER_EMAIL]]\n[[CASE_OFFICER_PHONE]]",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 70,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.924Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Application Update Email",
+            "template_code": "CA_APPLICATION_UPDATE_EMAIL",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "CA",
+            "template_title": "[[CASE_REFERENCE]] Request for Application Update",
+            "template_content": "Dear [[EXPORTER_NAME]]\n\nPlease make the following amendments to your request:\n\n[DESCRIBE WHAT UPDATES ARE NEEDED].\n\nPlease hover your cursor over the blue (i) on the right hand side of the application screen, opposite exporter status. You comply with the definition of a manufacturer as detailed in the applicable legislation if you have had the products designed or manufactured and market them under your own name or trademark. Manufacturer is not solely a reference to whoever carries out the manufacturing process. Please amend to I am the manufacturer.[DELETE IF NOT REQUIRED]\n\nYou can still list your contract manufacturer in the 'manufactured at' section if you want their details to be listed on the issued certificate. [DELETE IF NOT REQUIRED]\n\nYou must select the responsible person statement if your company has placed or will be placing these cosmetics products on the UK market. This statement confirms that your company is responsible for ensuring that the products meet the product safety requirements of the UK Cosmetics Regulation. [DELETE IF NOT COSMETICS] \n\nThe Responsible person statement does not refer to the person submitting the application, it refers to your company. [DELETE IF NOT COSMETICS]\n\nYou can only make the requested amendments using the update link found directly below the 'View Application' and 'Withdraw Application' links in the Actions column on the right hand side of your workbasket.\n\nAfter clicking on the update link, 'start changes' and then 'next' to progress through the screens until you are on the application screen. Make the changes and resubmit.\n\nYour request will be closed if the changes are not made within 1 working day.\n\nEmail enquiries.ilb@trade.gov.uk if you have questions quoting  [[CASE_REFERENCE]].\n\nYours sincerely,\n\n[[CASE_OFFICER_NAME]]",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 71,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.925Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Further Information Request Email",
+            "template_code": "CA_RFI_EMAIL",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "CA",
+            "template_title": "[[CASE_REFERENCE]] Further Information Request",
+            "template_content": "Dear [[EXPORTER_NAME]],\n\nPlease can you [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED]\n\nPlease log on to your account and reply using the information request link now assigned to this request. Your request will be closed if you do not reply within 1 working day.\n\nEmail enquiries.ilb@trade.gov.uk if you have questions quoting: [[CASE_REFERENCE]].\n\nYours sincerely,\n\n[[CASE_OFFICER_NAME]]",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 72,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.925Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Spanish",
+            "template_code": null,
+            "template_type": "CFS_DECLARATION_TRANSLATION",
+            "application_domain": "CA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Se certifica por el presente, a los efectos de la legislación de país citado precedentemente, que los productos mecionados en el anexo, que forma parte integral de este certificado, se pueden vender legalmente en el Reino Unido si satisfacen los requisitos reglamentarios.</p>\n",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 73,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.927Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "French",
+            "template_code": null,
+            "template_type": "CFS_DECLARATION_TRANSLATION",
+            "application_domain": "CA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Il est certifié par les présentes, pour l&apos;application des lois du pays susnommé, que la vente des préparations mentionnées à l&apos;annexe qui fait partie intégrale de ce certificat est légalement permise au Royaume-Uni dans la mesure où les prescriptions légales sont satisfaites.</p>\n",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 74,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.927Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Portuguese",
+            "template_code": null,
+            "template_type": "CFS_DECLARATION_TRANSLATION",
+            "application_domain": "CA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Pelo presente documento certifica-se, para os fins das leis do pais acima referido, que os preparados designados no anexo, que faz parte integrante do presente certificado, podem ser vendidos legalmente no Reino Unido desde que sejam satisfeitos os requisitos regulamentários.</p>\n",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 75,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.928Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Russian",
+            "template_code": null,
+            "template_type": "CFS_DECLARATION_TRANSLATION",
+            "application_domain": "CA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Настоящим удостоверяется для целей законов<br/>вышеупомянутой страны, что продукт(ы), указанный в списке, который<br/>является частью настоящего сертификата, может на законном основании<br/>продаваться в Соединённом Королевстве при условии удовлетворения<br/>официальных требований.</p>\n",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 76,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.929Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Turkish",
+            "template_code": null,
+            "template_type": "CFS_DECLARATION_TRANSLATION",
+            "application_domain": "CA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Bu sertifikanın bir parçası olan Listede gösterilen preparatın, mevzuatın öngördüğü şartlara uyduğu takdirde Birleşik Krallıkta yasal olarak satılabileceği yukarıda anılan ülke kanunları gereği tasdik olunur.</p>\n",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 77,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.930Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Section 5 Carrier",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "This licence is only valid when the goods are imported using a carrier authorised to carry Section 5 goods.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 78,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.931Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Section 5 carrier & EU transfer temporary endorsement",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "This licence is only valid for section 5 goods when they are imported using a carrier authorised to carry Section 5 goods.  \nEU transfers falling within the provisions of Directives 91/477/EEC and 93/15/EEC must have a transfer licence issued by the sending Member State.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 79,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.931Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Deactivated Firearms",
+            "template_code": "COVER_FIREARMS_DEACTIVATED_FIREARMS",
+            "template_type": "LETTER_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Dear [[CONTACT_NAME]]</p><p align=\"justify\"><b>Import into the UK from outside the EU or transfer from the EU to the UK of deactivated firearms - Import licence no. [[LICENCE_NUMBER]]</b></p><p align=\"justify\">Your request for an import licence dated [[APPLICATION_SUBMITTED_DATE]], has been approved. Your import licence is attached. The expiry date of the import licence is [[LICENCE_END_DATE]].</p><p align=\"justify\">Please note that the change to import licensing requirements from 1 January is that imports of firearms and deactivated firearms into GB from the EU are treated the same as imports from non-EU countries into the UK.</p><p align=\"justify\">The import licensing requirements for transfers from the EU to Northern Ireland will remain unchanged under the terms of the Northern Ireland Protocol. This means that<u>,</u> subject to specified exclusions<u>,</u> shipments from the EU to Northern Ireland will continue to require a transfer licence issued by the transferring EU Member State.</p><p align=\"justify\">There is also no change to the import licensing requirements for imports from non-EU countries into the UK.</p><p align=\"justify\">Notices to Importers detailing the current import licensing controls are published on <u>www.gov.uk/guidance/import-controls#notices-to-importers</u></p>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 80,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.932Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Prior Surveillance Declaration",
+            "template_code": "IMA_SPS_DECLARATION",
+            "template_type": "DECLARATION",
+            "application_domain": "IMA",
+            "template_title": "Declaration of Truth",
+            "template_content": "I am the applicant for this licence or I am authorised to act on their behalf. I undertake that if a licence is granted it will be used solely to import goods which are the property of the applicant. I confirm that I am legally entitled to be in possession of any export licence presented with this application. I undertake to provide any information or documentation required by DIT in connection with this application or in connection with any transaction arising from the use of any licence granted in response to this application. I am aware that DIT may use information in this application for its administration of import policy and that the information may be passed for similar purposes to the Commission of the European Communities and HM Revenue ; Customs. I, the undersigned, certify that the information provided in this application is true and given in good faith.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 81,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.934Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Steel Prior Surveillance",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "This surveillance document remains valid as long as the unit price remains within 5% of the listed unit price.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 82,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.935Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Certificate Revocation email",
+            "template_code": "CERTIFICATE_REVOKE",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "CA",
+            "template_title": "ICMS Certificate(s) Revoked",
+            "template_content": "Certificate(s) [[CERTIFICATE_REFERENCES]] have been revoked. Please email enquiries.ilb@trade.gov.uk if you believe this is in error or want further information.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 83,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.935Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Further Information Request Email",
+            "template_code": "IAR_RFI_EMAIL",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "IAR",
+            "template_title": "[[REQUEST_REFERENCE]] Further Information Request",
+            "template_content": "Dear [[REQUESTER_NAME]],\n\nPlease can you [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED]\n\nPlease log on to your account and reply using the information request link now assigned to this request. Your request will be closed if you do not reply within 1 working day.\n\nEmail enquiries.ilb@trade.gov.uk if you have questions quoting: [[REQUEST_REFERENCE]].\n\nYours sincerely,\n\n[[CURRENT_USER_NAME]]",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 84,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.936Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Spanish CFS Schedule",
+            "template_code": "CFS_SCHEDULE_TRANSLATION",
+            "template_type": "CFS_SCHEDULE_TRANSLATION",
+            "application_domain": "CA",
+            "template_title": null,
+            "template_content": null,
+            "country_translation_set": 4,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 85,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.937Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "CFS Schedule Template",
+            "template_code": "CFS_SCHEDULE_ENGLISH",
+            "template_type": "CFS_SCHEDULE",
+            "application_domain": "CA",
+            "template_title": null,
+            "template_content": null,
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 86,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.938Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Anti personnel mines",
+            "template_code": null,
+            "template_type": "ENDORSEMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "The licence is only valid if you also hold authority of the Secretary of State for Defence under the Landmines Act 1988 to possess and meet the conditions set out in that authority. You have a responsibility to comply with any legislation relating to explosives, if relevant, and that this import licence does not replace this responsibility. Please contact the Health and Safety Executive for further advice.\n\nThe movement of landmines from the port to their final destination is covered by the provisions of the Landmines Act 1998 and must be carried out by suitably authorised persons.\n\nThe Ministry of Defence requested that you include details of your UK mine holdings in due course.",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 87,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.939Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Firearms Markings Standard",
+            "template_code": "FIREARMS_MARKINGS_STANDARD",
+            "template_type": "LETTER_FRAGMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">This licence is only valid if the firearm and its essential component parts (barrel, frame, receiver (including both upper or lower receiver), slide, cylinder, bolt or breech block) are marked with name of manufacturer or brand, country or place of manufacturer, serial number and the year of manufacture (if not part of the serial number) and model (where feasible). If an essential component is too small to be fully marked it must at least be marked with a serial number or alpha-numeric or digital code. If the item is not marked as set out above you have 28 days from entry into the UK to comply with this requirement. If the item is being imported for deactivation, you have three months to either comply or have the item deactivated. Items must be marked using the Latin alphabet and the Arabic numeral system. The font size must be at least 1,6 mm unless the relevant component parts are too small to be marked to this size, in which case a smaller font size may be used. For frames or receivers made from a non-metallic material, the marking should be applied to a metal plate that is permanently embedded in the material of the frame or receiver in such a way that the plate cannot be easily or readily removed; and removing the plate would destroy a portion of the frame or receiver. Other techniques for marking such frames or receivers are permitted, provided those techniques ensure an equivalent level of clarity and permanence for the marking.</p>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 88,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.939Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Firearms Markings Non-Standard",
+            "template_code": "FIREARMS_MARKINGS_NON_STANDARD",
+            "template_type": "LETTER_FRAGMENT",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">The marking requirements do not apply to imports into the UK of air weapons, firearms that are either for the military or police use and firearms that were manufactured before 1 September 1939. As regards imports into Northern Ireland, the marking requirements do not apply to firearms and relevant component parts manufactured anywhere in the European Union before 14 September 2018 or which were imported into the European Union before that date.</p>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 89,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.941Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Firearms SIIL Cover Letter",
+            "template_code": "COVER_FIREARMS_SIIL",
+            "template_type": "LETTER_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": null,
+            "template_content": "<p align=\"justify\">Dear [[CONTACT_NAME]]</p><p align=\"justify\"><b>Import of firearms into the UK: Import licence no. [[LICENCE_NUMBER]].</b></p><p align=\"justify\">Your request for an import licence on [[APPLICATION_SUBMITTED_DATE]] has been approved and has been placed in the HM Revenue &amp; Customs CDS system. You will need to use the data on the attached notification to use your licence. The import licence is valid until [[LICENCE_END_DATE]] and allows you to import the goods listed in the import licence originating in [[COUNTRY_OF_ORIGIN]] and consigned from [[COUNTRY_OF_CONSIGNMENT]], into the UK.</p><p align=\"justify\">UK firearms possession authorities may limit the number of weapons, ammunition and component parts which you may hold at any one time. It is an offence to be in breach of a condition of this authority.</p><p align=\"justify\">If importing into Northern Ireland then the authority given to you under Article 45 of the Firearms (Northern Ireland) Order 2004, limits the number of Article 6(1) weapons, ammunition and component parts which you may hold at any one time. It is an offence to be in breach of this authority.</p><p align=\"justify\">Please note that the change to import licensing requirements from 1 January is that imports of firearms and deactivated firearms into GB from the EU are treated the same as imports from non-EU countries into the UK.</p><p align=\"justify\">The import licensing requirements for transfers from the EU to Northern Ireland will remain unchanged under the terms of the Northern Ireland Protocol. This means that<u>,</u> subject to specified exclusions<u>,</u> shipments from the EU to Northern Ireland will continue to require a transfer licence issued by the transferring EU Member State.</p><p align=\"justify\">There is also no change to the import licensing requirements for imports from non-EU countries into the UK.</p><p align=\"justify\">Notices to Importers detailing the current import licensing controls are published on <u>www.gov.uk/guidance/import-controls#notices-to-importers</u></p>",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 90,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.941Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "Sanctions email",
+            "template_code": "IMA_SANCTIONS_EMAIL",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "IMA",
+            "template_title": "Import Sanctions and Adhoc Licence",
+            "template_content": "Dear Colleagues\n\nWe have received an import licence application from:\n[[IMPORTER_NAME]]\n[[IMPORTER_ADDRESS]]\n \nThe application is for the following:\n\n[[GOODS_DESCRIPTION]]\n\nThanks and best regards \n\n[[CASE_OFFICER_NAME]]\n[[CASE_OFFICER_EMAIL]]\n[[CASE_OFFICER_PHONE]]",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
+        "model": "web.template",
+        "pk": 92,
+        "fields": {
+            "start_datetime": "2024-08-06T14:42:17.942Z",
+            "end_datetime": null,
+            "is_active": true,
+            "template_name": "BEIS OPSS Enquiry Email",
+            "template_code": "CA_BEIS_EMAIL",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "CA",
+            "template_title": "Good Manufacturing Practice Application Enquiry",
+            "template_content": "Dear Colleagues\n\n[[CASE_REFERENCE]] \n\nWe have received a [[APPLICATION_TYPE]] application from:\n[[EXPORTER_NAME]]\n[[EXPORTER_ADDRESS]]\n\nPlease review and advise whether or not this branch can issue a GMP Certificate for this\nrequest.\n\nMANUFACTURER:\n[[MANUFACTURER_NAME]]\n[[MANUFACTURER_ADDRESS]]\n[[MANUFACTURER_POSTCODE]]\n\nRESPONSIBLE PERSON:\n[[RESPONSIBLE_PERSON_NAME]]\n[[RESPONSIBLE_PERSON_ADDRESS]]\n[[RESPONSIBLE_PERSON_POSTCODE]]\n\nNAME OF BRAND:\n[[BRAND_NAME]]\n\nThanks and best regards\n\n[[CASE_OFFICER_NAME]]\n[[CASE_OFFICER_EMAIL]]\n[[CASE_OFFICER_PHONE]]",
+            "country_translation_set": null,
+            "countries": []
+        }
+    }
+]
