@@ -837,56 +837,73 @@ class SubmitGMPForm(EditGMPFormBase):
 
 # Example of how this works can be found here:
 # https://micropyramid.com/blog/how-to-use-nested-formsets-in-django
-Parent = CFSSchedule
-Child = CFSProduct
-Address = CFSProductActiveIngredient
-AddressTwo = CFSProductType
 
-# 1. Create basic inline-formset
-# ChildrenFormset = forms.inlineformset_factory(Parent, Child, fields=["product_name"], extra=1)
-AddressFormset = forms.inlineformset_factory(Child, Address, fields=["name", "cas_number"], extra=1)
+# Used later on as nested formsets.
+ActiveIngredientFormset = forms.inlineformset_factory(
+    CFSProduct, CFSProductActiveIngredient, fields=["name", "cas_number"], extra=1
+)
+ProductTypeFormset = forms.inlineformset_factory(
+    CFSProduct, CFSProductType, fields=["product_type_number"], extra=1
+)
 
 
+# TODO: Add init method to set nested formsets only when required.
+# e.g. def __init__(self, is_biocide):
 class BaseChildrenFormset(BaseInlineFormSet):
     # 2. Attach a nested formset for each form same as below.
     #    The super class 'BaseInlineFormSet' defines 'add_fields' method which is responsible for
     #    adding the fields for each form in a formset.
     #    So, here we can write logic to associate a nested formset.
     def add_fields(self, form, index):
+        """Add custom fields to the form.
+
+        We add two nested formsets to each form in the product formset.
+        """
         super().add_fields(form, index)
 
-        # save the formset in the 'nested' property
-        form.nested = AddressFormset(
+        form.active_ingredient_formset = ActiveIngredientFormset(
             instance=form.instance,
             data=form.data if form.is_bound else None,
             files=form.files if form.is_bound else None,
-            prefix=f"address-{form.prefix}-{AddressFormset.get_default_prefix()}",
-            # extra=1
+            prefix=f"active-ingredient-{form.prefix}-{ActiveIngredientFormset.get_default_prefix()}",
         )
 
-    # Validation - When validating a form in the formset, we also need to validate its sub-forms which are in nested formset.
+        form.product_type_formset = ProductTypeFormset(
+            instance=form.instance,
+            data=form.data if form.is_bound else None,
+            files=form.files if form.is_bound else None,
+            prefix=f"product-type-{form.prefix}-{ProductTypeFormset.get_default_prefix()}",
+        )
+
     def is_valid(self):
         result = super().is_valid()
 
         if self.is_bound:
             for form in self.forms:
-                if hasattr(form, "nested"):
-                    result = result and form.nested.is_valid()
+                if hasattr(form, "active_ingredient_formset"):
+                    result = result and form.active_ingredient_formset.is_valid()
+
+                if hasattr(form, "product_type_formset"):
+                    result = result and form.product_type_formset.is_valid()
 
         return result
 
-    # Saving data - When saving a form, additions/changes to the forms in the nested formset also need to be saved.
     def save(self, commit=True):
         result = super().save(commit=commit)
 
         for form in self.forms:
-            if hasattr(form, "nested"):
+            if hasattr(form, "active_ingredient_formset"):
                 if not self._should_delete_form(form):
-                    form.nested.save(commit=commit)
+                    form.active_ingredient_formset.save(commit=commit)
+
+            if hasattr(form, "product_type_formset"):
+                if not self._should_delete_form(form):
+                    form.product_type_formset.save(commit=commit)
 
         return result
 
 
-ChildrenFormset = forms.inlineformset_factory(
-    Parent, Child, fields=["product_name"], formset=BaseChildrenFormset, extra=1
+# TODO: Rename this when we delete the old formsets.
+NewCFSProductFormset = forms.inlineformset_factory(
+    CFSSchedule, CFSProduct, fields=["product_name"], formset=BaseChildrenFormset, extra=1
 )

@@ -66,12 +66,12 @@ from .forms import (
     CFSProductForm,
     CFSProductFormSet,
     CFSProductTypeForm,
-    ChildrenFormset,
     CreateExportApplicationForm,
     EditCFSForm,
     EditCFSScheduleForm,
     EditCOMForm,
     EditGMPForm,
+    NewCFSProductFormset,
     ProductsFileUploadForm,
     SubmitCFSForm,
     SubmitCFSScheduleForm,
@@ -614,7 +614,7 @@ def manage_children(
         parent = schedule
 
         if request.method == "POST":
-            formset = ChildrenFormset(request.POST, instance=parent)
+            formset = NewCFSProductFormset(request.POST, instance=parent)
 
             if formset.is_valid():
                 formset.save()
@@ -626,18 +626,14 @@ def manage_children(
                     )
                 )
         else:
-            formset = ChildrenFormset(instance=parent)
+            formset = NewCFSProductFormset(instance=parent)
 
         context = {
-            # TODO: Rename these
-            "parent": parent,
-            "children_formset": formset,
-            # Other context
             "process": application,
             "schedule": schedule,
-            # "form": form,
             "page_title": "Add Product",
             "case_type": "export",
+            "product_formset": formset,
         }
 
         return render(request, "web/domains/case/export/cfs-manage-products.html", context)

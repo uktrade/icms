@@ -7,9 +7,7 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a
-          href="{{ icms_url('export:cfs-schedule-edit', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk }) }}"
-          class="prev-link">
+        <a href="{{ icms_url('export:cfs-schedule-edit', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk }) }}" class="prev-link">
           Edit schedule
         </a>
       </li>
@@ -21,19 +19,32 @@
   <h4>{{ page_title }}</h4>
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-    {{ children_formset.management_form }}
-    {{ children_formset.non_form_errors() }}
+    {{ product_formset.management_form }}
+    {{ product_formset.non_form_errors() }}
 
-    {% for child_form in children_formset.forms %}
-        {{ child_form }}
-        {% if child_form.nested %}
-            {{ child_form.nested.management_form }}
-            {{ child_form.nested.non_form_errors() }}
+    {% for child_form in product_formset.forms %}
+      {# Product name  #}
+      {{ child_form }}
 
-            {% for nested_form in child_form.nested.forms %}
-                {{ nested_form }}
-            {% endfor %}
-        {% endif %}
+      {# Active Ingredients #}
+      {% if child_form.active_ingredient_formset %}
+        {{ child_form.active_ingredient_formset.management_form }}
+        {{ child_form.active_ingredient_formset.non_form_errors() }}
+
+        {% for ai_form in child_form.active_ingredient_formset.forms %}
+          {{ ai_form }}
+        {% endfor %}
+      {% endif %}
+
+      {# Product Types #}
+      {% if child_form.product_type_formset %}
+        {{ child_form.product_type_formset.management_form }}
+        {{ child_form.product_type_formset.non_form_errors() }}
+
+        {% for pt_form in child_form.product_type_formset.forms %}
+          {{ pt_form }}
+        {% endfor %}
+      {% endif %}
     {% endfor %}
     {{ forms.submit_button(btn_label="Save") }}
   {% endcall %}
