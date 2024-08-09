@@ -591,13 +591,13 @@ def cfs_delete_manufacturer(
         )
 
 
-def manage_children(
+def manage_cfs_products(
     request: AuthenticatedHttpRequest,
     *,
     application_pk: int,
     schedule_pk: int,
 ) -> HttpResponse:
-    """Edit children and their addresses for a single parent."""
+    """Edit CFS products and related records."""
 
     with transaction.atomic():
         application: CertificateOfFreeSaleApplication = get_object_or_404(

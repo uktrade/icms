@@ -45,7 +45,7 @@ schedule_urls = [
         views.cfs_delete_manufacturer,
         name="cfs-schedule-delete-manufacturer",
     ),
-    path("products/", views.manage_children, name="cfs-schedule-manage-products"),
+    path("products/", views.manage_cfs_products, name="cfs-schedule-manage-products"),
     path("product/add/", views.cfs_add_product, name="cfs-schedule-add-product"),
     path(
         "product/add-multiple/",

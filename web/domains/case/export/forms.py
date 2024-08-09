@@ -849,11 +849,7 @@ ProductTypeFormset = forms.inlineformset_factory(
 
 # TODO: Add init method to set nested formsets only when required.
 # e.g. def __init__(self, is_biocide):
-class BaseChildrenFormset(BaseInlineFormSet):
-    # 2. Attach a nested formset for each form same as below.
-    #    The super class 'BaseInlineFormSet' defines 'add_fields' method which is responsible for
-    #    adding the fields for each form in a formset.
-    #    So, here we can write logic to associate a nested formset.
+class BaseCFSProductFormset(BaseInlineFormSet):
     def add_fields(self, form, index):
         """Add custom fields to the form.
 
@@ -905,5 +901,5 @@ class BaseChildrenFormset(BaseInlineFormSet):
 
 # TODO: Rename this when we delete the old formsets.
 NewCFSProductFormset = forms.inlineformset_factory(
-    CFSSchedule, CFSProduct, fields=["product_name"], formset=BaseChildrenFormset, extra=1
+    CFSSchedule, CFSProduct, fields=["product_name"], formset=BaseCFSProductFormset, extra=1
 )
