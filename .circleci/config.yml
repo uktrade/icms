@@ -150,6 +150,7 @@ jobs:
               --cov=web \
               --cov=config \
               --cov-report=json:test-reports/coverage.json \
+              --cov-config=.coveragerc \
               --circleci-parallelize \
               --maxprocesses=2 \
               -n=auto \
