@@ -447,4 +447,5 @@ class V1ToV2ServiceRenameView(TemplateView):
         return context | {
             "import_a_licence_url": get_importer_site_domain(),
             "export_a_certificate_url": get_exporter_site_domain(),
+            "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
         }
