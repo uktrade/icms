@@ -1,3 +1,5 @@
+{% from "web/domains/signature/macros.html" import dbt_logo %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,10 +12,7 @@
   <body class="page-margin">
     <div class="letter-header flex-row">
       <div class="header-image">
-        <img
-            id="dbt-logo"
-            alt="DBT Logo"
-            src="data:image/png;base64, {{ get_file_base64('web/img/dbt_logo.png') }}" />
+        {{ dbt_logo() }}
       </div>
       <div class="flex-row header-block">
         <div class="address-text">
@@ -29,24 +28,24 @@
         <p>SAFETY AUTHORITIES</p>
     </div>
     <div class="content-block">
-      <p class="issue-date">31 December 2020</p>
+      <p class="issue-date">9 August 2024</p>
       <div class="letter-content">
         <h4 class="centre"><strong>CERTIFICATES OF FREE SALE (CFS) ISSUED BY THE UNITED KINGDOM (UK)</strong></h4>
         <p>
-            The Import Licensing Branch (ILB) is part of the Department for International Trade (DIT) in the United
+            The Import Licensing Branch (ILB) is part of the Department for Business and Trade (DBT) in the United
             Kingdom (UK). We are responsible for the issue of Certificates of Free Sale (CFS) except in relation
             to food, drink and pesticides (Department of the Environment, Food and Rural Affairs - DEFRA),
             medicines and medical equipment (Medicines & Healthcare Regulatory Authority - MHRA) and
             biocides (Health & Safety Executive - HSE).
         </p>
         <p>
-            I am writing to you to explain the changes that we have made to DIT issued CFS as a result of the UK
-            leaving the EU. The DIT CFS inform regarding the listed products ability to be placed on the UK
+            I am writing to you to explain the changes that we have made to DBT issued CFS as a result of the UK
+            leaving the EU. The DBT CFS inform regarding the listed products ability to be placed on the UK
             market.
         </p>
         <p>
-            The security of the DIT CFS has been improved by upgrades to the QR code so that more information
-            is available with which to confirm the validity of the DIT CFS. You are now able to download a copy of
+            The security of the DBT CFS has been improved by upgrades to the QR code so that more information
+            is available with which to confirm the validity of the DBT CFS. You are now able to download a copy of
             the issued CFS by using the QR code so you can do your own comparison if you have any concerns
             about the document presented. We believe that these changes make the CFS we issue one of the
             safest in the world and resilient to attempts to copy or manipulate an issued CFS. We hope that this
@@ -75,7 +74,7 @@
             Please note that previously issued CFS remain valid.
         </p>
         <p>
-            This branch can be contacted via {{ ilb_contact_email }} if you have any questions on the
+          This branch can be contacted via <a href="mailto:{{ ilb_contact_email }}">{{ ilb_contact_email }}</a> if you have any questions on the
             information provided.
         </p>
       </div>
@@ -85,8 +84,8 @@
           <p class="signature-text">{{ ilb_contact_name }}</p>
       </div>
       <div>
-        <p>{{ ilb_contact_name }}</p>
-        <p>DBT Import Licensing Branch</p>
+        <p id="penultimate-text">{{ ilb_contact_name }}</p>
+        <p id="last-text">DBT Import Licensing Branch</p>
       </div>
     </div>
   </body>
