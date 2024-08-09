@@ -45,6 +45,8 @@ schedule_urls = [
         views.cfs_delete_manufacturer,
         name="cfs-schedule-delete-manufacturer",
     ),
+    path("products/", views.cfs_manage_products, name="cfs-schedule-manage-products"),
+    # TODO: ICMSLST-2916 Remove all old product views.
     path("product/add/", views.cfs_add_product, name="cfs-schedule-add-product"),
     path(
         "product/add-multiple/",

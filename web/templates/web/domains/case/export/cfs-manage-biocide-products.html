@@ -1,0 +1,182 @@
+{% extends "web/domains/case/applicant-base.html" %}
+{% import "forms/fields.html" as fields %}
+{% import "forms/forms.html" as forms %}
+
+{% block css %}
+  {{ super() }}
+  <style>
+    .product-table > thead > tr > th:first-child {
+        width: 45%;
+    }
+    .product-table > thead > tr > th:last-child {
+        width: 45%;
+    }
+
+    .active-ingredient-name {
+        width: 75%;
+    }
+</style>
+{% endblock %}
+
+{% block js %}
+  {{ super() }}
+  <script src="{{ static('web/js/components/dynamic-django-formsets.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('export:cfs-schedule-edit', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk }) }}" class="prev-link">
+          Edit schedule
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% macro render_product_form(product_formset, form, include_header, is_hidden=False) %}
+  <table class="setoutList product-table formset-form" {% if is_hidden %} id="{{product_formset.prefix}}-hidden" style="display: none" {% endif %}>
+    {{ form.id }}
+    <thead>
+      <tr>
+        <th scope="col">{% if include_header %}Product Name{% endif %}</th>
+        <th scope="col">{% if include_header %}Product Type Numbers{% endif %}</th>
+        <th scope="col">{% if include_header %}Active Ingredients{% endif %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="row">
+            {{ fields.inline_field_with_label(form.product_name, prompt="north", label_cols='zero', padding='zero', input_cols='ten') }}
+            {% if form.instance.pk and product_formset.can_delete %}
+              <div class="hidden">{{ form.DELETE }}</div>
+              <button class="button small-button link-button icon-bin {{ product_formset.prefix }}-formset-remove-form" data-button-id="{{ form.DELETE.id_for_label }}"></button>
+            {% endif %}
+          </div>
+        </td>
+        <td class="formset-container" data-formset-prefix="{{ form.product_type_formset.prefix }}">
+          <table class="nestedListWithHeader setoutList nestedList">
+            <thead>
+            <tr>
+              <th scope="col">Number</th>
+              <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody class="forms">
+              {% if form.product_type_formset %}
+                {{ form.product_type_formset.management_form }}
+                {{ forms.formset_errors(form.product_type_formset) }}
+                  {% for pt_form in form.product_type_formset.forms %}
+                    {{ render_product_type_formset_form(form.product_type_formset, pt_form) }}
+                  {% endfor %}
+                  {# Render hidden empty form #}
+                  {{ render_product_type_formset_form(form.product_type_formset, form.product_type_formset.empty_form, True) }}
+              {% endif %}
+            </tbody>
+          </table>
+          <div class="row">
+            <button class="small-button icon-plus button {{ form.product_type_formset.prefix }}-formset-add-form">
+              Add product type number
+            </button>
+          </div>
+        </td>
+        <td class="formset-container" data-formset-prefix="{{ form.active_ingredient_formset.prefix }}">
+          <table class="nestedListWithHeader setoutList nestedList">
+            <thead>
+            <tr>
+              <th scope="col" style="width: 45%">Name</th>
+              <th scope="col" style="width: 45%">CAS Number</th>
+              <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody class="forms">
+              {% if form.active_ingredient_formset %}
+                {{ form.active_ingredient_formset.management_form }}
+                {{ forms.formset_errors(form.active_ingredient_formset) }}
+
+                {% for ai_form in form.active_ingredient_formset.forms %}
+                  {{ render_active_ingredient_formset_form(form.active_ingredient_formset, ai_form) }}
+                {% endfor %}
+                {# Render hidden empty form #}
+                {{ render_active_ingredient_formset_form(form.active_ingredient_formset, form.active_ingredient_formset.empty_form, True) }}
+              {% endif %}
+          </table>
+          <div class="row">
+            <button class="small-button icon-plus button {{ form.active_ingredient_formset.prefix }}-formset-add-form">
+              Add active ingredient
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+{% endmacro %}
+
+{% macro render_product_type_formset_form(product_type_formset, pt_form, is_hidden=False) %}
+  <tr class="formset-form" {% if is_hidden %} id="{{product_type_formset.prefix}}-hidden" style="display: none" {% endif %}>
+    {{ pt_form.id }}
+    <td>
+      <div class="row">
+        {{ fields.inline_field_with_label(pt_form.product_type_number, prompt="north", label_cols='zero', padding='zero', input_cols='eight') }}
+      </div>
+    </td>
+    <td>
+      {% if pt_form.instance.pk and product_type_formset.can_delete %}
+        <div class="two columns input-group">
+          <div class="hidden">{{ pt_form.DELETE }}</div>
+          <button class="button small-button link-button icon-bin {{ product_type_formset.prefix }}-formset-remove-form" data-button-id="{{ pt_form.DELETE.id_for_label }}"></button>
+        </div>
+      {% endif %}
+    </td>
+  </tr>
+{% endmacro %}
+
+{% macro render_active_ingredient_formset_form(active_ingredient_formset, ai_form, is_hidden=False) %}
+  <tr class="formset-form" {% if is_hidden %} id="{{active_ingredient_formset.prefix}}-hidden" style="display: none" {% endif %}>
+    {{ ai_form.id }}
+    <td class="active-ingredient-name">
+      {{ fields.inline_field_with_label(ai_form.name, prompt="north", label_cols='zero', padding='zero', input_cols='eight') }}
+    </td>
+    <td>
+      {{ fields.inline_field_with_label(ai_form.cas_number, prompt="north", label_cols='zero', padding='zero', input_cols='eight') }}
+    </td>
+    <td>
+      {% if ai_form.instance.pk and active_ingredient_formset.can_delete %}
+        <div class="two columns input-group">
+          <div class="hidden">{{ ai_form.DELETE }}</div>
+          <button class="button small-button link-button icon-bin {{ active_ingredient_formset.prefix }}-formset-remove-form" data-button-id="{{ ai_form.DELETE.id_for_label }}"></button>
+        </div>
+      {% endif %}
+    </td>
+  </tr>
+{% endmacro %}
+
+{% block main_content %}
+  <h4>{{ page_title }}</h4>
+  <div class="info-box info-box-info">
+    A CAS (Chemical Abstracts Service) Registry Number is a unique chemical identifier.
+    Numbers must be separated by hyphens.
+    For example, the CAS number for caffeine is 58-08-2.
+  </div>
+  <div class="formset-container" data-nested-formsets="true" data-formset-prefix="{{ product_formset.prefix }}">
+    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+        {{ product_formset.management_form }}
+        {{ forms.formset_errors(product_formset) }}
+        <div class="forms">
+          {% for child_form in product_formset.forms %}
+            {{ render_product_form(product_formset, child_form, loop.first) }}
+          {% endfor %}
+          {# Render hidden empty form #}
+          {{ render_product_form(product_formset, product_formset.empty_form, False, True) }}
+        </div>
+        <div class="row">
+          <button class="small-button icon-plus button {{ product_formset.prefix }}-formset-add-form">
+            Add product
+          </button>
+        </div>
+      {{ forms.submit_button(btn_label="Save") }}
+    {% endcall %}
+  </div>
+{% endblock %}

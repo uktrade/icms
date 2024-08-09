@@ -313,6 +313,8 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
                 extra["download_product_spreadsheet_url"] = reverse(
                     "cat:cfs-schedule-product-download-template", kwargs=cfs_schedule_kwargs
                 )
+                # TODO: ICMSLST-2916 Update cfs template to use new manage schedule products view.
+                extra["manage_schedule_products_url"] = "#"
                 extra["add_schedule_product_url"] = reverse(
                     "cat:cfs-schedule-product-create", kwargs=cfs_schedule_kwargs
                 )

@@ -71,6 +71,7 @@ from .forms import (
     EditCFSScheduleForm,
     EditCOMForm,
     EditGMPForm,
+    NewCFSProductFormset,
     ProductsFileUploadForm,
     SubmitCFSForm,
     SubmitCFSScheduleForm,
@@ -465,6 +466,10 @@ def cfs_edit_schedule(
                 "export:cfs-schedule-product-download-template",
                 kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
             ),
+            "manage_schedule_products_url": reverse(
+                "export:cfs-schedule-manage-products",
+                kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
+            ),
             "add_schedule_product_url": reverse(
                 "export:cfs-schedule-add-product",
                 kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
@@ -584,6 +589,61 @@ def cfs_delete_manufacturer(
                 kwargs={"application_pk": application_pk, "schedule_pk": schedule.pk},
             )
         )
+
+
+@login_required
+def cfs_manage_products(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    schedule_pk: int,
+) -> HttpResponse:
+    """Edit CFS products and related records."""
+
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_can_edit_application(request.user, application)
+        case_progress.application_in_progress(application)
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        formset_kwargs = {
+            "instance": schedule,
+            "is_biocidal": schedule.is_biocidal(),
+        }
+        if request.method == "POST":
+            formset = NewCFSProductFormset(request.POST, **formset_kwargs)
+
+            if formset.is_valid():
+                formset.save()
+
+                return redirect(
+                    reverse(
+                        "export:cfs-schedule-manage-products",
+                        kwargs={"application_pk": application_pk, "schedule_pk": schedule.pk},
+                    )
+                )
+        else:
+            formset = NewCFSProductFormset(**formset_kwargs)
+
+        context = {
+            "process": application,
+            "schedule": schedule,
+            "page_title": "Manage Products",
+            "case_type": "export",
+            "product_formset": formset,
+        }
+
+        if schedule.is_biocidal():
+            template = "web/domains/case/export/cfs-manage-biocide-products.html"
+        else:
+            template = "web/domains/case/export/cfs-manage-products.html"
+
+        return render(request, template, context)
 
 
 @login_required
@@ -1316,7 +1376,7 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
                 product_page_errors = PageErrors(
                     page_name=f"Schedule {idx} - Product",
                     url=reverse(
-                        "export:cfs-schedule-add-product",
+                        "export:cfs-schedule-manage-products",
                         kwargs={
                             "application_pk": application.pk,
                             "schedule_pk": schedule.pk,
@@ -1342,12 +1402,8 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
                 product_page_errors = PageErrors(
                     page_name=f"Schedule {idx} - Product {product.product_name}",
                     url=reverse(
-                        "export:cfs-schedule-edit-product",
-                        kwargs={
-                            "application_pk": application.pk,
-                            "schedule_pk": schedule.pk,
-                            "product_pk": product.pk,
-                        },
+                        "export:cfs-schedule-manage-products",
+                        kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
                     ),
                 )
 
