@@ -17,6 +17,7 @@ omit =
     web/management/commands/countries.py
     web/management/commands/drop_all_tables.py
     web/management/commands/query_task_result.py
+    web/harness/*
 
 [report]
 exclude_lines =

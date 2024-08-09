@@ -23,4 +23,4 @@ docker-compose run --rm web pytest --ignore web/end_to_end --tb=short -n=auto --
 #  --cov=config \
 #  --cov-report term-missing \
 #  --dist=loadfile \
-#  --tx=4*popen "$@"
+#  -n=auto "$@"
