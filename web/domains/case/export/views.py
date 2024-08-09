@@ -1564,7 +1564,7 @@ def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         context = {
             "process": application,
-            "exporter_name": application.exporter.name,
+            "brand_name": application.brand_name,
             "form": form,
             "errors": errors if errors.has_errors() else None,
             "case_type": "export",
