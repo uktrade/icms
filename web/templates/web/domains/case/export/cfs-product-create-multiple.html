@@ -12,20 +12,42 @@
   </div>
 {% endblock %}
 
+{% block js %}
+  {{ super() }}
+  <script src="{{ static('web/js/components/dynamic-django-formsets.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+
+{% macro render_form(form, is_hidden) %}
+  <div class="row formset-form" {% if is_hidden %} id="{{formset.prefix}}-hidden" style="display: none" {% endif %}>
+    {{ form.id }}
+    {{ fields.inline_field_with_label(form.product_name, prompt="north", label_cols='two', padding='zero', input_cols='four') }}
+    {% if form.instance.pk and formset.can_delete %}
+      <div class="hidden">{{ form.DELETE }}</div>
+      <button class="button small-button link-button icon-bin {{ formset.prefix }}-formset-remove-form" data-button-id="{{ form.DELETE.id_for_label }}"></button>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+
 {% block main_content %}
   <h4>{{ page_title }}</h4>
   <sub>Add any products leaving unused extra rows blank.</sub>
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-    {{ formset.management_form }}
-    {% for form in formset %}
-        {{ form.id }}
-        <div class="row">
-          {{ fields.inline_field_with_label(form.product_name, prompt="north", label_cols='two', padding='zero', input_cols='four') }}
-          {% if form.instance.pk and formset.can_delete %}
-            {{ fields.inline_field_with_label(form.DELETE, prompt="north", show_optional_indicator=False, label_cols='zero', padding='zero', input_cols='one') }}
-          {% endif %}
-        </div>
-    {% endfor %}
+    <div class="formset-container" data-formset-prefix="{{ formset.prefix }}">
+      {{ formset.management_form }}
+      {{ forms.formset_errors(formset) }}
+      <div class="forms">
+        {% for form in formset %}
+            {{ render_form(form) }}
+
+            {% if loop.last %}
+              {{ render_form(formset.empty_form, True) }}
+            {% endif %}
+        {% endfor %}
+      </div>
+      <button class="{{ formset.prefix }}-formset-add-form">Add a row</button>
+    </div>
     {{ forms.submit_button(padding_cols="two") }}
   {% endcall %}
 {% endblock %}

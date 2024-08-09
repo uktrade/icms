@@ -10,6 +10,7 @@ from web.models import (
     CertificateOfFreeSaleApplication,
     Country,
     ExportApplicationType,
+    ProductLegislation,
     Task,
     User,
 )
@@ -391,4 +392,129 @@ class TestCFSScheduleProductCreateMultipleView(AuthTestCase):
             "Test product 3",
             "Test product 4",
             "Test product 5",
+        ]
+
+
+class TestCFSScheduleMangeProductsView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, cfs_app_in_progress):
+        self.application = cfs_app_in_progress
+        self.schedule = cfs_app_in_progress.schedules.first()
+
+        self.url = reverse(
+            "export:cfs-schedule-manage-products",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.schedule.pk},
+        )
+
+    def test_permission(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        context = response.context
+        assert context["product_formset"] is not None
+        assert context["page_title"] == "Manage Products"
+        assert context["process"] == self.application
+        assert context["case_type"] == "export"
+
+    def test_post(self):
+        self.schedule.products.all().delete()
+        legislation = ProductLegislation.objects.filter(is_active=True, is_biocidal=False).first()
+        self.schedule.legislations.set([legislation])
+
+        form_data = {
+            "products-INITIAL_FORMS": "0",
+            "products-MAX_NUM_FORMS": "1000",
+            "products-MIN_NUM_FORMS": "0",
+            "products-TOTAL_FORMS": "5",
+            "products-0-id": "",
+            "products-0-product_name": "Test product 1",
+            "products-1-id": "",
+            "products-1-product_name": "Test product 2",
+            "products-2-id": "",
+            "products-2-product_name": "Test product 3",
+            "products-3-id": "",
+            "products-3-product_name": "Test product 4",
+            "products-4-id": "",
+            "products-4-product_name": "Test product 5",
+            "products-__prefix__-id": "",
+            "products-__prefix__-product_name": "",
+        }
+
+        response = self.exporter_client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.schedule.refresh_from_db()
+        assert self.schedule.products.count() == 5
+        assert list(self.schedule.products.all().values_list("product_name", flat=True)) == [
+            "Test product 1",
+            "Test product 2",
+            "Test product 3",
+            "Test product 4",
+            "Test product 5",
+        ]
+
+    def test_post_biocide(self):
+        self.schedule.products.all().delete()
+        legislation = ProductLegislation.objects.filter(is_active=True, is_biocidal=True).first()
+        self.schedule.legislations.set([legislation])
+
+        form_data = {
+            "products-TOTAL_FORMS": "2",
+            "products-INITIAL_FORMS": "0",
+            "products-MIN_NUM_FORMS": "0",
+            "products-MAX_NUM_FORMS": "1000",
+            "products-0-id": "",
+            "products-0-product_name": "Test product 1",
+            "product-type-products-0-product_type_numbers-TOTAL_FORMS": "3",
+            "product-type-products-0-product_type_numbers-INITIAL_FORMS": "0",
+            "product-type-products-0-product_type_numbers-MIN_NUM_FORMS": "0",
+            "product-type-products-0-product_type_numbers-MAX_NUM_FORMS": "1000",
+            "product-type-products-0-product_type_numbers-0-id": "",
+            "product-type-products-0-product_type_numbers-0-product_type_number": "1",
+            "product-type-products-0-product_type_numbers-1-id": "",
+            "product-type-products-0-product_type_numbers-1-product_type_number": "2",
+            "product-type-products-0-product_type_numbers-2-id": "",
+            "product-type-products-0-product_type_numbers-2-product_type_number": "3",
+            "active-ingredient-products-0-active_ingredients-TOTAL_FORMS": "2",
+            "active-ingredient-products-0-active_ingredients-INITIAL_FORMS": "0",
+            "active-ingredient-products-0-active_ingredients-MIN_NUM_FORMS": "0",
+            "active-ingredient-products-0-active_ingredients-MAX_NUM_FORMS": "1000",
+            "active-ingredient-products-0-active_ingredients-0-id": "",
+            "active-ingredient-products-0-active_ingredients-0-name": "AI name 1",
+            "active-ingredient-products-0-active_ingredients-0-cas_number": "12002-61-8",
+            "active-ingredient-products-0-active_ingredients-1-id": "",
+            "active-ingredient-products-0-active_ingredients-1-name": "AI name 2",
+            "active-ingredient-products-0-active_ingredients-1-cas_number": "7440-22-4",
+            "products-1-id": "",
+            "products-1-product_name": "Test product 2",
+            "product-type-products-1-product_type_numbers-TOTAL_FORMS": "1",
+            "product-type-products-1-product_type_numbers-INITIAL_FORMS": "0",
+            "product-type-products-1-product_type_numbers-MIN_NUM_FORMS": "0",
+            "product-type-products-1-product_type_numbers-MAX_NUM_FORMS": "1000",
+            "product-type-products-1-product_type_numbers-0-id": "",
+            "product-type-products-1-product_type_numbers-0-product_type_number": "4",
+            "active-ingredient-products-1-active_ingredients-TOTAL_FORMS": "1",
+            "active-ingredient-products-1-active_ingredients-INITIAL_FORMS": "0",
+            "active-ingredient-products-1-active_ingredients-MIN_NUM_FORMS": "0",
+            "active-ingredient-products-1-active_ingredients-MAX_NUM_FORMS": "1000",
+            "active-ingredient-products-1-active_ingredients-0-id": "",
+            "active-ingredient-products-1-active_ingredients-0-name": "AI name 3",
+            "active-ingredient-products-1-active_ingredients-0-cas_number": "27039-77-6",
+        }
+
+        response = self.exporter_client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.schedule.refresh_from_db()
+        assert self.schedule.products.count() == 2
+        assert list(self.schedule.products.all().values_list("product_name", flat=True)) == [
+            "Test product 1",
+            "Test product 2",
         ]

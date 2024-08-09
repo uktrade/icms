@@ -189,6 +189,13 @@ class CFSProduct(CFSProductABC):
         "web.CFSSchedule", related_name="products", on_delete=models.CASCADE
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["schedule", "product_name"], name="schedule_and_product_name_unique"
+            ),
+        ]
+
 
 class CFSProductTypeABC(models.Model):
     class Meta:
@@ -201,6 +208,13 @@ class CFSProductType(CFSProductTypeABC):
     product = models.ForeignKey(
         "web.CFSProduct", related_name="product_type_numbers", on_delete=models.CASCADE
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["product", "product_type_number"], name="product_and_ptn_unique"
+            ),
+        ]
 
 
 class CFSProductActiveIngredientABC(models.Model):
@@ -223,3 +237,11 @@ class CFSProductActiveIngredient(CFSProductActiveIngredientABC):
     product = models.ForeignKey(
         "web.CFSProduct", related_name="active_ingredients", on_delete=models.CASCADE
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["product", "cas_number"], name="product_and_cas_unique"
+            ),
+            models.UniqueConstraint(fields=["product", "name"], name="product_and_name_unique"),
+        ]

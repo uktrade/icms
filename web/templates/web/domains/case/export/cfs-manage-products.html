@@ -1,0 +1,79 @@
+{% extends "web/domains/case/applicant-base.html" %}
+{% import "forms/fields.html" as fields %}
+{% import "forms/forms.html" as forms %}
+
+
+{% block css %}
+  {{ super() }}
+  <style>
+    .product-table > tbody td {
+        padding: 0;
+    }
+</style>
+{% endblock %}
+
+{% block js %}
+  {{ super() }}
+  <script src="{{ static('web/js/components/dynamic-django-formsets.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('export:cfs-schedule-edit', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk }) }}" class="prev-link">
+          Edit schedule
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% macro render_product_form(product_formset, form, include_header, is_hidden=False) %}
+  <table class="setoutList product-table formset-form" {% if is_hidden %} id="{{product_formset.prefix}}-hidden" style="display: none" {% endif %}>
+    {{ form.id }}
+    {% if include_header %}
+      <thead>
+        <tr>
+          <th scope="col">Product Name</th>
+        </tr>
+      </thead>
+    {% endif %}
+    <tbody>
+      <tr>
+        <td>
+          <div class="row">
+            {{ fields.inline_field_with_label(form.product_name, prompt="north", label_cols='zero', padding='zero', input_cols='eleven') }}
+            {% if form.instance.pk and product_formset.can_delete %}
+              <div class="hidden">{{ form.DELETE }}</div>
+              <button class="button small-button link-button icon-bin {{ product_formset.prefix }}-formset-remove-form" data-button-id="{{ form.DELETE.id_for_label }}"></button>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+{% endmacro %}
+
+{% block main_content %}
+  <h4>{{ page_title }}</h4>
+  <div class="formset-container" data-nested-formsets="true" data-formset-prefix="{{ product_formset.prefix }}">
+    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+        {{ product_formset.management_form }}
+        {{ forms.formset_errors(product_formset) }}
+        <div class="forms">
+          {% for child_form in product_formset.forms %}
+            {{ render_product_form(product_formset, child_form, loop.first) }}
+          {% endfor %}
+          {# Render hidden empty form #}
+          {{ render_product_form(product_formset, product_formset.empty_form, False, True) }}
+        </div>
+        <div class="row">
+          <button class="small-button icon-plus button {{ product_formset.prefix }}-formset-add-form">
+            Add product
+          </button>
+        </div>
+      {{ forms.submit_button(btn_label="Save") }}
+    {% endcall %}
+  </div>
+{% endblock %}

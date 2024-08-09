@@ -4,6 +4,8 @@ from typing import Any
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models.query import QuerySet
+from django.forms.formsets import DELETION_FIELD_NAME
+from django.forms.models import BaseInlineFormSet
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django_select2.forms import Select2MultipleWidget
@@ -328,8 +330,6 @@ class EditCFSFormBase(forms.ModelForm):
             )
         }
 
-
-class EditCFSForm(OptionalFormMixin, EditCFSFormBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Contact isn't a field in the template.
@@ -337,6 +337,13 @@ class EditCFSForm(OptionalFormMixin, EditCFSFormBase):
             self.fields["contact"].queryset = application_contacts(self.instance)
 
         self.fields["countries"].queryset = Country.app.get_cfs_countries()
+
+
+class EditCFSForm(OptionalFormMixin, EditCFSFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
 
 
 class SubmitCFSForm(EditCFSFormBase):
@@ -583,7 +590,7 @@ CFSProductFormSet = forms.inlineformset_factory(
     CFSProduct,
     form=CFSProductForm,
     formset=CFSProductFormSetBase,
-    extra=5,
+    extra=1,
 )
 
 
@@ -595,27 +602,6 @@ class CFSProductTypeForm(forms.ModelForm):
     def __init__(self, *args: Any, product: CFSProduct, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.product = product
-
-        existing_product_numbers = product.product_type_numbers.values_list(
-            "product_type_number", flat=True
-        )
-        self.fields["product_type_number"].choices = [
-            each
-            for each in self.fields["product_type_number"].choices
-            if each[0] not in existing_product_numbers
-        ]
-
-    def clean_product_type_number(self):
-        product_type_number = self.cleaned_data["product_type_number"]
-
-        if (
-            self.product.product_type_numbers.filter(product_type_number=product_type_number)
-            .exclude(pk=self.instance.pk)
-            .exists()
-        ):
-            raise forms.ValidationError("Product type number must be unique to the product.")
-
-        return product_type_number
 
     def save(self, commit=True):
         if not self.instance.pk:
@@ -648,7 +634,7 @@ class CFSActiveIngredientForm(forms.ModelForm):
 
         cas_number = self.cleaned_data["cas_number"]
 
-        if not re.match("[0-9]{2,7}-[0-9]{2}-[0-9]{1}", cas_number):
+        if not re.match("^[0-9]{2,7}-[0-9]{2}-[0-9]{1}$", cas_number):
             raise forms.ValidationError(
                 "Enter in the correct format. The first part of the number has 2 to 7 digits;"
                 " the second part has 2 digits. The final part consists of a single check digit"
@@ -667,26 +653,7 @@ class CFSActiveIngredientForm(forms.ModelForm):
                 "This is not a valid CAS number (check digit validation has failed)."
             )
 
-        if (
-            self.product.active_ingredients.filter(cas_number=cas_number)
-            .exclude(pk=self.instance.pk)
-            .exists()
-        ):
-            raise forms.ValidationError("CAS number must be unique to the product.")
-
         return cas_number
-
-    def clean_name(self):
-        name = self.cleaned_data["name"]
-
-        if (
-            self.product.active_ingredients.filter(name__iexact=name)
-            .exclude(pk=self.instance.pk)
-            .exists()
-        ):
-            raise forms.ValidationError("Active ingredient name must be unique to the product.")
-
-        return name
 
     def save(self, commit=True):
         if not self.instance.pk:
@@ -830,3 +797,130 @@ class SubmitGMPForm(EditGMPFormBase):
                 )
 
         return cleaned_data
+
+
+# Example of how this works can be found here:
+# https://micropyramid.com/blog/how-to-use-nested-formsets-in-django
+class ManageCFSProductForm(CFSProductForm):
+    class Meta:
+        model = CFSProduct
+        fields = ("product_name",)
+        labels = {"product_name": ""}
+
+
+class ManageCFSActiveIngredientForm(CFSActiveIngredientForm):
+    class Meta:
+        model = CFSProductActiveIngredient
+        fields = ("name", "cas_number")
+        labels = {"name": "", "cas_number": ""}
+        help_texts = {"cas_number": ""}
+
+
+class ManageCFSProductTypeForm(CFSProductTypeForm):
+    class Meta:
+        model = CFSProductType
+        fields = ("product_type_number",)
+        labels = {"product_type_number": ""}
+
+
+class BaseProductRelatedFormset(BaseInlineFormSet):
+    def add_fields(self, form, index):
+        super().add_fields(form, index)
+        form.fields[DELETION_FIELD_NAME].label = ""
+
+
+# Used later on as nested formsets.
+ActiveIngredientFormset = forms.inlineformset_factory(
+    CFSProduct,
+    CFSProductActiveIngredient,
+    form=ManageCFSActiveIngredientForm,
+    formset=BaseProductRelatedFormset,
+    extra=1,
+)
+
+ProductTypeFormset = forms.inlineformset_factory(
+    CFSProduct,
+    CFSProductType,
+    form=ManageCFSProductTypeForm,
+    formset=BaseProductRelatedFormset,
+    extra=1,
+)
+
+
+class BaseCFSProductFormset(BaseInlineFormSet):
+    def __init__(self, *args: Any, is_biocidal: bool, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.is_biocidal = is_biocidal
+
+    def get_form_kwargs(self, index: int) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs(index)
+
+        return kwargs | {"schedule": self.instance}
+
+    def add_fields(self, form: ManageCFSProductForm, index: int) -> None:
+        """Add custom fields to the CFS Product form.
+
+        We add two nested formsets to each form in the product formset.
+        """
+        super().add_fields(form, index)
+        form.fields[DELETION_FIELD_NAME].label = ""
+
+        # Do not add the extra form fields if not biocidal
+        if not self.is_biocidal:
+            return
+
+        form.active_ingredient_formset = ActiveIngredientFormset(
+            instance=form.instance,
+            form_kwargs={"product": form.instance},
+            data=form.data if form.is_bound else None,
+            files=form.files if form.is_bound else None,
+            prefix=f"active-ingredient-{form.prefix}-{ActiveIngredientFormset.get_default_prefix()}",
+        )
+
+        form.product_type_formset = ProductTypeFormset(
+            instance=form.instance,
+            form_kwargs={"product": form.instance},
+            data=form.data if form.is_bound else None,
+            files=form.files if form.is_bound else None,
+            prefix=f"product-type-{form.prefix}-{ProductTypeFormset.get_default_prefix()}",
+        )
+
+    def is_valid(self) -> bool:
+        result = super().is_valid()
+
+        if self.is_bound:
+            for form in self.forms:
+                if hasattr(form, "active_ingredient_formset"):
+                    result = result and form.active_ingredient_formset.is_valid()
+
+                if hasattr(form, "product_type_formset"):
+                    result = result and form.product_type_formset.is_valid()
+
+        return result
+
+    def save(
+        self, commit: bool = True
+    ) -> list[CFSProduct | CFSProductActiveIngredient | CFSProductType]:
+        """Return a list of saved and created objects."""
+        result = super().save(commit=commit)
+
+        for form in self.forms:
+            if hasattr(form, "active_ingredient_formset"):
+                if not self._should_delete_form(form):
+                    ai_result = form.active_ingredient_formset.save(commit=commit)
+                    if ai_result:
+                        result.extend(ai_result)
+
+            if hasattr(form, "product_type_formset"):
+                if not self._should_delete_form(form):
+                    pt_result = form.product_type_formset.save(commit=commit)
+                    if pt_result:
+                        result.extend(pt_result)
+
+        return result
+
+
+# TODO: ICMSLST-2916 Rename this when we delete the old formsets.
+NewCFSProductFormset = forms.inlineformset_factory(
+    CFSSchedule, CFSProduct, form=ManageCFSProductForm, formset=BaseCFSProductFormset, extra=1
+)

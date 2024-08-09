@@ -4912,3 +4912,29 @@ Command
 DBT CFS
 the DBT CFS
 Generating CFS Cover
+cas_number.split("-
+"Add custom fields to the form
+{{ child_form.product_type_formset.management_form
+{{ child_form.product_type_formset.non_form_errors(
+{{ pt_form }}
+"Edit CFS
+input_cols='seven
+{{ pt_form.id }}
+{{ ai_form.id }}
+DynamicFormset
+el.querySelector(`input[name="${this.prefix}-MIN_NUM_FORMS
+newValue
+newForm.querySelectorAll
+el.getAttribute(attr).replace(match
+// Increment
+// Remove
+console.log("I
+grey
+{{ form.product_type_formset.management_form
+{{ form.active_ingredient_formset.management_form }
+form.active_ingredient_formset.empty_form
+Array.from(removeButtons).forEach((btn
+btn.addEventListener("click
+forms.formset_errors(product_formset
+"Add custom fields to the CFS Product
+ICMSLST-2916 Remove
