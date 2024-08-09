@@ -4,6 +4,7 @@ from typing import Any
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models.query import QuerySet
+from django.forms.models import BaseInlineFormSet
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django_select2.forms import Select2MultipleWidget
@@ -596,14 +597,15 @@ class CFSProductTypeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.product = product
 
-        existing_product_numbers = product.product_type_numbers.values_list(
-            "product_type_number", flat=True
-        )
-        self.fields["product_type_number"].choices = [
-            each
-            for each in self.fields["product_type_number"].choices
-            if each[0] not in existing_product_numbers
-        ]
+        # TODO: Add back in and fix:
+        # existing_product_numbers = product.product_type_numbers.values_list(
+        #     "product_type_number", flat=True
+        # )
+        # self.fields["product_type_number"].choices = [
+        #     each
+        #     for each in self.fields["product_type_number"].choices
+        #     if each[0] not in existing_product_numbers
+        # ]
 
     def clean_product_type_number(self):
         product_type_number = self.cleaned_data["product_type_number"]
@@ -655,17 +657,18 @@ class CFSActiveIngredientForm(forms.ModelForm):
             )
 
         # CAS number is valid so perform check digit validation
-        first, second, check_digit = cas_number.split("-")
-        cas_digits = first + second
-
-        check_sum = 0
-        for pos, digit in enumerate(cas_digits[::-1], start=1):
-            check_sum += pos * int(digit)
-
-        if check_sum % 10 != int(check_digit):
-            raise forms.ValidationError(
-                "This is not a valid CAS number (check digit validation has failed)."
-            )
+        # TODO: Add back in
+        # first, second, check_digit = cas_number.split("-")
+        # cas_digits = first + second
+        #
+        # check_sum = 0
+        # for pos, digit in enumerate(cas_digits[::-1], start=1):
+        #     check_sum += pos * int(digit)
+        #
+        # if check_sum % 10 != int(check_digit):
+        #     raise forms.ValidationError(
+        #         "This is not a valid CAS number (check digit validation has failed)."
+        #     )
 
         if (
             self.product.active_ingredients.filter(cas_number=cas_number)
@@ -830,3 +833,60 @@ class SubmitGMPForm(EditGMPFormBase):
                 )
 
         return cleaned_data
+
+
+# Example of how this works can be found here:
+# https://micropyramid.com/blog/how-to-use-nested-formsets-in-django
+Parent = CFSSchedule
+Child = CFSProduct
+Address = CFSProductActiveIngredient
+AddressTwo = CFSProductType
+
+# 1. Create basic inline-formset
+# ChildrenFormset = forms.inlineformset_factory(Parent, Child, fields=["product_name"], extra=1)
+AddressFormset = forms.inlineformset_factory(Child, Address, fields=["name", "cas_number"], extra=1)
+
+
+class BaseChildrenFormset(BaseInlineFormSet):
+    # 2. Attach a nested formset for each form same as below.
+    #    The super class 'BaseInlineFormSet' defines 'add_fields' method which is responsible for
+    #    adding the fields for each form in a formset.
+    #    So, here we can write logic to associate a nested formset.
+    def add_fields(self, form, index):
+        super().add_fields(form, index)
+
+        # save the formset in the 'nested' property
+        form.nested = AddressFormset(
+            instance=form.instance,
+            data=form.data if form.is_bound else None,
+            files=form.files if form.is_bound else None,
+            prefix=f"address-{form.prefix}-{AddressFormset.get_default_prefix()}",
+            # extra=1
+        )
+
+    # Validation - When validating a form in the formset, we also need to validate its sub-forms which are in nested formset.
+    def is_valid(self):
+        result = super().is_valid()
+
+        if self.is_bound:
+            for form in self.forms:
+                if hasattr(form, "nested"):
+                    result = result and form.nested.is_valid()
+
+        return result
+
+    # Saving data - When saving a form, additions/changes to the forms in the nested formset also need to be saved.
+    def save(self, commit=True):
+        result = super().save(commit=commit)
+
+        for form in self.forms:
+            if hasattr(form, "nested"):
+                if not self._should_delete_form(form):
+                    form.nested.save(commit=commit)
+
+        return result
+
+
+ChildrenFormset = forms.inlineformset_factory(
+    Parent, Child, fields=["product_name"], formset=BaseChildrenFormset, extra=1
+)

@@ -66,6 +66,7 @@ from .forms import (
     CFSProductForm,
     CFSProductFormSet,
     CFSProductTypeForm,
+    ChildrenFormset,
     CreateExportApplicationForm,
     EditCFSForm,
     EditCFSScheduleForm,
@@ -465,6 +466,10 @@ def cfs_edit_schedule(
                 "export:cfs-schedule-product-download-template",
                 kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
             ),
+            "manage_schedule_products_url": reverse(
+                "export:cfs-schedule-manage-products",
+                kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
+            ),
             "add_schedule_product_url": reverse(
                 "export:cfs-schedule-add-product",
                 kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
@@ -584,6 +589,58 @@ def cfs_delete_manufacturer(
                 kwargs={"application_pk": application_pk, "schedule_pk": schedule.pk},
             )
         )
+
+
+def manage_children(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    schedule_pk: int,
+) -> HttpResponse:
+    """Edit children and their addresses for a single parent."""
+
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_can_edit_application(request.user, application)
+        case_progress.application_in_progress(application)
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        # TODO: Rename once it all works
+        parent = schedule
+
+        if request.method == "POST":
+            formset = ChildrenFormset(request.POST, instance=parent)
+
+            if formset.is_valid():
+                formset.save()
+
+                return redirect(
+                    reverse(
+                        "export:cfs-schedule-edit",
+                        kwargs={"application_pk": application_pk, "schedule_pk": schedule.pk},
+                    )
+                )
+        else:
+            formset = ChildrenFormset(instance=parent)
+
+        context = {
+            # TODO: Rename these
+            "parent": parent,
+            "children_formset": formset,
+            # Other context
+            "process": application,
+            "schedule": schedule,
+            # "form": form,
+            "page_title": "Add Product",
+            "case_type": "export",
+        }
+
+        return render(request, "web/domains/case/export/cfs-manage-products.html", context)
 
 
 @login_required
