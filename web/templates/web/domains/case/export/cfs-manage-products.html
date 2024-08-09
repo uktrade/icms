@@ -23,28 +23,70 @@
     {{ product_formset.non_form_errors() }}
 
     {% for child_form in product_formset.forms %}
-      {# Product name  #}
-      {{ child_form }}
+      {{ child_form.id }}
+      <table class="setoutList">
+        <thead>
+        <tr>
+          <th scope="col">Product Name</th>
+          <th scope="col">Product Type Numbers</th>
+          <th scope="col">Active Ingredients</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="row">
+                {{ fields.inline_field_with_label(child_form.product_name, prompt="north", label_cols='two', padding='zero', input_cols='seven') }}
+                {% if child_form.instance.pk and product_formset.can_delete %}
+                  {{ fields.inline_field_with_label(child_form.DELETE, prompt="north", show_optional_indicator=False, label_cols='zero', padding='zero', input_cols='one') }}
+                {% endif %}
+              </div>
+            </td>
+            <td>
+              <table class="nestedListWithHeader setoutList nestedList">
+                <thead>
+                <tr>
+                  <th scope="col">Number</th>
+                </tr>
+                </thead>
+                <tbody>
+                  {% if child_form.product_type_formset %}
+                    {{ child_form.product_type_formset.management_form }}
+                    {{ child_form.product_type_formset.non_form_errors() }}
+                    {% for pt_form in child_form.product_type_formset.forms %}
+                      <tr>
+                        {{ pt_form }}
+                      </tr>
+                    {% endfor %}
+                  {% endif %}
+                </tbody>
+              </table>
+            </td>
+            <td>
+              <table class="nestedListWithHeader setoutList nestedList">
+                <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">CAS Number</th>
+                </tr>
+                </thead>
+                <tbody>
+                  {% if child_form.active_ingredient_formset %}
+                    {{ child_form.active_ingredient_formset.management_form }}
+                    {{ child_form.active_ingredient_formset.non_form_errors() }}
 
-      {# Active Ingredients #}
-      {% if child_form.active_ingredient_formset %}
-        {{ child_form.active_ingredient_formset.management_form }}
-        {{ child_form.active_ingredient_formset.non_form_errors() }}
-
-        {% for ai_form in child_form.active_ingredient_formset.forms %}
-          {{ ai_form }}
-        {% endfor %}
-      {% endif %}
-
-      {# Product Types #}
-      {% if child_form.product_type_formset %}
-        {{ child_form.product_type_formset.management_form }}
-        {{ child_form.product_type_formset.non_form_errors() }}
-
-        {% for pt_form in child_form.product_type_formset.forms %}
-          {{ pt_form }}
-        {% endfor %}
-      {% endif %}
+                    {% for ai_form in child_form.active_ingredient_formset.forms %}
+                      <tr>
+                        <td>{{ ai_form.name }}</td>
+                        <td>{{ ai_form.cas_number }}</td>
+                      </tr>
+                    {% endfor %}
+                  {% endif %}
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     {% endfor %}
     {{ forms.submit_button(btn_label="Save") }}
   {% endcall %}

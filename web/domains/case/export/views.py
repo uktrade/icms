@@ -631,7 +631,7 @@ def manage_cfs_products(
         context = {
             "process": application,
             "schedule": schedule,
-            "page_title": "Add Product",
+            "page_title": "Manage Products",
             "case_type": "export",
             "product_formset": formset,
         }
