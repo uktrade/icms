@@ -4908,3 +4908,10 @@ DBT ILB</td
 post' && !
 el.classList.add(doubleSubmitClass.formSelector
 TaskError
+cas_number.split("-
+"Add custom fields to the form
+{{ child_form.product_type_formset.management_form
+{{ child_form.product_type_formset.non_form_errors(
+{{ pt_form }}
+"Edit CFS
+input_cols='seven
