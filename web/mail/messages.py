@@ -61,6 +61,10 @@ from .url_helpers import (
     get_importer_view_url,
     get_mailshot_detail_view_url,
     get_maintain_importers_view_url,
+    get_manage_access_request_fir_url,
+    get_manage_application_fir_url,
+    get_respond_to_access_request_fir_url,
+    get_respond_to_application_fir_url,
     get_update_request_view_url,
     get_validate_digital_signatures_url,
 )
@@ -511,7 +515,7 @@ class BaseFurtherInformationRequestEmail(GOVNotifyEmailMessage):
         return context
 
 
-class ApplicationFurtherInformationRequestEmail(
+class BaseApplicationFurtherInformationRequestEmail(
     BaseApplicationEmail, BaseFurtherInformationRequestEmail
 ):
     name = EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST
@@ -521,8 +525,18 @@ class ApplicationFurtherInformationRequestEmail(
         return context
 
 
-class AccessRequestFurtherInformationRequestEmail(BaseFurtherInformationRequestEmail):
-    name = EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST
+@final
+class ApplicationFurtherInformationRequestEmail(BaseApplicationFurtherInformationRequestEmail):
+    name = EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST
+
+    def get_context(self) -> dict[str, Any]:
+        context = super().get_context() | {
+            "fir_url": get_respond_to_application_fir_url(self.application, self.fir),
+        }
+        return context
+
+
+class BaseAccessRequestFurtherInformationRequestEmail(BaseFurtherInformationRequestEmail):
 
     def __init__(self, *args: Any, access_request: ImpAccessOrExpAccess, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -547,26 +561,61 @@ class AccessRequestFurtherInformationRequestEmail(BaseFurtherInformationRequestE
 
 
 @final
+class AccessRequestFurtherInformationRequestEmail(BaseAccessRequestFurtherInformationRequestEmail):
+    name = EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST
+
+    def get_context(self) -> dict[str, Any]:
+        context = super().get_context() | {
+            "fir_url": get_respond_to_access_request_fir_url(
+                self.get_site_domain(), self.fir, self.access_request
+            ),
+        }
+        return context
+
+
+@final
 class AccessRequestFurtherInformationRequestRespondedEmail(
-    AccessRequestFurtherInformationRequestEmail
+    BaseAccessRequestFurtherInformationRequestEmail
 ):
     name = EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_RESPONDED
+
+    def get_context(self) -> dict[str, Any]:
+        context = super().get_context() | {
+            "fir_url": get_manage_access_request_fir_url(self.access_request),
+        }
+        return context
+
+    def get_site_domain(self) -> str:
+        return get_caseworker_site_domain()
 
 
 @final
 class AccessRequestFurtherInformationRequestWithdrawnEmail(
-    AccessRequestFurtherInformationRequestEmail
+    BaseAccessRequestFurtherInformationRequestEmail
 ):
     name = EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_WITHDRAWN
 
 
 @final
-class ApplicationFurtherInformationRequestRespondedEmail(ApplicationFurtherInformationRequestEmail):
+class ApplicationFurtherInformationRequestRespondedEmail(
+    BaseApplicationFurtherInformationRequestEmail
+):
     name = EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_RESPONDED
+
+    def get_context(self) -> dict[str, Any]:
+        context = super().get_context() | {
+            "fir_url": get_manage_application_fir_url(self.application),
+        }
+        return context
+
+    def get_site_domain(self) -> str:
+        return get_caseworker_site_domain()
 
 
 @final
-class ApplicationFurtherInformationRequestWithdrawnEmail(ApplicationFurtherInformationRequestEmail):
+class ApplicationFurtherInformationRequestWithdrawnEmail(
+    BaseApplicationFurtherInformationRequestEmail
+):
     name = EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_WITHDRAWN
 
 

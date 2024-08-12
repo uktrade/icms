@@ -6,6 +6,7 @@ from django.templatetags.static import static
 
 from web.domains.case.types import Authority, DocumentPack, ImpOrExp
 from web.models import (
+    AccessRequest,
     CaseDocumentReference,
     CaseEmailDownloadLink,
     ConstabularyLicenceDownloadLink,
@@ -13,6 +14,7 @@ from web.models import (
     Exporter,
     ExporterContactInvite,
     FirearmsAuthority,
+    FurtherInformationRequest,
     ImportApplication,
     Importer,
     ImporterContactInvite,
@@ -178,4 +180,47 @@ def get_case_email_otd_url(link: CaseEmailDownloadLink) -> str:
         get_caseworker_site_domain(),
         reverse("case:download-case-email-documents", kwargs={"code": link.code})
         + f"?{qd.urlencode()}",
+    )
+
+
+def get_respond_to_application_fir_url(
+    application: ImpOrExp, fir: FurtherInformationRequest
+) -> str:
+    if application.is_import_application():
+        case_type = "import"
+        site_url = get_importer_site_domain()
+    else:
+        case_type = "export"
+        site_url = get_exporter_site_domain()
+    kwargs = {"application_pk": application.pk, "fir_pk": fir.pk, "case_type": case_type}
+    return urljoin(site_url, reverse("case:respond-fir", kwargs=kwargs))
+
+
+def get_respond_to_access_request_fir_url(
+    site_url: str, fir: FurtherInformationRequest, access_request: AccessRequest
+) -> str:
+    return urljoin(
+        site_url,
+        reverse(
+            "case:respond-fir",
+            kwargs={"application_pk": access_request.pk, "fir_pk": fir.pk, "case_type": "access"},
+        ),
+    )
+
+
+def get_manage_application_fir_url(application: ImpOrExp) -> str:
+    if application.is_import_application():
+        case_type = "import"
+    else:
+        case_type = "export"
+    kwargs = {"application_pk": application.pk, "case_type": case_type}
+    return urljoin(get_caseworker_site_domain(), reverse("case:manage-firs", kwargs=kwargs))
+
+
+def get_manage_access_request_fir_url(access_request: AccessRequest) -> str:
+    return urljoin(
+        get_caseworker_site_domain(),
+        reverse(
+            "case:manage-firs", kwargs={"application_pk": access_request.pk, "case_type": "access"}
+        ),
     )
