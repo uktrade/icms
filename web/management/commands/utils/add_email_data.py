@@ -2,7 +2,6 @@ import datetime as dt
 
 import pytz
 from django.conf import settings
-from django.core.management.base import BaseCommand
 
 from web.mail.constants import EmailTypes
 from web.models import EmailTemplate, Template
@@ -67,6 +66,7 @@ EMAIL_TEMPLATES = [
     (EmailTypes.WITHDRAWAL_OPENED, "fd0e9524-bcb8-4d3d-8fe0-09910bb2f6a2"),  # /PS-IGNORE
     (EmailTypes.WITHDRAWAL_REJECTED, "59cee5db-9f9f-4966-b46a-07743b3e9e72"),  # /PS-IGNORE
     (EmailTypes.CASE_EMAIL, "3e68fc83-ad05-4c32-826a-d950ce2dfa32"),  # /PS-IGNORE
+    (EmailTypes.CASE_EMAIL_WITH_DOCUMENTS, "d208a30a-f03d-447a-89cf-c29f192b3cc4"),  # /PS-IGNORE
     (
         EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST,
         "7aa33950-19ac-4d1c-ad7b-e0a1b493914f",  # /PS-IGNORE
@@ -356,14 +356,32 @@ EMAIL_CONTENT = [
 ]
 
 
-class Command(BaseCommand):
-    help = """Upon sign off update email content inline with V2 terminology."""
+def update_database_email_templates():
+    for template_code, subject, body in EMAIL_CONTENT:
+        template = Template.objects.get(template_code=template_code)
+        template.template_title = subject
+        template.template_content = body
+        template.start_datetime = dt.datetime.now(tz=pytz.UTC).strftime("%Y-%m-%d %H:%M:%S:%z")
+        template.save(update_fields=["template_title", "template_content", "start_datetime"])
 
-    def handle(self, *args, **options):
-        add_user_management_email_templates()
-        update_database_email_templates(self.stdout)
-        archive_database_email_templates()
-        update_gov_notify_template_ids()
+
+def archive_database_email_templates():
+    templates = [
+        "STOP_CASE",
+        "CASE_REOPEN",
+        "LICENCE_REVOKE",
+        "CERTIFICATE_REVOKE",
+    ]
+    Template.objects.filter(template_code__in=templates).update(is_active=False)
+
+
+def add_gov_notify_templates():
+    EmailTemplate.objects.bulk_create(
+        [
+            EmailTemplate(name=name, gov_notify_template_id=gov_notify_template_id)
+            for name, gov_notify_template_id in EMAIL_TEMPLATES
+        ]
+    )
 
 
 def add_user_management_email_templates():
@@ -405,33 +423,3 @@ Yours sincerely,
 Import Licencing Branch
 """,
     )
-
-
-def update_database_email_templates(stdout):
-    for template_code, subject, body in EMAIL_CONTENT:
-        try:
-            template = Template.objects.get(template_code=template_code)
-        except Template.DoesNotExist:
-            stdout.write(f"Template {template_code} Not found")
-        else:
-            template.template_title = subject
-            template.template_content = body
-            template.start_datetime = dt.datetime.now(tz=pytz.UTC).strftime("%Y-%m-%d %H:%M:%S:%z")
-            template.save(update_fields=["template_title", "template_content", "start_datetime"])
-
-
-def archive_database_email_templates():
-    templates = [
-        "STOP_CASE",
-        "CASE_REOPEN",
-        "LICENCE_REVOKE",
-        "CERTIFICATE_REVOKE",
-    ]
-    Template.objects.filter(template_code__in=templates).update(is_active=False)
-
-
-def update_gov_notify_template_ids():
-    for email_type, gov_notify_template_id in EMAIL_TEMPLATES:
-        email_template = EmailTemplate.objects.get(name=email_type)
-        email_template.gov_notify_template_id = gov_notify_template_id
-        email_template.save(update_fields=["gov_notify_template_id"])
