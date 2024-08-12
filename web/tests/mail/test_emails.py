@@ -22,6 +22,10 @@ from web.mail.url_helpers import (
     get_importer_access_request_url,
     get_mailshot_detail_view_url,
     get_maintain_importers_view_url,
+    get_manage_access_request_fir_url,
+    get_manage_application_fir_url,
+    get_respond_to_access_request_fir_url,
+    get_respond_to_application_fir_url,
     get_update_request_view_url,
     get_validate_digital_signatures_url,
 )
@@ -674,6 +678,9 @@ class TestEmails(AuthTestCase):
             "body": "details",
             "reference": importer_access_request.reference,
             "fir_type": "access request",
+            "fir_url": get_respond_to_access_request_fir_url(
+                get_importer_access_request_url(), fir, importer_access_request
+            ),
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
         }
@@ -701,6 +708,7 @@ class TestEmails(AuthTestCase):
             "body": "details",
             "fir_type": "case",
             "icms_url": get_exporter_site_domain(),
+            "fir_url": get_respond_to_application_fir_url(com_app_submitted, fir),
             "service_name": SiteName.EXPORTER.label,
             "reference": com_app_submitted.reference,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
@@ -792,8 +800,9 @@ class TestEmails(AuthTestCase):
             "body": "details",
             "reference": importer_access_request.reference,
             "fir_type": "access request",
-            "icms_url": get_importer_site_domain(),
-            "service_name": SiteName.IMPORTER.label,
+            "icms_url": get_caseworker_site_domain(),
+            "fir_url": get_manage_access_request_fir_url(importer_access_request),
+            "service_name": SiteName.CASEWORKER.label,
         }
         emails.send_further_information_request_responded_email(fir)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -818,11 +827,12 @@ class TestEmails(AuthTestCase):
             "subject": "More Information Required",
             "body": "details",
             "fir_type": "case",
-            "icms_url": get_exporter_site_domain(),
-            "service_name": SiteName.EXPORTER.label,
+            "icms_url": get_caseworker_site_domain(),
+            "service_name": SiteName.CASEWORKER.label,
             "reference": com_app_submitted.reference,
+            "fir_url": get_manage_application_fir_url(com_app_submitted),
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
-            "application_url": get_case_view_url(com_app_submitted, get_exporter_site_domain()),
+            "application_url": get_case_view_url(com_app_submitted, get_caseworker_site_domain()),
         }
         emails.send_further_information_request_responded_email(fir)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1

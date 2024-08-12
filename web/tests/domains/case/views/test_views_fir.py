@@ -1,6 +1,7 @@
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 from unittest import mock
+from urllib.parse import urljoin
 
 import pytest
 from django.urls import reverse
@@ -8,7 +9,12 @@ from django.urls import reverse
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import FurtherInformationRequest
-from web.sites import SiteName, get_exporter_site_domain, get_importer_site_domain
+from web.sites import (
+    SiteName,
+    get_caseworker_site_domain,
+    get_exporter_site_domain,
+    get_importer_site_domain,
+)
 from web.tests.auth import AuthTestCase
 from web.tests.helpers import CaseURLS, check_gov_notify_email_was_sent
 
@@ -91,14 +97,20 @@ class TestImporterAccessRequestFIRView(AuthTestCase):
         assert response.status_code == HTTPStatus.OK
         fir_list = response.context["firs"]
         assert len(fir_list) == 1
-        self.assert_request_email_sent()
+        self.assert_request_email_sent(fir_list[0])
 
-    def assert_request_email_sent(self):
+    def assert_request_email_sent(self, fir):
         check_gov_notify_email_was_sent(
             1,
             [self.process.submitted_by.email],
             EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST,
-            self.expected_email_personalisation(),
+            self.expected_email_personalisation()
+            | {
+                "fir_url": urljoin(
+                    self.expected_site,
+                    CaseURLS.respond_to_fir(self.process.pk, fir.pk, self.case_type),
+                ),
+            },
             exp_subject="open fir",
             exp_in_body="test request detail",
         )
@@ -183,7 +195,15 @@ class TestImporterAccessRequestFIRView(AuthTestCase):
             1,
             [self.ilb_admin_user.email],
             EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_RESPONDED,
-            self.expected_email_personalisation(),
+            self.expected_email_personalisation()
+            | {
+                "fir_url": urljoin(
+                    get_caseworker_site_domain(),
+                    CaseURLS.manage_firs(self.process.pk, self.case_type),
+                ),
+                "icms_url": get_caseworker_site_domain(),
+                "service_name": SiteName.CASEWORKER.label,
+            },
             exp_subject="test responded email",
             exp_in_body="test request detail",
         )
@@ -263,12 +283,18 @@ class TestExportApplicationFIRView(TestImporterAccessRequestFIRView):
         self.expected_site = get_exporter_site_domain()
         self.expected_service_name = SiteName.EXPORTER.label
 
-    def assert_request_email_sent(self):
+    def assert_request_email_sent(self, fir):
         check_gov_notify_email_was_sent(
             1,
             [self.process.submitted_by.email],
             EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST,
-            self.expected_email_personalisation(),
+            self.expected_email_personalisation()
+            | {
+                "fir_url": urljoin(
+                    self.expected_site,
+                    CaseURLS.respond_to_fir(self.process.pk, fir.pk, self.case_type),
+                ),
+            },
             exp_subject="open fir",
             exp_in_body="test request detail",
         )
@@ -278,7 +304,16 @@ class TestExportApplicationFIRView(TestImporterAccessRequestFIRView):
             1,
             [self.ilb_admin_user.email],
             EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_RESPONDED,
-            self.expected_email_personalisation(),
+            self.expected_email_personalisation()
+            | {
+                "fir_url": urljoin(
+                    get_caseworker_site_domain(),
+                    CaseURLS.manage_firs(self.process.pk, self.case_type),
+                ),
+                "icms_url": get_caseworker_site_domain(),
+                "service_name": SiteName.CASEWORKER.label,
+                "application_url": get_case_view_url(self.process, get_caseworker_site_domain()),
+            },
             exp_subject="test responded email",
             exp_in_body="test request detail",
         )
