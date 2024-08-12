@@ -29,8 +29,8 @@ case "$1" in
     echo "Generating Sanctions benchmark PDFs."
     ./run-tests.sh web/tests/utils/pdf/test_visual_regression/generate_benchmark_pdfs/import.py::TestGenerateSanctionsLicenceBenchmarkPDF
     ;;
-  "cover-letter")
-    echo "Generating Cover letter benchmark PDFs."
+  "cfs-cover-letter")
+    echo "Generating CFS Cover letter benchmark PDFs."
     ./run-tests.sh web/tests/utils/pdf/test_visual_regression/generate_benchmark_pdfs/import.py::TestGenerateCoverLetterBenchmarkPDF
     ;;
   *)

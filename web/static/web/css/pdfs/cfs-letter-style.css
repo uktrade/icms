@@ -3,7 +3,10 @@
 }
 
 @page {
-    margin: 25px 65px 35px 0 !important;
+    margin-top: 45px !important;
+    margin-right: 65px !important;
+    margin-left: 0 !important;
+    margin-bottom: 25px !important;
     size: A4;
 }
 
@@ -13,7 +16,7 @@ body {
 }
 
 .page-margin {
-    margin-left: 77px;
+    margin-left: 75px;
 }
 
 .url {
@@ -38,6 +41,8 @@ body {
 
 .header-image {
     flex: 334px 0 0;
+    margin-top: 10px;
+    margin-left: -5px;
 }
 
 .header-block {
@@ -54,7 +59,7 @@ img {
 }
 
 .address-text {
-    margin-top: 67px;
+    margin-top: 60px;
     flex: 160px 0 0;
 }
 
@@ -110,9 +115,25 @@ img {
 }
 
 .signature {
-    margin: 16px 0;
+    margin-top: 5px;
+    margin-right: 0;
+    margin-left: 0;
+    margin-bottom: 16px;
 }
 
 .signature p {
     font-weight: bold;
+}
+
+.default-dbt-logo {
+    height: 82.5px;
+    width: 165px;
+}
+
+#penultimate-text {
+    margin-top: -10px;
+}
+
+#last-text {
+    margin-top: -5px;
 }
