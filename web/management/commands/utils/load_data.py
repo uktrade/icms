@@ -7,7 +7,12 @@ from .add_application_type_data import (
 )
 from .add_commodity_group_usage_data import add_usage_data
 from .add_constabulary_data import add_constabulary_data
-from .add_email_template_data import add_email_gov_notify_templates
+from .add_email_data import (
+    add_gov_notify_templates,
+    add_user_management_email_templates,
+    archive_database_email_templates,
+    update_database_email_templates,
+)
 from .add_fa_data import add_firearms_act_data, add_obsolete_calibre_data
 from .add_sanction_data import add_sanction_data
 from .add_template_data import (
@@ -41,5 +46,7 @@ def load_app_test_data():
     add_obsolete_calibre_data()
     call_command("loaddata", "product_legislations")
     add_sanction_data()
-    add_email_gov_notify_templates()
-    call_command("update_email_data")
+    add_user_management_email_templates()
+    update_database_email_templates()
+    archive_database_email_templates()
+    add_gov_notify_templates()
