@@ -7,15 +7,15 @@
     <meta charset="UTF-8">
     <meta name="description" content="{{ importer_site_name }} import licence">
     <style>
-      {{ get_css_rules_as_string("web/css/pdfs/fonts.css")|safe }}
-      {{ get_css_rules_as_string("web/css/pdfs/constants.css")|safe }}
-      {{ get_css_rules_as_string("web/css/pdfs/fa-oil-licence-style.css")|safe }}
+      {{ get_css_rules_as_string("web/css/pdfs/shared/fonts.css")|safe }}
+      {{ get_css_rules_as_string("web/css/pdfs/shared/constants.css")|safe }}
+      {{ get_css_rules_as_string("web/css/pdfs/import/fa-oil-licence-style.css")|safe }}
       {% if paper_licence_only %}
-        {{ get_css_rules_as_string("web/css/pdfs/fa-paper-licence-style.css")|safe }}
-        {{ get_css_rules_as_string("web/css/pdfs/fa-paper-licence-quantity-table-style.css")|safe }}
+        {{ get_css_rules_as_string("web/css/pdfs/import/fa-paper-licence-style.css")|safe }}
+        {{ get_css_rules_as_string("web/css/pdfs/import/fa-paper-licence-quantity-table-style.css")|safe }}
       {% endif %}
       {% if preview_licence %}
-        {{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
+        {{ get_css_rules_as_string("web/css/pdfs/shared/preview.css")|safe }}
       {% endif %}
     </style>
   </head>
@@ -146,7 +146,7 @@
     </footer>
 
     {% if paper_licence_only %}
-        {% include 'pdf/shared/fa-paper-licence-quantity-table.html' %}
+        {% include 'pdf/import/fa-paper-licence-quantity-table.html' %}
     {% endif %}
   </body>
 </html>

@@ -6,11 +6,11 @@
 <html lang="en">
   <head>
     <style>
-      {{ get_css_rules_as_string('web/css/pdfs/fonts.css')|safe }}
-      {{ get_css_rules_as_string('web/css/pdfs/constants.css')|safe }}
-      {{ get_css_rules_as_string("web/css/pdfs/gmp-certificate-style.css")|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/shared/fonts.css')|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/shared/constants.css')|safe }}
+      {{ get_css_rules_as_string("web/css/pdfs/export/gmp-certificate-style.css")|safe }}
       {% if preview %}
-        {{ get_css_rules_as_string('web/css/pdfs/preview.css')|safe }}
+        {{ get_css_rules_as_string('web/css/pdfs/shared/preview.css')|safe }}
       {% endif %}
       .dbt_logo_watermark {
         background-image: url("data:image/png;base64,{{ get_file_base64('web/img/dbt_logo.png') }}");
