@@ -13,7 +13,7 @@ from .add_email_data import (
     archive_database_email_templates,
     update_database_email_templates,
 )
-from .add_fa_data import add_firearms_act_data, add_obsolete_calibre_data
+from .add_fa_data import add_firearms_act_data
 from .add_sanction_data import add_sanction_data
 from .add_template_data import (
     add_cfs_declaration_template_countries,
@@ -43,7 +43,7 @@ def load_app_test_data():
     add_usage_data()
     add_constabulary_data()
     add_firearms_act_data()
-    add_obsolete_calibre_data()
+    call_command("loaddata", "obsolete_calibre")
     call_command("loaddata", "product_legislations")
     add_sanction_data()
     add_user_management_email_templates()

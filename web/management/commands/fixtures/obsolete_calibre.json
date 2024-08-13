@@ -1,0 +1,4775 @@
+[
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 1,
+        "fields": {
+            "name": ".22 - .29",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 2,
+        "fields": {
+            "name": ".30 - .35",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 3,
+        "fields": {
+            "name": ".36 - .38",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 4,
+        "fields": {
+            "name": ".40",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 5,
+        "fields": {
+            "name": ".42 - .43",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 6,
+        "fields": {
+            "name": ".44",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 7,
+        "fields": {
+            "name": ".45",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 8,
+        "fields": {
+            "name": ".46 - .49",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 9,
+        "fields": {
+            "name": ".50",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 10,
+        "fields": {
+            "name": ".52 - .58",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 11,
+        "fields": {
+            "name": ".60 - 4.9mm",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 12,
+        "fields": {
+            "name": "5mm - 5.9mm",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 13,
+        "fields": {
+            "name": "6mm - 6.99mm",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 14,
+        "fields": {
+            "name": "7mm - 7.99mm",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 15,
+        "fields": {
+            "name": "8mm - 8.5mm",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 16,
+        "fields": {
+            "name": "9mm - 9.5mm",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 17,
+        "fields": {
+            "name": "10.0mm - 10.3mm",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 18,
+        "fields": {
+            "name": "10.4mm - 10.8mm",
+            "is_active": true,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 19,
+        "fields": {
+            "name": "11.0mm",
+            "is_active": true,
+            "order": 20
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 20,
+        "fields": {
+            "name": "11.1mm",
+            "is_active": true,
+            "order": 21
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 21,
+        "fields": {
+            "name": "11.2mm - 11.4mm",
+            "is_active": true,
+            "order": 22
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 22,
+        "fields": {
+            "name": "11.5mm - 11.9mm",
+            "is_active": true,
+            "order": 23
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 23,
+        "fields": {
+            "name": "12mm - 14mm",
+            "is_active": true,
+            "order": 24
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 24,
+        "fields": {
+            "name": "15mm or more",
+            "is_active": true,
+            "order": 25
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 25,
+        "fields": {
+            "name": ".41",
+            "is_active": false,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 26,
+        "fields": {
+            "name": "proof house",
+            "is_active": false,
+            "order": 26
+        }
+    },
+    {
+        "model": "web.obsoletecalibregroup",
+        "pk": 27,
+        "fields": {
+            "name": "test",
+            "is_active": false,
+            "order": 27
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 1,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".22 Extra Long Maynard",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 2,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".22-15-60 Stevens",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 3,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".22CF",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 4,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".230CF",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 5,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".25/20 Single Shot",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 6,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".25/21 Stevens",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 7,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".25/25 Stevens",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 8,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".250 Rook (or .297/.250 Rook)",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 9,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".255 Jeffrey Rook",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 10,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".275 Jeffrey",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 11,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".276 Enfield P.13",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 12,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".28/30/120 Stevens",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 13,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".297/.230 Sporting",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 14,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".297/.230 Morris",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 15,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".297/.250 Rook (or .250 Rook)",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 16,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".298 Minex",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 17,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".300 (.295) Rook",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 18,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".300 Sherwood",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 19,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".300/.250 Rook",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 20,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".30/30 Wesson",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 21,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".30/40 Wesson",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 22,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".310 Cadet",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 23,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".310 Greener",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 24,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".31 Thuer",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 25,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".310/.300 Rook",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 26,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".320/.230 Rook",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 27,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".32 Protector",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 28,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".32 Long Rifle CF",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 29,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".32/35 Stevens",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 30,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".32/40 Remington-Hepburn",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 31,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".32/40 Bullard",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 32,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".32/40 Winchester and Ballard",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 33,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".32 Ideal",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 34,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".32 – .44 Smith & Wesson",
+            "is_active": true,
+            "order": 21
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 35,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".320 British (also known as the 320 Revolver C.F., Short or Long)",
+            "is_active": false,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 36,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".340 Short or Long Revolver",
+            "is_active": true,
+            "order": 20
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 37,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".35/30 Maynard",
+            "is_active": true,
+            "order": 22
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 38,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".35/40 Maynard",
+            "is_active": true,
+            "order": 23
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 39,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".360 Thuer",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 40,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".360 Rook (also known as the .360 No 5)",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 41,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".360 Shot gun",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 42,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".360 Westley Richards No.3 Express",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 43,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".360 No.3 Gibbs",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 44,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".360 Gibbs No.4 (also known as the .380 Gibbs No.4)",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 45,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".360/.300 Frasier",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 46,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".360 2 7/16 Black Powder Express",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 47,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".360-21/4 (also known as .380 Black Powder Express and .380-21/4 Rigby)",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 48,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".360 2 3/4 Boxer",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 49,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".369 Purdey",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 50,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".38/35 Stevens Everlasting",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 51,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".38/40 Ballard Everlasting",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 52,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".38/40 Remington-Hepburn",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 53,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".38/45 Bullard",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 54,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".38/70 Winchester",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 55,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".38/56 Winchester",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 56,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".38/90 Winchester",
+            "is_active": true,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 57,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".380 Black Powder Express (also known as the .380-21/4 Rigby and .360-21/4)",
+            "is_active": true,
+            "order": 20
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 58,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".380 Gibbs No.4 (also known as the .360 Gibbs No.4)",
+            "is_active": true,
+            "order": 21
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 59,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".380 Long Rifle",
+            "is_active": true,
+            "order": 22
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 60,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/40 Maynard",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 61,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/.50-70 Calibre Reduction Experimental",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 62,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".400-2.5 inch Kynoch",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 63,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".400-3.25 inch Boxer",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 64,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".400-3 inch Purdey",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 65,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/60 Marlin",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 66,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/60 Winchester",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 67,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/60 Maynard",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 68,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/70 Ballard",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 69,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/70 Sharps Necked",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 70,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/70 Sharps Straight",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 71,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/70 Maynard",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 72,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/70 WCF",
+            "is_active": true,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 73,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/72 Winchester",
+            "is_active": true,
+            "order": 21
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 74,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/75 Bullard",
+            "is_active": true,
+            "order": 22
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 75,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/82 Winchester",
+            "is_active": true,
+            "order": 23
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 76,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/90 Bullard",
+            "is_active": true,
+            "order": 25
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 77,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/90 What Cheer",
+            "is_active": true,
+            "order": 27
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 78,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/50 Sharps Straight",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 79,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/65 Sharps Straight",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 80,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/65 WCF",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 81,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/90 Sharps Necked",
+            "is_active": true,
+            "order": 26
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 82,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/63 Ballard",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 83,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/65 Ballard Everlasting",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 84,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/70 Peabody What Cheer",
+            "is_active": true,
+            "order": 20
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 85,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/85 Ballard",
+            "is_active": true,
+            "order": 24
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 86,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40/110 Winchester Express",
+            "is_active": true,
+            "order": 28
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 87,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".400 2 3/4 Westley Richards",
+            "is_active": true,
+            "order": 29
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 88,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".402 Enfield Martini Experimental",
+            "is_active": true,
+            "order": 31
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 89,
+        "fields": {
+            "calibre_group": 5,
+            "name": ".42/50-70 Caliber Reduction Exptl.",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 90,
+        "fields": {
+            "calibre_group": 5,
+            "name": ".425 Webley",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 91,
+        "fields": {
+            "calibre_group": 5,
+            "name": ".425 Webley 1 5/16",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 92,
+        "fields": {
+            "calibre_group": 5,
+            "name": ".430 Long Rifle (also known as the .430 Long revolver)",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 93,
+        "fields": {
+            "calibre_group": 5,
+            "name": ".430 Revolver",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 94,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44 Thuer",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 95,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44 Morse necked",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 96,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44-50 Meigs",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 97,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44 Dupee rimless",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 98,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44/60 Creedmore",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 99,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44/77 Remington",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 100,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44/90 Sharps 2 7/16 inch",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 101,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44/90 Sharps 2 5/8 inch",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 102,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44/90 Remington Special",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 103,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44/95 Peabody What Cheer",
+            "is_active": true,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 104,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44/100 Maynbard",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 105,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44 Evans Short and Long",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 106,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44 Devilliers",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 107,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".440 Revolver",
+            "is_active": true,
+            "order": 22
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 108,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".440 Long Revolver",
+            "is_active": true,
+            "order": 20
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 109,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".440 Nagant (Argentine model)",
+            "is_active": true,
+            "order": 21
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 110,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".442 Carbine 1.025\"",
+            "is_active": true,
+            "order": 23
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 111,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".442 Revolver (also known as 44 Webley)",
+            "is_active": false,
+            "order": 25
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 112,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".442 Long Revolver",
+            "is_active": true,
+            "order": 24
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 113,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44 Colt Revolver",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 114,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44 Remington Revolver",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 115,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44 S&W American",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 116,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44 Merwin Hulbert Long",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 117,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44 Merwin Hulbert Short",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 118,
+        "fields": {
+            "calibre_group": 6,
+            "name": ".44 S&W Russian",
+            "is_active": false,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 119,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45-85 Ward Burton Exptl.",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 120,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45/.50-70 Caliber Reduction Expti.",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 121,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45 US Exptl, 1869",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 122,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45-200-500 Winchester Exptl.",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 123,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45 Boxer-Henry Long Chamber 1869",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 124,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45 New South Wales Police Carbine",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 125,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45 Gardner & Gatling",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 126,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45 Mars Long",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 127,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45 Mars Short",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 128,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45 MP",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 129,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".450 No. 1 Bland",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 130,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".450 Soper 2.5 inch",
+            "is_active": true,
+            "order": 20
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 131,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".450 Needham",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 132,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".450 No. 1 Musket",
+            "is_active": true,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 133,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".450/.360 Purdey",
+            "is_active": true,
+            "order": 22
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 134,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".450/.350-2 3/8 inch",
+            "is_active": true,
+            "order": 21
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 135,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45/75 WCF",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 136,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45 Brown Standard Military Target Rifle",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 137,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45/50 Sporting",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 138,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".450/.400 Black Powder in case lengths of 2 3/8\", 2 7/8\", 2 19/32\" Thomas Turner No 2, 2 ¾\" Westley Richards and 3 ¼\". Also the .450.400 3\" Jeffrey",
+            "is_active": true,
+            "order": 23
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 139,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".450 Black Powder Express in case lengths of 1 ½\", 2 ½\", 2 9/16\", 2 6/10\", 3\", 3 1/16\" and 3 ¼\"",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 140,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45/125 Winchester",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 141,
+        "fields": {
+            "calibre_group": 7,
+            "name": ".45 Turkish Peabody (also known as the 11.43 x 55R Turkish)",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 142,
+        "fields": {
+            "calibre_group": 8,
+            "name": ".46 Winchester",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 143,
+        "fields": {
+            "calibre_group": 8,
+            "name": ".461 Gibbs No. 1",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 144,
+        "fields": {
+            "calibre_group": 8,
+            "name": ".461 Gibbs No. 2",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 145,
+        "fields": {
+            "calibre_group": 8,
+            "name": ".476 Indian Police",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 146,
+        "fields": {
+            "calibre_group": 8,
+            "name": ".48 Morse",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 147,
+        "fields": {
+            "calibre_group": 8,
+            "name": ".490 BSA",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 148,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50/.58 Morse sleeved",
+            "is_active": true,
+            "order": 20
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 149,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50 Morse",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 150,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50 Meigs",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 151,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50-.48 Meigs",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 152,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50 Peabody",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 153,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50 Spencer Carbine",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 154,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50 Springfield Cadet",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 155,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50-70 Springfield",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 156,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50 Daw’s Patent 1867",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 157,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50 Boxer 1867",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 158,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50/50 Maynard",
+            "is_active": true,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 159,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50/70 Maynard",
+            "is_active": true,
+            "order": 21
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 160,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".500/.450 Westley Richards No.2 Musket",
+            "is_active": true,
+            "order": 33
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 161,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".500-1.5 inch",
+            "is_active": true,
+            "order": 24
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 162,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".500-2-25 inch",
+            "is_active": true,
+            "order": 25
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 163,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".500-2.5 inch",
+            "is_active": true,
+            "order": 26
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 164,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".500-3 inch",
+            "is_active": true,
+            "order": 27
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 165,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".500-3.25 inch",
+            "is_active": true,
+            "order": 28
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 166,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".500/.450 No. 1 Carbine",
+            "is_active": true,
+            "order": 30
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 167,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".500/.450 Webley Carbine",
+            "is_active": true,
+            "order": 32
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 168,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".500/-450-2.5 inch",
+            "is_active": true,
+            "order": 29
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 169,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".500/.450 No. 1 Express",
+            "is_active": true,
+            "order": 31
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 170,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".500/.450-3 3/8 inch",
+            "is_active": true,
+            "order": 34
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 171,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".500/.450-3.5 inch",
+            "is_active": true,
+            "order": 35
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 172,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50 Remington Army Pistol, M1871",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 173,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50 Remington Navy Pistol, M1867",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 174,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50 Springfield Pistol, M1869",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 175,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".500 Revolver",
+            "is_active": true,
+            "order": 23
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 176,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50/95 Winchester",
+            "is_active": true,
+            "order": 22
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 177,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50-100 Winchester Express",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 178,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50-110 Winchester Express",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 179,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50/115 Bullard",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 180,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50/140 Sharps",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 181,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".52-70 Sharps",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 182,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".54 Morse",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 183,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".55 Morse",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 184,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".55 Gatling",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 185,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".55/100 Maynard",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 186,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".56-56 US Exptl.",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 187,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".577 Selwyn 1865",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 188,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".577 Daw’s Patent 1867",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 189,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".577 Snider",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 190,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".577/.450 Martini-Henry",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 191,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".577-2.25 inch",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 192,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".577 2.5 inch",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 193,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".577-2.75 inch",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 194,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".577/.500 No.2 Express",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 195,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".577/.500 Magnum Express",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 196,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".577 Pistol",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 197,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".58 Morse",
+            "is_active": true,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 198,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".58 US Converted Musket, 1865",
+            "is_active": true,
+            "order": 24
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 199,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".58 Remington Carbine",
+            "is_active": true,
+            "order": 20
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 200,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".58 US Berdan System Conversion",
+            "is_active": true,
+            "order": 23
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 201,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".58 Tibbals/Roberts 1869",
+            "is_active": true,
+            "order": 22
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 202,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".58 Roberts",
+            "is_active": true,
+            "order": 21
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 203,
+        "fields": {
+            "calibre_group": 11,
+            "name": ".60 Chinese Jingal",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 204,
+        "fields": {
+            "calibre_group": 11,
+            "name": ".65 Gatling",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 205,
+        "fields": {
+            "calibre_group": 11,
+            "name": ".69 Morse",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 206,
+        "fields": {
+            "calibre_group": 11,
+            "name": ".75 Gatling",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 207,
+        "fields": {
+            "calibre_group": 11,
+            "name": ".75 Chinese Jingal",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 208,
+        "fields": {
+            "calibre_group": 11,
+            "name": ".80 Gatling",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 209,
+        "fields": {
+            "calibre_group": 11,
+            "name": "1 inch Nordenfelt-Palmcranz",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 210,
+        "fields": {
+            "calibre_group": 11,
+            "name": "20 Bore/.577 Alex. Henry",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 211,
+        "fields": {
+            "calibre_group": 11,
+            "name": "2.7mm Kolibri",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 212,
+        "fields": {
+            "calibre_group": 11,
+            "name": "3mm Kolibri",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 213,
+        "fields": {
+            "calibre_group": 11,
+            "name": "4.25mm Liliput",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 214,
+        "fields": {
+            "calibre_group": 12,
+            "name": "5mm Bergmann NO.2 Pistol",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 215,
+        "fields": {
+            "calibre_group": 12,
+            "name": "5mm Charola-Anitua",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 216,
+        "fields": {
+            "calibre_group": 12,
+            "name": "5mm Clement",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 217,
+        "fields": {
+            "calibre_group": 12,
+            "name": "5mm Brun",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 218,
+        "fields": {
+            "calibre_group": 12,
+            "name": "5mm French",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 219,
+        "fields": {
+            "calibre_group": 12,
+            "name": "5mm Pickert",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 220,
+        "fields": {
+            "calibre_group": 12,
+            "name": "5.2mm Pickert revolver",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 221,
+        "fields": {
+            "calibre_group": 12,
+            "name": "5.2mm Mondragon",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 222,
+        "fields": {
+            "calibre_group": 12,
+            "name": "5.2mm x34R Kronprinz",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 223,
+        "fields": {
+            "calibre_group": 12,
+            "name": "5.43mm x26.BR Revolver",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 224,
+        "fields": {
+            "calibre_group": 12,
+            "name": "5.5mm Velo-Dog revolver",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 225,
+        "fields": {
+            "calibre_group": 12,
+            "name": "5.6mm x 34R Francotte Carbine",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 226,
+        "fields": {
+            "calibre_group": 12,
+            "name": "5.6mm x 33 Rook",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 227,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6mm Beaumont revolver",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 228,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6mm Merveilleux",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 229,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6mm Protector",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 230,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6mm Lee Navy",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 231,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6mm x 58 Gewehrprufungskommission M1897 (also 6 x 58 Forster)",
+            "is_active": true,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 232,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6mm x 58 Forster",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 233,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6mm x 29.5 Stahl",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 234,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6.3mm x 21 Rimless",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 235,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6.5mm Bergmann No.3 Pistol",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 236,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6.5mm Mannlicher Pistol M.1894",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 237,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6.5mm Mondragon",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 238,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6.5mm x 27R",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 239,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6.5mm x 4OR",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 240,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6.5mm x 48R Sauer",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 241,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6.5mm Ronezewsky",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 242,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6.6mm x 7OR",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 243,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6.8mm x 19.6 Revolver",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 244,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6.8mm Schulhof pistol",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 245,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7mm Bar",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 246,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7mm Charola y Anitua",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 247,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7mm French thick rim",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 248,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7mm Galand",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 249,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7mm Revolver",
+            "is_active": true,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 250,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7mm CF Walking Stick",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 251,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7mm Devisme",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 252,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7mm German Target Pistol Cartridges",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 253,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7.25mm Adler",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 254,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7.5mm x 53.5R Rubin",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 255,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7.5mm x 53.5 Rimless rubin",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 256,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7.5mm x 53 Swiss Schmidt Rubin M.1890",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 257,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7.53mm x 60R Hebler",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 258,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7.65mm Frommer M. 1901",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 259,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7.65mm Roth-Sauer",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 260,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7.7mm Bittner pistol",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 261,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7.7mm x 60R",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 262,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7.8mm Bergmann No.5",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 263,
+        "fields": {
+            "calibre_group": 14,
+            "name": "7.8mm x 19R Laumann",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 264,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm German Target Pistol",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 265,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm Schonberger",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 266,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 55R Petit Gras",
+            "is_active": true,
+            "order": 22
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 267,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 58R Petit Gras",
+            "is_active": true,
+            "order": 24
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 268,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 57R Petit Gras",
+            "is_active": true,
+            "order": 23
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 269,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 75R Pieri",
+            "is_active": true,
+            "order": 28
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 270,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 61R Rubin",
+            "is_active": true,
+            "order": 27
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 271,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 57.5E Rubin",
+            "is_active": false,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 272,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 57E Spanish Exptl.",
+            "is_active": false,
+            "order": 20
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 273,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 60R Guedes and Portuguese Kropatschek",
+            "is_active": true,
+            "order": 26
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 274,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm Gaulois pistol",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 275,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm Bergmann No.1 pistol",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 276,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 48R",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 277,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 58R Sauer",
+            "is_active": true,
+            "order": 25
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 278,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm Sauer",
+            "is_active": false,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 279,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm Bergmann No.4",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 280,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm Bergmann No.7",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 281,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm Bergmann-Schmeisser",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 282,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm Protector",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 283,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm Raphael",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 284,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm Schulof",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 285,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8.15mm x 46R",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 286,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8.15mm Mauser Experimental",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 287,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8.3mm x 53.5R Rubin",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 288,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8.5mm Mars",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 289,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9mm x 51.5R Rubin",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 290,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9mm x 57R Rubin",
+            "is_active": true,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 291,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9mm Devisme",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 292,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9mm  Moutier rimless-grooveless",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 293,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9mm French Thick Rim",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 294,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9mm Mars",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 295,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9mm Belgian Nagant",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 296,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9.1mm x 40 Walking Stick",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 297,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9.3mm x 58R Koeffler",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 298,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9.3mm x 63.5R Koeffler",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 299,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9.3mm x 70R",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 300,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9.3mm x 75R Nimrod",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 301,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9.3mm x 82R Nimrod",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 302,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9.3mm x 65R Collath",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 303,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9.4mm Dutch Revolver",
+            "is_active": false,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 304,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9.5mm x 59R Gras Exptl.",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 305,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9.5mm x 60R Turkish Mauser",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 306,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9.5mm x 42R",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 307,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9.5mm x 47R",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 308,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10mm x 47R",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 309,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10mm Gaupillat",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 310,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10mm Bergmann",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 311,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10mm Mars",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 312,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10mm Mauser Short",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 313,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10mm Mauser Long",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 314,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10.15mm x 61R",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 315,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10.15mm x 63R Serbian mauser",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 316,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10.15mm x 61R Jarmann",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 317,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10.16mm x 57R Berdan Exptl.",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 318,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10.25mm x 69R Hunting-Express",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 319,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10.3mm x 41R",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 320,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10.3mm x 65R Baenziger",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 321,
+        "fields": {
+            "calibre_group": 17,
+            "name": "10.35mm x 47R Italian Vetterli",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 322,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.4mm x 56R Swiss",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 323,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.4mm x 42R Swiss Vetterli",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 324,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.4mm x 38R Martini-Galland",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 325,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.4mm Swiss M.1878",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 326,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.4mm x 47R Stahl",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 327,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.6mm German Ordanance Revolver",
+            "is_active": false,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 328,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.6mm x 57R Mauser",
+            "is_active": false,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 329,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.66 x 48R Russian Berdan",
+            "is_active": false,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 330,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.7mm 57R Russian Berdan ~Carbine",
+            "is_active": false,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 331,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.75mm x 55R Krag Petersson",
+            "is_active": false,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 332,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.8mm x 47 Martini",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 333,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm x 42R",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 334,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm x 45R",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 335,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm x 53 Gevelot",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 336,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm Manceux",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 337,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm x 59R Gras",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 338,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm x 48.5 Gras \"Battalion Ecole\"",
+            "is_active": false,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 339,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm x 50.5 Comblain",
+            "is_active": false,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 340,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm x 43R Comblain Carbine",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 341,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm x 70R Mitrailleuse",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 342,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm x 46R",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 343,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm x 50R Egyptian Remington",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 344,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm x 57R Spanish Remington",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 345,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm Devisme",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 346,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm French Ordnance Revolver M1873 (Army)",
+            "is_active": false,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 347,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm Devilliers",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 348,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm Austrian Werndl",
+            "is_active": false,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 349,
+        "fields": {
+            "calibre_group": 20,
+            "name": "11.15mm x 42R Austrian Werndl Carbine",
+            "is_active": false,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 350,
+        "fields": {
+            "calibre_group": 20,
+            "name": "11.15mm x 36R Austrian Werndl Carbine",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 351,
+        "fields": {
+            "calibre_group": 20,
+            "name": "11.15mm x 58R Austrian Werndl, Holub and Mannlicher",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 352,
+        "fields": {
+            "calibre_group": 20,
+            "name": "11.15mm x 36R Fruhwirth",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 353,
+        "fields": {
+            "calibre_group": 20,
+            "name": "11.15mm x 60R Mauser",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 354,
+        "fields": {
+            "calibre_group": 20,
+            "name": "11.15mm x 37R",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 355,
+        "fields": {
+            "calibre_group": 20,
+            "name": "11.15mm x 60R Japanese Murata",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 356,
+        "fields": {
+            "calibre_group": 20,
+            "name": "11.5mm x 50R",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 357,
+        "fields": {
+            "calibre_group": 20,
+            "name": "11.15mm x 58R",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 358,
+        "fields": {
+            "calibre_group": 20,
+            "name": "11.15mm x 65R",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 359,
+        "fields": {
+            "calibre_group": 20,
+            "name": "11.15mm x 71R",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 360,
+        "fields": {
+            "calibre_group": 20,
+            "name": "11.5mm x 52 Walking Stick",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 361,
+        "fields": {
+            "calibre_group": 21,
+            "name": "11.2mm x 51R Kropatschek-Hessig",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 362,
+        "fields": {
+            "calibre_group": 21,
+            "name": "11.2mm",
+            "is_active": false,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 363,
+        "fields": {
+            "calibre_group": 21,
+            "name": "11.25mm x 44.5R",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 364,
+        "fields": {
+            "calibre_group": 21,
+            "name": "11.3mm x 51R Dutch Beaumont",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 365,
+        "fields": {
+            "calibre_group": 21,
+            "name": "11.35mm Schouboe (Rimmed and Rimless Version)",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 366,
+        "fields": {
+            "calibre_group": 21,
+            "name": "11.4mm x 53R Brazilian Comblain",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 367,
+        "fields": {
+            "calibre_group": 21,
+            "name": "11.4mm x 44.5R Dutch Gendarmerie Carbine",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 368,
+        "fields": {
+            "calibre_group": 21,
+            "name": "11.4mm x 57R Spanish Remington",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 369,
+        "fields": {
+            "calibre_group": 21,
+            "name": "11.43mm x 49R Romanian Peabody",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 370,
+        "fields": {
+            "calibre_group": 21,
+            "name": "11.43mm x 59R Turkish Peabody-Martini",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 371,
+        "fields": {
+            "calibre_group": 21,
+            "name": "11.43 x 55R Turkish (also known as .45 Turkish Peabody)",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 372,
+        "fields": {
+            "calibre_group": 21,
+            "name": "11.43mm x 41R Peabody Carbine",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 373,
+        "fields": {
+            "calibre_group": 22,
+            "name": "11.5mm x 50R Austrian Werder",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 374,
+        "fields": {
+            "calibre_group": 22,
+            "name": "11.5mm x 35R Werder Carbine",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 375,
+        "fields": {
+            "calibre_group": 22,
+            "name": "11.5mm x 60R",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 376,
+        "fields": {
+            "calibre_group": 22,
+            "name": "11.53mm Albini-Braendlin",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 377,
+        "fields": {
+            "calibre_group": 22,
+            "name": "11.6mm x 50R Chilean Comblain",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 378,
+        "fields": {
+            "calibre_group": 22,
+            "name": "11.7mm x 57R Berdan Exptl",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 379,
+        "fields": {
+            "calibre_group": 22,
+            "name": "11.7mm x 41.5R Danish Remington",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 380,
+        "fields": {
+            "calibre_group": 22,
+            "name": "11.7mm x 45.5R Danish Remington",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 381,
+        "fields": {
+            "calibre_group": 22,
+            "name": "11.7mm x 51.6R Danish Remington",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 382,
+        "fields": {
+            "calibre_group": 23,
+            "name": "12mm Perrin Thick Rim",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 383,
+        "fields": {
+            "calibre_group": 23,
+            "name": "12mm Raphael",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 384,
+        "fields": {
+            "calibre_group": 23,
+            "name": "12mm Moutier",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 385,
+        "fields": {
+            "calibre_group": 23,
+            "name": "12mm Pidault & Cordier",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 386,
+        "fields": {
+            "calibre_group": 23,
+            "name": "12.2mm x 70R Mitrailleuse",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 387,
+        "fields": {
+            "calibre_group": 23,
+            "name": "12.5mm x 60R",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 388,
+        "fields": {
+            "calibre_group": 23,
+            "name": "12.7mm x 48R",
+            "is_active": true,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 389,
+        "fields": {
+            "calibre_group": 23,
+            "name": "12.7mm x 70R Mitrailleuse",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 390,
+        "fields": {
+            "calibre_group": 23,
+            "name": "12.8mm x 45R Papal Remington (also know as the 12.7mm x 45R)",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 391,
+        "fields": {
+            "calibre_group": 23,
+            "name": "13mm x 87R Mitrailleuse",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 392,
+        "fields": {
+            "calibre_group": 23,
+            "name": "13mm Rochaz-Lindner",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 393,
+        "fields": {
+            "calibre_group": 23,
+            "name": "13mm x 92 Mauser T-Gew",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 394,
+        "fields": {
+            "calibre_group": 23,
+            "name": "13.2mm x 32R",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 395,
+        "fields": {
+            "calibre_group": 23,
+            "name": "14.5mm x 33R Austrian Wanzl",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 396,
+        "fields": {
+            "calibre_group": 23,
+            "name": "14.5mm x 41R Spanish Berdan",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 397,
+        "fields": {
+            "calibre_group": 23,
+            "name": "14.66mm x 35R Serbian Peabody",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 398,
+        "fields": {
+            "calibre_group": 23,
+            "name": "14.7mm x 58R Schneider",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 399,
+        "fields": {
+            "calibre_group": 24,
+            "name": "15mm Revolver",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 400,
+        "fields": {
+            "calibre_group": 24,
+            "name": "15.2mm x v110R Mitrailleuse",
+            "is_active": false,
+            "order": 3
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 401,
+        "fields": {
+            "calibre_group": 24,
+            "name": "15.2mm x 28R",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 402,
+        "fields": {
+            "calibre_group": 24,
+            "name": "15.24mm x 40R Krnka",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 403,
+        "fields": {
+            "calibre_group": 24,
+            "name": "16.5mm x 18R Beringer",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 404,
+        "fields": {
+            "calibre_group": 24,
+            "name": "17mm Danish Snider",
+            "is_active": true,
+            "order": 7
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 405,
+        "fields": {
+            "calibre_group": 24,
+            "name": "17.5mm x 29R Dutch Snider",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 406,
+        "fields": {
+            "calibre_group": 24,
+            "name": "18mm x 35R Tabatiere",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 407,
+        "fields": {
+            "calibre_group": 24,
+            "name": "18.84mm x 38R Tabatiere",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 408,
+        "fields": {
+            "calibre_group": 24,
+            "name": "18.84mm x 57R Wanzl-Albini",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 409,
+        "fields": {
+            "calibre_group": 25,
+            "name": ".41 Long colt revolver",
+            "is_active": false,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 410,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".380-21/4 Rigby (also known as .380 Black Powder Express and .360-21/4)",
+            "is_active": true,
+            "order": 23
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 411,
+        "fields": {
+            "calibre_group": 25,
+            "name": ".41 Colt (short or long)",
+            "is_active": true,
+            "order": 2
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 412,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 72R",
+            "is_active": true,
+            "order": 21
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 413,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 57.5R Rubin",
+            "is_active": true,
+            "order": 29
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 414,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 57.5R Spanish Exptl.",
+            "is_active": true,
+            "order": 30
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 415,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm x 48R Sauer",
+            "is_active": true,
+            "order": 33
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 416,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.6mm Mauser",
+            "is_active": true,
+            "order": 12
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 417,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.66mm x 57R Russian Berdan",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 418,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.66mm x 48R Russian Berdan Carbine",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 419,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.7mm x 57R Krag Petersson",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 420,
+        "fields": {
+            "calibre_group": 18,
+            "name": "10.75mm x 55R",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 421,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm x 48.5R Gras \"Battalion Ecole\"",
+            "is_active": true,
+            "order": 17
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 422,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm x 50.5R Coblain",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 423,
+        "fields": {
+            "calibre_group": 19,
+            "name": "11mm French Ordnance Revolver M1870 (Navy)",
+            "is_active": true,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 424,
+        "fields": {
+            "calibre_group": 20,
+            "name": "11.15mm x 42R Austrian Werndl",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 425,
+        "fields": {
+            "calibre_group": 21,
+            "name": "11.2mm x 39.6R",
+            "is_active": true,
+            "order": 13
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 426,
+        "fields": {
+            "calibre_group": 24,
+            "name": "15.2mm x 110R Mitrailleuse",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 427,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".26 BSA (.26 Rimless Belted Nitro Express)",
+            "is_active": true,
+            "order": 10
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 428,
+        "fields": {
+            "calibre_group": 2,
+            "name": ".33 BSA (.33 Rimless Belted Nitro Express)",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 429,
+        "fields": {
+            "calibre_group": 3,
+            "name": ".360 No 2 Nitro Express",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 430,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".40 BSA (.40 Rimless Belted Nitro Express)",
+            "is_active": true,
+            "order": 1
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 431,
+        "fields": {
+            "calibre_group": 4,
+            "name": ".400/360 2 ¾ in Nitro Express",
+            "is_active": true,
+            "order": 30
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 432,
+        "fields": {
+            "calibre_group": 5,
+            "name": ".425 Westley Richards Magnum",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 433,
+        "fields": {
+            "calibre_group": 8,
+            "name": ".475 x 3 ¼ in Nitro Express",
+            "is_active": true,
+            "order": 4
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 434,
+        "fields": {
+            "calibre_group": 8,
+            "name": ".475 No 2 Jeffery Nitro Express",
+            "is_active": true,
+            "order": 5
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 435,
+        "fields": {
+            "calibre_group": 8,
+            "name": ".475 No 2 Nitro Express",
+            "is_active": true,
+            "order": 6
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 436,
+        "fields": {
+            "calibre_group": 8,
+            "name": ".476 Nitro Express (.476 Westley Richards)",
+            "is_active": true,
+            "order": 8
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 437,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50-90 2 ½ inch",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 438,
+        "fields": {
+            "calibre_group": 9,
+            "name": ".50-110 2.4 inch",
+            "is_active": true,
+            "order": 16
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 439,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".577 – 3 in (Black Powder & Nitro Express)",
+            "is_active": true,
+            "order": 14
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 440,
+        "fields": {
+            "calibre_group": 10,
+            "name": ".577 – 3 ¼ in (Black Powder & Nitro Express)",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 441,
+        "fields": {
+            "calibre_group": 13,
+            "name": "6.5 x 53mm R Mannlicher (Dutch/Romanian)",
+            "is_active": true,
+            "order": 9
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 442,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8 mm Murata",
+            "is_active": true,
+            "order": 11
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 443,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8 x 58 mm R Krag",
+            "is_active": true,
+            "order": 31
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 444,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8 x 56mm Mannlicher Schoenauer",
+            "is_active": true,
+            "order": 32
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 445,
+        "fields": {
+            "calibre_group": 15,
+            "name": "8mm Roth Steyr",
+            "is_active": true,
+            "order": 15
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 446,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9 x 56mm Mannlicher Schoenauer",
+            "is_active": true,
+            "order": 20
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 447,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9 x 57mm R Mauser",
+            "is_active": true,
+            "order": 21
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 448,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9 x 57mm Rimless Mauser",
+            "is_active": true,
+            "order": 22
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 449,
+        "fields": {
+            "calibre_group": 16,
+            "name": "9.5 x 57mm Mannlicher Schoenauer",
+            "is_active": true,
+            "order": 23
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 450,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".200 test",
+            "is_active": true,
+            "order": 19
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 451,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".201 TEST",
+            "is_active": true,
+            "order": 20
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 452,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".202 TEST",
+            "is_active": true,
+            "order": 18
+        }
+    },
+    {
+        "model": "web.obsoletecalibre",
+        "pk": 453,
+        "fields": {
+            "calibre_group": 1,
+            "name": ".203 TEST",
+            "is_active": true,
+            "order": 21
+        }
+    }
+]
