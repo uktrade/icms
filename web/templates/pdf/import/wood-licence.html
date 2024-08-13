@@ -7,11 +7,11 @@
     <meta charset="UTF-8">
     <meta name="description" content="{{ importer_site_name }} import licence">
     <style>
-      {{ get_css_rules_as_string('web/css/pdfs/fonts.css')|safe }}
-      {{ get_css_rules_as_string('web/css/pdfs/constants.css')|safe }}
-      {{ get_css_rules_as_string("web/css/pdfs/wood-licence-style.css")|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/shared/fonts.css')|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/shared/constants.css')|safe }}
+      {{ get_css_rules_as_string("web/css/pdfs/import/wood-licence-style.css")|safe }}
       {% if preview_licence %}
-        {{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
+        {{ get_css_rules_as_string("web/css/pdfs/shared/preview.css")|safe }}
       {% endif %}
     </style>
   </head>

@@ -6,11 +6,11 @@
 <html lang="en">
   <head>
     <style>
-      {{ get_css_rules_as_string('web/css/pdfs/fonts.css')|safe }}
-      {{ get_css_rules_as_string('web/css/pdfs/constants.css')|safe }}
-      {{ get_css_rules_as_string("web/css/pdfs/com-certificate-style.css")|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/shared/fonts.css')|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/shared/constants.css')|safe }}
+      {{ get_css_rules_as_string("web/css/pdfs/export/com-certificate-style.css")|safe }}
 			{% if preview %}
-				{{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
+				{{ get_css_rules_as_string("web/css/pdfs/shared/preview.css")|safe }}
       {% endif %}
     </style>
   </head>
