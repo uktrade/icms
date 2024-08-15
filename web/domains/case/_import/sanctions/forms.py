@@ -121,10 +121,22 @@ class GoodsForm(forms.ModelForm):
 class GoodsSanctionsLicenceForm(forms.ModelForm):
     class Meta:
         model = SanctionsAndAdhocApplicationGoods
-        fields = ["commodity", "goods_description", "quantity_amount", "value"]
-        widgets = {"goods_description": forms.Textarea(attrs={"cols": 80, "rows": 20})}
+        fields = [
+            "commodity",
+            "goods_description_override",
+            "quantity_amount_override",
+            "value_override",
+        ]
+        widgets = {"goods_description_override": forms.Textarea(attrs={"cols": 80, "rows": 20})}
         help_texts = {"commodity": COMMODITY_HELP_TEXT}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["commodity"].disabled = True
+        self.initial["goods_description_override"] = (
+            self.instance.goods_description_override or self.instance.goods_description
+        )
+        self.initial["quantity_amount_override"] = (
+            self.instance.quantity_amount_override or self.instance.quantity_amount
+        )
+        self.initial["value_override"] = self.instance.value_override or self.instance.value

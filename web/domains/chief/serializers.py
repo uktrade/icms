@@ -107,7 +107,7 @@ def sanction_serializer(
     goods = [
         types.SanctionGoodsData(
             commodity=g.commodity.commodity_code,
-            quantity=g.quantity_amount,
+            quantity=g.quantity_amount_override or g.quantity_amount,
             unit=g.hmrc_code,  # This is an annotation
         )
         for g in goods_qs

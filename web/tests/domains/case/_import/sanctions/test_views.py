@@ -26,7 +26,11 @@ from web.tests.domains.case._import.factory import (
     SanctionsAndAdhocApplicationGoodsFactory,
     SanctionsAndAdhocLicenseApplicationFactory,
 )
-from web.tests.helpers import check_gov_notify_email_was_sent, check_page_errors
+from web.tests.helpers import (
+    CaseURLS,
+    check_gov_notify_email_was_sent,
+    check_page_errors,
+)
 from web.utils.commodity import get_usage_commodities, get_usage_records
 from web.utils.validation import ApplicationErrors, PageErrors
 
@@ -502,4 +506,106 @@ class TestSubmitSanctions:
                 "icms_url": get_caseworker_site_domain(),
                 "service_name": SiteName.CASEWORKER.label,
             },
+        )
+
+
+class TestEditSanctionsLicenceGoods:
+    @pytest.fixture(autouse=True)
+    def setup(self, ilb_admin_client, sanctions_app_submitted):
+        self.app = sanctions_app_submitted
+        self.client = ilb_admin_client
+
+        self.client.post(CaseURLS.take_ownership(self.app.pk, "import"))
+        self.app.refresh_from_db()
+
+        self.app.decision = self.app.APPROVE
+        self.app.save()
+
+        self.url = CaseURLS.prepare_response(self.app.pk, "import")
+
+    def test_edit_licence_goods(self):
+        goods: SanctionsAndAdhocApplicationGoods = self.app.sanctions_goods.first()
+
+        assert goods.goods_description == "Test Goods"
+        assert goods.quantity_amount == 1000
+        assert goods.value == 10500
+
+        assert goods.goods_description_override is None
+        assert goods.quantity_amount_override is None
+        assert goods.value_override is None
+
+        resp = self.client.get(self.url)
+        assert (
+            "<td>Test Goods</td><td>1000.000</td><td>pieces</td><td>10500.00</td>"
+            in resp.content.decode()
+        )
+
+        self.client.post(
+            reverse(
+                "import:sanctions:edit-goods-licence",
+                kwargs={"application_pk": self.app.pk, "goods_pk": goods.pk},
+            ),
+            data={
+                "goods_description_override": "New Description",
+                "quantity_amount_override": 99.000,
+                "value_override": 55.00,
+            },
+        )
+
+        goods.refresh_from_db()
+
+        assert goods.goods_description == "Test Goods"
+        assert goods.quantity_amount == 1000
+        assert goods.value == 10500
+
+        assert goods.goods_description_override == "New Description"
+        assert goods.quantity_amount_override == 99
+        assert goods.value_override == 55
+
+        resp = self.client.get(self.url)
+        assert (
+            "<td>New Description</td><td>99.000</td><td>pieces</td><td>55.00</td>"
+            in resp.content.decode()
+        )
+
+    def test_reset_licence_goods(self):
+        goods: SanctionsAndAdhocApplicationGoods = self.app.sanctions_goods.first()
+
+        assert goods.goods_description == "Test Goods"
+        assert goods.quantity_amount == 1000
+        assert goods.value == 10500
+
+        goods.goods_description_override = "Override"
+        goods.quantity_amount_override = 50
+        goods.value_override = 20
+
+        goods.save()
+        goods.refresh_from_db()
+
+        resp = self.client.get(self.url)
+        assert (
+            "<td>Override</td><td>50.000</td><td>pieces</td><td>20.00</td>" in resp.content.decode()
+        )
+
+        self.client.post(
+            reverse(
+                "import:sanctions:reset-goods-licence",
+                kwargs={"application_pk": self.app.pk, "goods_pk": goods.pk},
+            ),
+        )
+
+        goods.refresh_from_db()
+
+        assert goods.goods_description == "Test Goods"
+        assert goods.quantity_amount == 1000
+        assert goods.value == 10500
+
+        assert goods.goods_description_override is None
+        assert goods.quantity_amount_override is None
+        assert goods.value_override is None
+
+        resp = self.client.get(self.url)
+        assert (
+            "<td>Test Goods</td><td>1000.000</td><td>pieces</td><td>10500.00</td>"
+            in resp.content.decode()
         )
