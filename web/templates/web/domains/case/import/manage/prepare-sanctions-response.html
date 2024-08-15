@@ -34,7 +34,7 @@
             <td>
               <a
                 class="link-button button icon-pencil"
-                href={{ icms_url('import:sanctions:edit-goods-licence', args=[process.pk, goods_item.pk]) }}>
+                href={{ icms_url('import:sanctions:edit-goods-licence', kwargs={'application_pk': process.pk, 'goods_pk': goods_item.pk}) }}>
                 Edit
               </a>
             </td>
@@ -42,7 +42,7 @@
               {% if goods_item.goods_description_override or goods_item.quantity_amount_override or goods_item.value_override %}
                 <form
                   method="post"
-                  action="{{  icms_url('import:sanctions:reset-goods-licence', args=[process.pk, goods_item.pk]) }}"
+                  action="{{ icms_url('import:sanctions:reset-goods-licence', kwargs={'application_pk': process.pk, 'goods_pk': goods_item.pk}) }}"
                   class="form-inline">
                   {{ csrf_input }}
                   <button

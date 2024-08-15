@@ -17,13 +17,14 @@ from web.models import (
     Constabulary,
     Country,
     DFLApplication,
+    DFLGoodsCertificate,
     ImportApplicationLicence,
     Task,
     User,
 )
 from web.models.shared import FirearmCommodity
 from web.tests.auth import AuthTestCase
-from web.tests.helpers import check_page_errors, get_test_client
+from web.tests.helpers import CaseURLS, check_page_errors, get_test_client
 
 
 def _get_view_url(view_name, kwargs=None):
@@ -499,6 +500,80 @@ def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact
     assert application.licences.filter(status=ImportApplicationLicence.Status.DRAFT).exists()
 
 
+class TestEditDFLGoodsDescription:
+    @pytest.fixture(autouse=True)
+    def setup(self, ilb_admin_client, fa_dfl_app_submitted):
+        self.app = fa_dfl_app_submitted
+        self.client = ilb_admin_client
+
+        self.client.post(CaseURLS.take_ownership(self.app.pk, "import"))
+        self.app.refresh_from_db()
+
+        self.app.decision = self.app.APPROVE
+        self.app.save()
+
+        self.url = CaseURLS.prepare_response(self.app.pk, "import")
+
+    def test_edit_licence_goods(self):
+        goods: DFLGoodsCertificate = self.app.goods_certificates.first()
+
+        assert goods.goods_description == "goods_description value"
+        assert goods.goods_description_override is None
+
+        resp = self.client.get(self.url)
+        assert (
+            "<td>goods_description value</td><td>Unlimited</td><td>units</td>"
+            in resp.content.decode()
+        )
+
+        self.client.post(
+            reverse(
+                "import:fa-dfl:edit-goods-description",
+                kwargs={"application_pk": self.app.pk, "document_pk": goods.pk},
+            ),
+            data={"goods_description_override": "New Description"},
+        )
+
+        goods.refresh_from_db()
+
+        assert goods.goods_description == "goods_description value"
+        assert goods.goods_description_override == "New Description"
+
+        resp = self.client.get(self.url)
+        assert "<td>New Description</td><td>Unlimited</td><td>units</td>" in resp.content.decode()
+
+    def test_reset_licence_goods(self):
+        goods: DFLGoodsCertificate = self.app.goods_certificates.first()
+
+        assert goods.goods_description == "goods_description value"
+
+        goods.goods_description_override = "Override"
+
+        goods.save()
+        goods.refresh_from_db()
+
+        resp = self.client.get(self.url)
+        assert "<td>Override</td><td>Unlimited</td><td>units</td>" in resp.content.decode()
+
+        self.client.post(
+            reverse(
+                "import:fa-dfl:reset-goods-description",
+                kwargs={"application_pk": self.app.pk, "document_pk": goods.pk},
+            ),
+        )
+
+        goods.refresh_from_db()
+
+        assert goods.goods_description == "goods_description value"
+        assert goods.goods_description_override is None
+
+        resp = self.client.get(self.url)
+        assert (
+            "<td>goods_description value</td><td>Unlimited</td><td>units</td>"
+            in resp.content.decode()
+        )
+
+
 # def test_edit_goods_certificate_description_get(admin_cl, complete_dfl_app_pk):
 #     ...
 #
@@ -506,9 +581,6 @@ def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact
 # def test_edit_goods_certificate_description_post_invalid(admin_client):
 #     ...
 #
-#
-# def test_edit_goods_certificate_description_post_valid():
-#     ...
 #
 # def test_view_goods_certificate_get():
 #     ...

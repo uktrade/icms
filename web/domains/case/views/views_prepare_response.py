@@ -200,7 +200,7 @@ def _prepare_fa_dfl_response(
     context.update(
         {
             "process": application,
-            "goods": application.goods_certificates.filter(is_active=True),
+            "goods": application.goods_certificates.filter(is_active=True).order_by("pk"),
         }
     )
 
