@@ -4938,3 +4938,4 @@ btn.addEventListener("click
 forms.formset_errors(product_formset
 "Add custom fields to the CFS Product
 ICMSLST-2916 Remove
+aria-label="Reset

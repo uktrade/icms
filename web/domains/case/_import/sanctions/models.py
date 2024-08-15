@@ -29,7 +29,6 @@ class SanctionsAndAdhocApplicationGoods(models.Model):
     )
 
     goods_description = models.CharField(max_length=4096, verbose_name="Goods Description")
-
     # CHIEF spec:
     # 9(n).9(m) decimal field with up to n digits before the decimal point and up to m digits after.
     # quantityIssued 9(11).9(3)
@@ -43,6 +42,17 @@ class SanctionsAndAdhocApplicationGoods(models.Model):
             "The value is the total value of all goods under the specified commodity code."
             " It is not the value of a single unit."
         ),
+    )
+
+    # Fields for case officer to override the description / quantity / value that appears on the licence
+    goods_description_override = models.CharField(
+        max_length=4096, verbose_name="Goods Description", null=True
+    )
+    quantity_amount_override = models.DecimalField(
+        max_digits=14, decimal_places=3, verbose_name="Quantity", null=True
+    )
+    value_override = models.DecimalField(
+        max_digits=12, decimal_places=2, verbose_name="Value (GBP CIF)", null=True
     )
 
     def __str__(self):

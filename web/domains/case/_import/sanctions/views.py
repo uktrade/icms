@@ -271,6 +271,33 @@ def edit_goods_licence(
 
 @login_required
 @require_POST
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+def reset_goods_licence(
+    request: AuthenticatedHttpRequest, *, application_pk: int, goods_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: SanctionsAndAdhocApplication = get_object_or_404(
+            SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        case_progress.application_in_processing(application)
+
+        goods = get_object_or_404(application.sanctions_goods, pk=goods_pk)
+        goods.goods_description_override = None
+        goods.quantity_amount_override = None
+        goods.value_override = None
+        goods.save()
+
+        return redirect(
+            reverse(
+                "case:prepare-response",
+                kwargs={"application_pk": application.pk, "case_type": "import"},
+            )
+        )
+
+
+@login_required
+@require_POST
 def delete_goods(
     request: AuthenticatedHttpRequest, *, application_pk: int, goods_pk: int
 ) -> HttpResponse:

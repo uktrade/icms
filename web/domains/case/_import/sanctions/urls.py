@@ -20,6 +20,11 @@ goods_urls = [
                     views.edit_goods_licence,
                     name="edit-goods-licence",
                 ),
+                path(
+                    "reset-goods-licence/",
+                    views.reset_goods_licence,
+                    name="reset-goods-licence",
+                ),
             ]
         ),
     ),
