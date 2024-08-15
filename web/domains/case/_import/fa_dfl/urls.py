@@ -34,6 +34,11 @@ urlpatterns = [
                                             name="edit-goods-description",
                                         ),
                                         path(
+                                            "reset-description/",
+                                            views.reset_goods_certificate_description,
+                                            name="reset-goods-description",
+                                        ),
+                                        path(
                                             "view/", views.view_goods_certificate, name="view-goods"
                                         ),
                                         path(

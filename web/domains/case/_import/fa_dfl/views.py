@@ -257,6 +257,31 @@ def edit_goods_certificate_description(
         )
 
 
+@login_required
+@require_POST
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+def reset_goods_certificate_description(
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: DFLApplication = get_object_or_404(
+            DFLApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        case_progress.application_in_processing(application)
+
+        goods = get_object_or_404(application.goods_certificates, pk=document_pk)
+        goods.goods_description_override = None
+        goods.save()
+
+        return redirect(
+            reverse(
+                "case:prepare-response",
+                kwargs={"application_pk": application.pk, "case_type": "import"},
+            )
+        )
+
+
 @require_GET
 @login_required
 def view_goods_certificate(

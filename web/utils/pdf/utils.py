@@ -229,7 +229,7 @@ def get_licence_endorsements(application: ImportApplication) -> list[list[str]] 
 
 def _get_fa_dfl_goods(application: DFLApplication) -> list[str]:
     return [
-        g.goods_description
+        g.goods_description_override or g.goods_description
         for g in application.goods_certificates.filter(is_active=True).order_by("created_datetime")
     ]
 

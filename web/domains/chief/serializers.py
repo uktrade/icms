@@ -144,7 +144,7 @@ def fa_dfl_serializer(
     )
 
     goods = [
-        types.FirearmGoodsData(description=g.goods_description)
+        types.FirearmGoodsData(description=g.goods_description_override or g.goods_description)
         for g in application.goods_certificates.filter(is_active=True)
     ]
 
