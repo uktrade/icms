@@ -24,7 +24,7 @@
               <td>{{ app.importer.name }}</td>
               {% set case_completion_datetime = get_latest_issued_document(app).case_completion_datetime %}
               <td>
-                <span class="text-widget">{{ case_completion_datetime.strftime('%d-%b-%Y') }}</span>
+                <span class="text-widget">{{ case_completion_datetime|datetime_format('%d-%b-%Y') }}</span>
               </td>
               <td>
                 <ul class="menu-out">

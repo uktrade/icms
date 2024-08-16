@@ -4,6 +4,10 @@ import time as tm
 from collections.abc import Generator
 from contextlib import contextmanager
 
+from django.utils import timezone
+
+from .sentry import capture_exception, capture_message
+
 
 @contextmanager
 def time_snippet(msg: str) -> Generator[None, None, None]:
@@ -25,6 +29,32 @@ def strip_spaces(*fields: str | None) -> str:
     strip_spaces("123\n\nSesame   St", "ABC   123") -> "123 Sesame St ABC 123"
     """
     return " ".join(re.sub(r"\s+", " ", f"{f.strip()}") for f in fields if f)
+
+
+def datetime_format(
+    value: dt.datetime, _format: str = "%d-%b-%Y %H:%M:%S", local: bool = True
+) -> str:
+    """Format a datetime.datetime instance to the supplied format.
+
+    Does the following:
+      - Convert a timezone aware datetime in to the localtime.
+      - Return the datetime formatted by the supplied format.
+
+    The value is converted to the local timezone unless local is False.
+    """
+
+    if local:
+        try:
+            if isinstance(value, dt.datetime):
+                value = timezone.localtime(value)
+            else:
+                capture_message(f"Tried to use datetime_format with: {value}")
+        except ValueError:
+            # Capture errors where a naive datetime is being used.
+            # We should fix any naive datetime instances as ICMS defines USE_TZ = True
+            capture_exception()
+
+    return value.strftime(_format)
 
 
 def day_ordinal_date(date: dt.date) -> str:

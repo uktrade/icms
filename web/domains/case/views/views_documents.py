@@ -32,6 +32,7 @@ from web.models import (
     ImportApplication,
     ImportApplicationLicence,
 )
+from web.utils import datetime_format
 from web.utils.s3 import create_presigned_url
 from web.utils.sentry import capture_exception
 
@@ -223,8 +224,8 @@ class DownloadDFLCaseDocumentsFormView(DownloadLinkFormViewBase):
                 "issue_paper_licence_only": pack.issue_paper_licence_only,
                 "licence_start_date": pack.licence_start_date.strftime(self.licence_date_format),
                 "licence_end_date": pack.licence_end_date.strftime(self.licence_date_format),
-                "case_completion_date": pack.case_completion_datetime.strftime(
-                    self.licence_date_format
+                "case_completion_date": datetime_format(
+                    pack.case_completion_datetime, self.licence_date_format
                 ),
                 "documents": [
                     {

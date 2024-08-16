@@ -18,7 +18,7 @@
   </div>
   <div class="two columns" >
     <span>
-      {{ process.submit_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
+      {{ process.submit_datetime|datetime_format }}
     </span>
   </div>
 </div>

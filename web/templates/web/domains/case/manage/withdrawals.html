@@ -50,7 +50,7 @@
         </div>
         <div class="six columns">
           <span class="text-widget">
-            {{ current_withdrawal.created_datetime.strftime('%d-%b-%Y') }}
+            {{ current_withdrawal.created_datetime|datetime_format('%d-%b-%Y') }}
           </span>
         </div>
         <div class="three columns"></div>

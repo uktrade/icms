@@ -1279,7 +1279,8 @@ class TestFirearmsLicencesInterface:
     def test_get_sil_data(self, completed_sil_app, mock_gov_notify_client):
         interface = SILFirearmsLicenceInterface(self.report_schedule)
 
-        with freeze_time("2024-03-09 11:00:00"):
+        # Use BST datetime to test offset in output
+        with freeze_time("2024-07-09 11:00:00"):
             case_email = create_case_email(
                 completed_sil_app,
                 EmailTypes.CONSTABULARY_CASE_EMAIL,
@@ -1288,7 +1289,7 @@ class TestFirearmsLicencesInterface:
             completed_sil_app.case_emails.add(case_email)
             send_case_email(case_email, self.ilb_admin_user)
             case_email.status = CaseEmail.Status.CLOSED
-            case_email.closed_datetime = make_aware(dt.datetime(2024, 3, 10, 9, 0, 0))
+            case_email.closed_datetime = dt.datetime(2024, 7, 10, 9, 0, 0, tzinfo=dt.UTC)
             case_email.save()
 
         data = interface.get_data()
@@ -1319,8 +1320,9 @@ class TestFirearmsLicencesInterface:
                 "(including any previous name by which these territories have been known).",
                 "Revoked": "No",
                 "Constabularies": "Avon & Somerset",
-                "First Constabulary Email Sent Date": "09/03/2024 11:00:00",
-                "Last Constabulary Email Closed Date": "10/03/2024 09:00:00",
+                # Should be one hour ahead of freeze_time above.
+                "First Constabulary Email Sent Date": "09/07/2024 12:00:00",
+                "Last Constabulary Email Closed Date": "10/07/2024 10:00:00",
             }
         ]
 

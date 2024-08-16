@@ -562,7 +562,8 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
             self.imp_app.reference: {
                 "Processing": {
                     "Application Submitted": ["Request Withdrawal", "View Application"],
-                    "Further Information Request, 26 Jul 2023 06:38:16": ["Respond"],
+                    # Offset time by an hour as it's BST
+                    "Further Information Request, 26 Jul 2023 07:38:16": ["Respond"],
                 }
             }
         }
@@ -580,7 +581,8 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
             self.imp_agent_app.reference: {
                 "Processing": {
                     "Application Submitted": ["Request Withdrawal", "View Application"],
-                    "Further Information Request, 26 Jul 2023 06:38:16": ["Respond"],
+                    # Offset time by an hour as it's BST
+                    "Further Information Request, 26 Jul 2023 07:38:16": ["Respond"],
                 }
             }
         }
@@ -600,7 +602,8 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
             self.exp_app.reference: {
                 "Processing": {
                     "Application Submitted": ["Request Withdrawal", "View Application"],
-                    "Further Information Request, 26 Jul 2023 06:38:16": ["Respond"],
+                    # Offset time by an hour as it's BST
+                    "Further Information Request, 26 Jul 2023 07:38:16": ["Respond"],
                 }
             }
         }
@@ -618,7 +621,8 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
             self.exp_agent_app.reference: {
                 "Processing": {
                     "Application Submitted": ["Request Withdrawal", "View Application"],
-                    "Further Information Request, 26 Jul 2023 06:38:16": ["Respond"],
+                    # Offset time by an hour as it's BST
+                    "Further Information Request, 26 Jul 2023 07:38:16": ["Respond"],
                 }
             }
         }
@@ -1163,7 +1167,8 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
             self.exp_app.reference: {
                 "Completed": {
                     "Application View": ["View Application", "Clear"],
-                    "Documents Issued 27-Jul-2023 10:06": ["View Issued Documents", "Clear"],
+                    # Offset time by an hour as it's BST
+                    "Documents Issued 27-Jul-2023 11:06": ["View Issued Documents", "Clear"],
                 }
             },
             self.exp_agent_app.reference: {
@@ -1189,7 +1194,8 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
             self.exp_agent_app.reference: {
                 "Completed": {
                     "Application View": ["View Application", "Clear"],
-                    "Documents Issued 27-Jul-2023 10:06": ["View Issued Documents", "Clear"],
+                    # Offset time by an hour as it's BST
+                    "Documents Issued 27-Jul-2023 11:06": ["View Issued Documents", "Clear"],
                 }
             }
         }
@@ -1351,7 +1357,8 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
             self.imp_app.reference: {
                 "Completed": {
                     "Application View": ["View Application", "Clear"],
-                    "Documents Issued 27-Jul-2023 10:06": ["View Issued Documents", "Clear"],
+                    # Offset time by an hour as it's BST
+                    "Documents Issued 27-Jul-2023 11:06": ["View Issued Documents", "Clear"],
                     "Firearms Supplementary Reporting": ["Provide Report"],
                 }
             },
@@ -1378,7 +1385,8 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
             self.imp_agent_app.reference: {
                 "Completed": {
                     "Application View": ["View Application", "Clear"],
-                    "Documents Issued 27-Jul-2023 10:06": ["View Issued Documents", "Clear"],
+                    # Offset time by an hour as it's BST
+                    "Documents Issued 27-Jul-2023 11:06": ["View Issued Documents", "Clear"],
                     "Firearms Supplementary Reporting": ["Provide Report"],
                 }
             }
@@ -1400,7 +1408,8 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
             self.exp_app.reference: {
                 "Completed": {
                     "Application View": ["View Application", "Clear"],
-                    "Documents Issued 27-Jul-2023 10:06": ["View Issued Documents", "Clear"],
+                    # Offset time by an hour as it's BST
+                    "Documents Issued 27-Jul-2023 11:06": ["View Issued Documents", "Clear"],
                 }
             },
             self.exp_agent_app.reference: {
@@ -1426,7 +1435,8 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
             self.exp_agent_app.reference: {
                 "Completed": {
                     "Application View": ["View Application", "Clear"],
-                    "Documents Issued 27-Jul-2023 10:06": ["View Issued Documents", "Clear"],
+                    # Offset time by an hour as it's BST
+                    "Documents Issued 27-Jul-2023 11:06": ["View Issued Documents", "Clear"],
                 }
             }
         }

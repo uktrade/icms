@@ -40,8 +40,8 @@
         <tr>
           <td><a href="{{ icms_url('report:run-output-view', kwargs={'report_pk': obj.report.pk, 'schedule_pk': obj.pk }) }}">{{ obj.title }}</a></td>
           <td>{{ obj.get_status_display() }}</td>
-          <td>{% if obj.started_at %}{{ obj.started_at.strftime('%d %b %Y %H:%M:%S') }}{% else %}{% endif %}</td>
-          <td>{% if obj.finished_at %}{{ obj.finished_at.strftime('%d %b %Y %H:%M:%S') }}{% else %}{% endif %}</td>
+          <td>{% if obj.started_at %}{{ obj.started_at|datetime_format('%d %b %Y %H:%M:%S') }}{% else %}{% endif %}</td>
+          <td>{% if obj.finished_at %}{{ obj.finished_at|datetime_format('%d %b %Y %H:%M:%S') }}{% else %}{% endif %}</td>
         </tr>
         {% endfor %}
       </tbody>

@@ -198,7 +198,8 @@ def upload_case_document_file(
     """Upload a case document file to s3 and create related data."""
 
     # application id - document type - case document reference id - timestamp - filename
-    time_stamp = f'{timezone.now().strftime("%Y%m%d%H%M%S")}'
+    # Always store timestamp in UTC (e.g. Don't use datetime_format())
+    time_stamp = timezone.now().strftime("%Y%m%d%H%M%S")
     key = f"{cdr.object_id}_{cdr.document_type}_{cdr.id}_{time_stamp}_{filename}"
 
     file_size = upload_file_obj_to_s3(file_obj, key)

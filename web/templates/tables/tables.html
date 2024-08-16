@@ -13,7 +13,7 @@
     <strong>{{ text }}</strong>
   {% elif config and config.date_format %}
     {% if text %}
-      {{ text.strftime('%d-%b-%Y %H:%M:%S') }}
+      {{ text|datetime_format }}
     {% endif %}
   {% else %}
     {{ text }}

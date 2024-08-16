@@ -775,7 +775,9 @@ class TestViewIssuedCaseDocumentsView:
             response,
             "Firearms and Ammunition (Specific Individual Import Licence) - Issued Documents",
         )
-        assertContains(response, "<h3>Issued documents (15-Jun-2020 11:44)</h3>")
+
+        # case_completion_datetime timezone is BST so template should render an hour ahead of UTC.
+        assertContains(response, "<h3>Issued documents (15-Jun-2020 12:44)</h3>")
         assertContains(response, "Firearms Cover Letter")
         assertContains(response, "Firearms Licence")
 

@@ -1945,8 +1945,6 @@ Response Preparation</h3
 =False
 Cover Letter</h4
 Licence</h4
-{{ licence.licence_start_date.strftime('%d-%b-%Y'
-{{ licence.licence_end_date.strftime('%d-%b-%Y'
 {{ endorsement.content|nl2br }
 {{ csrf_input }
 Add Custom Endorsement
@@ -2058,7 +2056,6 @@ id="id
 Complete Supplementary Reporting</h3
 {{ process.supplementary_info.no_report_reason
 Report Completed By
-{{ application_field(process.supplementary_info.completed_datetime.strftime('%d-%b-%Y'
 {{ fields.field(form.no_report_reason
 Maintain Templates"
 Template Name
@@ -2406,7 +2403,6 @@ Export Applications Without Document Packs
 {{ process.reference }
 XXXX
 {{ process.consignment_country
-{{ licence_end_date.strftime("%d %B %
 "Creates a SIL
 f'<span
 PdfGenerator
@@ -2761,7 +2757,6 @@ Access Approval</h4
 Request Approval
 Access Request</button
 {{ firearms_authority.postcode
-{{ firearms_authority.start_date.strftime('%d-%b-%Y'
 {{ firearms_authority.further_details|nl2br
 {{ document.created_by }
 Archive Reaon
@@ -2771,7 +2766,6 @@ Section 5 Authorities Expiring
 the Import Case Management System
 function checkOther(element
 Select(Select
-{{ section5.start_date.strftime('%d-%b-%Y'
 {{ section5.end_date.strftime('%d-%b-%Y'
 {{ section5.further_details|nl2br }
 kwargs={'section5_pk
@@ -2786,7 +2780,6 @@ Another Sec 5
 {{ application_field(firearms_authority.reference
 Issuing Constabulary
 {{ application_field(firearms_authority.address|default
-{{ application_field(firearms_authority.end_date.strftime('%d-%b-%Y'
 {{ application_field(firearms_authority.further_details|nl2br
 firearms_authority.other_archive_reason %
 { firearms_authority.other_archive_reason }}
@@ -2807,7 +2800,6 @@ SELECT ia_id section5authority_id
 {{ application_field(section5.reference
 {{ application_field(section5.postcode
 {{ application_field(section5.address|default
-{{ application_field(section5.start_date.strftime('%d-%b-%Y'
 {{ application_field(section5.end_date.strftime('%d-%b-%Y'
 Further Details
 LISTAGG(archive_reason
@@ -2860,7 +2852,6 @@ Unknown Application Type
 {{ application_field(acc_req.submitted_by|string +
 Access Requested By
 {{ application_field(acc_req.get_request_type_display
-{{ application_field(acc_req.submit_datetime.strftime('%d-%b-%Y %
 {{ application_field(acc_req.link|default('Not Linked'
 Linked Exporter
 Linked Importer
@@ -2868,11 +2859,9 @@ Linked Importer
 Linked Further Information Requests
 {{ application_field(get_status(approval_request
 {{ application_field(approval_request.requested_from|default('All'
-{{ application_field(approval_request.request_date.strftime('%d-%b-%Y %
 Approval Request Date
 {{ application_field(approval_request.requested_by
 Approval Request Response</h4
-{{ application_field(approval_request.response_date.strftime('%d-%b-%Y %
 Response Date
 {{ application_field(approval_request.response_reason|default('N
 Response Reason
@@ -3087,19 +3076,15 @@ Import Search Users
 Access Request IAR/1
 Access Request EAR/1
 "Returns the case
-{{ update_request.request_datetime.strftime('%d-%b-%Y'
 {{ update_request.requested_by
 Request Detail
 {{ update_request.request_detail|nl2br }
-{{ update_request.closed_datetime.strftime('%d-%b-%Y
 {{ update_request.closed_by }
 MIDDLE_INITIALS
 Cache
-{{ update_request.request_datetime.strftime('%d-%b-%Y'
 {{ update_request.requested_by
 Request Detail
 {{ update_request.request_detail|nl2br }
-{{ update_request.closed_datetime.strftime('%d-%b-%Y
 {{ update_request.closed_by }
 Application Processing, Out for Update
 Test Further Information
@@ -3263,7 +3248,6 @@ Natural Person"
 Complete IMI</h4
 imi-net//imi
 imi-confirm-information'
-{{ application_field(app.imi_submit_datetime.strftime('%d-%b-%Y'
 class="extra
 west">Code</label
 BigAutoField
@@ -3432,9 +3416,7 @@ el mercado
 Unido
 Unido Los
 {{ note.updated_at|localize }}
-{{ fir.requested_datetime.strftime('%d-%b-%Y %
 fir.request_subject|default('N/A'
-{{ fir.response_datetime.strftime('%d-%b-%Y %
 {{fields.field(filter.form[field]
 SECURE_LOB_REF_ID
 col1
@@ -3496,7 +3478,6 @@ Department for Business
 {{ application_field(object.name
 {{ application_field(object.signatory
 Signatory
-{{ application_field(object.created_datetime.strftime('%d %B %
 Created Date
 {{ document_signature(signature_file
 west">History
@@ -3555,14 +3536,12 @@ twelve">Create
 {{ application_field(application_template.description
 {{ application_field(application_template.sharing
 {{ fields.field(form.activity_benefit_anyone
-{{ file.created_datetime.strftime('%d-%b-%Y %
 Quota)</h4
 fields.field(form.cp_processing_country
 fields.field(form.cp_commodities
 Adhoc License</h4
 {{ commodity_group_data|tojson }
 {{ current_withdrawal.reason
-{{ current_withdrawal.created_datetime.strftime('%d-%b-%Y'
 <li>0-9</li
 in_progress
 delete-fir'
@@ -3988,7 +3967,6 @@ field(object
 west">Sent By</label
 {{activation.management_form}}
 Access Requested
-{{ process.submit_datetime.strftime('%d-%b-%Y %
 Organisation Address</label
 Address</label
 =
@@ -4005,7 +3983,6 @@ west">Case Status</label
 the Department for International Trade or the Office
 Respond FIR
 west">Response
-{{ application_field(process.contract_sign_date.strftime('%d-%b-%Y'
 {{ application_field(process.explanation
 the Syrian National Coalition for Opposition and Revolutionary Forces
 {{ application_field(process.activity_benefit_anyone
@@ -4033,11 +4010,9 @@ Section 5 Authorities</h3
 class="bold">End
 {{ object.email_body|nl2br }
 object.email_sent_datetime.strftime("%d-%b-%Y
-{{ object.email_closed_datetime.strftime("%d-%b-%Y
 {{ certificate.issuing_constabulary }
 {{ certificate.address }
 {{ certificate.postcode }
-{{ certificate.start_date.strftime('%d-%b-%Y
 constabulary_email.email_closed_datetime.strftime("%d-%b-%Y
 {{ buttons.manual_add_button(report
 {{ buttons.upload_document_button(report
@@ -4070,12 +4045,10 @@ Outward Processing
 {{ fields.field(form.rate_of_yield_calc_method
 {{ fields.field(form.suggested_id
 {{ section.created_by.full_name
-{{ section.created_datetime.strftime('%d-%b-%Y'
 {{ doc.created_datetime.strftime('%d-%b-%Y %
 {{ doc.filename
 doc.human_readable_file_size
 {{ process.application_type.get_type_display
-{{ process.contract_file.created_datetime.strftime('%d-%b-%Y %
 {{ application_field(process.exporter_address
 {{ fields.field(form.customs_cleared_to_uk
 process.customs_cleared_to_uk
@@ -4085,9 +4058,7 @@ process.customs_cleared_to_uk
 Pre-Contract</h4
 {{ attachment.human_readable_file_size
 {{ object.body|nl2br }
-{{ object.sent_datetime.strftime("%d-%b-%Y
 {{ object.response|nl2br }
-{{ object.closed_datetime.strftime("%d-%b-%Y
 Response Documents
 Revoke Licence'
 document.created_by
@@ -4097,11 +4068,9 @@ columns"><label class="prompt north">Goods
 Code(s)</label></div
 Reopen case.</p></div
 Start Application Update</h4
-{{ application_field(vr.requested_datetime.strftime('%d-%b-%Y'
 {{ application_field(vr.reject_cancellation_reason
 Request</button
 Request Update
-{{ application_field(vr.requested_datetime.strftime('%d-%b-%Y %
 {{ application_field(vr.closed_by
 loop.previtem.0
 Global Trade Tariff
@@ -4161,9 +4130,7 @@ DBT Platform
 ON cad_c.ca_id
 {{ attachment.human_readable_file_size
 {{ object.body|nl2br }
-{{ object.sent_datetime.strftime("%d-%b-%Y %
 {{ object.response|nl2br }
-{{ object.closed_datetime.strftime("%d-%b-%Y %
 =Import Ltd
 f"{self.url}?exporter_name=Export Ltd
 Deactivated Firearms Licences
@@ -4189,15 +4156,11 @@ BUILD_STEP='True'
 ON cad_c.ca_id
 {{ attachment.human_readable_file_size
 {{ object.body|nl2br }
-{{ object.sent_datetime.strftime("%d-%b-%Y %
 {{ object.response|nl2br }
-{{ object.closed_datetime.strftime("%d-%b-%Y %
 ON cad_c.ca_id
 {{ attachment.human_readable_file_size
 {{ object.body|nl2br }
-{{ object.sent_datetime.strftime("%d-%b-%Y %
 {{ object.response|nl2br }
-{{ object.closed_datetime.strftime("%d-%b-%Y %
 Open Update
 make end_to_end_clear_session && \
 Max 13
@@ -4229,7 +4192,6 @@ Test GMP Template
 Test Brand
 {{ application_field(existing_application.reference
 {{ application_field(existing_application.application_type.get_type_code_display
-{{ application_field(existing_application.submit_datetime.strftime('%d %
 {{ fields.field(form.hmrc_code
 ON rp_login.resource_person_id = rmc.person_id
 Test End Use or Final Product
@@ -4359,9 +4321,7 @@ Deactivate User
 PLATFORM
 Unsupported
 {{ application_field(platform_user.job_title
-{{ application_field(platform_user.importer_last_login.strftime('%d
 Last Importer Site Login
-{{ application_field(platform_user.exporter_last_login.strftime('%d %
 f'User
 {{ application_field(platform_user.is_active
 Is Active
@@ -4940,3 +4900,27 @@ aria-label="Reset
 https://docs.djangoproject.com/en/4.2/howto/static-files/
 USE_TZ = True
 31-Jan-2024
+{{ update_request.request_datetime|datetime_format('%d-%b-%Y'
+{{ update_request.response_datetime|datetime_format('%d-%b-%Y'
+{{ update_request.closed_datetime|datetime_format('%d-%b-%Y
+withdrawal.updated_datetime|datetime_format('%d-%b-%Y
+{{ application_field(existing_application.submit_datetime|datetime_format('%d %
+file.created_datetime|datetime_format('%d-%b-%Y
+{{ object.email_sent_datetime|datetime_format('%d-%b-%Y'
+{{ object.email_closed_datetime|datetime_format('%d-%b-%Y'
+constabulary_email.email_sent_datetime|datetime_format('%d-%b-%Y
+{{ constabulary_email.email_closed_datetime|datetime_format('%d-%b-%Y'
+{{ application_field(process.supplementary_info.completed_datetime|datetime_format('%d-%b-%Y'
+{{ doc.created_datetime|datetime_format('%d-%b-%Y %
+{{ process.contract_file.created_datetime|datetime_format('%d-%b-%Y %
+{{ object.closed_datetime|datetime_format }
+{{ application_field(app.imi_submit_datetime|datetime_format('%d-%b-%Y'
+{{ application_field(vr.requested_datetime|datetime_format('%d-%b-%Y'
+{{ application_field(vr.closed_datetime|datetime_format('%d-%b-%Y'
+{{ application_field(vr.requested_datetime|datetime_format('%d-%b-%Y %
+{{ application_field(vr.closed_datetime|datetime_format('%d-%b-%Y %
+template.created_datetime|datetime_format('%d-%b-%Y
+{{ application_field(object.published_datetime|datetime_format('%d-%b-%Y %
+{{ application_field(platform_user.importer_last_login|datetime_format('%d
+{{ application_field(platform_user.exporter_last_login|datetime_format('%d %
+{{ application_field(object.created_datetime|datetime_format('%d %

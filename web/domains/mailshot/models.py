@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 
 from web.types import TypedTextChoices
+from web.utils import datetime_format
 
 
 class Mailshot(models.Model):
@@ -74,17 +75,17 @@ class Mailshot(models.Model):
     @property
     def started(self):
         if self.create_datetime:
-            return self.create_datetime.strftime("%d %b %Y %H:%M")
+            return datetime_format(self.create_datetime, "%d %b %Y %H:%M")
 
     @property
     def published(self):
         if self.published_datetime:
-            return self.published_datetime.strftime("%d %b %Y %H:%M")
+            return datetime_format(self.published_datetime, "%d %b %Y %H:%M")
 
     @property
     def retracted(self):
         if self.retracted_datetime:
-            return self.retracted_datetime.strftime("%d %b %Y %H:%M")
+            return datetime_format(self.retracted_datetime, "%d %b %Y %H:%M")
 
     @property
     def status_verbose(self):

@@ -1,5 +1,4 @@
 import base64
-import datetime as dt
 import re
 from typing import TYPE_CHECKING
 
@@ -24,7 +23,7 @@ from web.menu import Menu
 from web.permissions import Perms
 from web.permissions.context_processors import UserObjectPerms
 from web.types import AuthenticatedHttpRequest
-from web.utils.sentry import capture_exception, capture_message
+from web.utils import datetime_format
 
 if TYPE_CHECKING:
     from web.models import User
@@ -131,32 +130,6 @@ def get_user_obj_perms(user: "User") -> ObjectPermissionChecker:
     checker = UserObjectPerms(user)
 
     return checker
-
-
-def datetime_format(
-    value: dt.datetime, _format: str = "%d-%b-%Y %H:%M:%S", local: bool = True
-) -> str:
-    """Format a datetime.datetime instance to the supplied format.
-
-    Does the following:
-      - Convert a timezone aware datetime in to the localtime.
-      - Return the datetime formatted by the supplied format.
-
-    The value is converted to the local timezone unless local is False.
-    """
-
-    if local:
-        try:
-            if isinstance(value, dt.datetime):
-                value = timezone.localtime(value)
-            else:
-                capture_message(f"Tried to use datetime_format with: {value}")
-        except ValueError:
-            # Capture errors where a naive datetime is being used.
-            # We should fix any naive datetime instances as ICMS defines USE_TZ = True
-            capture_exception()
-
-    return value.strftime(_format)
 
 
 def environment(**options):

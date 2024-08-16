@@ -30,8 +30,8 @@
     {{ application_field(platform_user.job_title or "", "Job Title (Employer)") }}
     {{ application_field(platform_user.location_at_address or "", "Floor/Room/Bay/Location") }}
     {{ application_field(platform_user.work_address or "", "Work Address") }}
-    {{ application_field(platform_user.importer_last_login.strftime('%d %b %Y %H:%M:%S') if platform_user.importer_last_login else "", "Last Importer Site Login") }}
-    {{ application_field(platform_user.exporter_last_login.strftime('%d %b %Y %H:%M:%S') if platform_user.exporter_last_login else "", "Last Exporter Site Login") }}
+    {{ application_field(platform_user.importer_last_login|datetime_format('%d %b %Y %H:%M:%S') if platform_user.importer_last_login else "", "Last Importer Site Login") }}
+    {{ application_field(platform_user.exporter_last_login|datetime_format('%d %b %Y %H:%M:%S') if platform_user.exporter_last_login else "", "Last Exporter Site Login") }}
   {% endcall %}
 
 

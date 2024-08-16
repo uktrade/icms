@@ -41,7 +41,7 @@
       </strong>
     </legend>
     {{ application_field(get_status_widget(vr.status, vr.get_status_display()), "Status", is_safe_html=True) }}
-    {{ application_field(vr.requested_datetime.strftime('%d-%b-%Y') , "Request Date") }}
+    {{ application_field(vr.requested_datetime|datetime_format('%d-%b-%Y') , "Request Date") }}
     {{ application_field(vr.requested_by , "Requested By") }}
     {{ application_field(vr.what_varied , "What would you like to vary about the current licence(s)") }}
     {{ application_field(vr.why_varied , "Why would you like to vary the licence(s) in this way") }}
@@ -52,7 +52,7 @@
     {% endif %}
 
     {% if vr.closed_datetime %}
-      {{ application_field(vr.closed_datetime.strftime('%d-%b-%Y'), "Closed Date") }}
+      {{ application_field(vr.closed_datetime|datetime_format('%d-%b-%Y'), "Closed Date") }}
     {% endif %}
 
     {% if vr.status == "OPEN" and not readonly %}
@@ -117,13 +117,13 @@
     </strong>
   </legend>
   {{ application_field(get_status_widget(vr.status, vr.get_status_display()), "Status", is_safe_html=True) }}
-  {{ application_field(vr.requested_datetime.strftime('%d-%b-%Y %H:%M') , "Opened Date") }}
+  {{ application_field(vr.requested_datetime|datetime_format('%d-%b-%Y %H:%M') , "Opened Date") }}
   {{ application_field(vr.requested_by , "Opened By") }}
   {{ application_field(vr.what_varied , "Variation Reason") }}
 
   {% if vr.closed_datetime %}
     {% set label = "Cancellation Date" if vr.status == "CANCELLED" else "Closed Date" %}
-    {{ application_field(vr.closed_datetime.strftime('%d-%b-%Y %H:%M'), label) }}
+    {{ application_field(vr.closed_datetime|datetime_format('%d-%b-%Y %H:%M'), label) }}
   {% endif %}
 
   {% if vr.closed_by %}

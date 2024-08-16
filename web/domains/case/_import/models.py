@@ -10,6 +10,7 @@ from web.domains.case.models import ApplicationBase, DocumentPackBase, DownloadL
 from web.flow.models import ProcessTypes
 from web.models.shared import EnumJsonEncoder, YesNoNAChoices
 from web.types import TypedTextChoices
+from web.utils import datetime_format
 
 
 class ImportApplicationType(models.Model):
@@ -414,7 +415,7 @@ class ImportApplicationLicence(DocumentPackBase):
         ia_pk = self.import_application_id
         st = self.status
         cr = self.case_reference
-        ca = self.created_at.strftime("%Y/%m/%d %H:%M:%S")
+        ca = datetime_format(self.created_at, "%Y/%m/%d %H:%M:%S")
 
         return (
             f"ImportApplicationLicence("

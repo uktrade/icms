@@ -37,6 +37,7 @@ from web.models import (
 )
 from web.models.shared import YesNoChoices
 from web.permissions import constabulary_add_contact, organisation_add_contact
+from web.utils import datetime_format
 from web.utils.s3 import upload_file_obj_to_s3
 
 IMPORT_USERS = [
@@ -726,10 +727,11 @@ def create_dummy_signature(user: User) -> None:
     key = f"dummy_signature/{filename}"
     file_size = upload_file_obj_to_s3(file_path.open("rb"), key)
 
+    created_at = datetime_format(timezone.now(), "%Y-%m-%d %H:%M:%S")
     Signature.objects.create(
         name="Active Dummy Signature",
         signatory="Import Licencing Branch",
-        history=f"Created by add_dummy_data command on {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        history=f"Created by add_dummy_data command on {created_at}",
         filename=filename,
         path=key,
         content_type="image/jpg",

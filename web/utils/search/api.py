@@ -26,6 +26,7 @@ from web.models import (
     User,
 )
 from web.models.shared import FirearmCommodity, YesNoChoices
+from web.utils import datetime_format
 from web.utils.spreadsheet import XlsxSheetConfig, generate_xlsx_file
 
 from . import app_data, types, utils
@@ -248,7 +249,7 @@ def _get_result_row(
 
     row = types.ImportResultRow(
         app_pk=rec.pk,
-        submitted_at=rec.submit_datetime.strftime("%d %b %Y %H:%M:%S"),
+        submitted_at=datetime_format(rec.submit_datetime, "%d %b %Y %H:%M:%S"),
         case_status=types.CaseStatus(
             applicant_reference=getattr(rec, "applicant_reference", ""),
             case_reference=rec.get_reference(),
@@ -282,7 +283,9 @@ def _get_export_result_row(
 ) -> types.ExportResultRow:
     app_type_label = ProcessTypes(rec.process_type).label
     application_contact = rec.contact.full_name if rec.contact else ""
-    submitted_at = rec.submit_datetime.strftime("%d %b %Y %H:%M:%S") if rec.submit_datetime else ""
+    submitted_at = (
+        datetime_format(rec.submit_datetime, "%d %b %Y %H:%M:%S") if rec.submit_datetime else ""
+    )
 
     manufacturer_countries = []
     if rec.process_type == ProcessTypes.CFS:
@@ -314,9 +317,11 @@ def _get_export_result_row(
 def _get_assignee_details(app: ImportApplication | ExportApplication) -> types.AssigneeDetails:
     assignee_name = f"{app.case_owner.full_name} ({app.case_owner.email})" if app.case_owner else ""
     reassignment_at = (
-        app.reassign_datetime.strftime("%d %b %Y %H:%M") if app.reassign_datetime else ""
+        datetime_format(app.reassign_datetime, "%d %b %Y %H:%M") if app.reassign_datetime else ""
     )
-    submitted_at = app.submit_datetime.strftime("%d %b %Y %H:%M") if app.submit_datetime else ""
+    submitted_at = (
+        datetime_format(app.submit_datetime, "%d %b %Y %H:%M") if app.submit_datetime else ""
+    )
 
     return types.AssigneeDetails(
         title="Case Officer",

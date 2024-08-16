@@ -12,6 +12,7 @@ from web.models import (
     ExportApplicationCertificate,
 )
 from web.sites import require_exporter
+from web.utils import datetime_format
 from web.utils.s3 import create_presigned_url
 
 from .forms import CertificateCheckForm
@@ -86,7 +87,7 @@ class CheckCertificateView(FormView):
             app = cert.export_application
             context["exporter"] = app.exporter.name
 
-            context["issue_date"] = cert.case_completion_datetime.strftime("%d %B %Y")
+            context["issue_date"] = datetime_format(cert.case_completion_datetime, "%d %B %Y")
             context["goods"] = _get_export_application_goods(app)
 
             validity = "Revoked" if cert.status == cert.Status.REVOKED else "Valid"

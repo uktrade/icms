@@ -4,6 +4,8 @@ import humanize
 from django.conf import settings
 from django.db import models
 
+from web.utils import datetime_format
+
 logger = logging.getLogger(__name__)
 
 
@@ -27,10 +29,8 @@ class File(models.Model):
         ordering = ["-created_datetime"]
 
     def date_created_formatted(self):
-        """
-        returns a formatted datetime
-        """
-        return self.created_datetime.strftime("%d-%b-%Y %H:%M:%S")
+        """returns a formatted datetime"""
+        return datetime_format(self.created_datetime)
 
     def human_readable_file_size(self):
         return humanize.naturalsize(self.file_size or 0)

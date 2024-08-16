@@ -18,7 +18,7 @@
         <td>{{ doc.contract_date.strftime('%d-%b-%Y') }}</td>
         <td>
           {{ doc.created_by.full_name }}<br>
-          {{ doc.created_datetime.strftime('%d-%b-%Y %H:%M') }}
+          {{ doc.created_datetime|datetime_format('%d-%b-%Y %H:%M') }}
         </td>
         <td><a
           href="{{ icms_url('import:wood:view-contract-document', kwargs={'application_pk': process.pk, 'document_pk': doc.pk}) }}">

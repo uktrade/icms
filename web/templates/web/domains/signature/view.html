@@ -11,7 +11,7 @@
   {{ application_field(object.name, "Name") }}
   {{ application_field(object.signatory, "Signatory") }}
   {{ application_field(object.is_active, "Active") }}
-  {{ application_field(object.created_datetime.strftime('%d %B %Y'), "Created Date") }}
+  {{ application_field(object.created_datetime|datetime_format('%d %B %Y'), "Created Date") }}
   <div class="section-break"></div>
 
   <div class="row">

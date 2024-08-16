@@ -10,11 +10,11 @@
   {% call application_section("Approval Request") %}
     {{ application_field(get_status(approval_request), "Status", is_safe_html=True) }}
     {{ application_field(approval_request.requested_from|default('All', True), "Contact") }}
-    {{ application_field(approval_request.request_date.strftime('%d-%b-%Y %H:%M:%S'), "Approval Request Date") }}
+    {{ application_field(approval_request.request_date|datetime_format, "Approval Request Date") }}
     {{ application_field(approval_request.requested_by, "Sent By") }}
     {% if approval_request.response %}
       <h4>Approval Request Response</h4>
-      {{ application_field(approval_request.response_date.strftime('%d-%b-%Y %H:%M:%S'), "Response Date") }}
+      {{ application_field(approval_request.response_date|datetime_format, "Response Date") }}
       {{ application_field(approval_request.response_by, "Response By") }}
       {{ application_field(approval_request.get_response_display(), "Response") }}
       {{ application_field(approval_request.response_reason|default('N/A', True), "Response Reason") }}
