@@ -44,6 +44,7 @@ from web.sites import (
     is_exporter_site,
     is_importer_site,
 )
+from web.utils import datetime_format
 
 from .constants import DATE_FORMAT, IMPORT_CASE_EMAILS, EmailTypes
 from .models import EmailTemplate
@@ -688,7 +689,7 @@ class AuthorityArchivedEmail(GOVNotifyEmailMessage):
             "authority_name": self.authority.reference,
             "authority_type": self.authority.AUTHORITY_TYPE,
             "authority_url": get_authority_view_url(self.authority, full_url=True),
-            "date": timezone.now().strftime(DATE_FORMAT),
+            "date": datetime_format(timezone.now(), DATE_FORMAT),
             "importer_url": get_importer_view_url(self.authority.importer, full_url=True),
             "importer_name": self.authority.importer.name,
             "reason": self.get_reason(),

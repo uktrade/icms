@@ -62,7 +62,7 @@
             <tr>
               <td><span class="text-widget">{{ st.transmission_type }}</span></td>
               <td><span class="text-widget">{{ st.request_type }}</span></td>
-              <td><span class="text-widget">{{ st.sent_datetime.strftime('%d-%b-%Y %H:%M') }}</span></td>
+              <td><span class="text-widget">{{ st.sent_datetime|datetime_format('%d-%b-%Y %H:%M') }}</span></td>
               <td><span class="text-widget">{{ st.sent_by }}</span></td>
               <td>
                 <div class="container setoutForm">
@@ -71,7 +71,7 @@
                       <label class="prompt west">Date</label>
                     </div>
                     <div class="nine columns">
-                      <span class="text-widget">{{ st.response_datetime.strftime('%d-%b-%Y %H:%M') }}</span>
+                      <span class="text-widget">{{ st.response_datetime|datetime_format('%d-%b-%Y %H:%M') }}</span>
                     </div>
                   </div>
                   <div class="row">

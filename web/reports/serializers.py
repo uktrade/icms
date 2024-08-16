@@ -4,12 +4,15 @@ from typing import Annotated, Any
 import pydantic
 
 from web.models.shared import YesNoChoices
+from web.utils import datetime_format
 
 datetime_or_empty = Annotated[
     dt.datetime | None,
     pydantic.PlainSerializer(
         lambda _datetime: (
-            _datetime.strftime("%d/%m/%Y %H:%M:%S") if hasattr(_datetime, "strftime") else ""
+            datetime_format(_datetime, "%d/%m/%Y %H:%M:%S")
+            if hasattr(_datetime, "strftime")
+            else ""
         ),
         return_type=str,
     ),

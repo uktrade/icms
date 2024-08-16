@@ -104,12 +104,12 @@
           </td>
           <td>
             {% if constabulary_email.email_sent_datetime %}
-              {{ constabulary_email.email_sent_datetime.strftime("%d-%b-%Y") }}
+              {{ constabulary_email.email_sent_datetime|datetime_format('%d-%b-%Y') }}
             {% endif %}
           </td>
           <td>
             {% if constabulary_email.email_closed_datetime %}
-              {{ constabulary_email.email_closed_datetime.strftime("%d-%b-%Y") }}
+              {{ constabulary_email.email_closed_datetime|datetime_format('%d-%b-%Y') }}
             {% endif %}
           </td>
           <td>

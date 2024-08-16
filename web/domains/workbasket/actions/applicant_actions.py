@@ -1,3 +1,4 @@
+import datetime as dt
 from typing import Any
 
 from django.urls import reverse
@@ -9,6 +10,7 @@ from web.domains.case.types import DocumentPack
 from web.domains.workbasket.base import WorkbasketAction
 from web.models import Task
 from web.permissions import Perms
+from web.utils import datetime_format
 
 from .base import Action, ActionT
 
@@ -149,10 +151,14 @@ class RespondToFurtherInformationRequestAction(Action):
                 is_post=False,
                 name="Respond",
                 url=reverse("case:respond-fir", kwargs=kwargs | {"fir_pk": fir_pk}),
-                section_label=f"Further Information Request, {parse_datetime(requested_datetime).strftime('%d %b %Y %H:%M:%S')}",
+                section_label=f"Further Information Request, {self.fmt_fir_dt(requested_datetime)}",
             )
             for fir_pk, requested_datetime in self.application.annotation_open_fir_pairs
         ]
+
+    @staticmethod
+    def fmt_fir_dt(requested_datetime: dt.datetime) -> str:
+        return datetime_format(parse_datetime(requested_datetime), "%d %b %Y %H:%M:%S")
 
 
 class RespondToUpdateRequestAction(Action):
@@ -317,8 +323,7 @@ class IssuedDocumentsBaseAction(Action):
 
     @staticmethod
     def section_label(pack: DocumentPack) -> str:
-        cd = pack.case_completion_datetime
-        issue_datetime = cd.strftime("%d-%b-%Y %H:%M")
+        issue_datetime = datetime_format(pack.case_completion_datetime, "%d-%b-%Y %H:%M")
 
         return f"Documents Issued {issue_datetime}"
 

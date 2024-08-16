@@ -16,7 +16,7 @@
           <td>Section 5 Authority</td>
           <td>
             {{ section.created_by.full_name }}<br />
-            {{ section.created_datetime.strftime('%d-%b-%Y') }}
+            {{ section.created_datetime|datetime_format('%d-%b-%Y') }}
           </td>
           <td>
             <a

@@ -13,6 +13,7 @@ from web.domains.file.utils import create_file_model
 from web.models import Signature
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
+from web.utils import datetime_format
 
 from .forms import SignatureForm
 from .utils import get_signature_file_base64  # /PS-IGNORE
@@ -48,8 +49,7 @@ class SignatureMixin:
         :param signature: the signature object to be updated
         :param message: the log message to be saved in the signature object history
         """
-
-        timestamp = timezone.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = datetime_format(timezone.now(), "%Y-%m-%d %H:%M:%S")
         history = f"\n{signature.history}" if signature.history else ""
         signature.history = f"{timestamp} - {message}{history}"
         signature.save()

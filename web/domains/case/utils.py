@@ -28,6 +28,7 @@ from web.models import (
 )
 from web.permissions import AppChecker
 from web.types import AuthenticatedHttpRequest
+from web.utils import datetime_format
 from web.utils.s3 import get_file_from_s3
 
 from .types import (
@@ -202,8 +203,8 @@ def application_history(app_reference: str, is_import: bool = True) -> None:
 
 def _print_task(t: Task) -> None:
     task_type = t.get_task_type_display()
-    created = t.created.strftime("%Y/%m/%d %H:%M:%S")
-    finished = t.finished.strftime("%Y-%m-%d %H:%M:%S") if t.finished else ""
+    created = datetime_format(t.created, "%Y/%m/%d %H:%M:%S")
+    finished = datetime_format(t.finished, "%Y-%m-%d %H:%M:%S") if t.finished else ""
 
     print(f"\tTask: {task_type}, created={created}, finished={finished}")
 

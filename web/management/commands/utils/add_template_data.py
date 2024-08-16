@@ -96,13 +96,6 @@ def add_cfs_schedule_data():
     )
 
 
-DATETIME_FORMAT = "%d-%b-%Y %H:%M:%S"
-
-
-def remove_templates():
-    Template.objects.all().delete()
-
-
 def add_cfs_declaration_template_countries():
     spanish = Template.objects.get(
         template_name="Spanish", template_type="CFS_DECLARATION_TRANSLATION"

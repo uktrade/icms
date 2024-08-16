@@ -68,7 +68,7 @@
 
   {% else %}
     {% call application_section("IMI Details") %}
-      {{ application_field(app.imi_submit_datetime.strftime('%d-%b-%Y'), "Date provided to IMI") }}
+      {{ application_field(app.imi_submit_datetime|datetime_format('%d-%b-%Y'), "Date provided to IMI") }}
       {{ application_field(app.imi_submitted_by, "IMI Submitter") }}
     {% endcall %}
   {% endif %}

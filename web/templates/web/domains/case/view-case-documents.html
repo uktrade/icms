@@ -35,7 +35,7 @@
     {{ application_field(process.contact, "Follow-up contact") }}
   </div>
 
-  <h3>Issued documents ({{ issue_date.strftime('%d-%b-%Y %H:%M') }})</h3>
+  <h3>Issued documents ({{ issue_date|datetime_format('%d-%b-%Y %H:%M') }})</h3>
   {% if show_help_text %}
       <p>You have been issued with the following documents. Please view them and take any appropriate action.</p>
   {% endif %}

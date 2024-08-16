@@ -18,6 +18,7 @@ from web.models import (
     User,
 )
 from web.permissions import AppChecker, Perms
+from web.utils import datetime_format
 
 
 def check_can_view_application(user: User, application: ImpOrExp) -> None:
@@ -92,8 +93,8 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
                     "issue_paper_licence_only": lic.issue_paper_licence_only,
                     "licence_start_date": lic.licence_start_date.strftime(self.licence_date_format),
                     "licence_end_date": lic.licence_end_date.strftime(self.licence_date_format),
-                    "case_completion_date": lic.case_completion_datetime.strftime(
-                        self.licence_date_format
+                    "case_completion_date": datetime_format(
+                        lic.case_completion_datetime, self.licence_date_format
                     ),
                     "documents": [
                         {
@@ -123,7 +124,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
             "certificates": [
                 {
                     "reference": cert.case_reference,
-                    "issue_date": cert.case_completion_datetime.strftime("%d-%b-%Y"),
+                    "issue_date": datetime_format(cert.case_completion_datetime, "%d-%b-%Y"),
                     "documents": [
                         {
                             "name": _get_cdr_name(application, doc),

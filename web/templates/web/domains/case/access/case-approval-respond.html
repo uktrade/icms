@@ -30,7 +30,7 @@
     <dt class="bold">Contact</dt>
     <dd>{{ approval.requested_from }}</dd>
     <dt class="bold">Access Request Date</dt>
-    <dd>{{ approval.request_date.strftime('%d-%b-%Y %H:%M:%S') }}</dd>
+    <dd>{{ approval.request_date|datetime_format }}</dd>
     <dt class="bold">Sent by</dt>
     <dd>{{ approval.requested_by }}</dd>
   </dl>

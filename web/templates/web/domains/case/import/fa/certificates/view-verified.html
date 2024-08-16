@@ -92,7 +92,7 @@
                   <td>Verified Firearms Authority</td>
                   <td>
                     {{ document.created_by }}<br />
-                    <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
+                    <span class="extra-info">{{ document.created_datetime|datetime_format }}</span>
                   </td>
                   <td>
 

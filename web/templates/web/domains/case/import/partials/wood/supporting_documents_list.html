@@ -16,7 +16,7 @@
         <td>Supporting documents</td>
         <td>
           {{ file.created_by.full_name }}<br>
-          {{ file.created_datetime.strftime('%d-%b-%Y %H:%M') }}
+          {{ file.created_datetime|datetime_format('%d-%b-%Y %H:%M') }}
         </td>
         <td>
           <a

@@ -23,7 +23,7 @@ from web.sites import (
     get_importer_site_domain,
 )
 from web.types import DocumentTypes
-from web.utils import strip_spaces
+from web.utils import datetime_format, strip_spaces
 
 
 def _get_selected_product_data(biocidal_schedules: QuerySet[CFSSchedule]) -> str:
@@ -159,7 +159,7 @@ class CoverLetterTemplateContext:
     def _context(self, item: str) -> str:
         match item:
             case "APPLICATION_SUBMITTED_DATE":
-                return self.application.submit_datetime.strftime(self.date_fmt)
+                return datetime_format(self.application.submit_datetime, self.date_fmt)
             case "CONTACT_NAME":
                 return self.application.contact.full_name
             case "COUNTRY_OF_CONSIGNMENT":

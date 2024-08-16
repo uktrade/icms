@@ -98,7 +98,7 @@
     </div>
     <div class="six columns">
       {% if object.email_sent_datetime %}
-        {{ object.email_sent_datetime.strftime("%d-%b-%Y") }}
+        {{ object.email_sent_datetime|datetime_format('%d-%b-%Y') }}
       {% endif %}
     </div>
     <div class="three columns"></div>
@@ -112,7 +112,7 @@
     </div>
     <div class="six columns">
       {% if object.email_closed_datetime %}
-        {{ object.email_closed_datetime.strftime("%d-%b-%Y") }}
+        {{ object.email_closed_datetime|datetime_format('%d-%b-%Y') }}
       {% endif %}
     </div>
     <div class="three columns"></div>

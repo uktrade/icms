@@ -33,7 +33,7 @@
       <tr>
         <td>{{ obj.name }}</td>
         <td>{{ obj.signatory }}</td>
-        <td>{{ obj.created_datetime.strftime('%d %B %Y') }}</td>
+        <td>{{ obj.created_datetime|datetime_format('%d %B %Y') }}</td>
         <td>{{"Active" if obj.is_active else "Archived" }}</td>
         <td>
           <ul class="menu-out">

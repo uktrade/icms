@@ -3,7 +3,7 @@
 {% call application_section("Access Request") %}
   {{ application_field(acc_req.submitted_by|string + " (" + acc_req.submitted_by.email + ")", "Access Requested By") }}
   {{ application_field(acc_req.get_request_type_display(), "Access Request Type") }}
-  {{ application_field(acc_req.submit_datetime.strftime('%d-%b-%Y %H:%M:%S') if acc_req.submit_datetime else "", "Request date") }}
+  {{ application_field(acc_req.submit_datetime|datetime_format if acc_req.submit_datetime else "", "Request date") }}
   {% if acc_req.process_type == "ExporterAccessRequest" %}
     {{ application_field(acc_req.organisation_name, "Exporter Name") }}
     {{ application_field(acc_req.organisation_address, "Exporter Address") }}

@@ -55,7 +55,7 @@
     {% endif %}
 
     {{ application_field(process.supplementary_info.completed_by, "Report Completed By") }}
-    {{ application_field(process.supplementary_info.completed_datetime.strftime('%d-%b-%Y'), "Date Reporting Completed") }}
+    {{ application_field(process.supplementary_info.completed_datetime|datetime_format('%d-%b-%Y'), "Date Reporting Completed") }}
 
   {% else %}
     {% if not ilb_read_only|default(False) %}

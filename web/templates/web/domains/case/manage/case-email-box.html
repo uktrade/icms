@@ -49,7 +49,7 @@
         </label>
       </div>
       <div class="six columns">
-        {{ object.sent_datetime.strftime("%d-%b-%Y %H:%M:%S") }}
+        {{ object.sent_datetime|datetime_format }}
       </div>
       <div class="three columns"></div>
     </div>
@@ -207,7 +207,7 @@
       </div>
       <div class="six columns">
         {% if object.closed_datetime %}
-          {{ object.closed_datetime.strftime("%d-%b-%Y %H:%M:%S") }}
+          {{ object.closed_datetime|datetime_format }}
         {% endif %}
       </div>
       <div class="three columns"></div>
