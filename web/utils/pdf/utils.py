@@ -1,5 +1,4 @@
 import base64
-import datetime as dt
 import re
 from collections.abc import Iterable
 from tempfile import NamedTemporaryFile
@@ -428,7 +427,9 @@ def _get_certificate_context(
     if certificate.case_completion_datetime:
         issue_date = day_ordinal_date(certificate.case_completion_datetime.date())
     else:
-        issue_date = day_ordinal_date(dt.datetime.now().date())
+        # When displaying dates in ICMS we should use timezone.local_date()
+        # However with regard to the issue_date its best to stick to UTC and ignore timezones.
+        issue_date = day_ordinal_date(timezone.now().date())
 
     return context | {
         "exporter_name": application.exporter.name.upper(),
@@ -486,7 +487,7 @@ def get_gmp_certificate_context(
     if certificate.case_completion_datetime:
         expiry_date = certificate.case_completion_datetime.date() + expiry_delta
     else:
-        expiry_date = dt.datetime.now().date() + expiry_delta
+        expiry_date = timezone.now().date() + expiry_delta
 
     ni_country_type = CertificateOfGoodManufacturingPracticeApplication.CountryType.NIR
 

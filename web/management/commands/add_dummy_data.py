@@ -729,7 +729,7 @@ def create_dummy_signature(user: User) -> None:
     Signature.objects.create(
         name="Active Dummy Signature",
         signatory="Import Licencing Branch",
-        history=f"Created by add_dummy_data command on {dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        history=f"Created by add_dummy_data command on {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}",
         filename=filename,
         path=key,
         content_type="image/jpg",

@@ -2,6 +2,7 @@ import datetime as dt
 import re
 from typing import Any, Optional
 
+from django.utils import timezone
 from playwright.sync_api import Locator, Page, expect
 
 # Always match the format here: web/static/web/js/fox/core-footer.js
@@ -34,10 +35,9 @@ def assert_page_url(page: Page, url_pattern: str) -> None:
 
 def get_future_datetime() -> dt.datetime:
     """Return a future datetime"""
+    now = timezone.now()
 
-    now = dt.datetime.now()
-
-    return dt.datetime(year=now.year + 1, month=1, day=1, hour=15, minute=30)
+    return dt.datetime(year=now.year + 1, month=1, day=1, hour=15, minute=30, tzinfo=dt.UTC)
 
 
 def set_licence_end_date(page: Page) -> None:

@@ -1,6 +1,7 @@
 import datetime as dt
 
 from django.forms import forms
+from django.utils import timezone
 
 from web.forms.fields import (
     FutureOnlyJqueryDateField,
@@ -47,7 +48,7 @@ def test_past_only_date_field_render():
 def test_past_only_date_field():
     field = PastOnlyJqueryDateField(year_select_range=10)
     try:
-        field.validate(dt.datetime.now() + dt.timedelta(days=400))
+        field.validate(timezone.now() + dt.timedelta(days=400))
     except forms.ValidationError as e:
         assert "Date cannot be in the future." in str(e)
 
@@ -65,6 +66,6 @@ def test_future_only_date_field_render():
 def test_future_only_date_field():
     field = FutureOnlyJqueryDateField(year_select_range=10)
     try:
-        field.validate(dt.datetime.now() - dt.timedelta(days=400))
+        field.validate(timezone.now() - dt.timedelta(days=400))
     except forms.ValidationError as e:
         assert "Date cannot be in the past." in str(e)
