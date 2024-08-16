@@ -12,7 +12,7 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models import Model
 from django.http import HttpRequest
 from django.urls import reverse
-from django.utils import formats
+from django.utils import formats, timezone
 from guardian.core import ObjectPermissionChecker
 from jinja2 import Environment, pass_eval_context
 from markupsafe import Markup, escape
@@ -25,6 +25,7 @@ from web.menu import Menu
 from web.permissions import Perms
 from web.permissions.context_processors import UserObjectPerms
 from web.types import AuthenticatedHttpRequest
+from web.utils.sentry import capture_exception, capture_message
 
 if TYPE_CHECKING:
     from web.models import User
@@ -168,6 +169,32 @@ def get_user_obj_perms(user: "User") -> ObjectPermissionChecker:
     return checker
 
 
+def datetime_format(
+    value: dt.datetime, _format: str = "%d-%b-%Y %H:%M:%S", local: bool = True
+) -> str:
+    """Format a datetime.datetime instance to the supplied format.
+
+    Does the following:
+      - Convert a timezone aware datetime in to the localtime.
+      - Return the datetime formatted by the supplied format.
+
+    The value is converted to the local timezone unless local is False.
+    """
+
+    if local:
+        try:
+            if isinstance(value, dt.datetime):
+                value = timezone.localtime(value)
+            else:
+                capture_message(f"Tried to use datetime_format with: {value}")
+        except ValueError:
+            # Capture errors where a naive datetime is being used.
+            # We should fix any naive datetime instances as ICMS defines USE_TZ = True
+            capture_exception()
+
+    return value.strftime(_format)
+
+
 def environment(**options):
     # string_if_invalid is removed as it is not available as an option within the jinja environment
     # https://github.com/pytest-dev/pytest-django/issues/327
@@ -200,7 +227,13 @@ def environment(**options):
     env.filters["input_datetime"] = input_datetime
     env.filters["nl2br"] = nl2br
     env.filters["verbose_name"] = verbose_name
+    # Convert the timezone aware datetime in to the local format
     env.filters["localize"] = formats.localize
+    # Convert the timezone aware datetime in to the localtime
+    env.filters["localtime"] = timezone.template_localtime
+    # Convert an aware datetime to local time and return the value's date.
+    env.filters["localdate"] = timezone.localdate
+    env.filters["datetime_format"] = datetime_format
 
     return env
 
