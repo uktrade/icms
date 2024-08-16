@@ -85,7 +85,7 @@ def test_schedule_paragraph_context(cfs_app_submitted):
 
 
 def test_importer_user_management_context(importer_one_contact):
-    importer_one_contact.importer_last_login = dt.datetime(2021, 10, 1, 12, 1, 1)
+    importer_one_contact.importer_last_login = dt.datetime(2021, 10, 1, 12, 1, 1, tzinfo=dt.UTC)
     context = UserManagementContext(importer_one_contact)
     assert context["PLATFORM"] == "Apply for an import licence"
     assert context["CASE_OFFICER_EMAIL"] == settings.ILB_CONTACT_EMAIL
@@ -98,7 +98,7 @@ def test_importer_user_management_context(importer_one_contact):
 
 
 def test_exporter_user_management_context(exporter_one_contact):
-    exporter_one_contact.exporter_last_login = dt.datetime(2021, 10, 1, 12, 1, 1)
+    exporter_one_contact.exporter_last_login = dt.datetime(2021, 10, 1, 12, 1, 1, tzinfo=dt.UTC)
     context = UserManagementContext(exporter_one_contact)
     assert context["PLATFORM"] == "Apply for an export certificate"
     assert context["CASE_OFFICER_EMAIL"] == settings.ILB_CONTACT_EMAIL
@@ -108,7 +108,10 @@ def test_exporter_user_management_context(exporter_one_contact):
 @pytest.mark.parametrize(
     "importer_login,exporter_login",
     (
-        (dt.datetime(2021, 10, 1, 12, 1, 1), dt.datetime(2021, 10, 1, 12, 1, 1)),
+        (
+            dt.datetime(2021, 10, 1, 12, 1, 1, tzinfo=dt.UTC),
+            dt.datetime(2021, 10, 1, 12, 1, 1, tzinfo=dt.UTC),
+        ),
         (None, None),
     ),
 )

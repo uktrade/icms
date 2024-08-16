@@ -1,4 +1,3 @@
-import datetime as dt
 import io
 from typing import Any, ClassVar
 
@@ -6,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django.views.decorators.http import require_GET
 from django.views.generic import View
 
@@ -86,7 +86,7 @@ class DocumentPreviewBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRe
             signed_pdf = sign_pdf(signed_pdf_io)
             signed_pdf.seek(0)
             response = HttpResponse(signed_pdf, content_type="application/pdf")
-            response["Content-Disposition"] = f"filename={dt.datetime.now().isoformat()}-signed.pdf"
+            response["Content-Disposition"] = f"filename={timezone.now().isoformat()}-signed.pdf"
             return response
 
         return return_pdf(pdf_gen, self.output_filename)

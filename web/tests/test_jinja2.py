@@ -36,3 +36,6 @@ def test_datetime_format(dt_val, tz, expected_output):
     actual_output = datetime_format(dt_val)
 
     assert expected_output == actual_output
+
+    # Clear this so that it doesn't break other tests in the same thread.
+    timezone.deactivate()

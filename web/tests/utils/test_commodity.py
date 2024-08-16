@@ -20,7 +20,7 @@ from web.utils.commodity import (
 @pytest.fixture
 def next_jan():
     """A future date"""
-    return dt.datetime(dt.date.today().year + 1, 1, 1, 12, 0)
+    return dt.datetime(dt.date.today().year + 1, 1, 1, 12, 0, tzinfo=dt.UTC)
 
 
 @pytest.fixture

@@ -1,7 +1,5 @@
-import datetime as dt
-
-import pytz
 from django.conf import settings
+from django.utils import timezone
 
 from web.mail.constants import EmailTypes
 from web.models import EmailTemplate, Template
@@ -361,7 +359,7 @@ def update_database_email_templates():
         template = Template.objects.get(template_code=template_code)
         template.template_title = subject
         template.template_content = body
-        template.start_datetime = dt.datetime.now(tz=pytz.UTC).strftime("%Y-%m-%d %H:%M:%S:%z")
+        template.start_datetime = timezone.now().strftime("%Y-%m-%d %H:%M:%S:%z")
         template.save(update_fields=["template_title", "template_content", "start_datetime"])
 
 

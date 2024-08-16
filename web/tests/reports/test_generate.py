@@ -1,6 +1,7 @@
 import datetime as dt
 from unittest import mock
 
+from django.utils import timezone
 from freezegun import freeze_time
 
 from web.models import GeneratedReport
@@ -108,12 +109,12 @@ def test_write_files(mock_write_csv, mock_write_xlsx, report_schedule):
 @mock.patch("web.reports.generate.write_file_data")
 def test_write_csv_file(mock_write_file_data, report_schedule):
     mock_write_file_data.return_value = None
-    file_data = [{"int": 1, "str": "test", "date": dt.datetime.now()}]
+    file_data = [{"int": 1, "str": "test", "date": timezone.now()}]
     generate._write_csv_file(report_schedule, "test-file", file_data, ["int", "str", "date"])
     assert mock_write_file_data.called is True
     assert mock_write_file_data.call_args == mock.call(
         report_schedule,
-        "int,str,date\r\n1,test,2024-01-01 12:00:00\r\n",
+        "int,str,date\r\n1,test,2024-01-01 12:00:00+00:00\r\n",
         "test-file.csv",
         "application/csv",
     )
@@ -123,7 +124,7 @@ def test_write_csv_file(mock_write_file_data, report_schedule):
 @mock.patch("web.reports.generate.write_file_data")
 def test_write_xlsx_file(mock_write_file_data, report_schedule):
     mock_write_file_data.return_value = None
-    file_data = [{"int": 1, "str": "test", "date": dt.datetime.now()}]
+    file_data = [{"int": 1, "str": "test", "date": timezone.now()}]
     sheet = generate._prepare_workbook_sheet("Sheet 1", file_data, ["int", "str", "date"])
     sheet_2 = generate._prepare_workbook_sheet("Sheet 2", file_data, ["int", "str", "date"])
     generate._write_xlsx_file(report_schedule, "test-file", [sheet, sheet_2])
