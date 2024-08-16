@@ -3,7 +3,6 @@ import datetime as dt
 import re
 from typing import TYPE_CHECKING
 
-import pytz
 from compressor.contrib.jinja2ext import CompressorExtension
 from django import forms
 from django.conf import settings
@@ -40,41 +39,6 @@ def nl2br(eval_ctx, value):
     if eval_ctx.autoescape:
         result = Markup(result)
     return result
-
-
-def show_all_attrs(value):
-    res = []
-    for k in dir(value):
-        res.append(f"{k!r} {getattr(value, k)!r}\n")
-    return "\n".join(res)
-
-
-def input_datetime(value):
-    """
-    Convert a utc datetime from string to input date format
-    """
-    if not value:
-        return ""
-
-    input_formats = formats.get_format("DATETIME_INPUT_FORMATS")
-    for format in input_formats:
-        try:
-            dt.datetime.strptime(value, format)
-            return value
-        except ValueError:
-            continue
-
-    local_timezone = pytz.timezone(settings.TIME_ZONE)
-    naive_datetime = dt.datetime.strptime(value, "%Y-%m-%d %H:%M:%S.%f")
-    local_datetime = local_timezone.localize(naive_datetime, is_dst=None)
-    utc_datetime = local_datetime.astimezone(pytz.utc)
-    for format in formats.get_format("DATETIME_INPUT_FORMATS"):
-        try:
-            return utc_datetime.strftime(format)
-        except (ValueError, TypeError):
-            continue
-
-    return value
 
 
 def modify_query(request, **new_params):
@@ -223,8 +187,6 @@ def environment(**options):
             "app_env": settings.APP_ENV,
         }
     )
-    env.filters["show_all_attrs"] = show_all_attrs
-    env.filters["input_datetime"] = input_datetime
     env.filters["nl2br"] = nl2br
     env.filters["verbose_name"] = verbose_name
     # Convert the timezone aware datetime in to the local format

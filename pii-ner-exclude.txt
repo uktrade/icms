@@ -219,7 +219,6 @@ COMMODITY_ID>2</COMMODITY_ID
 COMMODITY_ID>3</COMMODITY_ID
 r"(?:\r\n|\r|\n){2
 f'<li class="{class_attr}"><a
-show_all_attrs
 Response Preparation
 Test Legislation
 an Import Case Management System
@@ -2366,7 +2365,6 @@ Django Guardian
 apps
 getattr(value
 %Y-%m-%d %H:%M:%S.%f
-input_datetime
 object_permissions(checker
 exporter_object_permissions(obj_perm_checker
 {{ exporter_object_permissions(user_obj_perms
