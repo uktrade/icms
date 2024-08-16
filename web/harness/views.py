@@ -1,4 +1,3 @@
-import datetime as dt
 import decimal
 import random
 from typing import Any
@@ -6,6 +5,7 @@ from typing import Any
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db.models import QuerySet
 from django.shortcuts import redirect
+from django.utils import timezone
 from django.views.generic import TemplateView, View
 from guardian.shortcuts import assign_perm
 
@@ -27,9 +27,9 @@ class L10NTestHarnessView(PermissionRequiredMixin, LoginRequiredMixin, TemplateV
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
-        date_value = dt.date.today()
-        datetime_value = dt.datetime.now()
-        time_value = dt.datetime.now().time()
+        datetime_value = timezone.now()
+        date_value = datetime_value.date()
+        time_value = datetime_value.time()
         int_field = 123_456_789
         float_field = 123_456_789.45
         decimal_field = decimal.Decimal(123_456_789.456)
@@ -49,8 +49,8 @@ class L10NTestHarnessView(PermissionRequiredMixin, LoginRequiredMixin, TemplateV
         non_localised_form = forms.NonLocalizedForm(initial=form_data)
 
         return context | {
-            "date_value": date_value,
             "datetime_value": datetime_value,
+            "date_value": date_value,
             "time_value": time_value,
             "int_field": int_field,
             "float_field": float_field,

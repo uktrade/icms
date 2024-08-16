@@ -16,6 +16,12 @@
 <p>Float: {{ float_field }}</p>
 <p>Decimal: {{ decimal_field }}</p>
 
+<h2>Test localtime and formatting</h2>
+<p>Datetime: {{ datetime_value }}</p>
+<p>Datetime using datetime_format filter: {{ datetime_value|datetime_format }}</p>
+<p>Datetime using datetime_format filter: {{ datetime_value|datetime_format("%Y/%m/%d %H:%M") }}</p>
+<p>Datetime local time: {{ datetime_value|localtime }}</p>
+<p>Datetime local time and localized: {{ datetime_value|localtime|localize }}</p>
 <h2>Localize ignoring USE_L10N settings and defaulting to False</h2>
 <p>Date: {{ date_value|localize(False) }}</p>
 <p>Datetime: {{ datetime_value|localize(False) }}</p>
