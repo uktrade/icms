@@ -94,6 +94,7 @@ class WithdrawForm(forms.ModelForm):
     class Meta:
         model = WithdrawApplication
         fields = ("reason",)
+        labels = {"reason": "Withdraw Reason"}
 
 
 class WithdrawResponseForm(forms.ModelForm):

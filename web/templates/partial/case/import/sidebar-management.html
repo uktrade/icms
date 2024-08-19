@@ -49,7 +49,7 @@
 
   {# Common import application links #}
   {% with total = process.withdrawals.count(),
-          processed = process.withdrawals.exclude(status="open").count() %}
+          processed = process.withdrawals.exclude(status=process.withdrawals.model.Statuses.OPEN).count() %}
     {{ icms_link(request, icms_url('case:manage-withdrawals', kwargs={'application_pk': process.pk, 'case_type': 'import'}),
                   'Application Withdrawals (' + processed|string + '/' + total|string + ')') }}
   {% endwith %}

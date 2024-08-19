@@ -43,13 +43,19 @@
   {% endif %}
 {%- endmacro %}
 
-{% macro submit_button(padding_cols="three", field_cols="six", btn_label="Create") %}
+{% macro submit_button(padding_cols="three", field_cols="six", btn_label="Create", data_confirm="") %}
   <div class="row">
     <div class="{{ padding_cols }} columns"></div>
     <div class="{{ field_cols }} columns">
       <ul class="menu-out flow-across">
         <li>
-          <button type="submit" class="primary-button button">{{ btn_label }}</button>
+          <button
+            type="submit"
+            class="primary-button button"
+            {% if data_confirm %} data-confirm="{{ data_confirm }}"{% endif %}
+          >
+            {{ btn_label }}
+          </button>
         </li>
       </ul>
     </div>

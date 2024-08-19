@@ -7,7 +7,7 @@
 
 {% block main_content %}
   <h3>Application Withdrawals</h3>
-  {% for withdrawal in withdrawals.filter(status="open") %}
+  {% for withdrawal in withdrawals.filter(status=withdrawals.model.Statuses.OPEN) %}
     {% include "partial/withdrawal/box.html" %}
   {% else %}
     <div class="info-box info-box-info">
@@ -36,28 +36,16 @@
       {% for field in form %}
         {{ fields.field(field) }}
       {% endfor %}
-
-      <div class="container">
-        <div class="row">
-          <div class="three columns"></div>
-          <div class="eight columns">
-            <ul class="menu-out flow-across">
-              <li>
-                <input
-                  type="submit" name="action" class="primary-button button" value="Withdraw"
-                  data-confirm="Are you sure you want to send this withdrawal request?"
-                />
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      {{ forms.submit_button(btn_label="Withdraw", data_confirm="Are you sure you want to send this withdrawal request?") }}
     </fieldset>
     {% endcall %}
   {% endfor %}
 
-  {% for withdrawal in previous_withdrawals %}
-    {% include "partial/withdrawal/box.html" %}
-  {% endfor %}
+  {% if previous_withdrawals.exists() %}
+    <h3>Previous withdrawals</h3>
+    {% for withdrawal in previous_withdrawals %}
+      {% include "partial/withdrawal/box.html" %}
+    {% endfor %}
+  {% endif %}
 
 {% endblock %}

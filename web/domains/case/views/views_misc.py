@@ -149,7 +149,7 @@ def withdraw_case(
             "page_title": get_case_page_title(case_type, application, "Withdrawals"),
             "form": form,
             "withdrawals": withdrawals,
-            "previous_withdrawals": withdrawals.exclude(status="open"),
+            "previous_withdrawals": withdrawals.exclude(status=WithdrawApplication.Statuses.OPEN),
             "case_type": case_type,
         }
         return render(request, "web/domains/case/withdraw.html", context)
@@ -259,7 +259,7 @@ def manage_withdrawals(
             "form": form,
             "withdrawals": withdrawals,
             "current_withdrawal": current_withdrawal,
-            "previous_withdrawals": withdrawals.exclude(status="open"),
+            "previous_withdrawals": withdrawals.exclude(status=WithdrawApplication.Statuses.OPEN),
             "case_type": case_type,
             "readonly_view": readonly_view,
         }
