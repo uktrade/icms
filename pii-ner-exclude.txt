@@ -4924,3 +4924,10 @@ template.created_datetime|datetime_format('%d-%b-%Y
 {{ application_field(platform_user.importer_last_login|datetime_format('%d
 {{ application_field(platform_user.exporter_last_login|datetime_format('%d %
 {{ application_field(object.created_datetime|datetime_format('%d %
+{{ btn_label }
+{{ display.application_field(withdrawal.reason
+{{ display.application_field(withdrawal.created_datetime|datetime_format('%d-%b-%Y'
+{{ display.application_field(withdrawal.request_by
+{{ display.application_field(withdrawal.response
+{{ display.application_field(withdrawal.updated_datetime|datetime_format('%d-%b-%Y'
+Responded Date

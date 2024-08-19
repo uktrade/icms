@@ -1,43 +1,44 @@
+{% import "display/fields.html" as display %}
+{% set WS = withdrawal.Statuses %}
+
 <fieldset>
   <legend class="bold">
     Withdrawal - {{ withdrawal.get_status_display() }}
   </legend>
 
-  <div class="row">
-    <div class="two columns"></div>
-    <div class="eight columns">
-      <dl>
-        <dt class="bold">Status</dt>
+  {% call display.application_section() %}
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">
+          Status
+        </label>
+      </div>
+      <div class="six columns">
         <dd class="status {{ withdrawal.status.lower() }}">
           <span class="text-widget">{{ withdrawal.get_status_display() }}</span>
         </dd>
-        <dt class="bold">Withdraw Reason</dt>
-        <dd>{{ withdrawal.reason|default('N/A', true)|nl2br }}</dd>
-        <dt class="bold">Request Date</dt>
-        <dd>{{ withdrawal.created_datetime|datetime_format('%d-%b-%Y') }}</dd>
-        <dt class="bold">Requested By</dt>
-        <dd>{{ withdrawal.request_by }}</dd>
-
-        {% if withdrawal.status == "rejected" %}
-          <dt class="bold">Withdraw Reject Reason</dt>
-          <dd>{{ withdrawal.response|default('N/A', true)|nl2br }}</dd>
-          <dt class="bold">Responded Date</dt>
-          <dd>{{ withdrawal.updated_datetime|datetime_format('%d-%b-%Y') }}</dd>
-          <dt class="bold">Response By</dt>
-          <dd>{{ withdrawal.response_by }}</dd>
-        {% endif %}
-      </dl>
-
-      {% if withdrawal.status == "open" %}
-        <form method="post" action="{{ icms_url("case:archive-withdrawal", kwargs={'application_pk': process.pk, 'withdrawal_pk': withdrawal.pk, 'case_type': case_type }) }}">
-          {{ csrf_input }}
-          <input
-            type="submit" class="button" value="Retract Request"
-            data-confirm="Are you sure you want to retract this withdrawal request?"
-          />
-        </form>
-      {% endif %}
+      </div>
+      <div class="three columns"></div>
     </div>
-    <div class="two columns"></div>
-  </div>
+
+    {{ display.application_field(withdrawal.reason, "Withdraw Reason", "N/A") }}
+    {{ display.application_field(withdrawal.created_datetime|datetime_format('%d-%b-%Y'), "Request Date") }}
+    {{ display.application_field(withdrawal.request_by, "Requested By") }}
+
+    {% if withdrawal.status == WS.REJECTED %}
+      {{ display.application_field(withdrawal.response, "Withdraw Reject Reason", "N/A") }}
+      {{ display.application_field(withdrawal.updated_datetime|datetime_format('%d-%b-%Y'), "Responded Date", "N/A") }}
+      {{ display.application_field(withdrawal.response_by, "Response By") }}
+    {% endif %}
+  {% endcall %}
+
+{% if withdrawal.status == WS.OPEN %}
+  <form method="post" action="{{ icms_url("case:archive-withdrawal", kwargs={'application_pk': process.pk, 'withdrawal_pk': withdrawal.pk, 'case_type': case_type }) }}">
+    {{ csrf_input }}
+    <input
+      type="submit" class="button" value="Retract Request"
+      data-confirm="Are you sure you want to retract this withdrawal request?"
+    />
+  </form>
+{% endif %}
 </fieldset>
