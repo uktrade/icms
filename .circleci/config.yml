@@ -98,6 +98,7 @@ jobs:
             source .env && export $(cut -d= -f1 < .env)
             python ./manage.py makemigrations --check --dry-run --settings=config.settings_local
 
+
   test:
     docker:
       - image: cimg/python:3.11.4
