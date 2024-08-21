@@ -813,9 +813,16 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert sch3.legislations.count() == 1
     assert sch3.is_biocidal() is True
 
-    assert sch1.products.count() == 3
+    assert sch1.products.count() == 4
     assert sch2.products.count() == 0
     assert sch3.products.count() == 2
+
+    assert list(sch1.products.values_list("product_name", flat=True).order_by("pk")) == [
+        "Product A",
+        "Product A (1)",
+        "Product B",
+        "Product C",
+    ]
 
     for p in sch1.products.all():
         assert p.active_ingredients.count() == 0
@@ -896,9 +903,10 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert sch_t1.updated_at == dt.datetime(2023, 1, 2, 14, 23, tzinfo=dt.UTC)
     assert list(sch_t1.legislations.values_list("pk", flat=True).order_by("pk")) == [1, 3]
 
-    assert sch_t1.products.count() == 3
+    assert sch_t1.products.count() == 4
     assert list(sch_t1.products.values_list("product_name", flat=True).order_by("pk")) == [
         "Product A",
+        "Product A (1)",
         "Product B",
         "Product C",
     ]

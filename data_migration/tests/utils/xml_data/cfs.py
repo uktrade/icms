@@ -4,6 +4,9 @@ cfs_product = """
     <NAME>Product A</NAME>
   </PRODUCT>
   <PRODUCT>
+    <NAME>Product A</NAME>
+  </PRODUCT>
+  <PRODUCT>
     <NAME>Product B</NAME>
   </PRODUCT>
   <PRODUCT>
