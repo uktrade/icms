@@ -91,8 +91,8 @@ def test_historical_reports(mock_connect, dummy_dm_settings):
     assert sr1.report == web.Report.objects.get(report_type=ReportType.ISSUED_CERTIFICATES)
     assert sr1.scheduled_by_id == 0
     assert sr1.legacy_report_id == 1001
-    assert sr1.started_at == dt.datetime(2022, 4, 27, 12, 23, tzinfo=dt.UTC)
-    assert sr1.finished_at == dt.datetime(2022, 4, 27, 12, 25, tzinfo=dt.UTC)
+    assert sr1.started_at == dt.datetime(2022, 4, 27, 11, 23, tzinfo=dt.UTC)
+    assert sr1.finished_at == dt.datetime(2022, 4, 27, 11, 25, tzinfo=dt.UTC)
     assert sr1.deleted_at is None
     assert sr1.parameters == {
         "application_type": None,
@@ -118,8 +118,8 @@ def test_historical_reports(mock_connect, dummy_dm_settings):
     assert sr2.report == web.Report.objects.get(report_type=ReportType.IMPORT_LICENCES)
     assert sr2.scheduled_by_id == 0
     assert sr2.legacy_report_id == 1002
-    assert sr2.started_at == dt.datetime(2022, 4, 27, 12, 23, tzinfo=dt.UTC)
-    assert sr2.finished_at == dt.datetime(2022, 4, 27, 12, 25, tzinfo=dt.UTC)
+    assert sr2.started_at == dt.datetime(2022, 4, 27, 11, 23, tzinfo=dt.UTC)
+    assert sr2.finished_at == dt.datetime(2022, 4, 27, 11, 25, tzinfo=dt.UTC)
     assert sr2.deleted_at is None
     assert sr2.parameters == {
         "application_type": None,
@@ -145,9 +145,9 @@ def test_historical_reports(mock_connect, dummy_dm_settings):
     assert sr3.report == web.Report.objects.get(report_type=ReportType.ACCESS_REQUESTS)
     assert sr3.scheduled_by_id == 0
     assert sr3.legacy_report_id == 1003
-    assert sr3.started_at == dt.datetime(2022, 4, 27, 12, 23, tzinfo=dt.UTC)
-    assert sr3.finished_at == dt.datetime(2022, 4, 27, 12, 25, tzinfo=dt.UTC)
-    assert sr3.deleted_at == dt.datetime(2022, 4, 30, 9, 0, tzinfo=dt.UTC)
+    assert sr3.started_at == dt.datetime(2022, 4, 27, 11, 23, tzinfo=dt.UTC)
+    assert sr3.finished_at == dt.datetime(2022, 4, 27, 11, 25, tzinfo=dt.UTC)
+    assert sr3.deleted_at == dt.datetime(2022, 4, 30, 8, 0, tzinfo=dt.UTC)
     assert sr3.deleted_by_id == 0
     assert sr3.parameters == {
         "application_type": None,

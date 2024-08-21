@@ -78,20 +78,46 @@ def datetime_or_none(dt_str: str | None, no_t: bool = False) -> dt.datetime | No
     if not dt_str:
         return None
 
-    str_format = "%Y-%m-%d" if no_t else "%Y-%m-%dT%H:%M:%S"
-    dt_val = dt.datetime.strptime(dt_str, str_format)
-
-    return adjust_icms_v1_datetime(dt_val)
+    # We do not adjust dt_str values that do not have a time aspect.
+    # if we did "2024-07-31" would return dt.datetime(2024, 7, 30, 23, 0, 0, tzinfo=dt.UTC)
+    if no_t:
+        return dt.datetime.strptime(dt_str, "%Y-%m-%d").replace(tzinfo=dt.UTC)
+    else:
+        dt_val = dt.datetime.strptime(dt_str, "%Y-%m-%dT%H:%M:%S")
+        return adjust_icms_v1_datetime(dt_val)
 
 
 def adjust_icms_v1_datetime(dt_val: dt.datetime) -> dt.datetime:
-    """Adjust an ICMS V1 naive datetime to an aware UTC datetime."""
+    """Adjust an ICMS V1 naive datetime to an aware UTC datetime.
+
+    Assumption: For ambiguous datetime values we are using the default fold of 0.
+    E.g. We have no way of knowing if this `naive_dt` is GMT or BST
+    >>> naive_dt = dt.datetime(2022, 10, 30, 1, 30, 0)
+    >>> london = zoneinfo.ZoneInfo("Europe/London")
+    >>> bst_val = naive_dt.replace(tzinfo=london, fold=0)
+    >>> gmt_val = naive_dt.replace(tzinfo=london, fold=1)
+    >>> print(bst_val)
+        2022-10-30 01:30:00+01:00
+    >>> print(gmt_val)
+        2022-10-30 01:30:00+00:00
+    >>> print(bst_val.astimezone(dt.UTC))
+        2022-10-30 00:30:00+00:00
+    >>> print(gmt_val.astimezone(dt.UTC))
+        2022-10-30 01:30:00+00:00
+    """
 
     if timezone.is_aware(dt_val):
         raise ValueError(f"Unable to adjust an aware datetime value: {dt_val}")
 
-    aware_dt = dt_val.replace(tzinfo=dt.UTC)
-    return aware_dt
+    # ICMS V1 datetime values are created using this:
+    # https://docs.oracle.com/database/121/SQLRF/functions207.htm#SQLRF06124
+    # Therefore replace the naive datetime with the correct timezone
+    aware_dt = dt_val.replace(tzinfo=UK_TZ)
+
+    # Return a datetime that has been offset to UTC
+    utc_dt = aware_dt.astimezone(dt.UTC)
+
+    return utc_dt
 
 
 def date_to_timezone(date: dt.date | None) -> dt.datetime | None:

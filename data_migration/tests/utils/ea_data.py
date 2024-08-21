@@ -133,11 +133,11 @@ ea_query_result = {
                 "GA/2022/9901",  # reference
                 "IN PROGRESS",  # status
                 2,  # created_by_id
-                dt.datetime(2022, 4, 27),  # create_datetime
-                dt.datetime(2022, 4, 27),  # created
+                dt.datetime(2022, 4, 27, 9),  # create_datetime
+                dt.datetime(2022, 4, 27, 9),  # created
                 None,  # submit_datetime
                 2,  # last_updated_by_id
-                dt.datetime(2022, 4, 27),  # last_updated_datetime
+                dt.datetime(2022, 4, 27, 9),  # last_updated_datetime
                 0,  # variation_no
                 21,  # application_type_id
                 2,  # exporter_id
@@ -174,11 +174,11 @@ ea_query_result = {
                 "GA/2022/9902",
                 "PROCESSING",
                 2,
-                dt.datetime(2022, 4, 28),
-                dt.datetime(2022, 4, 28),
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 28, 10),
+                dt.datetime(2022, 4, 28, 10),
+                dt.datetime(2022, 4, 29, 10),
                 2,
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29, 10),
                 0,
                 21,
                 3,
@@ -215,11 +215,11 @@ ea_query_result = {
                 "GA/2022/9903",
                 "COMPLETED",
                 2,
-                dt.datetime(2022, 4, 28),
-                dt.datetime(2022, 4, 28),
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 28, 10),
+                dt.datetime(2022, 4, 28, 10),
+                dt.datetime(2022, 4, 29, 10),
                 2,
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29, 10),
                 1,
                 21,
                 2,
@@ -256,11 +256,11 @@ ea_query_result = {
                 "GA/2022/9910",  # reference
                 "WITHDRAWN",  # status
                 2,  # created_by_id
-                dt.datetime(2022, 4, 28),  # create_datetime
-                dt.datetime(2022, 4, 28),  # created
-                dt.datetime(2022, 4, 29),  # submit_datetime
+                dt.datetime(2022, 4, 28, 10),  # create_datetime
+                dt.datetime(2022, 4, 28, 10),  # created
+                dt.datetime(2022, 4, 29, 10),  # submit_datetime
                 2,  # last_updated_by_id
-                dt.datetime(2022, 4, 29),  # last_updated_datetime
+                dt.datetime(2022, 4, 29, 10),  # last_updated_datetime
                 0,  # variation_id
                 21,  # application_type_id
                 2,  # exporter_id
@@ -297,11 +297,11 @@ ea_query_result = {
                 "GA/2022/9911",
                 "COMPLETED",
                 2,
-                dt.datetime(2022, 4, 28),
-                dt.datetime(2022, 4, 28),
-                dt.datetime(2022, 5, 29),
+                dt.datetime(2022, 4, 28, 10),
+                dt.datetime(2022, 4, 28, 10),
+                dt.datetime(2022, 5, 29, 10),
                 2,
-                dt.datetime(2022, 5, 29),
+                dt.datetime(2022, 5, 29, 10),
                 1,
                 21,
                 2,
@@ -354,11 +354,11 @@ ea_query_result = {
                 "CA/2022/9904",  # reference
                 "IN PROGRESS",  # status
                 2,  # created_by_id
-                dt.datetime(2022, 4, 27),  # create_datetime
-                dt.datetime(2022, 4, 27),  # created
+                dt.datetime(2022, 4, 27, 9),  # create_datetime
+                dt.datetime(2022, 4, 27, 9),  # created
                 None,  # submit_datetime
                 2,  # last_updated_by_id
-                dt.datetime(2022, 4, 27),  # last_update_datetime
+                dt.datetime(2022, 4, 27, 9),  # last_update_datetime
                 0,  # variation_no
                 2,  # application_type_id
                 2,  # exporter_id
@@ -380,11 +380,11 @@ ea_query_result = {
                 "CA/2022/9905",
                 "PROCESSING",
                 2,
-                dt.datetime(2022, 4, 28),
-                dt.datetime(2022, 4, 28),
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 28, 10),
+                dt.datetime(2022, 4, 28, 10),
+                dt.datetime(2022, 4, 29, 10),
                 2,
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29, 10),
                 0,
                 2,
                 3,
@@ -406,11 +406,11 @@ ea_query_result = {
                 "CA/2022/9906",
                 "COMPLETED",
                 2,
-                dt.datetime(2022, 4, 28),
-                dt.datetime(2022, 4, 28),
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 28, 10),
+                dt.datetime(2022, 4, 28, 10),
+                dt.datetime(2022, 4, 29, 10),
                 2,
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29, 10),
                 0,
                 2,
                 2,
@@ -437,11 +437,11 @@ ea_query_result = {
                 "CA/2022/9907",  # reference
                 "IN PROGRESS",  # status
                 2,  # created_by_id
-                dt.datetime(2022, 4, 27),  # create_datetime
-                dt.datetime(2022, 4, 27),  # created
+                dt.datetime(2022, 4, 27, 9),  # create_datetime
+                dt.datetime(2022, 4, 27, 9),  # created
                 None,  # submit_datetime
                 2,  # last_updated_by_id
-                dt.datetime(2022, 4, 27),  # last_update_datetime
+                dt.datetime(2022, 4, 27, 9),  # last_update_datetime
                 0,  # variation_no
                 2,  # application_type_id
                 2,  # exporter_id
@@ -458,11 +458,11 @@ ea_query_result = {
                 "CA/2022/9908",  # reference
                 "PROCESSING",  # status
                 2,  # created_by_id
-                dt.datetime(2022, 4, 28),  # create_datetime
-                dt.datetime(2022, 4, 28),  # created
-                dt.datetime(2022, 4, 29),  # submit_datetime
+                dt.datetime(2022, 4, 28, 10),  # create_datetime
+                dt.datetime(2022, 4, 28, 10),  # created
+                dt.datetime(2022, 4, 29, 10),  # submit_datetime
                 2,  # last_updated_by_id
-                dt.datetime(2022, 4, 29),  # last_update_datetime
+                dt.datetime(2022, 4, 29, 10),  # last_update_datetime
                 0,  # variation_no
                 2,  # application_type_id
                 3,  # exporter_id
@@ -479,11 +479,11 @@ ea_query_result = {
                 "CA/2022/9909",  # reference
                 "COMPLETED",  # status
                 2,  # created_by_id
-                dt.datetime(2022, 4, 28),  # create_datetime
-                dt.datetime(2022, 4, 28),  # created
-                dt.datetime(2022, 4, 29),  # submit_datetime
+                dt.datetime(2022, 4, 28, 10),  # create_datetime
+                dt.datetime(2022, 4, 28, 10),  # created
+                dt.datetime(2022, 4, 29, 10),  # submit_datetime
                 2,  # last_updated_by_id
-                dt.datetime(2022, 4, 29),  # last_update_datetime
+                dt.datetime(2022, 4, 29, 10),  # last_update_datetime
                 2,  # variation_no
                 2,  # application_type_id
                 2,  # exporter_id
@@ -612,7 +612,7 @@ ea_query_result = {
             (
                 9,
                 10,
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29, 10),
                 "AR",
                 "GA/2022/9903",
                 dt.datetime(2022, 4, 29, 13, 21),
@@ -622,7 +622,7 @@ ea_query_result = {
             (
                 9,
                 19,
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29, 10),
                 "AC",
                 "CA/2022/9903/1",
                 dt.datetime(2022, 4, 29, 13, 21),
@@ -646,7 +646,7 @@ ea_query_result = {
             (
                 12,
                 22,
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29, 10),
                 "AC",
                 "CA/2022/9906",
                 dt.datetime(2022, 4, 29, 13, 21),
@@ -658,7 +658,7 @@ ea_query_result = {
             (
                 14,
                 24,
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29, 10),
                 "DR",
                 "CA/2022/9908",
                 dt.datetime(2022, 4, 29, 13, 21),
@@ -670,7 +670,7 @@ ea_query_result = {
             (
                 15,
                 11,
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29, 10),
                 "AR",
                 "CA/2022/9909",
                 dt.datetime(2022, 4, 29, 13, 21),
@@ -682,7 +682,7 @@ ea_query_result = {
             (
                 15,
                 12,
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29, 10),
                 "AR",
                 "CA/2022/9909/1",
                 dt.datetime(2022, 4, 29, 13, 21),
@@ -694,7 +694,7 @@ ea_query_result = {
             (
                 15,
                 25,
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29, 10),
                 "AC",
                 "CA/2022/9909/2",
                 dt.datetime(2022, 4, 29, 13, 21),
@@ -706,7 +706,7 @@ ea_query_result = {
             (
                 9,
                 26,
-                dt.datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29, 10),
                 "RE",
                 "GA/2022/9909",
                 dt.datetime(2022, 4, 29, 13, 21),

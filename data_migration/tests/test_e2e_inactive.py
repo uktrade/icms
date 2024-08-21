@@ -295,12 +295,12 @@ def test_import_sps_data(mock_connect, dummy_dm_settings):
     assert sps1.customs_cleared_to_uk is True
     assert sps1.chief_usage_status == "D"
 
-    assert sps1.create_datetime == dt.datetime(2022, 4, 22, 0, 0, 0, tzinfo=dt.UTC)
-    assert sps1.created == dt.datetime(2022, 4, 22, 0, 0, 0, tzinfo=dt.UTC)
-    assert sps1.submit_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
-    assert sps1.last_submit_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
-    assert sps1.last_update_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
-    assert sps1.order_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
+    assert sps1.create_datetime == dt.datetime(2022, 4, 22, 7, 0, 0, tzinfo=dt.UTC)
+    assert sps1.created == dt.datetime(2022, 4, 22, 7, 0, 0, tzinfo=dt.UTC)
+    assert sps1.submit_datetime == dt.datetime(2022, 4, 23, 8, 0, 0, tzinfo=dt.UTC)
+    assert sps1.last_submit_datetime == dt.datetime(2022, 4, 23, 8, 0, 0, tzinfo=dt.UTC)
+    assert sps1.last_update_datetime == dt.datetime(2022, 4, 23, 8, 0, 0, tzinfo=dt.UTC)
+    assert sps1.order_datetime == dt.datetime(2022, 4, 23, 8, 0, 0, tzinfo=dt.UTC)
 
     none_fields = [
         "finished",
@@ -360,12 +360,12 @@ def test_import_sps_data(mock_connect, dummy_dm_settings):
     assert sps2.customs_cleared_to_uk is False
     assert sps2.chief_usage_status == "E"
 
-    assert sps2.create_datetime == dt.datetime(2022, 4, 22, 0, 0, 0, tzinfo=dt.UTC)
-    assert sps2.created == dt.datetime(2022, 4, 22, 0, 0, 0, tzinfo=dt.UTC)
-    assert sps2.submit_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
-    assert sps2.last_submit_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
-    assert sps2.last_update_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
-    assert sps2.order_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
+    assert sps2.create_datetime == dt.datetime(2022, 4, 22, 7, 0, 0, tzinfo=dt.UTC)
+    assert sps2.created == dt.datetime(2022, 4, 22, 7, 0, 0, tzinfo=dt.UTC)
+    assert sps2.submit_datetime == dt.datetime(2022, 4, 23, 8, 0, 0, tzinfo=dt.UTC)
+    assert sps2.last_submit_datetime == dt.datetime(2022, 4, 23, 8, 0, 0, tzinfo=dt.UTC)
+    assert sps2.last_update_datetime == dt.datetime(2022, 4, 23, 8, 0, 0, tzinfo=dt.UTC)
+    assert sps2.order_datetime == dt.datetime(2022, 4, 23, 8, 0, 0, tzinfo=dt.UTC)
 
     assert sps2.contract_file.file_type == "supply_contract"
     assert sps2.supporting_documents.count() == 1
