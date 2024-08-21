@@ -240,8 +240,8 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     vr1: web.VariationRequest = ea3.variation_requests.first()
     assert vr1.what_varied == "Changes 1"
-    assert vr1.requested_datetime == dt.datetime(2022, 10, 13, 11, 1, 5, tzinfo=dt.UTC)
-    assert vr1.closed_datetime == dt.datetime(2022, 10, 14, 12, 1, 5, tzinfo=dt.UTC)
+    assert vr1.requested_datetime == dt.datetime(2022, 10, 13, 10, 1, 5, tzinfo=dt.UTC)
+    assert vr1.closed_datetime == dt.datetime(2022, 10, 14, 11, 1, 5, tzinfo=dt.UTC)
 
     assert ea1.update_requests.count() == 0
     assert ea2.update_requests.count() == 1
@@ -250,7 +250,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     upr1: web.UpdateRequest = ea2.update_requests.first()
     assert upr1.response_detail == "update request response info"
-    assert upr1.response_datetime == dt.datetime(2022, 9, 21, 8, 31, 34, tzinfo=dt.UTC)
+    assert upr1.response_datetime == dt.datetime(2022, 9, 21, 7, 31, 34, tzinfo=dt.UTC)
     assert upr1.response_by_id == 2
 
     assert ea1.case_notes.count() == 0
@@ -272,9 +272,9 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     case_note1 = ea2.case_notes.filter(is_active=True).first()
     assert case_note1.note == "This is a case note"
-    assert case_note1.create_datetime == dt.datetime(2022, 9, 20, 8, 31, 34, tzinfo=dt.UTC)
+    assert case_note1.create_datetime == dt.datetime(2022, 9, 20, 7, 31, 34, tzinfo=dt.UTC)
     assert case_note1.created_by_id == 2
-    assert case_note1.updated_at == dt.datetime(2022, 9, 20, 8, 31, 34, tzinfo=dt.UTC)
+    assert case_note1.updated_at == dt.datetime(2022, 9, 20, 7, 31, 34, tzinfo=dt.UTC)
     assert case_note1.updated_by_id == 2
     assert case_note1.files.count() == 1
 
@@ -303,8 +303,8 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert cert1.revoke_reason is None
     assert cert1.revoke_email_sent is False
     assert cert1.case_completion_datetime is None
-    assert cert1.updated_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
-    assert cert1.created_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
+    assert cert1.updated_at == dt.datetime(2022, 4, 29, 12, 21, tzinfo=dt.UTC)
+    assert cert1.created_at == dt.datetime(2022, 4, 29, 12, 21, tzinfo=dt.UTC)
     assert cert1.document_references.count() == 3
 
     cert1_ref1, cert1_ref2, cert1_ref3 = cert1.document_references.order_by("pk")
@@ -331,18 +331,18 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert cert2.case_reference == "GA/2022/9903"
     assert cert2.revoke_reason is None
     assert cert2.revoke_email_sent is False
-    assert cert2.case_completion_datetime == dt.datetime(2022, 4, 29, 0, 0, tzinfo=dt.UTC)
-    assert cert2.updated_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
-    assert cert2.created_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
+    assert cert2.case_completion_datetime == dt.datetime(2022, 4, 29, 9, 0, tzinfo=dt.UTC)
+    assert cert2.updated_at == dt.datetime(2022, 4, 29, 12, 21, tzinfo=dt.UTC)
+    assert cert2.created_at == dt.datetime(2022, 4, 29, 12, 21, tzinfo=dt.UTC)
     assert cert2.document_references.count() == 0
 
     assert cert3.status == "AC"
     assert cert3.case_reference == "CA/2022/9903/1"
     assert cert3.revoke_reason is None
     assert cert3.revoke_email_sent is False
-    assert cert3.case_completion_datetime == dt.datetime(2022, 4, 29, 0, 0, tzinfo=dt.UTC)
-    assert cert3.updated_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
-    assert cert3.created_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
+    assert cert3.case_completion_datetime == dt.datetime(2022, 4, 29, 9, 0, tzinfo=dt.UTC)
+    assert cert3.updated_at == dt.datetime(2022, 4, 29, 12, 21, tzinfo=dt.UTC)
+    assert cert3.created_at == dt.datetime(2022, 4, 29, 12, 21, tzinfo=dt.UTC)
     assert cert3.document_references.count() == 1
 
     cert3_ref1 = cert3.document_references.first()
@@ -357,9 +357,9 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert cert4.case_reference == "GA/2022/9909"
     assert cert4.revoke_reason == "No longer trading"
     assert cert4.revoke_email_sent is True
-    assert cert4.case_completion_datetime == dt.datetime(2022, 4, 29, 0, 0, tzinfo=dt.UTC)
-    assert cert4.updated_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
-    assert cert4.created_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
+    assert cert4.case_completion_datetime == dt.datetime(2022, 4, 29, 9, 0, tzinfo=dt.UTC)
+    assert cert4.updated_at == dt.datetime(2022, 4, 29, 12, 21, tzinfo=dt.UTC)
+    assert cert4.created_at == dt.datetime(2022, 4, 29, 12, 21, tzinfo=dt.UTC)
     assert cert4.document_references.count() == 1
 
     cert4_ref1 = cert4.document_references.first()
@@ -377,7 +377,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert gmp1.manufacturer_address_entry_type == "SEARCH"
     assert gmp1.exporter_id == 2
     assert gmp1.created_by_id == 2
-    assert gmp1.created == dt.datetime(2022, 4, 27, 0, 0, tzinfo=dt.timezone.utc)
+    assert gmp1.created == dt.datetime(2022, 4, 27, 8, 0, tzinfo=dt.timezone.utc)
 
     none_fields = [
         "finished",
@@ -436,7 +436,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
         gmp2.gmp_certificate_issued
         == web.CertificateOfGoodManufacturingPracticeApplication.CertificateTypes.BRC_GSOCP
     )
-    assert gmp2.submit_datetime == dt.datetime(2022, 4, 29, 0, 0, tzinfo=dt.timezone.utc)
+    assert gmp2.submit_datetime == dt.datetime(2022, 4, 29, 9, 0, tzinfo=dt.timezone.utc)
     assert gmp2.last_submit_datetime is not None
 
     assert gmp2.variation_requests.count() == 0
@@ -563,7 +563,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     fir1 = ea6.further_information_requests.first()
     assert fir1.status == "CLOSED"
     assert fir1.response_detail == "Further Information Request Data"
-    assert fir1.response_datetime == dt.datetime(2022, 9, 21, 8, 31, 34, tzinfo=dt.UTC)
+    assert fir1.response_datetime == dt.datetime(2022, 9, 21, 7, 31, 34, tzinfo=dt.UTC)
     assert fir1.response_by_id == 2
 
     assert ea4.certificates.count() == 0
@@ -588,7 +588,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     assert cert5.status == "AC"
     assert cert5.document_references.count() == 1
-    assert cert5.case_completion_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
+    assert cert5.case_completion_datetime == dt.datetime(2022, 4, 29, 9, 0, 0, tzinfo=dt.UTC)
     assert cert5.case_reference == "CA/2022/9906"
     assert cert5.document_references.count() == 1
 
@@ -621,12 +621,12 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert com1.last_updated_by_id == 2
     assert com1.submitted_by_id is None
 
-    assert com1.created == dt.datetime(2022, 4, 27, 0, 0, 0, tzinfo=dt.UTC)
+    assert com1.created == dt.datetime(2022, 4, 27, 8, 0, 0, tzinfo=dt.UTC)
     assert com1.submit_datetime is None
     assert com1.last_submit_datetime is None
 
-    assert com1.order_datetime == dt.datetime(2022, 4, 27, 0, 0, 0, tzinfo=dt.UTC)
-    assert com1.last_update_datetime == dt.datetime(2022, 4, 27, 0, 0, 0, tzinfo=dt.UTC)
+    assert com1.order_datetime == dt.datetime(2022, 4, 27, 8, 0, 0, tzinfo=dt.UTC)
+    assert com1.last_update_datetime == dt.datetime(2022, 4, 27, 8, 0, 0, tzinfo=dt.UTC)
 
     assert com1.status == "IN PROGRESS"
     assert com1.reference == "CA/2022/9904"
@@ -645,11 +645,11 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert com2.last_updated_by_id == 2
     assert com2.submitted_by_id is None
 
-    assert com2.created == dt.datetime(2022, 4, 28, 0, 0, 0, tzinfo=dt.UTC)
-    assert com2.submit_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
-    assert com2.last_submit_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
-    assert com2.order_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
-    assert com2.last_update_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
+    assert com2.created == dt.datetime(2022, 4, 28, 9, 0, 0, tzinfo=dt.UTC)
+    assert com2.submit_datetime == dt.datetime(2022, 4, 29, 9, 0, 0, tzinfo=dt.UTC)
+    assert com2.last_submit_datetime == dt.datetime(2022, 4, 29, 9, 0, 0, tzinfo=dt.UTC)
+    assert com2.order_datetime == dt.datetime(2022, 4, 29, 9, 0, 0, tzinfo=dt.UTC)
+    assert com2.last_update_datetime == dt.datetime(2022, 4, 29, 9, 0, 0, tzinfo=dt.UTC)
 
     assert com2.status == "PROCESSING"
     assert com2.reference == "CA/2022/9905"
@@ -668,11 +668,11 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert com3.last_updated_by_id == 2
     assert com3.submitted_by_id is None
 
-    assert com3.created == dt.datetime(2022, 4, 28, 0, 0, 0, tzinfo=dt.UTC)
-    assert com3.submit_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
-    assert com3.last_submit_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
-    assert com3.order_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
-    assert com3.last_update_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
+    assert com3.created == dt.datetime(2022, 4, 28, 9, 0, 0, tzinfo=dt.UTC)
+    assert com3.submit_datetime == dt.datetime(2022, 4, 29, 9, 0, 0, tzinfo=dt.UTC)
+    assert com3.last_submit_datetime == dt.datetime(2022, 4, 29, 9, 0, 0, tzinfo=dt.UTC)
+    assert com3.order_datetime == dt.datetime(2022, 4, 29, 9, 0, 0, tzinfo=dt.UTC)
+    assert com3.last_update_datetime == dt.datetime(2022, 4, 29, 9, 0, 0, tzinfo=dt.UTC)
 
     assert com3.status == "COMPLETED"
     assert com3.reference == "CA/2022/9906"
@@ -702,11 +702,11 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     vr2, vr3 = ea9.variation_requests.order_by("pk")
     assert vr2.what_varied == "Changes 2"
-    assert vr2.requested_datetime == dt.datetime(2022, 10, 13, 11, 1, 5, tzinfo=dt.UTC)
-    assert vr2.closed_datetime == dt.datetime(2022, 10, 14, 12, 1, 5, tzinfo=dt.UTC)
+    assert vr2.requested_datetime == dt.datetime(2022, 10, 13, 10, 1, 5, tzinfo=dt.UTC)
+    assert vr2.closed_datetime == dt.datetime(2022, 10, 14, 11, 1, 5, tzinfo=dt.UTC)
     assert vr3.what_varied == "Changes 3"
-    assert vr3.requested_datetime == dt.datetime(2022, 10, 15, 11, 1, 5, tzinfo=dt.UTC)
-    assert vr3.closed_datetime == dt.datetime(2022, 10, 16, 12, 1, 5, tzinfo=dt.UTC)
+    assert vr3.requested_datetime == dt.datetime(2022, 10, 15, 10, 1, 5, tzinfo=dt.UTC)
+    assert vr3.closed_datetime == dt.datetime(2022, 10, 16, 11, 1, 5, tzinfo=dt.UTC)
 
     assert ea7.update_requests.count() == 0
     assert ea8.update_requests.count() == 0

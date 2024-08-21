@@ -45,7 +45,7 @@ ia_query_result = {
                 "A",
                 "Aa",
                 1,
-                dt.datetime(2020, 6, 29),
+                dt.datetime(2020, 6, 29, 7),
                 2,
                 None,
                 None,
@@ -55,7 +55,7 @@ ia_query_result = {
                 "B",
                 "Bb",
                 1,
-                dt.datetime(2021, 5, 28),
+                dt.datetime(2021, 5, 28, 7),
                 2,
                 None,
                 None,
@@ -195,8 +195,8 @@ ia_query_result = {
             (
                 1,  # ima_id
                 11,  # imad_id
-                dt.datetime(2022, 4, 27).date(),  # licence_start_date
-                dt.datetime(2023, 4, 27).date(),  # licence_end_date
+                dt.date(2022, 4, 27),  # licence_start_date
+                dt.date(2023, 4, 27),  # licence_end_date
                 "IMA/2022/1234",  # case_reference
                 0,  # issue_paper_licence_only
                 "AC",  # status
@@ -211,8 +211,8 @@ ia_query_result = {
             (
                 2,  # ima_id
                 9,  # imad_id
-                dt.datetime(2022, 4, 27).date(),  # licence_start_date
-                dt.datetime(2023, 4, 30).date(),  # licence_end_date
+                dt.date(2022, 4, 27),  # licence_start_date
+                dt.date(2023, 4, 30),  # licence_end_date
                 "IMA/2022/2345",  # case_reference
                 1,  # issue_paper_licence_only
                 "AR",  # status
@@ -227,8 +227,8 @@ ia_query_result = {
             (
                 2,  # ima_id
                 10,  # imad_id
-                dt.datetime(2022, 4, 27).date(),  # licence_start_date
-                dt.datetime(2023, 5, 30).date(),  # licence_end_date
+                dt.date(2022, 4, 27),  # licence_start_date
+                dt.date(2023, 5, 30),  # licence_end_date
                 "IMA/2022/2345/1",  # case_reference
                 0,  # issue_papaer_licence_only
                 "RE",  # status
@@ -243,8 +243,8 @@ ia_query_result = {
             (
                 2,  # ima_id
                 12,  # imad_id
-                dt.datetime(2022, 4, 27).date(),  # licence_start_date
-                dt.datetime(2023, 6, 30).date(),  # licence_end_date
+                dt.date(2022, 4, 27),  # licence_start_date
+                dt.date(2023, 6, 30),  # licence_end_date
                 "IMA/2022/2345/2",  # case_reference
                 0,  # issue_paper_licence_only
                 "AC",  # status
@@ -287,9 +287,9 @@ ia_query_result = {
                 "application/pdf",  # content_type
                 100,  # file_size
                 "firearms-licence-1.pdf",  # path
-                dt.datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27, 7),  # created_datetime
                 2,  # created_by_id
-                dt.datetime(2022, 4, 27),  # signed_datetime
+                dt.datetime(2022, 4, 27, 7),  # signed_datetime
                 2,  # signed_by_id
             ),
             (
@@ -301,9 +301,9 @@ ia_query_result = {
                 "application/pdf",  # content_type
                 100,  # file_size
                 "firearms-cover-1.pdf",  # path
-                dt.datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27, 7),  # created_datetime
                 2,  # created_by_id
-                dt.datetime(2022, 4, 27),  # signed_datetime
+                dt.datetime(2022, 4, 27, 7),  # signed_datetime
                 2,  # signed_by_id
             ),
             (
@@ -315,9 +315,9 @@ ia_query_result = {
                 "application/pdf",  # content_type
                 100,  # file_size
                 "firearms-licence-2.pdf",  # path
-                dt.datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27, 7),  # created_datetime
                 2,  # created_by_id
-                dt.datetime(2022, 4, 27),  # signed_datetime
+                dt.datetime(2022, 4, 27, 7),  # signed_datetime
                 2,  # signed_by_id
             ),
             (
@@ -329,9 +329,9 @@ ia_query_result = {
                 "application/pdf",  # content_type
                 100,  # file_size
                 "firearms-licence-3.pdf",  # path
-                dt.datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27, 7),  # created_datetime
                 2,  # created_by_id
-                dt.datetime(2022, 4, 27),  # signed_datetime
+                dt.datetime(2022, 4, 27, 7),  # signed_datetime
                 2,  # signed_by_id
             ),
             (
@@ -343,9 +343,9 @@ ia_query_result = {
                 "application/pdf",  # content_type
                 100,  # path
                 "firearms-licence-5.pdf",  # path
-                dt.datetime(2022, 4, 30),  # created_datetime
+                dt.datetime(2022, 4, 30, 7),  # created_datetime
                 2,  # created_by_id
-                dt.datetime(2022, 4, 30),  # signed_datetime
+                dt.datetime(2022, 4, 30, 7),  # signed_datetime
                 2,  # signed_by_id
             ),
             (
@@ -357,9 +357,9 @@ ia_query_result = {
                 "application/pdf",  # content_type
                 100,  # file_size
                 "firearms-cover-2.pdf",  # path
-                dt.datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27, 7),  # created_datetime
                 2,  # created_by_id
-                dt.datetime(2022, 4, 27),  # signed_datetime
+                dt.datetime(2022, 4, 27, 7),  # signed_datetime
                 2,  # signed_by_id
                 "COVER",  # prefix
             ),
@@ -421,9 +421,9 @@ ia_query_result = {
                 10,  # file_folder_id
                 "IMA/2022/2234",  # reference
                 "COMPLETED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
-                dt.datetime(2022, 4, 22),  # create_datetime
-                dt.datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8),  # create_datetime
+                dt.datetime(2022, 4, 22, 8),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -435,12 +435,12 @@ ia_query_result = {
                 "OutwardProcessingTradeApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
                 "Test",  # customs_office_name
                 "Test Address",  # customs_office_address
                 0.5,  # rate_of_yield
                 "abc",  # rate_of_yield_calc_method
-                dt.datetime(2023, 4, 23).date(),  # last_export_day
+                dt.date(2023, 4, 23),  # last_export_day
                 12,  # reimport_period
                 "test",  # nature_process_ops
                 "test",  # suggested_id
@@ -477,9 +477,9 @@ ia_query_result = {
                 11,  # file_folder_id
                 "IMA/2022/2235",  # reference
                 "COMPLETED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
-                dt.datetime(2022, 4, 22),  # create_datetime
-                dt.datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8),  # create_datetime
+                dt.datetime(2022, 4, 22, 8),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -491,12 +491,12 @@ ia_query_result = {
                 "OutwardProcessingTradeApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
                 "Test",  # customs_office_name
                 "Test Address",  # customs_office_address
                 0.5,  # rate_of_yield
                 "abc",  # rate_of_yield_calc_method
-                dt.datetime(2023, 4, 23).date(),  # last_export_day
+                dt.date(2023, 4, 23),  # last_export_day
                 12,  # reimport_period
                 "test",  # nature_process_ops
                 "test",  # suggested_id
@@ -544,9 +544,9 @@ ia_query_result = {
                 60,  # file_folder_id
                 "IMA/2022/6234",  # reference
                 "COMPLETED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
-                dt.datetime(2022, 4, 22),  # create_datetime
-                dt.datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8),  # create_datetime
+                dt.datetime(2022, 4, 22, 8),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -558,7 +558,7 @@ ia_query_result = {
                 "SanctionsApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
                 "Test Exporter",  # exporter_name
                 "123 Somewhere",  # exporter_address
                 xd.sanctions_commodities,  # commodities_xml
@@ -586,9 +586,9 @@ ia_query_result = {
                 100,  # file_folder_id
                 "IMA/2022/10234",  # reference
                 "COMPLETED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
-                dt.datetime(2022, 4, 22),  # create_datetime
-                dt.datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8),  # create_datetime
+                dt.datetime(2022, 4, 22, 8),  # created
                 0,  # variation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -600,7 +600,7 @@ ia_query_result = {
                 "PriorSurveillanceApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
                 "NONSENSE",  # quantity
                 "NONSENSE",  # value_gbp
                 "NONSENSE",  # value_eur
@@ -617,9 +617,9 @@ ia_query_result = {
                 101,  # file_folder_id
                 "IMA/2022/10235",  # reference
                 "COMPLETED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
-                dt.datetime(2022, 4, 22),  # create_datetime
-                dt.datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8),  # create_datetime
+                dt.datetime(2022, 4, 22, 8),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -631,7 +631,7 @@ ia_query_result = {
                 "PriorSurveillanceApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
                 100,  # quantity
                 100,  # value_gbp
                 100,  # value_eur
@@ -653,9 +653,9 @@ ia_query_result = {
                 41,  # file_folder_id
                 "IMA/2022/4234",  # reference
                 "COMPLETED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
-                dt.datetime(2022, 4, 22),  # create_datetime
-                dt.datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8),  # create_datetime
+                dt.datetime(2022, 4, 22, 8),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -667,7 +667,7 @@ ia_query_result = {
                 "TexilesQuotaApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
             ),
             (
                 42,  # ima_id
@@ -675,9 +675,9 @@ ia_query_result = {
                 42,  # file_folder_id
                 "IMA/2022/4235",  # reference
                 "COMPLETED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
-                dt.datetime(2022, 4, 22),  # create_datetime
-                dt.datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8),  # create_datetime
+                dt.datetime(2022, 4, 22, 8),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -689,7 +689,7 @@ ia_query_result = {
                 "TexilesQuotaApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
             ),
             (
                 43,  # ima_id
@@ -697,9 +697,9 @@ ia_query_result = {
                 43,  # file_folder_id
                 "IMA/2022/4236",  # reference
                 "COMPLETED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
-                dt.datetime(2022, 4, 22),  # create_datetime
-                dt.datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8),  # create_datetime
+                dt.datetime(2022, 4, 22, 8),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -711,7 +711,7 @@ ia_query_result = {
                 "TexilesQuotaApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
             ),
         ],
     ),
@@ -733,9 +733,9 @@ ia_query_result = {
                 51,  # file_folder_id
                 "IMA/2022/5234",  # reference
                 "COMPLETED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
-                dt.datetime(2022, 4, 22),  # create_datetime
-                dt.datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8),  # create_datetime
+                dt.datetime(2022, 4, 22, 8),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -747,7 +747,7 @@ ia_query_result = {
                 "DFLApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
                 True,  # deactivated_firearm
                 True,  # proof_checked
                 1,  # constabulary_id
@@ -762,9 +762,9 @@ ia_query_result = {
                 52,  # file_folder_id
                 "IMA/2022/5235",  # reference
                 "REVOKED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
-                dt.datetime(2022, 4, 22),  # create_datetime
-                dt.datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8),  # create_datetime
+                dt.datetime(2022, 4, 22, 8),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -776,7 +776,7 @@ ia_query_result = {
                 "DFLApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
                 True,  # deactivated_firearm
                 True,  # proof_checked
                 1,  # constabulary_id
@@ -791,9 +791,9 @@ ia_query_result = {
                 53,  # file_folder_id
                 "IMA/2022/5236",  # reference
                 "WITHDRAWN",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
-                dt.datetime(2022, 4, 22),  # create_datetime
-                dt.datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8),  # create_datetime
+                dt.datetime(2022, 4, 22, 8),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -805,7 +805,7 @@ ia_query_result = {
                 "DFLApplication",  # process_type
                 None,  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
                 True,  # deactivated_firearm
                 True,  # proof_checked
                 1,  # constabulary_id
@@ -831,9 +831,9 @@ ia_query_result = {
                 21,  # file_folder_id
                 "IMA/2022/3234",  # reference
                 "COMPLETED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
-                dt.datetime(2022, 4, 22),  # create_datetime
-                dt.datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8),  # create_datetime
+                dt.datetime(2022, 4, 22, 8),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -845,7 +845,7 @@ ia_query_result = {
                 "OpenIndividualLicenceApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
                 1,  # section1
                 1,  # section2
                 None,  # bought_from_details_xml
@@ -857,9 +857,9 @@ ia_query_result = {
                 22,  # file_folder_id
                 "IMA/2022/3235",  # reference
                 "COMPLETED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
-                dt.datetime(2022, 4, 22),  # create_datetime
-                dt.datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8),  # create_datetime
+                dt.datetime(2022, 4, 22, 8),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -871,7 +871,7 @@ ia_query_result = {
                 "OpenIndividualLicenceApplication",  # process_type
                 "REFUSE",  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
                 1,  # section1
                 0,  # section2
                 xd.import_contact_xml,  # bought_from_details_xml
@@ -899,7 +899,7 @@ ia_query_result = {
                 1,  # file_folder_id
                 "IMA/2022/1234",  # reference
                 "PROCESSING",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
                 dt.datetime(2022, 4, 22, 9, 23, 22),  # create_datetime
                 dt.datetime(2022, 4, 22, 9, 23, 22),  # created
                 0,  # vartiation_no
@@ -913,7 +913,7 @@ ia_query_result = {
                 "SILApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
                 1,  # section1
                 1,  # section2
                 1,  # section5
@@ -930,7 +930,7 @@ ia_query_result = {
                 2,  # file_folder_id
                 "IMA/2022/2345",  # reference
                 "COMPLETED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
                 dt.datetime(2022, 4, 22, 8, 44, 44),  # create_datetime
                 dt.datetime(2022, 4, 22, 8, 44, 44),  # created
                 2,  # vartiation_no
@@ -944,7 +944,7 @@ ia_query_result = {
                 "SILApplication",  # process_type
                 "APPROVE",  # decision
                 xd.open_variation,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
                 1,  # section1
                 1,  # section2
                 1,  # section5
@@ -961,7 +961,7 @@ ia_query_result = {
                 3,  # file_folder_id
                 "IMA/2022/2346",  # reference
                 "COMPLETED",  # status
-                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 23, 9),  # submit_datetime
                 dt.datetime(2022, 4, 22, 7, 52, 4),  # create_datetime
                 dt.datetime(2022, 4, 22, 7, 52, 4),  # created
                 1,  # vartiation_no
@@ -975,7 +975,7 @@ ia_query_result = {
                 "SILApplication",  # process_type
                 "APPROVE",  # decision
                 xd.open_variation,  # variations_xml
-                dt.datetime(2022, 4, 23),  # last_update_datetime
+                dt.datetime(2022, 4, 23, 9),  # last_update_datetime
                 1,  # section1
                 0,  # section2
                 0,  # section5
@@ -1356,11 +1356,11 @@ ia_query_result = {
                 "Test Closed",  # request_subject
                 "Closed Details",  # request_detail
                 "AA",  # response_detail
-                dt.datetime(2021, 1, 2),  # request_datetime
+                dt.datetime(2021, 1, 2, 7),  # request_datetime
                 2,  # request_by_id
-                dt.datetime(2021, 1, 3),  # response_datetime
+                dt.datetime(2021, 1, 3, 7),  # response_datetime
                 2,  # response_by_id
-                dt.datetime(2021, 1, 4),  # closed_datetime
+                dt.datetime(2021, 1, 4, 7),  # closed_datetime
                 2,  # closed_by_id
             ),
             (
@@ -1369,7 +1369,7 @@ ia_query_result = {
                 "Test Open",  # request_subject
                 "Open Details",  # request_detail
                 None,  # response_detail
-                dt.datetime(2021, 2, 2),  # request_datetime
+                dt.datetime(2021, 2, 2, 7),  # request_datetime
                 2,  # request_by_id
                 None,  # response_datetime
                 None,  # response_by_id
