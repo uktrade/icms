@@ -193,6 +193,14 @@ class Archive(PostAction):
         messages.success(request, "Record archived successfully")
 
 
+class ArchiveTemplate(Archive):
+
+    def display(self, template: Template) -> bool:
+        if template.template_type == Template.EMAIL_TEMPLATE:
+            return False
+        return super().display(template)
+
+
 class Unarchive(PostAction):
     action = "unarchive"
     label = "Unarchive"
@@ -209,6 +217,14 @@ class Unarchive(PostAction):
         model.save()
 
         messages.success(request, "Record restored successfully")
+
+
+class UnarchiveTemplate(Unarchive):
+
+    def display(self, template: Template) -> bool:
+        if template.template_type == Template.EMAIL_TEMPLATE:
+            return False
+        return super().display(template)
 
 
 class CreateIndividualAgent(LinkAction):
