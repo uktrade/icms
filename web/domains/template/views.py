@@ -7,7 +7,7 @@ from django.urls import reverse, reverse_lazy
 from web.models import ImportApplicationType
 from web.permissions import Perms
 from web.views import ModelCreateView, ModelFilterView
-from web.views.actions import Archive, EditTemplate, Unarchive
+from web.views.actions import ArchiveTemplate, EditTemplate, UnarchiveTemplate
 
 from .forms import (
     CFSDeclarationTranslationForm,
@@ -50,7 +50,11 @@ class TemplateListView(ModelFilterView):
             "application_domain_verbose": {"header": "Application Domain"},
             "template_status": {"header": "Template Status"},
         }
-        actions = [Archive(), Unarchive(), EditTemplate(hide_if_archived_object=True)]
+        actions = [
+            ArchiveTemplate(),
+            UnarchiveTemplate(),
+            EditTemplate(hide_if_archived_object=True),
+        ]
 
 
 @login_required
@@ -132,8 +136,9 @@ def edit_template(request, pk):
     if request.method == "POST":
         form = TemplateForm(request.POST, instance=template)
         if form.is_valid():
-            template = form.save()
-            return redirect(reverse("template-edit", kwargs={"pk": template.pk}))
+            form.save()
+            messages.success(request, "The template was saved.")
+            return redirect(reverse("template-list"))
     else:
         form = TemplateForm(instance=template)
 

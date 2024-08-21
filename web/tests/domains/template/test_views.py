@@ -3,7 +3,7 @@ from pytest_django.asserts import assertInHTML, assertRedirects
 
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
-from web.views.actions import Unarchive
+from web.views.actions import ArchiveTemplate, Unarchive, UnarchiveTemplate
 
 from .factory import TemplateFactory
 
@@ -36,11 +36,16 @@ class TestTemplateListView(AuthTestCase):
         assert page.paginator.num_pages == 5
 
     def test_page_results(self):
-        TemplateFactory.create_batch(103, is_active=True)
-
-        response = self.ilb_admin_client.get(self.url, {"page": "3", "template_name_title": ""})
+        response = self.ilb_admin_client.get(self.url, {"page": "2", "template_name_title": ""})
         page = response.context_data["page"]
-        assert len(page.object_list) == 50
+        assert len(page.object_list) == 39
+
+    def test_email_template_not_archivable(self):
+        response = self.ilb_admin_client.get(self.url, {"template_type": "EMAIL_TEMPLATE"})
+        page = response.context_data["page"]
+        for _template in page.object_list:
+            assert ArchiveTemplate().display(_template) is False
+            assert UnarchiveTemplate().display(_template) is False
 
     def test_archived_not_editable(self):
         """Making sure that the only visible action for archived templates is the unarchive action"""
