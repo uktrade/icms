@@ -1,0 +1,29 @@
+{% extends "layout/sidebar.html" %}
+
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% import "display/fields.html" as display %}
+
+{% block css %}
+  {{ super() }}
+  <link rel="stylesheet" type="text/css" href="{{ static('web/css/pages/cfs-manage-biocide-products.css') }}">
+{% endblock %}
+
+{% block js %}
+  {{ super() }}
+  <script src="{{ static('web/js/components/dynamic-django-formsets.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ previous_link }}" class="prev-link">Edit schedule</a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  {% include "web/domains/case/export/partials/cfs/manage-biocide-products-formset.html" %}
+{% endblock %}

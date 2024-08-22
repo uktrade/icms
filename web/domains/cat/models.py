@@ -105,17 +105,42 @@ class CFSProductTemplate(CFSProductABC):
         "web.CFSScheduleTemplate", related_name="products", on_delete=models.CASCADE
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["schedule", "product_name"],
+                name="template_schedule_and_product_name_unique",
+            ),
+        ]
+
 
 class CFSProductTypeTemplate(CFSProductTypeABC):
     product = models.ForeignKey(
         "web.CFSProductTemplate", related_name="product_type_numbers", on_delete=models.CASCADE
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["product", "product_type_number"], name="template_product_and_ptn_unique"
+            ),
+        ]
+
 
 class CFSProductActiveIngredientTemplate(CFSProductActiveIngredientABC):
     product = models.ForeignKey(
         "web.CFSProductTemplate", related_name="active_ingredients", on_delete=models.CASCADE
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["product", "cas_number"], name="template_product_and_cas_unique"
+            ),
+            models.UniqueConstraint(
+                fields=["product", "name"], name="template_product_and_name_unique"
+            ),
+        ]
 
 
 class CertificateOfGoodManufacturingPracticeApplicationTemplate(  # type: ignore[misc]

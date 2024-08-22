@@ -281,3 +281,134 @@ CFSActiveIngredientTemplateFormSet = forms.inlineformset_factory(
     form=CFSActiveIngredientTemplateForm,
     formset=CFSActiveIngredientTemplateFormSetBase,
 )
+
+
+# Example of how this works can be found here:
+# https://micropyramid.com/blog/how-to-use-nested-formsets-in-django
+class ManageCFSProductForm(CFSProductForm):
+    class Meta:
+        model = CFSProductTemplate
+        fields = ("product_name",)
+        labels = {"product_name": ""}
+
+
+class ManageCFSActiveIngredientForm(CFSActiveIngredientForm):
+    class Meta:
+        model = CFSProductActiveIngredientTemplate
+        fields = ("name", "cas_number")
+        labels = {"name": "", "cas_number": ""}
+        help_texts = {"cas_number": ""}
+
+
+class ManageCFSProductTypeForm(CFSProductTypeForm):
+    class Meta:
+        model = CFSProductTypeTemplate
+        fields = ("product_type_number",)
+        labels = {"product_type_number": ""}
+
+
+class BaseProductRelatedFormset(forms.BaseInlineFormSet):
+    def add_fields(self, form, index):
+        super().add_fields(form, index)
+        form.fields[forms.formsets.DELETION_FIELD_NAME].label = ""
+
+
+# Used later on as nested formsets.
+ActiveIngredientFormset = forms.inlineformset_factory(
+    CFSProductTemplate,
+    CFSProductActiveIngredientTemplate,
+    form=ManageCFSActiveIngredientForm,
+    formset=BaseProductRelatedFormset,
+    extra=1,
+)
+
+ProductTypeFormset = forms.inlineformset_factory(
+    CFSProductTemplate,
+    CFSProductTypeTemplate,
+    form=ManageCFSProductTypeForm,
+    formset=BaseProductRelatedFormset,
+    extra=1,
+)
+
+
+class BaseCFSProductFormset(forms.BaseInlineFormSet):
+    def __init__(self, *args: Any, is_biocidal: bool, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.is_biocidal = is_biocidal
+
+    def get_form_kwargs(self, index: int) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs(index)
+
+        return kwargs | {"schedule": self.instance}
+
+    def add_fields(self, form: ManageCFSProductForm, index: int) -> None:
+        """Add custom fields to the CFS Product form.
+
+        We add two nested formsets to each form in the product formset.
+        """
+        super().add_fields(form, index)
+        form.fields[forms.formsets.DELETION_FIELD_NAME].label = ""
+
+        # Do not add the extra form fields if not biocidal
+        if not self.is_biocidal:
+            return
+
+        form.active_ingredient_formset = ActiveIngredientFormset(
+            instance=form.instance,
+            form_kwargs={"product": form.instance},
+            data=form.data if form.is_bound else None,
+            files=form.files if form.is_bound else None,
+            prefix=f"active-ingredient-{form.prefix}-{ActiveIngredientFormset.get_default_prefix()}",
+        )
+
+        form.product_type_formset = ProductTypeFormset(
+            instance=form.instance,
+            form_kwargs={"product": form.instance},
+            data=form.data if form.is_bound else None,
+            files=form.files if form.is_bound else None,
+            prefix=f"product-type-{form.prefix}-{ProductTypeFormset.get_default_prefix()}",
+        )
+
+    def is_valid(self) -> bool:
+        result = super().is_valid()
+
+        if self.is_bound:
+            for form in self.forms:
+                if hasattr(form, "active_ingredient_formset"):
+                    result = result and form.active_ingredient_formset.is_valid()
+
+                if hasattr(form, "product_type_formset"):
+                    result = result and form.product_type_formset.is_valid()
+
+        return result
+
+    def save(
+        self, commit: bool = True
+    ) -> list[CFSProductTemplate | CFSProductActiveIngredientTemplate | CFSProductTypeTemplate]:
+        """Return a list of saved and created objects."""
+        result = super().save(commit=commit)
+
+        for form in self.forms:
+            if hasattr(form, "active_ingredient_formset"):
+                if not self._should_delete_form(form):
+                    ai_result = form.active_ingredient_formset.save(commit=commit)
+                    if ai_result:
+                        result.extend(ai_result)
+
+            if hasattr(form, "product_type_formset"):
+                if not self._should_delete_form(form):
+                    pt_result = form.product_type_formset.save(commit=commit)
+                    if pt_result:
+                        result.extend(pt_result)
+
+        return result
+
+
+# TODO: ICMSLST-2916 Rename this when we delete the old formsets.
+NewCFSProductTemplateFormset = forms.inlineformset_factory(
+    CFSScheduleTemplate,
+    CFSProductTemplate,
+    form=ManageCFSProductForm,
+    formset=BaseCFSProductFormset,
+    extra=1,
+)
