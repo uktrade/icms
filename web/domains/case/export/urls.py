@@ -5,36 +5,6 @@ from . import views
 app_name = "export"
 
 
-product_urls = [
-    path("edit/", views.cfs_edit_product, name="cfs-schedule-edit-product"),
-    path("delete/", views.cfs_delete_product, name="cfs-schedule-delete-product"),
-    path("ingredient/add/", views.cfs_add_ingredient, name="cfs-schedule-add-ingredient"),
-    path(
-        "ingredient/<int:ingredient_pk>/",
-        include(
-            [
-                path("edit/", views.cfs_edit_ingredient, name="cfs-schedule-edit-ingredient"),
-                path("delete/", views.cfs_delete_ingredient, name="cfs-schedule-delete-ingredient"),
-            ]
-        ),
-    ),
-    path("product-type/add/", views.cfs_add_product_type, name="cfs-schedule-add-product-type"),
-    path(
-        "product-type/<int:product_type_pk>/",
-        include(
-            [
-                path("edit/", views.cfs_edit_product_type, name="cfs-schedule-edit-product-type"),
-                path(
-                    "delete/",
-                    views.cfs_delete_product_type,
-                    name="cfs-schedule-delete-product-type",
-                ),
-            ]
-        ),
-    ),
-]
-
-
 schedule_urls = [
     path("edit/", views.cfs_edit_schedule, name="cfs-schedule-edit"),
     path("copy/", views.cfs_copy_schedule, name="cfs-schedule-copy"),
@@ -46,13 +16,6 @@ schedule_urls = [
         name="cfs-schedule-delete-manufacturer",
     ),
     path("products/", views.cfs_manage_products, name="cfs-schedule-manage-products"),
-    # TODO: ICMSLST-2916 Remove all old product views.
-    path("product/add/", views.cfs_add_product, name="cfs-schedule-add-product"),
-    path(
-        "product/add-multiple/",
-        views.CFSScheduleProductCreateMultipleView.as_view(),
-        name="cfs-schedule-add-multiple-products",
-    ),
     path(
         "product/spreadsheet/download-template/",
         views.product_spreadsheet_download_template,
@@ -63,7 +26,6 @@ schedule_urls = [
         views.product_spreadsheet_upload,
         name="cfs-schedule-product-spreadsheet-upload",
     ),
-    path("product/<int:product_pk>/", include(product_urls)),
 ]
 
 

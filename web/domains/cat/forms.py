@@ -181,22 +181,6 @@ class CFSProductTemplateForm(CFSProductForm):
         }
 
 
-class CFSProductTemplateFormSetBase(forms.BaseInlineFormSet):
-    def get_form_kwargs(self, index: int) -> dict[str, Any]:
-        kwargs = super().get_form_kwargs(index)
-
-        return kwargs | {"schedule": self.instance}
-
-
-CFSProductTemplateFormSet = forms.inlineformset_factory(
-    CFSScheduleTemplate,
-    CFSProductTemplate,
-    form=CFSProductTemplateForm,
-    formset=CFSProductTemplateFormSetBase,
-    extra=5,
-)
-
-
 class CFSProductTypeTemplateForm(CFSProductTypeForm):
     class Meta:
         model = CFSProductTypeTemplate
@@ -206,81 +190,10 @@ class CFSProductTypeTemplateForm(CFSProductTypeForm):
         }
 
 
-class CFSProductTypeTemplateFormSetBase(forms.BaseInlineFormSet):
-    def get_form_kwargs(self, index: int) -> dict[str, Any]:
-        kwargs = super().get_form_kwargs(index)
-
-        return kwargs | {"product": self.instance}
-
-    def clean(self):
-        """Checks that no two product types have the same number."""
-
-        if any(self.errors):
-            # Don't bother validating the formset unless each form is valid on its own
-            return
-
-        product_types = set()
-
-        for form in self.forms:
-            if self.can_delete and self._should_delete_form(form):
-                continue
-
-            if pt := form.cleaned_data.get("product_type_number"):
-                if pt in product_types:
-                    form.add_error(
-                        "product_type_number",
-                        "Product type number must be unique to the product.",
-                    )
-
-                product_types.add(pt)
-
-
-CFSProductTypeTemplateFormSet = forms.inlineformset_factory(
-    CFSProductTemplate,
-    CFSProductTypeTemplate,
-    form=CFSProductTypeTemplateForm,
-    formset=CFSProductTypeTemplateFormSetBase,
-)
-
-
 class CFSActiveIngredientTemplateForm(CFSActiveIngredientForm):
     class Meta:
         model = CFSProductActiveIngredientTemplate
         fields = copy_form_fields(CFSActiveIngredientForm.Meta.fields)
-
-
-class CFSActiveIngredientTemplateFormSetBase(forms.BaseInlineFormSet):
-    def get_form_kwargs(self, index: int) -> dict[str, Any]:
-        kwargs = super().get_form_kwargs(index)
-
-        return kwargs | {"product": self.instance}
-
-    def clean(self):
-        """Checks that no two active ingredients have the same CAS number."""
-
-        if any(self.errors):
-            # Don't bother validating the formset unless each form is valid on its own
-            return
-
-        cas_numbers = set()
-
-        for form in self.forms:
-            if self.can_delete and self._should_delete_form(form):
-                continue
-
-            if cn := form.cleaned_data.get("cas_number"):
-                if cn in cas_numbers:
-                    form.add_error("cas_number", "CAS number must be unique to the product.")
-
-                cas_numbers.add(cn)
-
-
-CFSActiveIngredientTemplateFormSet = forms.inlineformset_factory(
-    CFSProductTemplate,
-    CFSProductActiveIngredientTemplate,
-    form=CFSActiveIngredientTemplateForm,
-    formset=CFSActiveIngredientTemplateFormSetBase,
-)
 
 
 # Example of how this works can be found here:
@@ -404,8 +317,7 @@ class BaseCFSProductFormset(forms.BaseInlineFormSet):
         return result
 
 
-# TODO: ICMSLST-2916 Rename this when we delete the old formsets.
-NewCFSProductTemplateFormset = forms.inlineformset_factory(
+CFSProductTemplateFormset = forms.inlineformset_factory(
     CFSScheduleTemplate,
     CFSProductTemplate,
     form=ManageCFSProductForm,

@@ -1,5 +1,5 @@
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -10,12 +10,12 @@ from django.contrib.auth.mixins import (
 )
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
-from django.db.models import ObjectDoesNotExist
+from django.db.models import ObjectDoesNotExist, QuerySet
 from django.forms.models import ModelForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.generic import CreateView, FormView, UpdateView, View
+from django.views.generic import FormView, UpdateView, View
 from django.views.generic.detail import SingleObjectMixin
 from django_filters import FilterSet
 from django_filters.views import FilterView
@@ -49,15 +49,11 @@ from .forms import (
     CertificateOfFreeSaleApplicationTemplateForm,
     CertificateOfGoodManufacturingPracticeApplicationTemplateForm,
     CertificateOfManufactureApplicationTemplateForm,
-    CFSActiveIngredientTemplateFormSet,
     CFSManufacturerDetailsTemplateForm,
-    CFSProductTemplateForm,
-    CFSProductTemplateFormSet,
-    CFSProductTypeTemplateFormSet,
+    CFSProductTemplateFormset,
     CFSScheduleTemplateForm,
     CreateCATForm,
     EditCATForm,
-    NewCFSProductTemplateFormset,
 )
 from .utils import (
     create_cat,
@@ -65,9 +61,6 @@ from .utils import (
     template_in_user_templates,
     user_can_edit_template,
 )
-
-if TYPE_CHECKING:
-    from django.db import QuerySet
 
 
 class CATListView(PermissionRequiredMixin, LoginRequiredMixin, FilterView):
@@ -78,7 +71,7 @@ class CATListView(PermissionRequiredMixin, LoginRequiredMixin, FilterView):
     def has_permission(self) -> bool:
         return _has_permission(self.request.user)
 
-    def get_queryset(self) -> "QuerySet[CertificateApplicationTemplate]":
+    def get_queryset(self) -> QuerySet[CertificateApplicationTemplate]:
         if self.request.GET.get("is_active") == "True":
             return get_user_templates(self.request.user)
         else:
@@ -316,12 +309,6 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
                 )
                 extra["manage_schedule_products_url"] = reverse(
                     "cat:cfs-schedule-manage-products", kwargs=cfs_schedule_kwargs
-                )
-                extra["add_schedule_product_url"] = reverse(
-                    "cat:cfs-schedule-product-create", kwargs=cfs_schedule_kwargs
-                )
-                extra["add_multiple_schedule_product_url"] = reverse(
-                    "cat:cfs-schedule-product-create-multiple", kwargs=cfs_schedule_kwargs
                 )
 
         if app_type == ExportApplicationType.Types.GMP and step == CatSteps.GMP:
@@ -601,83 +588,6 @@ class CFSManufacturerDeleteView(CFSTemplatePermissionRequiredMixin, LoginRequire
         )
 
 
-class CFSScheduleTemplateProductCreateView(
-    CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, CreateView
-):
-    form_class = CFSProductTemplateForm
-    template_name = "web/domains/cat/cfs/product-template-create.html"
-
-    def get_form_kwargs(self) -> dict[str, Any]:
-        kwargs = super().get_form_kwargs()
-        return kwargs | {"schedule": get_cfs_schedule_template(**self.kwargs)}
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-
-        return context | {
-            "page_title": "Add Product",
-            "previous_link": self.get_edit_schedule_url(),
-        }
-
-    def get_success_url(self) -> str:
-        return reverse(
-            "cat:cfs-schedule-product-update",
-            kwargs={
-                "cat_pk": self.kwargs["cat_pk"],
-                "schedule_template_pk": self.kwargs["schedule_template_pk"],
-                "product_template_pk": self.object.pk,
-            },
-        )
-
-    def get_edit_schedule_url(self) -> str:
-        return reverse(
-            "cat:edit-step-related",
-            kwargs={
-                "cat_pk": self.kwargs["cat_pk"],
-                "step": CatSteps.CFS_SCHEDULE,
-                "step_pk": self.kwargs["schedule_template_pk"],
-            },
-        )
-
-
-class CFSScheduleTemplateProductCreateMultipleView(
-    CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, InlineFormsetView
-):
-    # parent model config
-    model = CFSScheduleTemplate
-    pk_url_kwarg = "schedule_template_pk"
-
-    # Inline formset config
-    formset_class = CFSProductTemplateFormSet
-    template_name = "web/domains/cat/cfs/product-template-create-multiple.html"
-
-    def get_success_url(self) -> str:
-        return reverse(
-            "cat:edit-step-related",
-            kwargs={
-                "cat_pk": self.kwargs["cat_pk"],
-                "step": CatSteps.CFS_SCHEDULE,
-                "step_pk": self.object.pk,
-            },
-        )
-
-    def get_formset_kwargs(self) -> dict[str, Any]:
-        kwargs = super().get_formset_kwargs()
-
-        # Exclude existing related products as this is a create view.
-        queryset = CFSProductTemplateFormSet.model.objects.none()
-
-        return kwargs | {"queryset": queryset}
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-
-        return context | {
-            "page_title": "Add Products",
-            "previous_link": self.get_success_url(),
-        }
-
-
 class CFSScheduleTemplateManageProductsView(
     CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, InlineFormsetView
 ):
@@ -688,8 +598,7 @@ class CFSScheduleTemplateManageProductsView(
     pk_url_kwarg = "schedule_template_pk"
 
     # Inline formset config
-    formset_class = NewCFSProductTemplateFormset
-    template_name = "web/domains/cat/cfs/product-template-create-multiple.html"
+    formset_class = CFSProductTemplateFormset
 
     def get_template_names(self) -> list[str]:
         if self.object.is_biocidal():
@@ -725,121 +634,6 @@ class CFSScheduleTemplateManageProductsView(
             "previous_link": self.get_success_url(),
             "product_formset": self.get_formset(),
         }
-
-
-class CFSScheduleTemplateProductUpdateView(
-    CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, UpdateView
-):
-    form_class = CFSProductTemplateForm
-    template_name = "web/domains/cat/cfs/product-template-update.html"
-
-    # extra type hints
-    object: CFSProductTemplate
-    pt_formset: CFSProductTypeTemplateFormSet
-    ai_formset: CFSActiveIngredientTemplateFormSet
-
-    def get_object(self, queryset: CFSProductTemplate | None = None) -> CFSProductTemplate:
-        return get_cfs_schedule_product(**self.kwargs)
-
-    def get_form_kwargs(self) -> dict[str, Any]:
-        kwargs = super().get_form_kwargs()
-        return kwargs | {"schedule": self.object.schedule}
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-
-        return context | {
-            "page_title": "Update Product",
-            "previous_link": self.get_edit_schedule_url(),
-            "is_biocidal": self.object.schedule.is_biocidal(),
-            "pt_formset": self.pt_formset,
-            "ai_formset": self.ai_formset,
-        }
-
-    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        self.object = self.get_object()
-        self._set_formsets()
-
-        return super().get(request, *args, **kwargs)
-
-    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        self.object = self.get_object()
-        self._set_formsets()
-        form = self.get_form()
-        form_valid = form.is_valid()
-
-        if self.object.schedule.is_biocidal():
-            # Evaluate all form.is_valid() methods so we see all errors.
-            pt_formset_valid = self.pt_formset.is_valid()
-            ai_formset_valid = self.ai_formset.is_valid()
-
-            all_forms_valid = form_valid and pt_formset_valid and ai_formset_valid
-        else:
-            all_forms_valid = form_valid
-
-        if all_forms_valid:
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-
-    def form_valid(self, form: CFSProductTemplateForm) -> HttpResponse:
-        form.save()
-
-        if self.object.schedule.is_biocidal():
-            self.pt_formset.save()
-            self.ai_formset.save()
-
-        return redirect(self.get_success_url())
-
-    def _set_formsets(self) -> None:
-        """Prefix needs to be the same for GET and POST to work correctly."""
-        self.pt_formset = CFSProductTypeTemplateFormSet(
-            self.request.POST or None, instance=self.object, prefix="pt_"
-        )
-        self.ai_formset = CFSActiveIngredientTemplateFormSet(
-            self.request.POST or None, instance=self.object, prefix="ai_"
-        )
-
-    def get_success_url(self) -> str:
-        return reverse(
-            "cat:cfs-schedule-product-update",
-            kwargs={
-                "cat_pk": self.kwargs["cat_pk"],
-                "schedule_template_pk": self.kwargs["schedule_template_pk"],
-                "product_template_pk": self.object.pk,
-            },
-        )
-
-    def get_edit_schedule_url(self) -> str:
-        return reverse(
-            "cat:edit-step-related",
-            kwargs={
-                "cat_pk": self.kwargs["cat_pk"],
-                "step": CatSteps.CFS_SCHEDULE,
-                "step_pk": self.kwargs["schedule_template_pk"],
-            },
-        )
-
-
-class CFSScheduleTemplateProductDeleteView(
-    CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View
-):
-    http_method_names = ["post"]
-
-    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        product = get_cfs_schedule_product(**kwargs)
-        product.delete()
-
-        return redirect(
-            reverse(
-                "cat:edit-step-related",
-                kwargs={
-                    "cat_pk": self.kwargs["cat_pk"],
-                    "step": CatSteps.CFS_SCHEDULE,
-                    "step_pk": self.kwargs["schedule_template_pk"],
-                },
-            )
-        )
 
 
 class CFSScheduleTemplateProductDownloadSpreadsheetView(
