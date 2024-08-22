@@ -117,7 +117,39 @@ class SILApplication(ImportApplication):
     )
 
 
-class SILGoodsSection1(models.Model):
+class SILGoodsSectionBase(models.Model):
+    class Meta:
+        abstract = True
+
+    description = models.CharField(
+        max_length=4096,
+        help_text=(
+            "You no longer need to type the part of the Firearms Act that applies to the"
+            " item listed in this box. You must select it from the 'Licence for' section."
+        ),
+    )
+
+    quantity = models.PositiveBigIntegerField(help_text="Enter a whole number")
+
+    # Original applicant fields that cannot be overritten by the case office
+    # TODO ICMSLST-2790 Make fields not nullable when data migration is updated
+    description_original = models.CharField(max_length=4096, null=True)
+    quantity_original = models.PositiveBigIntegerField(null=True)
+
+
+class SILGoodsSectionUnlimitedBase(SILGoodsSectionBase):
+    class Meta:
+        abstract = True
+
+    quantity = models.PositiveBigIntegerField(
+        blank=True, null=True, help_text="Enter a whole number"
+    )
+    quantity_original = models.PositiveBigIntegerField(blank=True, null=True)
+
+    unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
+
+
+class SILGoodsSection1(SILGoodsSectionUnlimitedBase):
     import_application = models.ForeignKey(
         "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section1"
     )
@@ -127,21 +159,8 @@ class SILGoodsSection1(models.Model):
         verbose_name="Was the firearm manufactured before 1900?", null=True
     )
 
-    description = models.CharField(
-        max_length=4096,
-        help_text=(
-            "You no longer need to type the part of the Firearms Act that applies to the"
-            " item listed in this box. You must select it from the 'Licence for' section."
-        ),
-    )
 
-    quantity = models.PositiveBigIntegerField(
-        blank=True, null=True, help_text="Enter a whole number"
-    )
-    unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
-
-
-class SILGoodsSection2(models.Model):
+class SILGoodsSection2(SILGoodsSectionUnlimitedBase):
     import_application = models.ForeignKey(
         "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section2"
     )
@@ -151,21 +170,8 @@ class SILGoodsSection2(models.Model):
         verbose_name="Was the firearm manufactured before 1900?", null=True
     )
 
-    description = models.CharField(
-        max_length=4096,
-        help_text=(
-            "You no longer need to type the part of the Firearms Act that applies to the"
-            " item listed in this box. You must select it from the 'Licence for' section."
-        ),
-    )
 
-    quantity = models.PositiveBigIntegerField(
-        blank=True, null=True, help_text="Enter a whole number"
-    )
-    unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
-
-
-class SILGoodsSection5(models.Model):
+class SILGoodsSection5(SILGoodsSectionUnlimitedBase):
     import_application = models.ForeignKey(
         "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section5"
     )
@@ -179,21 +185,8 @@ class SILGoodsSection5(models.Model):
         verbose_name="Was the firearm manufactured before 1900?", null=True
     )
 
-    description = models.CharField(
-        max_length=4096,
-        help_text=(
-            "You no longer need to type the part of the Firearms Act that applies to the"
-            " item listed in this box. You must select it from the 'Licence for' section."
-        ),
-    )
 
-    quantity = models.PositiveBigIntegerField(
-        blank=True, null=True, help_text="Enter a whole number"
-    )
-    unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
-
-
-class SILGoodsSection582Obsolete(models.Model):  # /PS-IGNORE
+class SILGoodsSection582Obsolete(SILGoodsSectionBase):  # /PS-IGNORE
     import_application = models.ForeignKey(
         "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section582_obsoletes"
     )
@@ -220,18 +213,8 @@ class SILGoodsSection582Obsolete(models.Model):  # /PS-IGNORE
 
     obsolete_calibre = models.CharField(max_length=200, verbose_name="Obsolete Calibre")
 
-    description = models.CharField(
-        max_length=4096,
-        help_text=(
-            "You no longer need to type the part of the Firearms Act that applies to the"
-            " item listed in this box. You must select it from the 'Licence for' section."
-        ),
-    )
 
-    quantity = models.PositiveBigIntegerField(help_text="Enter a whole number")
-
-
-class SILGoodsSection582Other(models.Model):  # /PS-IGNORE
+class SILGoodsSection582Other(SILGoodsSectionBase):  # /PS-IGNORE
     class IgnitionDetail(TypedTextChoices):
         PIN_FIRE = ("Pin-fire", "Pin-fire")
         NEEDDLE_FIRE = ("Needle-fire", "Needle-fire")
@@ -301,27 +284,14 @@ class SILGoodsSection582Other(models.Model):  # /PS-IGNORE
         blank=True,
     )
 
-    description = models.CharField(
-        max_length=4096,
-        help_text=(
-            "You no longer need to type the part of the Firearms Act that applies to the"
-            " item listed in this box. You must select it from the 'Licence for' section."
-        ),
-    )
 
-    quantity = models.PositiveBigIntegerField(help_text="Enter a whole number")
-
-
-class SILLegacyGoods(models.Model):
+class SILLegacyGoods(SILGoodsSectionUnlimitedBase):
     """Model to hold historic SIL goods where we can't determine the section they apply to"""
 
     import_application = models.ForeignKey(
         "web.SILApplication", on_delete=models.PROTECT, related_name="goods_legacy"
     )
     is_active = models.BooleanField(default=True)
-    description = models.CharField(max_length=4096)
-    quantity = models.PositiveBigIntegerField(null=True, help_text="Enter a whole number")
-    unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
     obsolete_calibre = models.CharField(max_length=200, verbose_name="Obsolete Calibre", null=True)
 
 

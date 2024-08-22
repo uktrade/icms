@@ -44,16 +44,11 @@ class SanctionsAndAdhocApplicationGoods(models.Model):
         ),
     )
 
-    # Fields for case officer to override the description / quantity / value that appears on the licence
-    goods_description_override = models.CharField(
-        max_length=4096, verbose_name="Goods Description", null=True
-    )
-    quantity_amount_override = models.DecimalField(
-        max_digits=14, decimal_places=3, verbose_name="Quantity", null=True
-    )
-    value_override = models.DecimalField(
-        max_digits=12, decimal_places=2, verbose_name="Value (GBP CIF)", null=True
-    )
+    # Original values from applicant that cannot be overritten by case officer
+    # TODO ICMSLST-2790 Make fields not nullable when data migration is updated
+    goods_description_original = models.CharField(max_length=4096, null=True)
+    quantity_amount_original = models.DecimalField(max_digits=14, decimal_places=3, null=True)
+    value_original = models.DecimalField(max_digits=12, decimal_places=2, null=True)
 
     def __str__(self):
         return (

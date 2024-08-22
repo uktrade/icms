@@ -530,9 +530,9 @@ class TestEditSanctionsLicenceGoods:
         assert goods.quantity_amount == 1000
         assert goods.value == 10500
 
-        assert goods.goods_description_override is None
-        assert goods.quantity_amount_override is None
-        assert goods.value_override is None
+        assert goods.goods_description_original == "Test Goods"
+        assert goods.quantity_amount_original == 1000
+        assert goods.value == 10500
 
         resp = self.client.get(self.url)
         assert (
@@ -546,21 +546,21 @@ class TestEditSanctionsLicenceGoods:
                 kwargs={"application_pk": self.app.pk, "goods_pk": goods.pk},
             ),
             data={
-                "goods_description_override": "New Description",
-                "quantity_amount_override": 99.000,
-                "value_override": 55.00,
+                "goods_description": "New Description",
+                "quantity_amount": 99.000,
+                "value": 55.00,
             },
         )
 
         goods.refresh_from_db()
 
-        assert goods.goods_description == "Test Goods"
-        assert goods.quantity_amount == 1000
-        assert goods.value == 10500
+        assert goods.goods_description == "New Description"
+        assert goods.quantity_amount == 99
+        assert goods.value == 55
 
-        assert goods.goods_description_override == "New Description"
-        assert goods.quantity_amount_override == 99
-        assert goods.value_override == 55
+        assert goods.goods_description_original == "Test Goods"
+        assert goods.quantity_amount_original == 1000
+        assert goods.value_original == 10500
 
         resp = self.client.get(self.url)
         assert (
@@ -571,13 +571,13 @@ class TestEditSanctionsLicenceGoods:
     def test_reset_licence_goods(self):
         goods: SanctionsAndAdhocApplicationGoods = self.app.sanctions_goods.first()
 
-        assert goods.goods_description == "Test Goods"
-        assert goods.quantity_amount == 1000
-        assert goods.value == 10500
+        assert goods.goods_description_original == "Test Goods"
+        assert goods.quantity_amount_original == 1000
+        assert goods.value_original == 10500
 
-        goods.goods_description_override = "Override"
-        goods.quantity_amount_override = 50
-        goods.value_override = 20
+        goods.goods_description = "Override"
+        goods.quantity_amount = 50
+        goods.value = 20
 
         goods.save()
         goods.refresh_from_db()
@@ -600,9 +600,9 @@ class TestEditSanctionsLicenceGoods:
         assert goods.quantity_amount == 1000
         assert goods.value == 10500
 
-        assert goods.goods_description_override is None
-        assert goods.quantity_amount_override is None
-        assert goods.value_override is None
+        assert goods.goods_description_original == "Test Goods"
+        assert goods.quantity_amount_original == 1000
+        assert goods.value_original == 10500
 
         resp = self.client.get(self.url)
         assert (

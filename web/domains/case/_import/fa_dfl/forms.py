@@ -73,7 +73,11 @@ class AddDLFGoodsCertificateForm(forms.ModelForm):
 
     class Meta:
         model = models.DFLGoodsCertificate
-        fields = ("goods_description", "deactivated_certificate_reference", "issuing_country")
+        fields = (
+            "goods_description",
+            "deactivated_certificate_reference",
+            "issuing_country",
+        )
 
         help_texts = {
             "goods_description": (
@@ -111,7 +115,7 @@ class EditDLFGoodsCertificateForm(forms.ModelForm):
 class EditDFLGoodsCertificateDescriptionForm(forms.ModelForm):
     class Meta:
         model = models.DFLGoodsCertificate
-        fields = ("goods_description_override",)
+        fields = ("goods_description",)
 
         help_texts = {
             "goods_description": (
@@ -119,12 +123,6 @@ class EditDFLGoodsCertificateDescriptionForm(forms.ModelForm):
                 " You must list only one deactivated firearm per goods line."
             )
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.initial["goods_description_override"] = (
-            self.instance.goods_description_override or self.instance.goods_description
-        )
 
 
 class DFLChecklistForm(ChecklistBaseForm):

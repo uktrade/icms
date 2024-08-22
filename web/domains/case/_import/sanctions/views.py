@@ -147,8 +147,11 @@ def add_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Http
             goods_form = GoodsForm(request.POST, application=application)
 
             if goods_form.is_valid():
-                obj = goods_form.save(commit=False)
+                obj: SanctionsAndAdhocApplicationGoods = goods_form.save(commit=False)
                 obj.import_application = application
+                obj.goods_description_original = obj.goods_description
+                obj.quantity_amount_original = obj.quantity_amount
+                obj.value_original = obj.value
                 obj.save()
 
                 return redirect(
@@ -191,8 +194,11 @@ def edit_goods(
             form = GoodsForm(request.POST, instance=goods, application=application)
 
             if form.is_valid():
-                obj = form.save(commit=False)
+                obj: SanctionsAndAdhocApplicationGoods = form.save(commit=False)
                 obj.import_application = application
+                obj.goods_description_original = obj.goods_description
+                obj.quantity_amount_original = obj.quantity_amount
+                obj.value_original = obj.value
                 obj.save()
 
                 return redirect(
@@ -283,9 +289,9 @@ def reset_goods_licence(
         case_progress.application_in_processing(application)
 
         goods = get_object_or_404(application.sanctions_goods, pk=goods_pk)
-        goods.goods_description_override = None
-        goods.quantity_amount_override = None
-        goods.value_override = None
+        goods.goods_description = goods.goods_description_original
+        goods.quantity_amount = goods.quantity_amount_original
+        goods.value = goods.value_original
         goods.save()
 
         return redirect(

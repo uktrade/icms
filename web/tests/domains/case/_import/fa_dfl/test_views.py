@@ -518,7 +518,7 @@ class TestEditDFLGoodsDescription:
         goods: DFLGoodsCertificate = self.app.goods_certificates.first()
 
         assert goods.goods_description == "goods_description value"
-        assert goods.goods_description_override is None
+        assert goods.goods_description_original == "goods_description value"
 
         resp = self.client.get(self.url)
         assert (
@@ -531,13 +531,13 @@ class TestEditDFLGoodsDescription:
                 "import:fa-dfl:edit-goods-description",
                 kwargs={"application_pk": self.app.pk, "document_pk": goods.pk},
             ),
-            data={"goods_description_override": "New Description"},
+            data={"goods_description": "New Description"},
         )
 
         goods.refresh_from_db()
 
-        assert goods.goods_description == "goods_description value"
-        assert goods.goods_description_override == "New Description"
+        assert goods.goods_description == "New Description"
+        assert goods.goods_description_original == "goods_description value"
 
         resp = self.client.get(self.url)
         assert "<td>New Description</td><td>Unlimited</td><td>units</td>" in resp.content.decode()
@@ -545,9 +545,9 @@ class TestEditDFLGoodsDescription:
     def test_reset_licence_goods(self):
         goods: DFLGoodsCertificate = self.app.goods_certificates.first()
 
-        assert goods.goods_description == "goods_description value"
+        assert goods.goods_description_original == "goods_description value"
 
-        goods.goods_description_override = "Override"
+        goods.goods_description = "Override"
 
         goods.save()
         goods.refresh_from_db()
@@ -565,7 +565,7 @@ class TestEditDFLGoodsDescription:
         goods.refresh_from_db()
 
         assert goods.goods_description == "goods_description value"
-        assert goods.goods_description_override is None
+        assert goods.goods_description_original == "goods_description value"
 
         resp = self.client.get(self.url)
         assert (

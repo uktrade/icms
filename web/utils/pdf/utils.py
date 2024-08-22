@@ -145,16 +145,11 @@ def get_country_and_geo_code(country: Country) -> str:
 
 
 def get_sanctions_goods_line(goods: SanctionsAndAdhocApplicationGoods) -> list[str]:
-    description = goods.goods_description_override or goods.goods_description
-    goods_line = _split_text_field_newlines(description)
+    goods_line = _split_text_field_newlines(goods.goods_description)
     last_line = goods_line.pop()
 
-    quantity_amount = goods.quantity_amount_override or goods.quantity_amount
-    quantity = f"{quantity_amount:.3f}".rstrip("0").rstrip(".")
-
-    value_amount = goods.value_override or goods.value
-    value = f"{value_amount:.2f}".rstrip("0").rstrip(".")
-
+    quantity = f"{goods.quantity_amount:.3f}".rstrip("0").rstrip(".")
+    value = f"{goods.value:.2f}".rstrip("0").rstrip(".")
     goods_line.append(f"{last_line}, {goods.commodity.commodity_code}, {quantity} kilos, {value}")
 
     return goods_line
@@ -228,7 +223,7 @@ def get_licence_endorsements(application: ImportApplication) -> list[list[str]] 
 
 def _get_fa_dfl_goods(application: DFLApplication) -> list[str]:
     return [
-        g.goods_description_override or g.goods_description
+        g.goods_description
         for g in application.goods_certificates.filter(is_active=True).order_by("created_datetime")
     ]
 

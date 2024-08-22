@@ -31,7 +31,7 @@
 
     {% for row in goods %}
       <tr class="result-row">
-        <td>{{ row.goods_description_override or row.goods_description }}</td>
+        <td>{{ row.goods_description }}</td>
         <td>Unlimited</td>
         <td>units</td>
         {% if not readonly_view and not variation_refused%}
@@ -41,7 +41,7 @@
             >Edit</a>
           </td>
           <td>
-            {% if row.goods_description_override %}
+            {% if row.goods_description != row.goods_original %}
               <form
                 method="post"
                 action="{{ icms_url('import:fa-dfl:reset-goods-description', kwargs={'application_pk': process.pk, 'document_pk': row.pk}) }}"
