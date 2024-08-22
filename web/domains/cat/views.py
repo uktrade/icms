@@ -57,6 +57,7 @@ from .forms import (
     CFSScheduleTemplateForm,
     CreateCATForm,
     EditCATForm,
+    NewCFSProductTemplateFormset,
 )
 from .utils import (
     create_cat,
@@ -313,8 +314,9 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
                 extra["download_product_spreadsheet_url"] = reverse(
                     "cat:cfs-schedule-product-download-template", kwargs=cfs_schedule_kwargs
                 )
-                # TODO: ICMSLST-2916 Update cfs template to use new manage schedule products view.
-                extra["manage_schedule_products_url"] = "#"
+                extra["manage_schedule_products_url"] = reverse(
+                    "cat:cfs-schedule-manage-products", kwargs=cfs_schedule_kwargs
+                )
                 extra["add_schedule_product_url"] = reverse(
                     "cat:cfs-schedule-product-create", kwargs=cfs_schedule_kwargs
                 )
@@ -673,6 +675,55 @@ class CFSScheduleTemplateProductCreateMultipleView(
         return context | {
             "page_title": "Add Products",
             "previous_link": self.get_success_url(),
+        }
+
+
+class CFSScheduleTemplateManageProductsView(
+    CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, InlineFormsetView
+):
+    object: CFSScheduleTemplate
+
+    # parent model config
+    model = CFSScheduleTemplate
+    pk_url_kwarg = "schedule_template_pk"
+
+    # Inline formset config
+    formset_class = NewCFSProductTemplateFormset
+    template_name = "web/domains/cat/cfs/product-template-create-multiple.html"
+
+    def get_template_names(self) -> list[str]:
+        if self.object.is_biocidal():
+            template = "web/domains/cat/cfs/manage-biocide-products.html"
+        else:
+            template = "web/domains/cat/cfs/manage-products.html"
+
+        return [template]
+
+    def get_success_url(self) -> str:
+        return reverse(
+            "cat:edit-step-related",
+            kwargs={
+                "cat_pk": self.kwargs["cat_pk"],
+                "step": CatSteps.CFS_SCHEDULE,
+                "step_pk": self.object.pk,
+            },
+        )
+
+    def get_formset_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_formset_kwargs()
+
+        return kwargs | {
+            "instance": self.object,
+            "is_biocidal": self.object.is_biocidal(),
+        }
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        return context | {
+            "page_title": "Add Products",
+            "previous_link": self.get_success_url(),
+            "product_formset": self.get_formset(),
         }
 
 

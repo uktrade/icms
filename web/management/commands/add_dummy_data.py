@@ -692,8 +692,7 @@ def create_certificate_application_templates(
         product = cfs_schedule_template.products.create(product_name=f"Test Product {i}")
         for z in range(1, i + 1):
             product.product_type_numbers.create(product_type_number=z)
-            z = str(z)  # type:ignore[assignment]
-            cas = valid_cas_numbers[i - 1]
+            cas = valid_cas_numbers[z - 1]
             product.active_ingredients.create(name=f"Test Ingredient {z}", cas_number=cas)
 
     #
