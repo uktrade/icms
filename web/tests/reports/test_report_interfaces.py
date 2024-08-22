@@ -20,6 +20,7 @@ from web.models import (
     VariationRequest,
 )
 from web.permissions import organisation_add_contact
+from web.reports.constants import UserDateFilterType
 from web.reports.interfaces import (
     AccessRequestTotalsInterface,
     ActiveStaffUserInterface,
@@ -30,6 +31,7 @@ from web.reports.interfaces import (
     ImportLicenceInterface,
     IssuedCertificateReportInterface,
     OILFirearmsLicenceInterface,
+    RegisteredUserInterface,
     SILFirearmsLicenceInterface,
     SupplementaryFirearmsInterface,
 )
@@ -39,6 +41,7 @@ from web.reports.serializers import (
     ImporterAccessRequestReportSerializer,
     ImportLicenceSerializer,
     SupplementaryFirearmsSerializer,
+    UserSerializer,
 )
 from web.tests.helpers import add_variation_request_to_app
 
@@ -176,6 +179,8 @@ EXPECTED_ACTIVE_USER_HEADER = [
     "First Name",  # /PS-IGNORE
     "Last Name",  # /PS-IGNORE
     "Email Address",
+    "Date Joined",
+    "Last Login",
     "Is Importer",
     "Is Exporter",
     "Businesses",
@@ -185,6 +190,8 @@ EXPECTED_ACTIVE_STAFF_USER_HEADER = [
     "First Name",  # /PS-IGNORE
     "Last Name",  # /PS-IGNORE
     "Email Address",
+    "Date Joined",
+    "Last Login",
 ]
 
 
@@ -261,6 +268,10 @@ class IncorrectTypeImporterAccessRequestReportSerializer(ImporterAccessRequestRe
 
 class IncorrectTypeAccessRequestTotalsReportSerializer(AccessRequestTotalsReportSerializer):
     approved_requests: str
+
+
+class IncorrectTypeUserSerializer(UserSerializer):
+    date_joined: int
 
 
 class TestIssuedCertificateReportInterface:
@@ -1331,6 +1342,7 @@ class TestActiveUserInterface:
     @pytest.fixture(autouse=True)
     def _setup(self, report_schedule, ilb_admin_user):
         self.report_schedule = report_schedule
+        self.report_schedule.parameters["date_filter_type"] = UserDateFilterType.DATE_JOINED
         self.ilb_admin_user = ilb_admin_user
 
     def test_get_data_header(self):
@@ -1339,21 +1351,96 @@ class TestActiveUserInterface:
         assert data["header"] == EXPECTED_ACTIVE_USER_HEADER
         assert data["errors"] == []
 
-    def test_get_data(self, importer, ilb_admin_two):
-        # Makes an admin user an importer to make sure they are excluded from the report
-        organisation_add_contact(importer, ilb_admin_two)
+        @freeze_time("2024-02-11 12:00:00")
+        def test_get_data(self, importer, ilb_admin_two, importer_client, importer_one_contact):
+            importer_client.force_login(importer_one_contact)
+            # Makes an admin user an importer to make sure they are excluded from the report
+            organisation_add_contact(importer, ilb_admin_two)
 
+            interface = ActiveUserInterface(self.report_schedule)
+            data = interface.get_data()
+            assert data["results"] == [
+                {
+                    "Businesses": "Test Importer 1",
+                    "Email Address": "I1_main_contact@example.com",  # /PS-IGNORE
+                    "First Name": "I1_main_contact_first_name",  # /PS-IGNORE
+                    "Is Exporter": "No",
+                    "Is Importer": "Yes",
+                    "Last Name": "I1_main_contact_last_name",  # /PS-IGNORE
+                    "Date Joined": "20/01/2024",
+                    "Last Login": "11/02/2024",
+                },
+                {
+                    "Businesses": "Test Importer 1, Test Importer 1 Agent 1",
+                    "Email Address": "I1_A1_main_contact@example.com",  # /PS-IGNORE
+                    "First Name": "I1_A1_main_contact_first_name",  # /PS-IGNORE
+                    "Is Exporter": "No",
+                    "Is Importer": "Yes",
+                    "Last Name": "I1_A1_main_contact_last_name",  # /PS-IGNORE
+                    "Date Joined": "20/01/2024",
+                    "Last Login": "",
+                },
+                {
+                    "Businesses": "Test Importer 2",
+                    "Email Address": "I2_main_contact@example.com",  # /PS-IGNORE
+                    "First Name": "I2_main_contact_first_name",  # /PS-IGNORE
+                    "Is Exporter": "No",
+                    "Is Importer": "Yes",
+                    "Last Name": "I2_main_contact_last_name",  # /PS-IGNORE
+                    "Date Joined": "20/01/2024",
+                    "Last Login": "",
+                },
+                {
+                    "Businesses": "Test Exporter 1",
+                    "Email Address": "E1_main_contact@example.com",  # /PS-IGNORE
+                    "First Name": "E1_main_contact_first_name",  # /PS-IGNORE
+                    "Is Exporter": "Yes",
+                    "Is Importer": "No",
+                    "Last Name": "E1_main_contact_last_name",  # /PS-IGNORE
+                    "Date Joined": "20/01/2024",
+                    "Last Login": "",
+                },
+                {
+                    "Businesses": "Test Exporter 1",
+                    "Email Address": "E1_secondary_contact@example.com",  # /PS-IGNORE
+                    "First Name": "E1_secondary_contact_first_name",  # /PS-IGNORE
+                    "Is Exporter": "Yes",
+                    "Is Importer": "No",
+                    "Last Name": "E1_secondary_contact_last_name",  # /PS-IGNORE
+                    "Date Joined": "20/01/2024",
+                    "Last Login": "",
+                },
+                {
+                    "Businesses": "Test Exporter 1, Test Exporter 1 Agent 1",
+                    "Email Address": "E1_A1_main_contact@example.com",  # /PS-IGNORE
+                    "First Name": "E1_A1_main_contact_first_name",  # /PS-IGNORE
+                    "Is Exporter": "Yes",
+                    "Is Importer": "No",
+                    "Last Name": "E1_A1_main_contact_last_name",  # /PS-IGNORE
+                    "Date Joined": "20/01/2024",
+                    "Last Login": "",
+                },
+                {
+                    "Businesses": "Test Exporter 2",
+                    "Email Address": "E2_main_contact@example.com",  # /PS-IGNORE
+                    "First Name": "E2_main_contact_first_name",  # /PS-IGNORE
+                    "Is Exporter": "Yes",
+                    "Is Importer": "No",
+                    "Last Name": "E2_main_contact_last_name",  # /PS-IGNORE
+                    "Date Joined": "20/01/2024",
+                    "Last Login": "",
+                },
+            ]
+
+    @freeze_time("2024-02-11 12:00:00")
+    def test_get_data_filtered_by_last_login(
+        self, importer, ilb_admin_two, importer_client, importer_one_contact
+    ):
+        importer_client.force_login(importer_one_contact)
+        self.report_schedule.parameters["date_filter_type"] = UserDateFilterType.LAST_LOGIN
         interface = ActiveUserInterface(self.report_schedule)
         data = interface.get_data()
         assert data["results"] == [
-            {
-                "Businesses": "",
-                "Email Address": "access_request_user@example.com",  # /PS-IGNORE
-                "First Name": "access_request_user_first_name",  # /PS-IGNORE
-                "Is Exporter": "No",
-                "Is Importer": "No",
-                "Last Name": "access_request_user_last_name",  # /PS-IGNORE
-            },
             {
                 "Businesses": "Test Importer 1",
                 "Email Address": "I1_main_contact@example.com",  # /PS-IGNORE
@@ -1361,55 +1448,9 @@ class TestActiveUserInterface:
                 "Is Exporter": "No",
                 "Is Importer": "Yes",
                 "Last Name": "I1_main_contact_last_name",  # /PS-IGNORE
-            },
-            {
-                "Businesses": "Test Importer 1, Test Importer 1 Agent 1",
-                "Email Address": "I1_A1_main_contact@example.com",  # /PS-IGNORE
-                "First Name": "I1_A1_main_contact_first_name",  # /PS-IGNORE
-                "Is Exporter": "No",
-                "Is Importer": "Yes",
-                "Last Name": "I1_A1_main_contact_last_name",  # /PS-IGNORE
-            },
-            {
-                "Businesses": "Test Importer 2",
-                "Email Address": "I2_main_contact@example.com",  # /PS-IGNORE
-                "First Name": "I2_main_contact_first_name",  # /PS-IGNORE
-                "Is Exporter": "No",
-                "Is Importer": "Yes",
-                "Last Name": "I2_main_contact_last_name",  # /PS-IGNORE
-            },
-            {
-                "Businesses": "Test Exporter 1",
-                "Email Address": "E1_main_contact@example.com",  # /PS-IGNORE
-                "First Name": "E1_main_contact_first_name",  # /PS-IGNORE
-                "Is Exporter": "Yes",
-                "Is Importer": "No",
-                "Last Name": "E1_main_contact_last_name",  # /PS-IGNORE
-            },
-            {
-                "Businesses": "Test Exporter 1",
-                "Email Address": "E1_secondary_contact@example.com",  # /PS-IGNORE
-                "First Name": "E1_secondary_contact_first_name",  # /PS-IGNORE
-                "Is Exporter": "Yes",
-                "Is Importer": "No",
-                "Last Name": "E1_secondary_contact_last_name",  # /PS-IGNORE
-            },
-            {
-                "Businesses": "Test Exporter 1, Test Exporter 1 Agent 1",
-                "Email Address": "E1_A1_main_contact@example.com",  # /PS-IGNORE
-                "First Name": "E1_A1_main_contact_first_name",  # /PS-IGNORE
-                "Is Exporter": "Yes",
-                "Is Importer": "No",
-                "Last Name": "E1_A1_main_contact_last_name",  # /PS-IGNORE
-            },
-            {
-                "Businesses": "Test Exporter 2",
-                "Email Address": "E2_main_contact@example.com",  # /PS-IGNORE
-                "First Name": "E2_main_contact_first_name",  # /PS-IGNORE
-                "Is Exporter": "Yes",
-                "Is Importer": "No",
-                "Last Name": "E2_main_contact_last_name",  # /PS-IGNORE
-            },
+                "Date Joined": "20/01/2024",
+                "Last Login": "11/02/2024",
+            }
         ]
 
 
@@ -1417,6 +1458,7 @@ class TestActiveStaffUserInterface:
     @pytest.fixture(autouse=True)
     def _setup(self, report_schedule, ilb_admin_user):
         self.report_schedule = report_schedule
+        self.report_schedule.parameters["date_filter_type"] = UserDateFilterType.DATE_JOINED
         self.ilb_admin_user = ilb_admin_user
 
     def test_get_data_header(self):
@@ -1433,35 +1475,101 @@ class TestActiveStaffUserInterface:
                 "Email Address": "ilb_admin_user@example.com",  # /PS-IGNORE
                 "First Name": "ilb_admin_user_first_name",  # /PS-IGNORE
                 "Last Name": "ilb_admin_user_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
             },
             {
                 "Email Address": "ilb_admin_two@example.com",  # /PS-IGNORE
                 "First Name": "ilb_admin_two_first_name",  # /PS-IGNORE
                 "Last Name": "ilb_admin_two_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
             },
             {
                 "Email Address": "nca_admin_user@example.com",  # /PS-IGNORE
                 "First Name": "nca_admin_user_first_name",  # /PS-IGNORE
                 "Last Name": "nca_admin_user_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
             },
             {
                 "Email Address": "ho_admin_user@example.com",  # /PS-IGNORE
                 "First Name": "ho_admin_user_first_name",  # /PS-IGNORE
                 "Last Name": "ho_admin_user_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
             },
             {
                 "Email Address": "san_admin_user@example.com",  # /PS-IGNORE
                 "First Name": "san_admin_user_first_name",  # /PS-IGNORE
                 "Last Name": "san_admin_user_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
             },
             {
                 "Email Address": "import_search_user@example.com",  # /PS-IGNORE
                 "First Name": "import_search_user_first_name",  # /PS-IGNORE
                 "Last Name": "import_search_user_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
             },
             {
                 "Email Address": "con_user@example.com",  # /PS-IGNORE
                 "First Name": "con_user_first_name",  # /PS-IGNORE
                 "Last Name": "con_user_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
             },
+        ]
+
+
+class TestRegisteredUserInterface:
+    @pytest.fixture(autouse=True)
+    def _setup(self, report_schedule, ilb_admin_user):
+        self.report_schedule = report_schedule
+        self.report_schedule.parameters["date_filter_type"] = UserDateFilterType.DATE_JOINED
+        self.ilb_admin_user = ilb_admin_user
+
+    def test_get_data_header(self):
+        interface = RegisteredUserInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["header"] == EXPECTED_ACTIVE_USER_HEADER
+        assert data["errors"] == []
+
+    def test_get_errors(self):
+        interface = RegisteredUserInterface(self.report_schedule)
+        interface.ReportSerializer = IncorrectTypeUserSerializer
+        data = interface.get_data()
+        assert data == {
+            "header": EXPECTED_ACTIVE_USER_HEADER,
+            "results": [],
+            "errors": [
+                {
+                    "Identifier": "access_request_user@example.com",  # /PS-IGNORE
+                    "Error Type": "Validation Error",
+                    "Error Message": "Input should be a valid integer",
+                    "Column": "date_joined",
+                    "Value": "2024-01-20",
+                    "Report Name": "Registered Users",
+                }
+            ],
+        }
+
+    def test_get_data(self, importer, ilb_admin_two):
+        # Makes an admin user an importer to make sure they are excluded from the report
+        organisation_add_contact(importer, ilb_admin_two)
+
+        interface = RegisteredUserInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Businesses": "",
+                "Email Address": "access_request_user@example.com",  # /PS-IGNORE
+                "First Name": "access_request_user_first_name",  # /PS-IGNORE
+                "Is Exporter": "No",
+                "Is Importer": "No",
+                "Last Name": "access_request_user_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
+            }
         ]

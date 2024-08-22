@@ -4933,3 +4933,6 @@ template.created_datetime|datetime_format('%d-%b-%Y
 Responded Date
 Product A (
 dt
+DATE_JOINED
+date_joined_date
+Registered Users

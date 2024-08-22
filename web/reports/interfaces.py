@@ -73,7 +73,7 @@ from web.utils.search.app_data import _add_import_licence_data
 from web.utils.sentry import capture_exception
 
 from . import utils
-from .constants import NO, YES, DateFilterType
+from .constants import NO, YES, DateFilterType, UserDateFilterType
 from .serializers import (
     AccessRequestTotalsReportSerializer,
     DFLFirearmsLicenceSerializer,
@@ -137,6 +137,13 @@ class ImportLicenceFilter(BaseModel):
     model_config = ConfigDict(extra="ignore")
     application_type: str
     date_filter_type: DateFilterType
+    date_from: str
+    date_to: str
+
+
+class UserFilter(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    date_filter_type: UserDateFilterType
     date_from: str
     date_to: str
 
@@ -1172,28 +1179,36 @@ class SILFirearmsLicenceInterface(BaseFirearmsLicenceInterface):
 class ActiveUserInterface(ReportInterface):
     name = "Active Users"
     ReportSerializer = UserSerializer
-    ReportFilter = BasicReportFilter
-    filters: BasicReportFilter
+    ReportFilter = UserFilter
+    filters: UserFilter
+
+    def get_permission_filter(self) -> Q:
+        return Q(
+            groups__permissions__codename__in=[
+                Perms.sys.exporter_access.codename,
+                Perms.sys.importer_access.codename,
+            ]
+        )
 
     def get_queryset(self) -> QuerySet:
-        _filter = Q(
-            date_joined__date__range=(
-                self.filters.date_from,
-                self.filters.date_to,
+        if self.filters.date_filter_type == UserDateFilterType.LAST_LOGIN:
+            _filter = Q(
+                last_login__date__range=(
+                    self.filters.date_from,
+                    self.filters.date_to,
+                )
             )
-        )
-        _permissions_filter = Q(
-            Q(groups__isnull=True)
-            | Q(
-                groups__permissions__codename__in=[
-                    Perms.sys.exporter_access.codename,
-                    Perms.sys.importer_access.codename,
-                ]
+        else:
+            _filter = Q(
+                date_joined__date__range=(
+                    self.filters.date_from,
+                    self.filters.date_to,
+                )
             )
-        )
+
         return (
             user_list_view_qs()
-            .filter(_filter, _permissions_filter, is_active=True)
+            .filter(_filter, self.get_permission_filter(), is_active=True)
             .exclude(groups__name__in=StaffUserGroups)
             .annotate(
                 exporters=ArraySubquery(
@@ -1206,12 +1221,16 @@ class ActiveUserInterface(ReportInterface):
                     .values_list("content_object__name", flat=True)
                     .distinct()
                 ),
+                date_joined_date=F("date_joined__date"),
+                last_login_date=F("last_login__date"),
             )
             .distinct()
             .values(
                 "first_name",
                 "last_name",
                 "email",
+                "date_joined_date",
+                "last_login_date",
                 "exporters",
                 "importers",
             )
@@ -1226,6 +1245,8 @@ class ActiveUserInterface(ReportInterface):
             is_importer=True if user["importers"] else False,
             is_exporter=True if user["exporters"] else False,
             businesses=", ".join(user["exporters"] + user["importers"]),
+            date_joined=user["date_joined_date"],
+            last_login=user["last_login_date"],
         )
 
     def get_row_identifier(self, user: User) -> str:
@@ -1235,25 +1256,39 @@ class ActiveUserInterface(ReportInterface):
 class ActiveStaffUserInterface(ReportInterface):
     name = "Active Staff Users"
     ReportSerializer = StaffUserSerializer
-    ReportFilter = BasicReportFilter
-    filters: BasicReportFilter
+    ReportFilter = UserFilter
+    filters: UserFilter
 
     def get_queryset(self) -> QuerySet:
-        _filter = Q(
-            date_joined__date__range=(
-                self.filters.date_from,
-                self.filters.date_to,
+        if self.filters.date_filter_type == UserDateFilterType.LAST_LOGIN:
+            _filter = Q(
+                last_login__date__range=(
+                    self.filters.date_from,
+                    self.filters.date_to,
+                )
             )
-        )
+        else:
+            _filter = Q(
+                date_joined__date__range=(
+                    self.filters.date_from,
+                    self.filters.date_to,
+                )
+            )
         _permissions_filter = Q(groups__name__in=StaffUserGroups)
         return (
             user_list_view_qs()
             .filter(_filter, _permissions_filter, is_active=True)
+            .annotate(
+                date_joined_date=F("date_joined__date"),
+                last_login_date=F("last_login__date"),
+            )
             .distinct()
             .values(
                 "first_name",
                 "last_name",
                 "email",
+                "date_joined_date",
+                "last_login_date",
             )
             .order_by("pk")
         )
@@ -1263,7 +1298,16 @@ class ActiveStaffUserInterface(ReportInterface):
             first_name=user["first_name"],
             last_name=user["last_name"],
             email_address=user["email"],
+            date_joined=user["date_joined_date"],
+            last_login=user["last_login_date"],
         )
 
     def get_row_identifier(self, user: User) -> str:
         return user["email"]
+
+
+class RegisteredUserInterface(ActiveUserInterface):
+    name = "Registered Users"
+
+    def get_permission_filter(self) -> Q:
+        return Q(groups__isnull=True)

@@ -67,6 +67,21 @@ from web.reports.utils import (
                 "New Field": "Test",
             },
         ),
+        (
+            ReportType.ACTIVE_USERS,
+            {
+                "date_from": "2011-02-03",
+                "date_to": "2014-11-16",
+                "date_filter_type": "LAST_LOGIN",
+                "new_field": "Test",
+            },
+            {
+                "Date From": "03 Feb 2011",
+                "Date to": "16 Nov 2014",
+                "Date Filter Type": "Last login date",
+                "New Field": "Test",
+            },
+        ),
     ),
 )
 def test_format_parameters_used(report_schedule, report_type, parameters, exp_formatted_parameters):

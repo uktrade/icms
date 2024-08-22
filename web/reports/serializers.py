@@ -232,6 +232,8 @@ class UserSerializer(BaseSerializer):
     first_name: str
     last_name: str
     email_address: str
+    date_joined: date_or_empty
+    last_login: date_or_empty
     is_importer: yes_no
     is_exporter: yes_no
     businesses: str_or_empty
@@ -241,6 +243,8 @@ class StaffUserSerializer(BaseSerializer):
     first_name: str
     last_name: str
     email_address: str
+    date_joined: date_or_empty
+    last_login: date_or_empty
 
 
 class ErrorSerializer(BaseSerializer):

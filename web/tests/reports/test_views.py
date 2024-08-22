@@ -4,7 +4,12 @@ import pytest
 from pytest_django.asserts import assertContains, assertNotContains, assertTemplateUsed
 
 from web.models import File, GeneratedReport
-from web.reports.constants import DateFilterType, ReportStatus, ReportType
+from web.reports.constants import (
+    DateFilterType,
+    ReportStatus,
+    ReportType,
+    UserDateFilterType,
+)
 from web.reports.models import Report, ScheduleReport
 from web.tests.helpers import CaseURLS
 
@@ -120,6 +125,7 @@ def test_run_history_view(ilb_admin_client, report_schedule, deleted_report_sche
                 "date_from": "1-Jan-2006",
                 "date_to": "1-Jan-2022",
                 "notes": "",
+                "date_filter_type": UserDateFilterType.DATE_JOINED,
             },
         ),
     ),

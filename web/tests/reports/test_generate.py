@@ -6,7 +6,7 @@ from freezegun import freeze_time
 
 from web.models import GeneratedReport
 from web.reports import generate, interfaces
-from web.reports.constants import ReportStatus
+from web.reports.constants import ReportStatus, UserDateFilterType
 
 
 @freeze_time("2024-01-01 12:00:00")
@@ -65,12 +65,14 @@ def test_generate_firearms_licences_report(mock_write_files, report_schedule):
 @mock.patch("web.reports.generate.write_files")
 def test_generate_active_users_report(mock_write_files, report_schedule):
     mock_write_files.return_value = None
+    report_schedule.parameters["date_filter_type"] = UserDateFilterType.DATE_JOINED
     generate.generate_active_users_report(report_schedule)
     mock_write_files.called_once_with(
         [report_schedule],
         [
             interfaces.ActiveUserInterface(report_schedule),
             interfaces.ActiveStaffUserInterface(report_schedule),
+            interfaces.RegisteredUserInterface(report_schedule),
         ],
     )
     report_schedule.refresh_from_db()

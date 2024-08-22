@@ -3,13 +3,15 @@ from unittest import mock
 import pytest
 
 from web.models import Report
-from web.reports.constants import ReportType
+from web.reports.constants import ReportType, UserDateFilterType
 from web.reports.tasks import generate_report_task
 
 
 def test_report_task(report_schedule):
     for report_type in ReportType:
         report_schedule.report = Report.objects.get(report_type=report_type)
+        if report_type == ReportType.ACTIVE_USERS:
+            report_schedule.parameters["date_filter_type"] = UserDateFilterType.DATE_JOINED
         report_schedule.save()
         with mock.patch("web.reports.generate.write_files") as mock_write_files:
             mock_write_files.return_value = None

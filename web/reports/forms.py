@@ -11,7 +11,7 @@ from web.models import (
     ScheduleReport,
 )
 
-from .constants import DateFilterType
+from .constants import DateFilterType, UserDateFilterType
 
 
 class BasicReportForm(forms.ModelForm):
@@ -91,4 +91,18 @@ class ImportLicenceForm(ReportForm):
         help_texts = {
             "date_from": "Application Submitted/Initially closed date (inclusive of this day ie 1-Jan-24 00:00:01)",
             "date_to": "Application Submitted/Initially closed date (inclusive of this day ie 31-Jan-24 23:59:59)",
+        }
+
+
+class ActiveUserForm(BasicReportForm):
+    date_filter_type = forms.ChoiceField(
+        choices=UserDateFilterType.choices, initial=UserDateFilterType.DATE_JOINED
+    )
+
+    class Meta:
+        model = ReportForm.Meta.model
+        fields = ["date_filter_type"] + ReportForm.Meta.fields
+        help_texts = {
+            "date_from": "Date joined/Last login date (inclusive of this day ie 1-Jan-24 00:00:01)",
+            "date_to": "Date joined/Last login date (inclusive of this day ie 31-Jan-24 23:59:59)",
         }
