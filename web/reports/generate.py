@@ -18,6 +18,7 @@ from .interfaces import (
     ImportLicenceInterface,
     IssuedCertificateReportInterface,
     OILFirearmsLicenceInterface,
+    RegisteredUserInterface,
     ReportInterface,
     SILFirearmsLicenceInterface,
     SupplementaryFirearmsInterface,
@@ -89,7 +90,11 @@ def generate_active_users_report(scheduled_report: ScheduleReport) -> None:
     scheduled_report = _start_processing_report(scheduled_report)
     active_users_interface = ActiveUserInterface(scheduled_report)
     active_staff_interface = ActiveStaffUserInterface(scheduled_report)
-    has_errors = write_files(scheduled_report, [active_users_interface, active_staff_interface])
+    registered_users_interface = RegisteredUserInterface(scheduled_report)
+    has_errors = write_files(
+        scheduled_report,
+        [active_users_interface, active_staff_interface, registered_users_interface],
+    )
     _end_processing_report(scheduled_report, has_errors)
 
 

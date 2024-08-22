@@ -12,7 +12,7 @@ from web.models import (
 )
 from web.permissions import get_report_type_for_permission
 
-from .constants import DateFilterType, ReportType
+from .constants import DateFilterType, ReportType, UserDateFilterType
 from .serializers import (
     ConstabularyEmailTimesSerializer,
     ErrorSerializer,
@@ -117,7 +117,10 @@ def format_parameters_used(schedule_report: ScheduleReport) -> dict[str, str]:
             except ValueError:
                 pass
         elif desc == "date_filter_type":
-            value = DateFilterType(value).label
+            if schedule_report.report.report_type == ReportType.ACTIVE_USERS:
+                value = UserDateFilterType(value).label
+            else:
+                value = DateFilterType(value).label
         elif desc == "legislation":
             value = (
                 "<br>".join(

@@ -28,3 +28,8 @@ class ReportType(TypedTextChoices):
 class DateFilterType(TypedTextChoices):
     SUBMITTED = ("SUBMITTED", "Application Submitted date")
     CLOSED = ("CLOSED", "Application Initially closed date")
+
+
+class UserDateFilterType(TypedTextChoices):
+    DATE_JOINED = ("DATE_JOINED", "Date user joined")
+    LAST_LOGIN = ("LAST_LOGIN", "Last login date")

@@ -587,6 +587,7 @@ class Command(BaseCommand):
             last_name=last_name,
             date_of_birth=dt.date(2000, 1, 1),
             icms_v1_user=icms_v1_user,
+            date_joined=dt.date(2020, 1, 20),
         )
 
         Email.objects.create(
