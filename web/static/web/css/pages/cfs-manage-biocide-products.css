@@ -1,0 +1,11 @@
+.product-table > thead > tr > th:first-child {
+    width: 45%;
+}
+
+.product-table > thead > tr > th:last-child {
+    width: 45%;
+}
+
+.active-ingredient-name {
+    width: 75%;
+}
