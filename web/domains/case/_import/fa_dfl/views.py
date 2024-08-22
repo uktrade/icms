@@ -115,8 +115,10 @@ class DFLGoodsCertificateDetailView(case_progress.InProgressApplicationStatusTas
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
-        goods_list = self.application.goods_certificates.filter(is_active=True).select_related(
-            "issuing_country"
+        goods_list = (
+            self.application.goods_certificates.filter(is_active=True)
+            .select_related("issuing_country")
+            .order_by("pk")
         )
 
         return context | {
@@ -148,6 +150,7 @@ def add_goods_certificate(
                     for (field, value) in form.cleaned_data.items()
                     if field not in ["document"]
                 }
+                extra_args["goods_description_original"] = form.cleaned_data["goods_description"]
 
                 create_file_model(
                     document,
@@ -190,7 +193,9 @@ def edit_goods_certificate(
             form = EditDLFGoodsCertificateForm(data=request.POST, instance=document)
 
             if form.is_valid():
-                form.save()
+                goods_cert = form.save(commit=False)
+                goods_cert.goods_description_original = goods_cert.goods_description
+                goods_cert.save()
 
                 return redirect(
                     reverse("import:fa-dfl:list-goods", kwargs={"application_pk": application_pk})
@@ -271,7 +276,7 @@ def reset_goods_certificate_description(
         case_progress.application_in_processing(application)
 
         goods = get_object_or_404(application.goods_certificates, pk=document_pk)
-        goods.goods_description_override = None
+        goods.goods_description = goods.goods_description_original
         goods.save()
 
         return redirect(

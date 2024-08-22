@@ -22,10 +22,9 @@ class DFLGoodsCertificate(File):
 
     goods_description = models.CharField(max_length=4096, verbose_name="Goods Description")
 
-    # Field for case officer to override the description that appears on the licence
-    goods_description_override = models.CharField(
-        max_length=4096, verbose_name="Goods Description", null=True
-    )
+    # Field for storing original value from the applicant that is overritten by th case officer
+    # TODO ICMSLST-2790 Make field not nullable when data migration is updated
+    goods_description_original = models.CharField(max_length=4096, null=True)
 
     deactivated_certificate_reference = models.CharField(
         max_length=50, verbose_name="Deactivated Certificate Reference"

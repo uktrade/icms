@@ -21,14 +21,14 @@
             {{ commodity_link(goods_item.commodity) }}
           </td>
           <td>
-            {{ goods_item.goods_description_override or goods_item.goods_description }}
+            {{ goods_item.goods_description }}
           </td>
           <td>
-            {{ goods_item.quantity_amount_override or goods_item.quantity_amount }}
+            {{ goods_item.quantity_amount }}
           </td>
           <td>{{ goods_item.unit_description }}</td>
           <td>
-            {{ goods_item.value_override or goods_item.value }}
+            {{ goods_item.value }}
           </td>
           {% if not readonly_view and not variation_refused %}
             <td>
@@ -39,7 +39,9 @@
               </a>
             </td>
             <td>
-              {% if goods_item.goods_description_override or goods_item.quantity_amount_override or goods_item.value_override %}
+              {% if goods_item.goods_description != goods_item.goods_description_original
+                or goods_item.quantity_amount !=  goods_item.quantity_amount_original
+                or goods_item.value != goods_item.value_original %}
                 <form
                   method="post"
                   action="{{ icms_url('import:sanctions:reset-goods-licence', kwargs={'application_pk': process.pk, 'goods_pk': goods_item.pk}) }}"
