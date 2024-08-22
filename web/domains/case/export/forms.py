@@ -578,22 +578,6 @@ class CFSProductForm(forms.ModelForm):
         return super().save(commit=commit)
 
 
-class CFSProductFormSetBase(forms.BaseInlineFormSet):
-    def get_form_kwargs(self, index: int) -> dict[str, Any]:
-        kwargs = super().get_form_kwargs(index)
-
-        return kwargs | {"schedule": self.instance}
-
-
-CFSProductFormSet = forms.inlineformset_factory(
-    CFSSchedule,
-    CFSProduct,
-    form=CFSProductForm,
-    formset=CFSProductFormSetBase,
-    extra=1,
-)
-
-
 class CFSProductTypeForm(forms.ModelForm):
     class Meta:
         model = CFSProductType
@@ -920,7 +904,6 @@ class BaseCFSProductFormset(BaseInlineFormSet):
         return result
 
 
-# TODO: ICMSLST-2916 Rename this when we delete the old formsets.
-NewCFSProductFormset = forms.inlineformset_factory(
+CFSProductFormset = forms.inlineformset_factory(
     CFSSchedule, CFSProduct, form=ManageCFSProductForm, formset=BaseCFSProductFormset, extra=1
 )

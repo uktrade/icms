@@ -542,27 +542,13 @@ def create_in_progress_cfs_app(
     schedule.legislations.add(legislation)
 
     # Add a product to the schedule
-    add_product_url = reverse("export:cfs-schedule-add-product", kwargs=schedule_kwargs)
-
-    resp = exporter_client.post(add_product_url, {"product_name": "A Product"})
-    assert resp.status_code == 302
-
-    product = schedule.products.first()
-    product_kwargs = schedule_kwargs | {"product_pk": product.pk}
+    product = schedule.products.create(product_name="A Product")
 
     # Add an ingredient to the product
-    add_ingredient_url = reverse("export:cfs-schedule-add-ingredient", kwargs=product_kwargs)
-    resp = exporter_client.post(
-        add_ingredient_url, {"name": "A Ingredient", "cas_number": "107-07-3"}
-    )
-    assert resp.status_code == 302
+    product.active_ingredients.create(name="An Ingredient", cas_number="107-07-3")
 
     # Add product type numbers to the product
-    add_product_type_number_url = reverse(
-        "export:cfs-schedule-add-product-type", kwargs=product_kwargs
-    )
-    resp = exporter_client.post(add_product_type_number_url, {"product_type_number": 1})
-    assert resp.status_code == 302
+    product.product_type_numbers.create(product_type_number=1)
 
     return cfs_app
 

@@ -58,26 +58,6 @@ urlpatterns = [
                     name="cfs-schedule-manage-products",
                 ),
                 path(
-                    "cfs-schedule-product-create/",
-                    views.CFSScheduleTemplateProductCreateView.as_view(),
-                    name="cfs-schedule-product-create",
-                ),
-                path(
-                    "cfs-schedule-product-create-multiple/",
-                    views.CFSScheduleTemplateProductCreateMultipleView.as_view(),
-                    name="cfs-schedule-product-create-multiple",
-                ),
-                path(
-                    "cfs-schedule-product-update/<int:product_template_pk>/",
-                    views.CFSScheduleTemplateProductUpdateView.as_view(),
-                    name="cfs-schedule-product-update",
-                ),
-                path(
-                    "cfs-schedule-product-delete/<int:product_template_pk>/",
-                    views.CFSScheduleTemplateProductDeleteView.as_view(),
-                    name="cfs-schedule-product-delete",
-                ),
-                path(
                     "cfs-schedule-product/spreadsheet/download-template/",
                     views.CFSScheduleTemplateProductDownloadSpreadsheetView.as_view(),
                     name="cfs-schedule-product-download-template",
