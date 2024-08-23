@@ -131,8 +131,9 @@ class Command(BaseCommand):
             self.fetch_permission_data(connection, "Importer User")
             self.fetch_permission_data(connection, "Exporter User")
 
-            # TODO ICMSLST-2128: Constabulary contact permissions may not be migrated to V2
-            self.fetch_permission_data(connection, "Constabulary Contact")
+            # Constabulary contact permissions do not need to be migrated to V2
+            # Uncomment to assign constabulary contact permissions
+            # self.fetch_permission_data(connection, "Constabulary Contact")
 
     def fetch_permission_data(self, connection: oracledb.Connection, group_name: str) -> None:
         """Fetch user teams and roles from V1 and call methods to assign groups and permissions
