@@ -17,11 +17,7 @@ from data_migration.management.commands.config.run_order import (
 from data_migration.management.commands.types import QueryModel
 from data_migration.utils import xml_parser
 from web import models as web
-from web.permissions import (
-    ConstabularyObjectPermissions,
-    ExporterObjectPermissions,
-    ImporterObjectPermissions,
-)
+from web.permissions import ExporterObjectPermissions, ImporterObjectPermissions
 
 from . import utils
 
@@ -387,7 +383,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
 
     # Check Groups / Permissions
 
-    assert web.User.objects.filter(groups__isnull=False).count() == 13
+    assert web.User.objects.filter(groups__isnull=False).count() == 12
     assert (
         web.User.objects.get(groups__name="ILB Case Officer").username
         == "ilb_case_officer@example.com"  # /PS-IGNORE
@@ -405,14 +401,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
         == "import_search_user@example.com"  # /PS-IGNORE
     )
 
-    constabulary_user = web.User.objects.get(groups__name="Constabulary Contact")
-    constabulary = web.Constabulary.objects.get(id=1)
-    COP = ConstabularyObjectPermissions
-
-    assert constabulary_user.username == "constabulary_contact@example.com"  # /PS-IGNORE
-    assert constabulary_user.has_perm(COP.verified_fa_authority_editor, constabulary) is True
     assert web.User.objects.filter(groups__name="Importer User").count() == 4
-
     IOP = ImporterObjectPermissions
     importer_org = web.Importer.objects.get(id=2)
     importer_agent_org = web.Importer.objects.get(id=3)
