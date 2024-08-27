@@ -24,7 +24,7 @@
   </table>
 {% endmacro %}
 
-<div class="formset-container" data-nested-formsets="true" data-formset-prefix="{{ product_formset.prefix }}">
+<div class="formset-container" data-formset-prefix="{{ product_formset.prefix }}">
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {{ product_formset.management_form }}
     {{ forms.formset_errors(product_formset) }}
