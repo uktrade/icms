@@ -45,7 +45,7 @@
                                'import:fa:add-authority',
                                kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}" method="post">
                   {{ csrf_input }}
-                  <input type="submit" class="button small-button" value="Select"/>
+                  <input type="submit" class="button small-button" data-test-id="verified-cert-btn-{{ loop.index }}" value="Select"/>
                 </form>
             {% endif %}
           </td>

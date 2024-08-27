@@ -168,6 +168,7 @@ def fa_dfl_manage_and_complete_case(page: Page, dfl_id: int) -> None:
     utils.assert_page_url(page, f"/case/import/{dfl_id}/authorisation/start/")
 
     page.get_by_role("button", name="Start Authorisation (Close Case Processing)").click()
+    page.get_by_role("button", name="OK").click()
     utils.assert_page_url(page, "/workbasket/")
 
     #

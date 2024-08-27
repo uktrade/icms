@@ -25,7 +25,12 @@ To run Playwright locally follow the following commands (this is for running the
 # Activate a venv before doing this
 pip install --upgrade pip
 pip install pytest-playwright
-playwright install
+playwright install chromium
+```
+
+Example showing how to debug a single test locally:
+```bash
+make end_to_end_test_local args="--headed --slowmo 250 -k test_can_create_fa_dfl"
 ```
 
 To create a test using the codegen tool run this:

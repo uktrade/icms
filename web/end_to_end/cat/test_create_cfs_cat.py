@@ -1,3 +1,5 @@
+import re
+
 from web.end_to_end import conftest, utils
 
 
@@ -79,23 +81,25 @@ def test_can_create_cfs_cat(pages: conftest.UserPages) -> None:
         page.get_by_label("Address", exact=True).fill("Address line one")
         page.get_by_role("button", name="Save").click()
 
-        # Add, edit and delete a product.
-        page.get_by_role("link", name="Add Product").click()
-        page.get_by_label("Product Name").click()
-        page.get_by_label("Product Name").fill("Product 1")
-        page.get_by_role("button", name="Create").click()
-        product_pk = utils.get_application_id(
-            page.url,
-            r"cat/edit/\d+/schedule_template/\d+/cfs-schedule-product-update/(?P<product_pk>\d+)/",
-            "product_pk",
-        )
-        page.get_by_label("Product Name").click()
-        page.get_by_label("Product Name").fill("Product 1 updated")
-        page.get_by_role("button", name="save").click()
-        page.get_by_role("link", name="Edit schedule").click()
-        utils.get_cfs_product_list_row(page, product_pk).get_by_role(
-            "button", name="Delete"
-        ).click()
+        # Add, edit and delete a few products.
+        page.get_by_role("link", name="Manage Products").click()
+        page.get_by_role("button", name="Add product").click()
+        page.locator("#id_products-0-product_name").click()
+        page.locator("#id_products-0-product_name").fill("product 1")
+        page.locator("#id_products-1-product_name").click()
+        page.locator("#id_products-1-product_name").fill("Product 2")
+        page.get_by_role("button", name="Save").click()
+        page.get_by_role("link", name="Manage Products").click()
+        page.get_by_role("cell", name="product 1").get_by_label("").click()
+        page.get_by_role("cell", name="product 1").get_by_label("").fill("product 1 updated")
+        page.get_by_role("cell", name="Product 2").get_by_label("").click()
+        page.get_by_role("cell", name="Product 2").get_by_label("").fill("Product 2 updated")
+        page.get_by_role("button", name="Save").click()
+        page.get_by_role("link", name="Manage Products").click()
+        # Delete buttons
+        page.get_by_role("cell", name="product 1 updated").get_by_role("button").click()
+        page.get_by_role("cell", name="product 2 updated").get_by_role("button").click()
+        page.get_by_role("button", name="Save").click()
 
         # Navigate back to main csf form (showing schedule list)
         page.get_by_role("link", name="Certificate of Free Sale").click()
@@ -218,43 +222,41 @@ def test_can_create_cfs_cat_biocidal_schdedule(pages: conftest.UserPages) -> Non
         page.get_by_label("Address", exact=True).fill("Address line one")
         page.get_by_role("button", name="Save").click()
 
-        # Add, edit and delete several products (including active ingredients / product types.
-        page.get_by_role("link", name="Add Product").click()
-        page.get_by_label("Product Name").click()
-        page.get_by_label("Product Name").fill("Product 1")
-        page.get_by_role("button", name="Create").click()
-        product_pk = utils.get_application_id(
-            page.url,
-            r"cat/edit/\d+/schedule_template/\d+/cfs-schedule-product-update/(?P<product_pk>\d+)/",
-            "product_pk",
+        # Add a product to schedule 2
+        page.get_by_role("link", name="Manage Products").click()
+        page.locator("#id_products-0-product_name").click()
+        page.locator("#id_products-0-product_name").fill("Product 1")
+        page.get_by_role("button", name="Add product type number").first.click()
+        page.locator(
+            "#id_product-type-products-0-product_type_numbers-0-product_type_number"
+        ).select_option("1")
+        page.locator(
+            "#id_product-type-products-0-product_type_numbers-1-product_type_number"
+        ).select_option("2")
+        page.locator("#id_active-ingredient-products-0-active_ingredients-0-name").click()
+        page.locator("#id_active-ingredient-products-0-active_ingredients-0-name").fill("Name 1")
+        page.locator("#id_active-ingredient-products-0-active_ingredients-0-cas_number").click()
+        page.locator("#id_active-ingredient-products-0-active_ingredients-0-cas_number").fill(
+            "58-08-2"
         )
-        page.get_by_label("Product Name").click()
-        page.get_by_label("Product Name").fill("Test product updated")
-        page.locator("#id_pt_-0-product_type_number").select_option("1")
-        page.locator("#id_pt_-1-product_type_number").select_option("2")
-        page.locator("#id_pt_-2-product_type_number").select_option("3")
-        page.locator("#id_ai_-0-name").click()
-        page.locator("#id_ai_-0-name").fill("Active ingredient 1")
-        page.locator("#id_ai_-0-cas_number").click()
-        page.locator("#id_ai_-0-cas_number").fill("107-07-3")
-        page.locator("#id_ai_-1-name").click()
-        page.locator("#id_ai_-1-name").fill("Active ingredient 2")
-        page.locator("#id_ai_-1-cas_number").click()
-        page.locator("#id_ai_-1-cas_number").fill("506-64-9")
-        page.locator("#id_ai_-2-name").click()
-        page.locator("#id_ai_-2-name").fill("Active ingredient 3")
-        page.locator("#id_ai_-2-cas_number").click()
-        page.locator("#id_ai_-2-cas_number").fill("534-16-7")
-        page.get_by_role("button", name="save").click()
-        page.locator("#id_pt_-1-DELETE").check()
-        page.locator("#id_pt_-2-DELETE").check()
-        page.locator("#id_ai_-1-DELETE").check()
-        page.locator("#id_ai_-2-DELETE").check()
-        page.get_by_role("button", name="save").click()
-        page.get_by_role("link", name="Edit schedule").click()
-        utils.get_cfs_product_list_row(page, product_pk).get_by_role(
-            "button", name="Delete"
-        ).click()
+
+        page.get_by_role("button", name=re.compile(r".+Add product$"), include_hidden=False).click()
+        page.locator("#id_products-1-product_name").click()
+        page.locator("#id_products-1-product_name").fill("Product 2")
+        page.locator(
+            "#id_product-type-products-1-product_type_numbers-0-product_type_number"
+        ).select_option("1")
+        page.locator("#id_active-ingredient-products-1-active_ingredients-0-name").fill("Name 2")
+        page.locator("#id_active-ingredient-products-1-active_ingredients-0-cas_number").click()
+        page.locator("#id_active-ingredient-products-1-active_ingredients-0-cas_number").fill(
+            "27039-77-6"
+        )
+        page.get_by_role("button", name="Save").click()
+
+        page.get_by_role("link", name="Manage Products").click()
+        page.get_by_role("cell", name="Product 1").get_by_role("button").click()
+        page.get_by_role("cell", name="Product 2").get_by_role("button").click()
+        page.get_by_role("button", name="Save").click()
 
         # Navigate back to main csf form (showing schedule list)
         page.get_by_role("link", name="Certificate of Free Sale").click()

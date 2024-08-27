@@ -169,9 +169,18 @@ def fa_sil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_role("button", name="Save").click()
 
     #
-    # Add a certificate
+    # Go to certificates page
     #
     page.get_by_role("link", name="Certificates").click()
+
+    #
+    # Add a verified firearms certificate
+    #
+    page.locator('[data-test-id="verified-cert-btn-1"]').click()
+
+    #
+    # Add a firearms certificate
+    #
     page.get_by_role("link", name="Add Certificate").click()
     page.get_by_label("Certificate Reference").click()
     page.get_by_label("Certificate Reference").fill("reference")
@@ -189,6 +198,11 @@ def fa_sil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_label("Expiry Date").press("Enter")
     page.get_by_label("Document").set_input_files(sample_upload_file)
     page.get_by_role("button", name="Save").click()
+
+    #
+    # Add a verified section 5 authority certificate
+    #
+    page.locator('[data-test-id="verified-section5-btn-1"]').click()
 
     #
     # Add a section 5 authority
@@ -296,7 +310,7 @@ def fa_sil_manage_and_complete_case(page: Page, app_id: int) -> None:
     # Complete Response Preparation (Set Cover Letter)
     #
     page.get_by_role("link", name="Set Cover Letter").click()
-    page.get_by_role("combobox", name="Template").select_option("79")
+    page.get_by_role("combobox", name="Template").select_option("89")
     page.get_by_role("button", name="Save").click()
 
     #
@@ -312,7 +326,7 @@ def fa_sil_manage_and_complete_case(page: Page, app_id: int) -> None:
     # Add an Endorsement
     #
     page.get_by_role("link", name=re.compile(".+Add Endorsement")).click()
-    page.get_by_role("combobox", name="Content").select_option("54")
+    page.get_by_role("combobox", name="Content").select_option("86")
     page.get_by_role("button", name="Save").click()
 
     #
@@ -328,6 +342,7 @@ def fa_sil_manage_and_complete_case(page: Page, app_id: int) -> None:
     #
     page.get_by_role("link", name="Authorisation").click()
     page.get_by_role("button", name="Start Authorisation (Close Case Processing)").click()
+    page.get_by_role("button", name="OK").click()
 
     #
     # Authorise Documents

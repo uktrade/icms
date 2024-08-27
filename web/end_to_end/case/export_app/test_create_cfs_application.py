@@ -54,9 +54,30 @@ def cfs_create(page: Page) -> int:
     page.get_by_role("button", name="Save").click()
 
     # Add a product to schedule 1
-    page.get_by_role("link", name="Add Product").click()
-    page.get_by_label("Product name").click()
-    page.get_by_label("Product name").fill("Product 1")
+    page.get_by_role("link", name="Manage Products").click()
+    # Add and save a product
+    page.locator("#id_products-0-product_name").click()
+    page.locator("#id_products-0-product_name").fill("Product 1")
+    page.get_by_role("button", name="Save").click()
+
+    # Edit and save a product
+    page.get_by_role("cell", name="Product 1").get_by_label("").click()
+    page.get_by_role("cell", name="Product 1").get_by_label("").fill("Product 1 Updated")
+    page.get_by_role("button", name="Save").click()
+
+    # Delete a product
+    page.get_by_role("cell", name="Product 1 Updated").get_by_role("button").click()
+    page.get_by_role("button", name="Save").click()
+
+    # Add several products using add product button
+    page.locator("#id_products-0-product_name").click()
+    page.locator("#id_products-0-product_name").fill("Product 1")
+    page.get_by_role("button", name="Add product").click()
+    page.locator("#id_products-1-product_name").click()
+    page.locator("#id_products-1-product_name").fill("Product 2")
+    page.get_by_role("button", name="Add product").click()
+    page.locator("#id_products-2-product_name").click()
+    page.locator("#id_products-2-product_name").fill("Product 3")
     page.get_by_role("button", name="Save").click()
 
     # Navigate back to main schedule view of application
@@ -64,9 +85,6 @@ def cfs_create(page: Page) -> int:
 
     # Copy Schedule 1 (opens schedule 2)
     page.get_by_role("button", name="Copy").click()
-
-    # Delete existing product
-    page.get_by_role("button", name="Delete").click()
 
     # Change to Biocide regulation to change product page
     page.get_by_role(
@@ -81,24 +99,34 @@ def cfs_create(page: Page) -> int:
     ).click()
     page.get_by_role("button", name="Save").click()
 
+    # Delete existing products
+    page.get_by_role("link", name="Manage Products").click()
+    page.get_by_role("cell", name="Product 1").get_by_role("button").click()
+    page.get_by_role("cell", name="Product 2").get_by_role("button").click()
+    page.get_by_role("cell", name="Product 3").get_by_role("button").click()
+    page.get_by_role("button", name="Save").click()
+
     # Add a product to schedule 2
-    page.get_by_role("link", name="Add Product").click()
-    page.get_by_label("Product name").click()
-    page.get_by_label("Product name").fill("Biocide Product")
-    page.get_by_role("button", name="Save").click()
-
-    page.get_by_role("link", name="Add PT Number").click()
-    page.get_by_role("combobox", name="Product type number").select_option("1")
-    page.get_by_role("button", name="Save").click()
-
-    page.get_by_role("link", name="Add Active Ingredient").click()
-    page.get_by_label("Name").click()
-    page.get_by_label("Name").fill("name value")
-    page.get_by_label("CAS Number").click()
-    page.get_by_label("CAS Number").fill("107-07-3")
-    page.get_by_role("button", name="Save").click()
-
-    # Click save on the Goods list view
+    page.locator("#id_products-0-product_name").click()
+    page.locator("#id_products-0-product_name").fill("Product 1")
+    page.get_by_role("button", name="Add product type number").click()
+    page.locator(
+        "#id_product-type-products-0-product_type_numbers-0-product_type_number"
+    ).select_option("1")
+    page.locator(
+        "#id_product-type-products-0-product_type_numbers-1-product_type_number"
+    ).select_option("2")
+    page.locator("#id_active-ingredient-products-0-active_ingredients-0-name").click()
+    page.locator("#id_active-ingredient-products-0-active_ingredients-0-name").fill("Name 1")
+    page.locator("#id_active-ingredient-products-0-active_ingredients-0-cas_number").click()
+    page.locator("#id_active-ingredient-products-0-active_ingredients-0-cas_number").fill("58-08-2")
+    page.get_by_role("button", name="Add active ingredient").click()
+    page.locator("#id_active-ingredient-products-0-active_ingredients-1-name").click()
+    page.locator("#id_active-ingredient-products-0-active_ingredients-1-name").fill("Name 2")
+    page.locator("#id_active-ingredient-products-0-active_ingredients-1-cas_number").click()
+    page.locator("#id_active-ingredient-products-0-active_ingredients-1-cas_number").fill(
+        "7440-22-4"
+    )
     page.get_by_role("button", name="Save").click()
 
     # Submit the application
@@ -138,6 +166,7 @@ def cfs_manage_and_complete_case(page: Page, cfs_id: int) -> None:
     #
     page.get_by_role("link", name="Authorisation").click()
     page.get_by_role("button", name="Start Authorisation (Close Case Processing)").click()
+    page.get_by_role("button", name="OK").click()
 
     #
     # Authorise Documents

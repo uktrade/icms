@@ -2,7 +2,6 @@ import datetime as dt
 import re
 from typing import Any, Optional
 
-from django.utils import timezone
 from playwright.sync_api import Locator, Page, expect
 
 # Always match the format here: web/static/web/js/fox/core-footer.js
@@ -35,9 +34,15 @@ def assert_page_url(page: Page, url_pattern: str) -> None:
 
 def get_future_datetime() -> dt.datetime:
     """Return a future datetime"""
-    now = timezone.now()
 
-    return dt.datetime(year=now.year + 1, month=1, day=1, hour=15, minute=30, tzinfo=dt.UTC)
+    # use datetime instead of django.timezone.now as end to end test runner doesn't have
+    # django installed.
+    # Can't use dt.UTC as that was added in 3.11 (playwright runner uses python 3.10)
+    now = dt.datetime.now(tz=dt.timezone.utc)
+
+    return dt.datetime(
+        year=now.year + 1, month=1, day=1, hour=15, minute=30, tzinfo=dt.timezone.utc
+    )
 
 
 def set_licence_end_date(page: Page) -> None:
@@ -94,7 +99,3 @@ def get_search_row(page: Page, app_id: int) -> Locator:
 
 def get_cat_list_row(page: Page, cat_pk: int) -> Locator:
     return page.locator(f'[data-test-id="cat-results-row-{cat_pk}"]')
-
-
-def get_cfs_product_list_row(page: Page, product_pk: int) -> Locator:
-    return page.locator(f'[data-test-id="schedule-product-row-{product_pk}"]')

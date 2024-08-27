@@ -193,7 +193,7 @@ def fa_oil_manage_and_complete_case(page: Page, app_id: int) -> None:
     # Add an Endorsement
     #
     page.get_by_role("link", name=re.compile(".+Add Endorsement")).click()
-    page.get_by_role("combobox", name="Content").select_option("54")
+    page.get_by_role("combobox", name="Content").select_option("86")
     page.get_by_role("button", name="Save").click()
 
     #
@@ -209,6 +209,7 @@ def fa_oil_manage_and_complete_case(page: Page, app_id: int) -> None:
     #
     page.get_by_role("link", name="Authorisation").click()
     page.get_by_role("button", name="Start Authorisation (Close Case Processing)").click()
+    page.get_by_role("button", name="OK").click()
 
     #
     # Authorise Documents
