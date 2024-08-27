@@ -518,7 +518,9 @@ def test_start_authorisation_rejected_variation_requested_application(
         EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED,
         {
             "reference": wood_application.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_importer_site_domain()
+            ),
             "application_url": get_case_view_url(wood_application, get_importer_site_domain()),
             "reason": "test refuse reason",
             "icms_url": get_importer_site_domain(),

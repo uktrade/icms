@@ -2,7 +2,6 @@ from urllib.parse import urljoin
 
 from django.http import QueryDict
 from django.shortcuts import reverse
-from django.templatetags.static import static
 
 from web.domains.case.types import Authority, DocumentPack, ImpOrExp
 from web.models import (
@@ -28,11 +27,8 @@ from web.sites import (
 )
 
 
-def get_validate_digital_signatures_url(full_url: bool = False) -> str:
-    url = static("web/docs/ValidateDigSigs.pdf")
-    if full_url:
-        return urljoin(get_importer_site_domain(), url)
-    return url
+def get_validate_digital_signatures_url(domain: str) -> str:
+    return urljoin(domain, reverse("support:validate-signature"))
 
 
 def get_case_view_url(application: ImpOrExp, domain: str) -> str:

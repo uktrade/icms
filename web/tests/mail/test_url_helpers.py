@@ -14,15 +14,11 @@ from web.models import FirearmsAuthority, Section5Authority
 from web.sites import get_exporter_site_domain, get_importer_site_domain
 
 
-@pytest.mark.parametrize(
-    "full_url,expected_url",
-    [
-        (False, "/static/web/docs/ValidateDigSigs.pdf"),
-        (True, "http://import-a-licence/static/web/docs/ValidateDigSigs.pdf"),
-    ],
-)
-def test_get_validate_digital_signatures_url(db, full_url, expected_url):
-    assert get_validate_digital_signatures_url(full_url=full_url) == expected_url
+def test_get_validate_digital_signatures_url(db):
+    assert (
+        get_validate_digital_signatures_url(get_importer_site_domain())
+        == "http://import-a-licence/support/validate-signature/"
+    )
 
 
 def test_get_export_case_view_url(completed_cfs_app):

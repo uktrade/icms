@@ -70,7 +70,9 @@ def test_manage_update_requests(ilb_admin_client: Client, wood_app_submitted: Im
         EmailTypes.APPLICATION_UPDATE,
         {
             "reference": wood_app_submitted.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_importer_site_domain()
+            ),
             "application_url": get_case_view_url(wood_app_submitted, get_importer_site_domain()),
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
@@ -193,7 +195,9 @@ def test_close_update_request_when_ilb_withdraws(
         EmailTypes.APPLICATION_UPDATE_WITHDRAWN,
         {
             "reference": wood_app_submitted.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_importer_site_domain()
+            ),
             "application_url": get_case_view_url(wood_app_submitted, get_importer_site_domain()),
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,

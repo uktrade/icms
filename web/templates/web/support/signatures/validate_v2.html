@@ -1,0 +1,101 @@
+{% extends "web/support/index.html" %}
+{% block context_header %}How to validate a signature on a digitally signed document{% endblock %}
+
+{% block page_title %}How to validate a signature on a digitally signed document{% endblock %}
+
+{% block css %}
+  {{ super() }}
+  <link rel="stylesheet" type="text/css" href="{{ static('web/css/pages/help-validate-signatures.css') }}">
+{% endblock %}
+
+
+{% block main_content %}
+
+      <div class="row">
+        <h5>Use this guide if your documents were issued after 25th September 2024</h5>
+        <p>You will be receiving PDF licences and letters through "Apply for an import licence or export certificate" which will be digitally signed.</p>
+        <h4>1. Prerequisite</h4>
+        <p>Before opening a licence please ensure that you have the latest version of Adobe Acrobat Reader installed (This can be found at: <a rel="noopener noreferrer" target="_blank" href="https://get.adobe.com/uk/reader/">https://get.adobe.com/uk/reader/</a>).</p>
+        <h4>2. Opening the licence</h4>
+        <p>Please ensure that you open the licence in the Adobe Reader and not in the Adobe web browser plugin (which is the default option in most cases).  You will need to save the licence to your computer and open the file in Adobe Acrobat Reader.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure2_1.png") }}">
+          <p>Figure 2.1</p>
+        </div>
+        <h4>3. Validating the Signature</h4>
+        <p>When opening the licence you will probably see the following message at the top of the document.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure3_1.png") }}">
+          <p>Figure 3.1</p>
+        </div>
+        <p>In order to validate the signature, click  ‘Signature Panel’, expand  ‘Signature Details` and then click ‘Certificate Details..’ (see Figure 3.2).</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure3_2.png") }}">
+          <p>Figure 3.2</p>
+        </div>
+        <p>In the next dialogue box (Figure 3.3) select the ‘Trust’ tab. Then make sure the lowest level certificate is selected in the left panel (highlighted in blue below). Then click on the ‘Add to Trusted Certificates…’ button.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure3_3.png") }}">
+          <p>Figure 3.3</p>
+        </div>
+        <p>You will then be presented with the security box below. Click on the ‘OK’ button.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure3_4.png") }}">
+          <p>Figure 3.4</p>
+        </div>
+        <p>In the next dialogue box (Figure 3.5) make sure the ‘Use this certificate as a trusted root’ checkbox is ticked and then click the ‘OK’ button.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure3_5.png") }}">
+          <p>Figure 3.5</p>
+        </div>
+        <p>You will be returned to the box shown in Figure 3.6, where you will need to click on the ‘OK’ button.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure3_6.png") }}">
+          <p>Figure 3.6</p>
+        </div>
+        <p>Then back in the Signature Panel (Figure 3.7) click the three dots in the top right corner. Then click `Validate All Signatures`.</p>
+          <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure3_7.png") }}">
+          <p>Figure 3.7</p>
+        </div>
+        <p>You will then be presented with the security box below (Figure 3.8). Click on the ‘OK’ button.</p>
+           <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure3_8.png") }}">
+          <p>Figure 3.8</p>
+        </div>
+          <p>When you look again at your PDF document, you should see the top banner has changed and now says ‘Signed and all signatures are valid’</p>
+           <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure3_9.png") }}">
+          <p>Figure 3.9</p>
+        </div>
+        <p>From that point on, all PDF documents sent by us should show the above image.</p>
+        <h4>4. Troubleshooting</h4>
+        <p>If upon completing the all listed steps you find that the signature is still displaying ‘At least one signature has problems’. Please start section 3 again making sure that the ‘Use this certificate as a trusted root’ checkbox in Figure 3.6 is ticked.</p>
+        <p>If the ‘Add to trusted certificates..’ button in Figure 3.4 is greyed out like in Figure 4.1 and you are unable to click it, then it is likely that the ‘Use certificate as trusted root’ checkbox (Figure 3.6) was unticked.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure4_1.png") }}">
+          <p>Figure 4.1</p>
+        </div>
+        <p>To solve this you will have to remove the certificate and re-add it. To remove the certificate, go to the Preferences option either under the Edit menu or on a Mac by clicking on the menu below ‘Acrobat Reader’.</p>
+          <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure4_2.png") }}">
+          <p>Figure 4.2</p>
+        </div>
+        <p>The box displayed in Figure 4.3 will then appear. Under the Signatures category select the button for ‘Identities & Trusted Certificates’</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure4_3.png") }}">
+          <p>Figure 4.3</p>
+        </div>
+        <p>In the next box (Figure 4.4), select ‘Trusted Certificates’ in the left section and then scroll down to select the name of the certificate that you added in section 3 (e.g. DBT). Next click on the ‘Remove’ button at the top of the box. Finally click ‘OK’ in the confirmation box that then appears.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v2/figure4_4.png") }}">
+          <p>Figure 4.4</p>
+        </div>
+        <p>You will then be able to go back and follow the instructions listed in section 3 to add the certificate again, remembering to tick the ‘Use this certificate as a trusted root’ checkbox as shown in Figure 3.5.</p>
+        <h4>5. New Digital Certificates</h4>
+        <p>Digital certificates are periodically replaced (normally every few years). When this happens, you would need to repeat the steps listed in section 3 to make the new certificate trusted.</p>
+    </div>
+ 
+{% endblock %}
+
+{% block footer %}{% endblock %}

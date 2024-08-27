@@ -430,11 +430,6 @@ class ModelDetailView(PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixi
         return f"Viewing {self.object}"
 
 
-class AccessibilityStatementView(TemplateView):
-    http_method_names = ["get"]
-    template_name = "web/accessibility_statement.html"
-
-
 class V1ToV2ServiceRenameView(TemplateView):
     """View detailing service name change for users who have bookmarked the V1 URL."""
 

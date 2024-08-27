@@ -1,0 +1,133 @@
+{% extends "web/support/index.html" %}
+
+{% block context_header %}How to validate a signature on a digitally signed document{% endblock %}
+
+{% block page_title %}How to validate a signature on a digitally signed document{% endblock %}
+
+{% block css %}
+  {{ super() }}
+  <link rel="stylesheet" type="text/css" href="{{ static('web/css/pages/help-validate-signatures.css') }}">
+{% endblock %}
+
+
+{% block main_content %}
+      <div class="row">
+        <h5>Use this guide if your documents were issued before 26th September 2024</h5>
+        <p>You will be receiving PDF licences and letters through ICMS which will be digitally signed.</p>
+        <h4>1. Prerequisite</h4>
+        <p>Before opening a licence please ensure that you have the latest version of Adobe Acrobat Reader installed (This can be found at: <a rel="noopener noreferrer" target="_blank" href="https://get.adobe.com/uk/reader/">https://get.adobe.com/uk/reader/</a>).  Ideally it is also recommended that you view the licences on a Windows system.</p>
+        <h4>2. Opening the licence</h4>
+        <p>Please ensure that you open the licence in the Adobe Reader and not in the Adobe web browser plugin (which is the default option in most cases).  You will need to save the licence to your computer and open the file in Adobe Acrobat Reader DC.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure2_1.png") }}">
+          <p>Figure 2.1</p>
+        </div>
+        <p>In Figure 2.2 you can see what the options will look like if you are in the Adobe Browser plugin, the normal options are not present when you right click on the signature. Instead you only have print/rotate/save as etc.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure2_2.png") }}">
+          <p>Figure 2.2</p>
+        </div>
+        <h4>3. Validating the Signature</h4>
+        <p>The licence you receive will probably have the following image where you would normally expect to see a signature.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure3_1.png") }}">
+          <p>Figure 3.1</p>
+        </div>
+        <p>In order to validate the signature, you should right click on the signature and select  ‘Show Signature Properties’ option (see Figure 3.2).</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure3_2.png") }}">
+          <p>Figure 3.2</p>
+        </div>
+        <p>The following box up will then appear.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure3_3.png") }}">
+          <p>Figure 3.3</p>
+        </div>
+        <p>Click on the ‘Show Signer’s Certificate’ button. In the next dialogue box (Figure 3.4) select the ‘Trust’ tab. Then make sure the lowest level certificate is selected in the left panel (highlighted in blue below). Then click on the ‘Add to Trusted Certificates…’ button.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure3_4.png") }}">
+          <p>Figure 3.4</p>
+        </div>
+        <p>You will then be presented with the security box below. Click on the ‘OK’ button.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure3_5.png") }}">
+          <p>Figure 3.5</p>
+        </div>
+        <p>In the next dialogue box (Figure 3.6) make sure the ‘Use this certificate as a trusted root’ tickbox is checked and then click the ‘OK’ button.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure3_6.png") }}">
+          <p>Figure 3.6</p>
+        </div>
+        <p>You will be returned to the box shown in Figure 3.7, where you will need to click on the ‘OK’ button.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure3_7.png") }}">
+          <p>Figure 3.7</p>
+        </div>
+        <p>In the next box (Figure 3.8) click on the ‘Validate Signature’ button.  Finally click the ‘Close’ button.</p>
+          <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure3_8.png") }}">
+          <p>Figure 3.8</p>
+        </div>
+        <p>When you look again at your pdf document, you should see the following image where you would normally expect to see a signature:</p>
+           <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure3_9.png") }}">
+          <p>Figure 3.9</p>
+        </div>
+        <p>From that point on, all PDF documents sent by us should show the above image.</p>
+        <h4>4. Troubleshooting</h4>
+        <p>If upon completing the steps listed in section 3 you find that the signature is still displaying ‘Validity unknown‘. Please return to the dialog box shown in Figure 3.4.  If it looks like the box below (Figure 4.1) with the ‘Add to Trusted Certificates’ button disabled, then it is likely that you did not ticket the ‘Use this certificate as a trusted root’ tickbox as shown in Figure 3.6 above.</p>
+         <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure4_1.png") }}">
+          <p>Figure 4.1</p>
+        </div>
+        <p>To solve this you will have to remove the certificate and re-add it. To remove the certificate, go to the Preferences option under the Edit menu.</p>
+          <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure4_2.png") }}">
+          <p>Figure 4.2</p>
+        </div>
+        <p>The box displayed in Figure 4.3 will then appear. Under the Signatures category select the button for ‘Identities & Trusted Certificates’</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure4_3.png") }}">
+          <p>Figure 4.3</p>
+        </div>
+        <p>In the next box (Figure 4.4), select ‘Trusted Certificates’ in the left section and then scroll down to select the name of the certificate that you added in section 3 (e.g. Export Control Organisation &lt;eco.spire&#64;trade.gsi.gov.uk&gt;). Next click on the ‘Remove’ button at the top of the box. Finally click ‘OK’ in the confirmation box that then appears.</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure4_4.png") }}">
+          <p>Figure 4.4</p>
+        </div>
+        <p>You will then be able to go back and follow the instructions listed in section 3 to add the certificate again, remembering to tick the ‘Use this certificate as a trusted root’ tickbox as shown in Figure 3.6.</p>
+        <h4>5. MAC Problems</h4>
+        <p>There is a known problem with the preview app and digital signatures on a MAC computer. If the user has viewed the PDF with Preview prior to opening it in Adobe Reader they will not be able to validate the signature.</p>
+        <p>When this happens Adobe thinks that the signature is just an image (see Figure 5.1).</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure5_1.png") }}">
+          <p>Figure 5.1</p>
+        </div>
+        <p>To resolve this, try the following:</p>
+        <ul>
+          <li>Download the PDF again, making sure that if it does get opened in Preview you quit out of it without clicking on any element in the PDF at all - this is what causes Preview to break the signature. Then open the file in Adobe Reader and follow the instructions in section 3 of this document.</li>
+          <li>If that does not work try to get Preview to undo any changes it has made. Force Preview to open the PDF by right clicking and going open with preview</li>
+        </ul>
+         <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure5_2.png") }}">
+          <p>Figure 5.2</p>
+        </div>
+        <p>Within Preview, under the File menu, go to  Revert To => Browse All Versions (See Figure 5.3).</p>
+        <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure5_3.png") }}">
+          <p>Figure 5.3</p>
+        </div>
+        <p>In the version selector click the up arrow to get to the earliest revision of the file - this should be a version identical to the one downloaded. Then click Restore.</p>
+         <div class="cert-help">
+          <img src="{{ static("web/img/validate_signature/v1/figure5_4.png") }}">
+          <p>Figure 5.4</p>
+        </div>
+        <p>Quit Preview and open the PDF with Adobe. The normal validation instructions should then work.</p>
+        <ul><li>Alternatively use a windows PC. There's no equivalent default preview application in Windows that does anything like what MacOS Preview does.</li></ul>
+        <p>The users might like to consider the following guide <a rel="noopener noreferrer" target="_blank" href="http://osxdaily.com/2012/08/22/turn-off-auto-save-os-x/">http://osxdaily.com/2012/08/22/turn-off-auto-save-os-x/</a> to disable auto-save in MacOS.</p>
+        <h4>6. New Digital Certificates</h4>
+        <p>Digital certificates are periodically replaced (normally every few years). When this happens, you would need to repeat the steps listed in section 3 to make the new certificate trusted.</p>
+    </div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

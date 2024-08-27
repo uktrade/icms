@@ -225,7 +225,9 @@ class TestEmails(AuthTestCase):
         exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_STOPPED)
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_exporter_site_domain()
+            ),
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
@@ -243,7 +245,9 @@ class TestEmails(AuthTestCase):
         exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_REOPENED)
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_exporter_site_domain()
+            ),
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
@@ -263,7 +267,9 @@ class TestEmails(AuthTestCase):
         exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_REOPENED)
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_exporter_site_domain()
+            ),
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
@@ -296,7 +302,9 @@ class TestEmails(AuthTestCase):
         exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_REASSIGNED)
         expected_personalisation = default_personalisation() | {
             "reference": com_app_submitted.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_caseworker_site_domain()
+            ),
             "application_url": get_case_view_url(com_app_submitted, get_caseworker_site_domain()),
             "comment": expected_comment,
             "icms_url": get_caseworker_site_domain(),
@@ -318,7 +326,9 @@ class TestEmails(AuthTestCase):
         exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_REFUSED)
         expected_personalisation = default_personalisation() | {
             "reference": fa_sil_app_submitted.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_importer_site_domain()
+            ),
             "application_url": get_case_view_url(fa_sil_app_submitted, get_importer_site_domain()),
             "reason": fa_sil_app_submitted.refuse_reason,
             "icms_url": get_importer_site_domain(),
@@ -336,7 +346,9 @@ class TestEmails(AuthTestCase):
         exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_COMPLETE)
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_exporter_site_domain()
+            ),
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
@@ -355,7 +367,9 @@ class TestEmails(AuthTestCase):
         )
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_exporter_site_domain()
+            ),
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
@@ -372,7 +386,9 @@ class TestEmails(AuthTestCase):
         exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_EXTENSION_COMPLETE)
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_exporter_site_domain()
+            ),
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
@@ -515,7 +531,9 @@ class TestEmails(AuthTestCase):
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
             "reason": "Cancel reason",
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_caseworker_site_domain()
+            ),
             "icms_url": get_caseworker_site_domain(),
             "service_name": SiteName.CASEWORKER.label,
             "application_url": get_case_view_url(completed_cfs_app, get_caseworker_site_domain()),
@@ -545,7 +563,9 @@ class TestEmails(AuthTestCase):
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
             "reason": "Please update",
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_exporter_site_domain()
+            ),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
@@ -572,7 +592,9 @@ class TestEmails(AuthTestCase):
 
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_exporter_site_domain()
+            ),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
@@ -599,7 +621,9 @@ class TestEmails(AuthTestCase):
 
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_caseworker_site_domain()
+            ),
             "icms_url": get_caseworker_site_domain(),
             "service_name": SiteName.CASEWORKER.label,
             "application_url": get_case_view_url(completed_cfs_app, get_caseworker_site_domain()),
@@ -629,7 +653,9 @@ class TestEmails(AuthTestCase):
         expected_personalisation = default_personalisation() | {
             "reference": completed_dfl_app.reference,
             "reason": "Variation refused.",
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_importer_site_domain()
+            ),
             "application_url": get_case_view_url(completed_dfl_app, get_importer_site_domain()),
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
@@ -648,7 +674,9 @@ class TestEmails(AuthTestCase):
         exp_template_id = get_gov_notify_template_id(EmailTypes.FIREARMS_SUPPLEMENTARY_REPORT)
         expected_personalisation = default_personalisation() | {
             "reference": completed_dfl_app.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_importer_site_domain()
+            ),
             "application_url": get_case_view_url(completed_dfl_app, get_importer_site_domain()),
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
@@ -711,7 +739,9 @@ class TestEmails(AuthTestCase):
             "fir_url": get_respond_to_application_fir_url(com_app_submitted, fir),
             "service_name": SiteName.EXPORTER.label,
             "reference": com_app_submitted.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_exporter_site_domain()
+            ),
             "application_url": get_case_view_url(com_app_submitted, get_exporter_site_domain()),
         }
         emails.send_further_information_request_email(fir)
@@ -770,7 +800,9 @@ class TestEmails(AuthTestCase):
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
             "reference": com_app_submitted.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_exporter_site_domain()
+            ),
             "application_url": get_case_view_url(com_app_submitted, get_exporter_site_domain()),
         }
         emails.send_further_information_request_withdrawn_email(fir)
@@ -831,7 +863,9 @@ class TestEmails(AuthTestCase):
             "service_name": SiteName.CASEWORKER.label,
             "reference": com_app_submitted.reference,
             "fir_url": get_manage_application_fir_url(com_app_submitted),
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_caseworker_site_domain()
+            ),
             "application_url": get_case_view_url(com_app_submitted, get_caseworker_site_domain()),
         }
         emails.send_further_information_request_responded_email(fir)
@@ -941,7 +975,9 @@ class TestEmails(AuthTestCase):
         exp_template_id = get_gov_notify_template_id(EmailTypes.LICENCE_REVOKED)
         expected_personalisation = default_personalisation() | {
             "reference": completed_dfl_app.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_importer_site_domain()
+            ),
             "application_url": get_case_view_url(completed_dfl_app, get_importer_site_domain()),
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
@@ -962,7 +998,9 @@ class TestEmails(AuthTestCase):
         exp_template_id = get_gov_notify_template_id(EmailTypes.CERTIFICATE_REVOKED)
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_exporter_site_domain()
+            ),
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
@@ -980,7 +1018,9 @@ class TestEmails(AuthTestCase):
         exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_UPDATE_RESPONSE)
         expected_personalisation = default_personalisation() | {
             "reference": completed_dfl_app.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_caseworker_site_domain()
+            ),
             "application_url": get_case_manage_view_url(completed_dfl_app),
             "icms_url": get_caseworker_site_domain(),
             "service_name": SiteName.CASEWORKER.label,
@@ -1005,7 +1045,9 @@ class TestEmails(AuthTestCase):
             "reference": wood_app_submitted.reference,
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_importer_site_domain()
+            ),
             "application_url": get_case_view_url(wood_app_submitted, get_importer_site_domain()),
             "application_update_url": get_update_request_view_url(
                 wood_app_submitted, update_request, get_importer_site_domain()
@@ -1029,7 +1071,9 @@ class TestEmails(AuthTestCase):
             "reference": wood_app_submitted.reference,
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_importer_site_domain()
+            ),
             "application_url": get_case_view_url(wood_app_submitted, get_importer_site_domain()),
         }
         emails.send_application_update_withdrawn_email(update_request)
@@ -1297,7 +1341,9 @@ Firearms references(s): 423,476,677\r\n"""
             "service_name": SiteName.CASEWORKER.label,
             "reference": completed_dfl_app.reference,
             "application_url": get_case_view_url(completed_dfl_app, get_caseworker_site_domain()),
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                get_caseworker_site_domain()
+            ),
             "check_code": str(link.check_code),
             "documents_url": get_dfl_application_otd_url(link),
             "constabulary_name": "Derbyshire",

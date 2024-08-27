@@ -348,7 +348,7 @@ class TestReopenApplicationViewImportApplication:
             {
                 "reference": application.reference,
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
-                    full_url=True
+                    get_importer_site_domain()
                 ),
                 "application_url": get_case_view_url(application, get_importer_site_domain()),
                 "icms_url": get_importer_site_domain(),
@@ -449,7 +449,7 @@ class TestReopenApplicationViewExportApplication:
             {
                 "reference": application.reference,
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
-                    full_url=True
+                    get_exporter_site_domain()
                 ),
                 "application_url": get_case_view_url(application, get_exporter_site_domain()),
                 "icms_url": get_exporter_site_domain(),
@@ -706,7 +706,7 @@ class TestRevokeCaseView:
             {
                 "reference": app.reference,
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
-                    full_url=True
+                    get_exporter_site_domain()
                 ),
                 "application_url": get_case_view_url(app, get_exporter_site_domain()),
                 "icms_url": get_exporter_site_domain(),
@@ -747,7 +747,7 @@ class TestRevokeCaseView:
             {
                 "reference": self.app.reference,
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
-                    full_url=True
+                    get_importer_site_domain()
                 ),
                 "application_url": get_case_view_url(self.app, get_importer_site_domain()),
                 "icms_url": get_importer_site_domain(),

@@ -313,6 +313,9 @@ class TestExportApplicationFIRView(TestImporterAccessRequestFIRView):
                 "icms_url": get_caseworker_site_domain(),
                 "service_name": SiteName.CASEWORKER.label,
                 "application_url": get_case_view_url(self.process, get_caseworker_site_domain()),
+                "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                    get_caseworker_site_domain()
+                ),
             },
             exp_subject="test responded email",
             exp_in_body="test request detail",
@@ -334,7 +337,9 @@ class TestExportApplicationFIRView(TestImporterAccessRequestFIRView):
             "icms_url": self.expected_site,
             "service_name": self.expected_service_name,
             "fir_type": self.fir_type,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                self.expected_site
+            ),
             "application_url": get_case_view_url(self.process, self.expected_site),
         }
 
