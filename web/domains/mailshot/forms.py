@@ -2,6 +2,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from django.db import models
+from django.db.models import Q
 from django.forms import ModelForm, MultipleChoiceField
 from django.forms.widgets import CheckboxInput, CheckboxSelectMultiple, Textarea
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
@@ -63,11 +64,18 @@ class ReceivedMailshotsFilter(FilterSet):
         self.user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
 
-    id = CharFilter(field_name="id", lookup_expr="icontains", label="Reference")
+    id_reference = CharFilter(label="Reference", method="filter_id_reference")
 
     title = CharFilter(field_name="title", lookup_expr="icontains", label="Title")
 
     description = CharFilter(field_name="description", lookup_expr="icontains", label="Description")
+
+    @staticmethod
+    def filter_id_reference(
+        queryset: "QuerySet[Mailshot]", name: str, value: str
+    ) -> "QuerySet[Mailshot]":
+        # Filter by id or reference, the user may enter MAIL/1 or 1
+        return queryset.filter(Q(id__icontains=value) | Q(reference__icontains=value))
 
     @property
     def qs(self) -> "QuerySet[Mailshot]":

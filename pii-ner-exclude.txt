@@ -4936,3 +4936,5 @@ dt
 DATE_JOINED
 date_joined_date
 Registered Users
+AWS
+MAIL/1

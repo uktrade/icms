@@ -1,7 +1,10 @@
+from unittest.mock import Mock
+
 import pytest
 from django.contrib.auth.models import Group
 from django.test import TestCase
 
+from web.domains.case.services import reference
 from web.domains.mailshot.forms import (
     MailshotFilter,
     MailshotForm,
@@ -178,6 +181,23 @@ class TestReceivedMailshotsFilter:
         assert results[0].description == "This is a published mailshot to all"
         assert results[1].description == "This is a published mailshot to exporters"
         assert results[2].description == "This is a published mailshot to importers"
+
+    def test_id_reference_filter(self):
+        # first checking if searching by reference (e.g. MAIL/1) works
+        mailshot_object = Mailshot.objects.filter(status=Mailshot.Statuses.PUBLISHED).first()
+        mailshot_object.reference = reference.get_mailshot_reference(lock_manager=Mock())
+        mailshot_object.save()
+
+        results = self.run_filter(
+            {"id_reference": mailshot_object.reference}, user=self.importer_exporter
+        )
+        assert results.count() == 1
+        assert results.get() == mailshot_object
+
+        # now let's check if searching by the ID works
+        results = self.run_filter({"id_reference": mailshot_object.pk}, user=self.importer_exporter)
+        assert results.count() == 1
+        assert results.get() == mailshot_object
 
 
 class TestMailshotForm(TestCase):
