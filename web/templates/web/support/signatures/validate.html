@@ -1,0 +1,28 @@
+{% extends "web/support/index.html" %}
+
+{% block context_header %}How to validate a signature on a digitally signed document{% endblock %}
+
+{% block page_title %}How to validate a signature on a digitally signed document{% endblock %}
+
+{% block css %}
+  {{ super() }}
+  <link rel="stylesheet" type="text/css" href="{{ static('web/css/pages/help-validate-signatures.css') }}">
+{% endblock %}
+
+{% block main_content %}
+
+      <div class="row">
+        <form action="" method="post" class="column four">
+        {{ csrf_input }}
+        {{ form.as_p() }}
+        <input
+          type="submit"
+          class="primary-button button"
+          value="Submit"
+        >
+      </form>
+      </div>
+
+{% endblock %}
+
+{% block footer %}{% endblock %}

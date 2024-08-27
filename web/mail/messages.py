@@ -156,7 +156,9 @@ class BaseApplicationEmail(GOVNotifyEmailMessage):
         context = super().get_context()
         return context | {
             "reference": self.application.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                self.get_site_domain()
+            ),
             "application_url": get_case_view_url(self.application, self.get_site_domain()),
         }
 

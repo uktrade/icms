@@ -500,7 +500,7 @@ class TestSubmitSanctions:
             {
                 "reference": self.app.reference,
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
-                    full_url=True
+                    get_caseworker_site_domain()
                 ),
                 "application_url": get_case_manage_view_url(self.app),
                 "icms_url": get_caseworker_site_domain(),

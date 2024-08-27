@@ -1,5 +1,4 @@
 from .views import (
-    AccessibilityStatementView,
     LoginRequiredSelect2AutoResponseView,
     ModelCreateView,
     ModelDetailView,
@@ -16,7 +15,6 @@ from .views import (
 from .views_healthcheck import health_check
 
 __all__ = [
-    "AccessibilityStatementView",
     "LoginRequiredSelect2AutoResponseView",
     "ModelCreateView",
     "ModelDetailView",

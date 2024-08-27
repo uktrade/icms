@@ -161,3 +161,4 @@ ilb_admin.json
 /generated_pdfs/
 /python_version.txt
 /.env.no-docker
+.DS_Store

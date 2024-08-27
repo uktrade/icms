@@ -1,15 +1,13 @@
-{% extends "layout/sidebar.html" %}
+{% extends "web/support/index.html" %}
 
-{% block context_header %}Apply for an import licence or export certificate accessibility statement{% endblock %}
+{% block context_header %}{{ request.site.name }} accessibility statement{% endblock %}
 
-{% block page_title %}Apply for an import licence or export certificate accessibility statement{% endblock %}
+{% block page_title %}{{ request.site.name }} accessibility statement{% endblock %}
 
-{% block content %}
-<div id="wrapper">
-  <div id="content">
-    <div class=content-ie8-float">
+{% block main_content %}
+
       <div class="row">
-        <p>This accessibility statement applies to the service Apply for an import licence and export certificate.</p>
+        <p>This accessibility statement applies to the service {{ request.site.name }}.</p>
         <p>The Department for Business and Trade (DBT) wants to make the service accessible for all and must do so to comply with rules set out by The Equality and Human Rights Commission (EHRC), responsible for enforcing the Public Sector Bodies Accessibility Regulations 2018.</p>
         <p>Users should be able to:</p>
         <ul>
@@ -42,9 +40,7 @@
         <p>This statement was prepared on 4th September 2024. It was last reviewed on 1st July 2024.</p>
         <p>This website was last tested on 10th of August 2023. The test was carried out by DAC (Digital Accessibility Centre). </p>
       </div>
-    </div>
-  </div>
-</div>
+
 {% endblock %}
 
 {% block footer %}{% endblock %}

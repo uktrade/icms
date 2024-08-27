@@ -153,7 +153,7 @@ class TestVariationRequestCancelView:
             {
                 "reference": self.wood_app.reference,
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
-                    full_url=True
+                    get_importer_site_domain()
                 ),
                 "application_url": get_case_view_url(self.wood_app, get_importer_site_domain()),
                 "reason": "Test cancellation reason",
@@ -216,7 +216,7 @@ class TestVariationRequestCancelViewForExportApplication:
             {
                 "reference": self.app.reference,
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
-                    full_url=True
+                    get_caseworker_site_domain()
                 ),
                 "application_url": get_case_view_url(self.app, get_caseworker_site_domain()),
                 "reason": None,
@@ -269,7 +269,7 @@ class TestVariationRequestRequestUpdateView:
             {
                 "reference": self.wood_app.reference,
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
-                    full_url=True
+                    get_importer_site_domain()
                 ),
                 "application_url": get_case_view_url(self.wood_app, get_importer_site_domain()),
                 "reason": "Dummy update request reason",
@@ -309,7 +309,7 @@ class TestVariationRequestCancelUpdateRequestView:
             {
                 "reference": self.app.reference,
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
-                    full_url=True
+                    get_importer_site_domain()
                 ),
                 "application_url": get_case_view_url(self.app, get_importer_site_domain()),
                 "reason": "Dummy update request reason",
@@ -354,7 +354,7 @@ class TestVariationRequestCancelUpdateRequestView:
             {
                 "reference": self.app.reference,
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
-                    full_url=True
+                    get_importer_site_domain()
                 ),
                 "application_url": get_case_view_url(self.app, get_importer_site_domain()),
                 "icms_url": get_importer_site_domain(),
@@ -394,7 +394,7 @@ class TestVariationRequestRespondToUpdateRequestView:
             {
                 "reference": self.wood_app.reference,
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
-                    full_url=True
+                    get_importer_site_domain()
                 ),
                 "application_url": get_case_view_url(self.wood_app, get_importer_site_domain()),
                 "reason": "Dummy update request reason",
@@ -446,7 +446,7 @@ class TestVariationRequestRespondToUpdateRequestView:
             {
                 "reference": self.wood_app.reference,
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
-                    full_url=True
+                    get_caseworker_site_domain()
                 ),
                 "application_url": get_case_view_url(self.wood_app, get_caseworker_site_domain()),
                 "icms_url": get_caseworker_site_domain(),
