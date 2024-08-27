@@ -60,7 +60,7 @@ def sanctions_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     #
     page.get_by_role("link", name="Goods").click()
     page.get_by_role("link", name="Add Goods").click()
-    page.get_by_role("combobox", name="Commodity Code").select_option("3288")
+    page.get_by_role("combobox", name="Commodity Code").select_option("3474")
     page.get_by_label("Goods Description").click()
     page.get_by_label("Goods Description").fill("Goods description value")
     page.get_by_label("Quantity").click()
@@ -125,7 +125,7 @@ def sanctions_manage_and_complete_case(page: Page, app_id: int) -> None:
     # Add an Endorsement
     #
     page.get_by_role("link", name=re.compile(".+Add Endorsement")).click()
-    page.get_by_role("combobox", name="Content").select_option("54")
+    page.get_by_role("combobox", name="Content").select_option("86")
     page.get_by_role("button", name="Save").click()
 
     #
@@ -141,6 +141,7 @@ def sanctions_manage_and_complete_case(page: Page, app_id: int) -> None:
     #
     page.get_by_role("link", name="Authorisation").click()
     page.get_by_role("button", name="Start Authorisation (Close Case Processing)").click()
+    page.get_by_role("button", name="OK").click()
 
     #
     # Authorise Documents

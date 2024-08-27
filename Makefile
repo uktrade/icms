@@ -179,7 +179,8 @@ end_to_end_clear_session: ## Clears the session cookies stored after running end
 	rm -f exporter_user.json && \
 	rm -f ilb_admin.json
 
-end_to_end_test: end_to_end_clear_session ## Run end to end tests in a container
+end_to_end_test: ## Run end to end tests in a container
+	make end_to_end_clear_session && \
 	docker-compose run -it --rm playwright-runner pytest -c playwright/pytest.ini  web/end_to_end/ --numprocesses=auto ${args}
 
 end_to_end_test_firearm_chief: end_to_end_clear_session ## Run send applications end to end tests to icms-hmrc

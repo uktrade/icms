@@ -106,6 +106,7 @@ def gmp_manage_and_complete_case(page: Page, gmp_id: int) -> None:
     #
     page.get_by_role("link", name="Authorisation").click()
     page.get_by_role("button", name="Start Authorisation (Close Case Processing)").click()
+    page.get_by_role("button", name="OK").click()
 
     workbasket_row = utils.get_wb_row(page, gmp_id)
     workbasket_row.get_by_role("link", name="Authorise Documents").click()

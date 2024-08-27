@@ -32,7 +32,7 @@
                   method="POST"
                   action="{{ icms_url('import:fa-sil:add-verified-section5', kwargs={'application_pk': process.pk, 'section5_pk': section.pk}) }}">
                   {{ csrf_input }}
-                  <input type="submit" class="button small-button" value="Select" />
+                  <input type="submit" class="button small-button" data-test-id="verified-section5-btn-{{ loop.index }}" value="Select" />
                 </form>
               </td>
             {% endif %}
