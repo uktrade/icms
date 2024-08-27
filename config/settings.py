@@ -259,7 +259,7 @@ AWS_S3_ENDPOINT_URL: str | None = None
 # Order is important
 FILE_UPLOAD_HANDLERS = (
     "django_chunk_upload_handlers.clam_av.ClamAVFileUploadHandler",
-    "django_chunk_upload_handlers.s3.S3FileUploadHandler",
+    "web.upload_handlers.S3FileUploadHandler",
 )
 
 # Anti virus settings
