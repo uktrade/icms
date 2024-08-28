@@ -517,9 +517,13 @@ class SILCoverLetterTemplateForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # TODO: ICMSLST-2930 Revisit this filter code.
+
+        sil_cover_letters = [
+            Template.Codes.COVER_FIREARMS_DEACTIVATED_FIREARMS,
+            Template.Codes.COVER_FIREARMS_SIIL,
+        ]
         self.fields["template"].queryset = Template.objects.filter(
-            template_code__startswith="COVER_FIREARMS_SIIL"
+            template_code__in=sil_cover_letters
         )
 
 

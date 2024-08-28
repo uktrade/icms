@@ -27,4 +27,9 @@ class TestTemplate(TestCase):
 
     def test_string_representation(self):
         product_legisation = self.create_template()
-        assert product_legisation.__str__() == "Template - Test Template"
+        assert product_legisation.__str__() == "Test Template"
+
+
+def test_all_template_codes_are_valid(db):
+    for template_code in Template.Codes:
+        Template.objects.get(template_code=template_code)

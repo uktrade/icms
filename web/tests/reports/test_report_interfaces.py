@@ -8,7 +8,7 @@ from freezegun import freeze_time
 from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
-from web.mail.constants import EmailTypes
+from web.mail.constants import CaseEmailCodes
 from web.mail.emails import create_case_email, send_case_email
 from web.models import (
     CaseEmail,
@@ -295,7 +295,7 @@ class TestIssuedCertificateReportInterface:
         app.update_requests.add(update_request)
 
     def _setup_app_with_case_email(
-        self, app: ImpOrExp, email_type: EmailTypes, completed: bool
+        self, app: ImpOrExp, email_type: CaseEmailCodes, completed: bool
     ) -> None:
         case_email = create_case_email(app, email_type)
         if completed:
@@ -331,7 +331,7 @@ class TestIssuedCertificateReportInterface:
         self, completed_cfs_app
     ):
         self._setup_app_update_submitted_and_completed_dates(completed_cfs_app)
-        self._setup_app_with_case_email(completed_cfs_app, EmailTypes.HSE_CASE_EMAIL, True)
+        self._setup_app_with_case_email(completed_cfs_app, CaseEmailCodes.HSE_CASE_EMAIL, True)
         self.report_schedule.parameters["legislation"] = ["1"]
         self.report_schedule.save()
         interface = IssuedCertificateReportInterface(self.report_schedule)
@@ -341,7 +341,7 @@ class TestIssuedCertificateReportInterface:
     def test_issued_certificate_report_interface_get_data_cfs(self, completed_cfs_app):
         self._setup_app_with_variation_request(completed_cfs_app)
         self._setup_app_update_submitted_and_completed_dates(completed_cfs_app)
-        self._setup_app_with_case_email(completed_cfs_app, EmailTypes.HSE_CASE_EMAIL, True)
+        self._setup_app_with_case_email(completed_cfs_app, CaseEmailCodes.HSE_CASE_EMAIL, True)
         self.report_schedule.parameters["legislation"] = ["241"]
         pl_name = (
             "Regulation (EU) No. 528/2012 of the European Parliament and of the Council concerning the making available on the market and use of"
@@ -401,9 +401,9 @@ class TestIssuedCertificateReportInterface:
 
     def test_issued_certificate_report_interface_get_data_gmp(self, completed_gmp_app):
         self._setup_app_update_submitted_and_completed_dates(completed_gmp_app)
-        self._setup_app_with_case_email(completed_gmp_app, EmailTypes.BEIS_CASE_EMAIL, False)
-        self._setup_app_with_case_email(completed_gmp_app, EmailTypes.BEIS_CASE_EMAIL, True)
-        self._setup_app_with_case_email(completed_gmp_app, EmailTypes.BEIS_CASE_EMAIL, True)
+        self._setup_app_with_case_email(completed_gmp_app, CaseEmailCodes.BEIS_CASE_EMAIL, False)
+        self._setup_app_with_case_email(completed_gmp_app, CaseEmailCodes.BEIS_CASE_EMAIL, True)
+        self._setup_app_with_case_email(completed_gmp_app, CaseEmailCodes.BEIS_CASE_EMAIL, True)
         interface = IssuedCertificateReportInterface(self.report_schedule)
         data = interface.get_data()
         assert data["results"] == [
@@ -1294,7 +1294,7 @@ class TestFirearmsLicencesInterface:
         with freeze_time("2024-07-09 11:00:00"):
             case_email = create_case_email(
                 completed_sil_app,
-                EmailTypes.CONSTABULARY_CASE_EMAIL,
+                CaseEmailCodes.CONSTABULARY_CASE_EMAIL,
                 cc=["cc_address@example.com"],  # /PS-IGNORE
             )
             completed_sil_app.case_emails.add(case_email)
