@@ -1,3 +1,6 @@
+from http import HTTPStatus
+
+import pytest
 from django.conf import settings
 from django.http import HttpResponse
 from django.test import override_settings
@@ -9,11 +12,22 @@ from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.views.views_prepare_response import get_licence_for_application
+from web.flow.models import ProcessTypes
 from web.models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
+    CertificateOfManufactureApplication,
+    DerogationsApplication,
     DFLApplication,
     ExportApplication,
     ImportApplication,
+    IronSteelApplication,
+    OpenIndividualLicenceApplication,
+    OutwardProcessingTradeApplication,
+    PriorSurveillanceApplication,
+    SILApplication,
     Task,
+    TextilesApplication,
     User,
     VariationRequest,
     WoodQuotaApplication,
@@ -23,27 +37,140 @@ from web.tests.helpers import CaseURLS, add_variation_request_to_app
 
 
 class TestPrepareResponseView(AuthTestCase):
-    # TODO: ICMSLST-2090 - Add missing prep response unittests
-    # Add test for each application type as response prep is different for each
-    # Add test for rejecting and approving an application
 
     def test_wood_quota_prepare_response_get(
         self, wood_app_submitted: WoodQuotaApplication
     ) -> None:
         resp = self.ilb_admin_client.get(CaseURLS.prepare_response(wood_app_submitted.pk))
-        assert resp.status_code == 200
+        assert resp.status_code == HTTPStatus.OK
 
         assertContains(resp, "Wood (Quota) - Response Preparation")
         assertTemplateUsed(resp, "web/domains/case/import/manage/prepare-wood-quota-response.html")
 
     def test_fa_dfl_prepare_response_get(self, fa_dfl_app_submitted: DFLApplication) -> None:
         resp = self.ilb_admin_client.get(CaseURLS.prepare_response(fa_dfl_app_submitted.pk))
-        assert resp.status_code == 200
+        assert resp.status_code == HTTPStatus.OK
 
         assertContains(
             resp, "Firearms and Ammunition (Deactivated Firearms Licence) - Response Preparation"
         )
         assertTemplateUsed(resp, "web/domains/case/import/manage/prepare-fa-dfl-response.html")
+
+    def test_fa_oil_prepare_response_get(
+        self, fa_oil_app_submitted: OpenIndividualLicenceApplication
+    ) -> None:
+        resp = self.ilb_admin_client.get(CaseURLS.prepare_response(fa_oil_app_submitted.pk))
+        assert resp.status_code == HTTPStatus.OK
+
+        assertContains(
+            resp, "Firearms and Ammunition (Open Individual Import Licence) - Response Preparation"
+        )
+        assertTemplateUsed(resp, "web/domains/case/import/manage/prepare-fa-oil-response.html")
+
+    def test_fa_sil_prepare_response_get(self, fa_sil_app_submitted: SILApplication) -> None:
+        resp = self.ilb_admin_client.get(CaseURLS.prepare_response(fa_sil_app_submitted.pk))
+        assert resp.status_code == HTTPStatus.OK
+
+        assertContains(resp, "Firearms and Ammunition (Specific Individual Import Licence)")
+        assertTemplateUsed(resp, "web/domains/case/import/manage/prepare-fa-sil-response.html")
+
+    def test_derogations_prepare_response_get(
+        self, derogation_app_submitted: DerogationsApplication
+    ) -> None:
+        resp = self.ilb_admin_client.get(CaseURLS.prepare_response(derogation_app_submitted.pk))
+        assert resp.status_code == HTTPStatus.OK
+
+        assertContains(resp, "Derogation from Sanctions Import Ban")
+        assertTemplateUsed(resp, "web/domains/case/import/manage/prepare-derogations-response.html")
+
+    def test_opt_prepare_response_get(
+        self, opt_app_submitted: OutwardProcessingTradeApplication
+    ) -> None:
+        resp = self.ilb_admin_client.get(CaseURLS.prepare_response(opt_app_submitted.pk))
+        assert resp.status_code == HTTPStatus.OK
+
+        assertContains(resp, "Outward Processing Trade")
+        assertTemplateUsed(resp, "web/domains/case/import/manage/prepare-opt-response.html")
+
+    def test_com_prepare_response_get(
+        self, com_app_submitted: CertificateOfManufactureApplication
+    ) -> None:
+        resp = self.ilb_admin_client.get(
+            CaseURLS.prepare_response(com_app_submitted.pk, case_type="export")
+        )
+        assert resp.status_code == HTTPStatus.OK
+
+        assertContains(resp, "Certificate of Manufacture")
+        assertTemplateUsed(resp, "web/domains/case/export/manage/prepare-com-response.html")
+
+    def test_gmp_prepare_response_get(
+        self, gmp_app_submitted: CertificateOfGoodManufacturingPracticeApplication
+    ) -> None:
+        resp = self.ilb_admin_client.get(
+            CaseURLS.prepare_response(gmp_app_submitted.pk, case_type="export")
+        )
+        assert resp.status_code == HTTPStatus.OK
+
+        assertContains(resp, "Certificate of Good Manufacturing Practice")
+        assertTemplateUsed(resp, "web/domains/case/export/manage/prepare-gmp-response.html")
+
+    def test_cfs_prepare_response_get(
+        self, cfs_app_submitted: CertificateOfFreeSaleApplication
+    ) -> None:
+        resp = self.ilb_admin_client.get(
+            CaseURLS.prepare_response(cfs_app_submitted.pk, case_type="export")
+        )
+        assert resp.status_code == HTTPStatus.OK
+
+        assertContains(resp, "Certificate of Free Sale")
+        assertTemplateUsed(resp, "web/domains/case/export/manage/prepare-cfs-response.html")
+
+    def test_textiles_prepare_response_get(
+        self, textiles_app_submitted: TextilesApplication
+    ) -> None:
+        resp = self.ilb_admin_client.get(CaseURLS.prepare_response(textiles_app_submitted.pk))
+        assert resp.status_code == HTTPStatus.OK
+
+        assertContains(resp, "Textiles (Quota)")
+        assertTemplateUsed(
+            resp, "web/domains/case/import/manage/prepare-textiles-quota-response.html"
+        )
+
+    def test_sps_prepare_response_get(
+        self, sps_app_submitted: PriorSurveillanceApplication
+    ) -> None:
+        resp = self.ilb_admin_client.get(CaseURLS.prepare_response(sps_app_submitted.pk))
+        assert resp.status_code == HTTPStatus.OK
+
+        assertContains(resp, "Prior Surveillance")
+        assertTemplateUsed(resp, "web/domains/case/import/manage/prepare-sps-response.html")
+
+    def test_iron_prepare_response_get(self, iron_app_submitted: IronSteelApplication) -> None:
+        resp = self.ilb_admin_client.get(CaseURLS.prepare_response(iron_app_submitted.pk))
+        assert resp.status_code == HTTPStatus.OK
+
+        assertContains(resp, "Iron and Steel (Quota)")
+        assertTemplateUsed(resp, "web/domains/case/import/manage/prepare-ironsteel-response.html")
+
+    def test_prepare_response_invalid_case_type_get(
+        self, fa_sil_app_submitted: SILApplication
+    ) -> None:
+        with pytest.raises(NotImplementedError, match="Unknown case_type access"):
+            self.ilb_admin_client.get(
+                CaseURLS.prepare_response(fa_sil_app_submitted.pk, case_type="access")
+            )
+
+    def test_prepare_response_invalid_process_type_get(
+        self, fa_sil_app_submitted: SILApplication
+    ) -> None:
+        """Changing the process type to cause an error"""
+        fa_sil_app_submitted.process_type = ProcessTypes.FIR
+        fa_sil_app_submitted.save()
+        with pytest.raises(
+            NotImplementedError,
+            match="Application process type 'FurtherInformationRequest' haven't been configured yet",
+        ):
+            self.ilb_admin_client.get(CaseURLS.prepare_response(fa_sil_app_submitted.pk))
 
     @override_settings(TEMPLATES=settings.STRICT_TEMPLATES)
     def test_export_variation_request_cannot_edit_decision(
@@ -102,24 +229,30 @@ class TestPrepareResponseView(AuthTestCase):
         Task.objects.create(process=app, task_type=Task.TaskType.PROCESS, previous=None)
         client.post(CaseURLS.take_ownership(app.pk, case_type=case_type))
         response = client.get(CaseURLS.prepare_response(app.pk, case_type=case_type))
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         return response
 
-    def test_get_licence_for_completed_approved_application(self, completed_dfl_app):
+    def test_get_licence_for_completed_approved_application(
+        self, completed_dfl_app: DFLApplication
+    ) -> None:
         _license = get_licence_for_application(completed_dfl_app)
         assert _license.status == DocumentPackBase.Status.ACTIVE
 
-    def test_get_licence_for_submitted_application(self, fa_dfl_app_submitted):
+    def test_get_licence_for_submitted_application(
+        self, fa_dfl_app_submitted: DFLApplication
+    ) -> None:
         _license = get_licence_for_application(fa_dfl_app_submitted)
         assert _license.status == DocumentPackBase.Status.DRAFT
 
-    def test_get_licence_for_revoked_application(self, completed_dfl_app):
+    def test_get_licence_for_revoked_application(self, completed_dfl_app: DFLApplication) -> None:
         completed_dfl_app.status = ImportApplication.Statuses.REVOKED
         completed_dfl_app.save()
         document_pack.pack_active_revoke(completed_dfl_app, "Test revoke reason", False)
         _license = get_licence_for_application(completed_dfl_app)
         assert _license.status == DocumentPackBase.Status.REVOKED
 
-    def test_get_licence_for_rejected_application(self, complete_rejected_app):
+    def test_get_licence_for_rejected_application(
+        self, complete_rejected_app: SILApplication
+    ) -> None:
         _license = get_licence_for_application(complete_rejected_app)
         assert _license is None
