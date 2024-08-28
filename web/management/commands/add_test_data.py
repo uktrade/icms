@@ -217,7 +217,7 @@ class Command(BaseCommand):
             job_title=f"{username}_job_title",
             organisation=f"{username}_org",
             department=f"{username}_dep",
-            date_joined=dt.date(2024, 1, 20),
+            date_joined=dt.datetime(2024, 1, 20, tzinfo=dt.UTC),
         )
 
     def create_import_access_request(self, user):
