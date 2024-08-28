@@ -98,7 +98,7 @@ class BaseTestPDFVisualRegression:
                         settings.BASE_DIR
                         / "generated_pdfs"
                         / self.__class__.__name__
-                        / f"generated_page_{page}.png"
+                        / f"{self.benchmark_pdf_image_file_path}_generated_page_{page}.png"
                     )
                     output_file.parent.mkdir(exist_ok=True, parents=True)
                     with output_file.open("wb") as f:
@@ -119,7 +119,7 @@ class BaseTestPDFVisualRegression:
                     settings.BASE_DIR
                     / "generated_pdfs"
                     / self.__class__.__name__
-                    / f"diff_{page}.png"
+                    / f"{self.benchmark_pdf_image_file_path}_diff_{page}.png"
                 )
                 with output_file.open("wb") as f:
                     diff.save(f, "PNG")
