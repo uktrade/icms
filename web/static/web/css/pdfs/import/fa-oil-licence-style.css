@@ -77,12 +77,12 @@ div > p.content:first-child {
 
 /* Minimum height for reference and licence divs */
 #reference-and-licence > div {
-    min-height: 55px;
+    min-height: 50px;
 }
 
 
 #commodities > div {
-    min-height: 65px;
+    min-height: 45px;
 }
 
 main {
