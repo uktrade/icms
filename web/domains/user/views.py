@@ -26,7 +26,7 @@ from django.views.generic.detail import SingleObjectMixin
 
 from web.domains.template.context import UserManagementContext
 from web.domains.template.utils import replace_template_values
-from web.mail.constants import EmailTypes
+from web.mail.constants import CaseEmailCodes
 from web.mail.emails import send_case_email
 from web.middleware.one_login import new_one_login_user
 from web.models import CaseEmail, Email, Exporter, Importer, PhoneNumber, Template, User
@@ -247,7 +247,7 @@ class UserReactivateFormView(PermissionRequiredMixin, FormView):
     permission_required = Perms.sys.ilb_admin
     template_name = "web/domains/user/user_management.html"
     form_class = UserManagementEmailForm
-    email_template_code = EmailTypes.REACTIVATE_USER_EMAIL
+    email_template_code = CaseEmailCodes.REACTIVATE_USER_EMAIL
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -265,7 +265,7 @@ class UserReactivateFormView(PermissionRequiredMixin, FormView):
         initial = super().get_initial()
         user = self.get_platform_user()
         ctx = UserManagementContext(user)
-        email_template = Template.objects.get(template_code=self.email_template_code)
+        email_template = Template.objects.get(template_code=self.email_template_code.value)
         return initial | {
             "subject": replace_template_values(email_template.template_title, ctx),
             "body": replace_template_values(email_template.template_content, ctx),
@@ -300,7 +300,7 @@ class UserReactivateFormView(PermissionRequiredMixin, FormView):
 @method_decorator(transaction.atomic, name="post")
 class UserDeactivateFormView(UserReactivateFormView):
     permission_required = Perms.sys.ilb_admin
-    email_template_code = EmailTypes.DEACTIVATE_USER_EMAIL
+    email_template_code = CaseEmailCodes.DEACTIVATE_USER_EMAIL
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)

@@ -28,10 +28,10 @@ def add_export_application_type_data():
 
 
 def add_import_application_type_data():
-    gen_dec = Template.objects.get(template_code="IMA_GEN_DECLARATION")
-    opt_dec = Template.objects.get(template_code="IMA_OPT_DECLARATION")
-    sps_dec = Template.objects.get(template_code="IMA_SPS_DECLARATION")
-    wd_dec = Template.objects.get(template_code="IMA_WD_DECLARATION")
+    gen_dec = Template.objects.get(template_code=Template.Codes.IMA_GEN_DECLARATION)
+    opt_dec = Template.objects.get(template_code=Template.Codes.IMA_OPT_DECLARATION)
+    sps_dec = Template.objects.get(template_code=Template.Codes.IMA_SPS_DECLARATION)
+    wd_dec = Template.objects.get(template_code=Template.Codes.IMA_WD_DECLARATION)
 
     #
     # Active application types

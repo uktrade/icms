@@ -18,6 +18,7 @@ from web.models import (
     User,
 )
 
+from .constants import TemplateCodes
 from .context import (
     CoverLetterTemplateContext,
     EmailTemplateContext,
@@ -109,7 +110,7 @@ def get_cover_letter_content(application: ImportApplication, document_type: "Doc
 
 def get_email_template_subject_body(
     process: Process,
-    template_code: str,
+    template_code: TemplateCodes,
     context_cls: type[EmailTemplateContext] = EmailTemplateContext,
     current_user_name: str = "",
 ) -> tuple[str, str]:
@@ -129,14 +130,18 @@ def get_letter_fragment(application: SILApplication) -> str:
         raise ValueError(f"No letter fragments for process type {application.process_type}")
 
     if application.military_police or application.eu_single_market or application.manufactured:
-        return Template.objects.get(template_code="FIREARMS_MARKINGS_NON_STANDARD").template_content
+        return Template.objects.get(
+            template_code=Template.Codes.FIREARMS_MARKINGS_NON_STANDARD
+        ).template_content
 
     if (
         application.military_police is False
         and application.eu_single_market is False
         and application.manufactured is False
     ):
-        return Template.objects.get(template_code="FIREARMS_MARKINGS_STANDARD").template_content
+        return Template.objects.get(
+            template_code=Template.Codes.FIREARMS_MARKINGS_STANDARD
+        ).template_content
 
     raise ValueError("Unable to get letter fragment due to missing application data")
 
@@ -153,10 +158,12 @@ def add_application_default_cover_letter(application: "ImportApplication") -> No
 
     match application.process_type:
         case ProcessTypes.FA_DFL:
-            template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
+            template = Template.objects.get(
+                template_code=Template.Codes.COVER_FIREARMS_DEACTIVATED_FIREARMS
+            )
             add_application_cover_letter(application, template)
         case ProcessTypes.FA_OIL:
-            template = Template.objects.get(template_code="COVER_FIREARMS_OIL")
+            template = Template.objects.get(template_code=Template.Codes.COVER_FIREARMS_OIL)
             add_application_cover_letter(application, template)
         case ProcessTypes.FA_SIL:
             # SIL applcation cover letters are added manually
@@ -177,9 +184,11 @@ def add_template_data_on_submit(application: "ImportApplication") -> None:
 def get_application_update_template_data(application: ImpOrExp) -> tuple[str, str]:
     match application:
         case ImportApplication():
-            return get_email_template_subject_body(application, "IMA_APP_UPDATE")
+            return get_email_template_subject_body(application, Template.Codes.IMA_APP_UPDATE)
         case ExportApplication():
-            return get_email_template_subject_body(application, "CA_APPLICATION_UPDATE_EMAIL")
+            return get_email_template_subject_body(
+                application, Template.Codes.CA_APPLICATION_UPDATE_EMAIL
+            )
         case _:
             raise ValueError(
                 "Application must be an instance of ImportApplication / ExportApplication"
@@ -189,13 +198,13 @@ def get_application_update_template_data(application: ImpOrExp) -> tuple[str, st
 def get_fir_template_data(process: Process, current_user: User) -> tuple[str, str]:
     match process:
         case ImportApplication():
-            return get_email_template_subject_body(process, "IMA_RFI")
+            return get_email_template_subject_body(process, Template.Codes.IMA_RFI)
         case ExportApplication():
-            return get_email_template_subject_body(process, "CA_RFI_EMAIL")
+            return get_email_template_subject_body(process, Template.Codes.CA_RFI_EMAIL)
         case AccessRequest():
             current_user_name = current_user.full_name
             return get_email_template_subject_body(
-                process, "IAR_RFI_EMAIL", current_user_name=current_user_name
+                process, Template.Codes.IAR_RFI_EMAIL, current_user_name=current_user_name
             )
         case _:
             raise ValueError(

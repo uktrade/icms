@@ -1149,7 +1149,6 @@ Countries</label></div
 xcgd
 validity_end_date
 agents</p></td
-Template - Test Template
 process.status}}</span></div
 process.request_reason
 class="eight columns"></div
@@ -4938,7 +4937,6 @@ date_joined_date
 Registered Users
 AWS
 MAIL/1
-ICMSLST-2930 Revisit
 id_products-0
 Product 1 Updated
 id_product
@@ -4955,3 +4953,9 @@ Action
 View Welcome Message
 Welcome & Introduction
 Clear From Workbasket
+Refactored
+COVER_FIREARMS_OUTSIDE_EU
+COVER_FIREARMS_SEC5_NOT_EU
+Spanish CFS Schedule
+TemplateCodes
+CaseEmail Records

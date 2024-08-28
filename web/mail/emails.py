@@ -11,8 +11,10 @@ from web.domains.case.types import (
     ImpOrExpApproval,
     Organisation,
 )
+from web.domains.template.constants import TemplateCodes
 from web.domains.template.utils import get_email_template_subject_body
 from web.flow.models import ProcessTypes
+from web.mail.constants import CaseEmailCodes
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
     Constabulary,
@@ -501,12 +503,12 @@ def send_case_email(case_email: CaseEmailModel, sent_by: User) -> None:
 
 def create_case_email(
     application: ImpOrExp,
-    email_type: EmailTypes,
+    email_type: CaseEmailCodes,
     to: str | None = None,
     cc: list[str] | None = None,
     attachments: QuerySet | None = None,
 ) -> CaseEmailModel:
-    template_code = email_type.value
+    template_code: TemplateCodes = email_type.value  # type: ignore[assignment]
     subject, body = get_email_template_subject_body(application, template_code)
 
     case_email = CaseEmailModel.objects.create(

@@ -159,7 +159,7 @@ def test_fa_sil_get_preview_context(mock_get_goods, sil_app, licence, sil_expect
     mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
 
     sil_app.military_police = True
-    template = Template.objects.get(template_code="FIREARMS_MARKINGS_NON_STANDARD")
+    template = Template.objects.get(template_code=Template.Codes.FIREARMS_MARKINGS_NON_STANDARD)
 
     sil_expected_preview_context["goods"] = [
         ("goods one", 10),

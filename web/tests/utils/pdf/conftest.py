@@ -135,7 +135,7 @@ def dfl_expected_preview_context(active_signature):
 @pytest.fixture()
 def sil_expected_preview_context(active_signature):
     """Returns the minimum expected context values - tests then override the different keys in the tests."""
-    template = Template.objects.get(template_code="FIREARMS_MARKINGS_STANDARD")
+    template = Template.objects.get(template_code=Template.Codes.FIREARMS_MARKINGS_STANDARD)
 
     return {
         "applicant_reference": "Applicant Reference",

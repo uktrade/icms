@@ -238,7 +238,7 @@ def test_get_fa_sil_preview_licence_context(
     mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
     generator = PdfGenerator(DocumentTypes.LICENCE_PREVIEW, sil_app, licence)
     sil_app.manufactured = True
-    template = Template.objects.get(template_code="FIREARMS_MARKINGS_NON_STANDARD")
+    template = Template.objects.get(template_code=Template.Codes.FIREARMS_MARKINGS_NON_STANDARD)
 
     sil_expected_preview_context["goods"] = [
         ("goods one", 10),

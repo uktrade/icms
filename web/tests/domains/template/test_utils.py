@@ -180,7 +180,9 @@ def test_add_endorsements_from_application_type_added(importer_one_contact, impo
 
 def test_add_template_data_on_submit(importer_one_contact, importer, office):
     app = _create_dfl_app(importer_one_contact, importer, office)
-    template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
+    template = Template.objects.get(
+        template_code=Template.Codes.COVER_FIREARMS_DEACTIVATED_FIREARMS
+    )
 
     add_template_data_on_submit(app)
 
@@ -254,7 +256,9 @@ def test_get_cover_letter_invalid_context(importer_one_contact, importer, office
 
 def test_dfl_add_application_default_cover_letter(importer_one_contact, importer, office):
     app = _create_dfl_app(importer_one_contact, importer, office)
-    template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
+    template = Template.objects.get(
+        template_code=Template.Codes.COVER_FIREARMS_DEACTIVATED_FIREARMS
+    )
 
     add_application_default_cover_letter(app)
     assert app.cover_letter_text == template.template_content
@@ -286,7 +290,7 @@ def test_oil_add_application_default_cover_letter(importer_one_contact, importer
         contact=importer_one_contact,
         submit_datetime=dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.UTC),
     )
-    template = Template.objects.get(template_code="COVER_FIREARMS_OIL")
+    template = Template.objects.get(template_code=Template.Codes.COVER_FIREARMS_OIL)
 
     add_application_default_cover_letter(app)
     assert app.cover_letter_text == template.template_content
@@ -353,10 +357,10 @@ def test_sil_incomplete_get_letter_fragment(importer_one_contact, importer, offi
 @pytest.mark.parametrize(
     "mp,eu,man,tc",
     [
-        (True, False, False, "FIREARMS_MARKINGS_NON_STANDARD"),
-        (False, True, False, "FIREARMS_MARKINGS_NON_STANDARD"),
-        (False, False, True, "FIREARMS_MARKINGS_NON_STANDARD"),
-        (False, False, False, "FIREARMS_MARKINGS_STANDARD"),
+        (True, False, False, Template.Codes.FIREARMS_MARKINGS_NON_STANDARD),
+        (False, True, False, Template.Codes.FIREARMS_MARKINGS_NON_STANDARD),
+        (False, False, True, Template.Codes.FIREARMS_MARKINGS_NON_STANDARD),
+        (False, False, False, Template.Codes.FIREARMS_MARKINGS_STANDARD),
     ],
 )
 def test_sil_get_letter_fragment(importer_one_contact, importer, office, mp, eu, man, tc):
@@ -642,7 +646,7 @@ class TestCreateSchedule:
 
         template = Template.objects.get(
             template_type=Template.CFS_SCHEDULE_TRANSLATION,
-            template_code="CFS_SCHEDULE_TRANSLATION",
+            template_code=Template.Codes.CFS_SCHEDULE_TRANSLATION,
             template_name="Spanish CFS Schedule",
         )
         sp = ScheduleParagraphs(schedule, template)

@@ -4,7 +4,7 @@ from web.models import CFSScheduleParagraph, Country, CountryTranslationSet, Tem
 def add_cfs_schedule_data():
     t = Template.objects.get(
         template_type="CFS_SCHEDULE",
-        template_code="CFS_SCHEDULE_ENGLISH",
+        template_code=Template.Codes.CFS_SCHEDULE_ENGLISH,
         application_domain="CA",
     )
 
@@ -151,7 +151,7 @@ def add_cfs_declaration_template_countries():
 def add_schedule_translation_templates():
     t = Template.objects.get(
         template_name="Spanish CFS Schedule",
-        template_code="CFS_SCHEDULE_TRANSLATION",
+        template_code=Template.Codes.CFS_SCHEDULE_TRANSLATION,
         template_type="CFS_SCHEDULE_TRANSLATION",
         application_domain="CA",
         country_translation_set=CountryTranslationSet.objects.get(name="Spanish"),

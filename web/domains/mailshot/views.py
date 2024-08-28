@@ -177,7 +177,7 @@ class MailshotListView(ModelFilterView):
 
 
 class MailshotCreateView(PermissionRequiredMixin, LoginRequiredMixin, View):
-    MAILSHOT_TEMPLATE_CODE = "PUBLISH_MAILSHOT"
+    MAILSHOT_TEMPLATE_CODE = Template.Codes.PUBLISH_MAILSHOT
     permission_required = [Perms.sys.ilb_admin]
 
     def get(self, request):
@@ -323,7 +323,7 @@ class MailshotDetailView(MailshotReceivedDetailView):
 
 
 class MailshotRetractView(ModelUpdateView):
-    RETRACT_TEMPLATE_CODE = "RETRACT_MAILSHOT"
+    RETRACT_TEMPLATE_CODE = Template.Codes.RETRACT_MAILSHOT
     template_name = "web/domains/mailshot/retract.html"
     form_class = MailshotRetractForm
     model = Mailshot

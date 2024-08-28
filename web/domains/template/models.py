@@ -2,10 +2,14 @@ from django.db import models
 
 from web.types import TypedTextChoices
 
+from .constants import TemplateCodes
+
 TEMPLATE_CONTENT_REGEX = r"\[\[{}\]\]"
 
 
 class Template(models.Model):
+    Codes = TemplateCodes
+
     # Template types
     ENDORSEMENT = "ENDORSEMENT"
     LETTER_TEMPLATE = "LETTER_TEMPLATE"
@@ -82,12 +86,8 @@ class Template(models.Model):
     def application_domain_verbose(self):
         return dict(Template.DOMAINS)[self.application_domain]
 
-    def __str__(self):
-        label = "Template"
-        if self.id:
-            return label + " - " + self.template_name
-        else:
-            return label
+    def __str__(self) -> str:
+        return self.template_name
 
     class Meta:
         ordering = (

@@ -46,7 +46,7 @@ from web.sites import (
 )
 from web.utils import datetime_format
 
-from .constants import DATE_FORMAT, IMPORT_CASE_EMAILS, EmailTypes
+from .constants import DATE_FORMAT, CaseEmailCodes, EmailTypes
 from .models import EmailTemplate
 from .types import ImporterDetails
 from .url_helpers import (
@@ -470,7 +470,10 @@ class BaseCaseEmail(GOVNotifyEmailMessage):
         self.case_email = case_email
 
     def get_site_domain(self) -> str:
-        if self.case_email.template_code in IMPORT_CASE_EMAILS:
+        if self.case_email.template_code in [
+            CaseEmailCodes.CONSTABULARY_CASE_EMAIL,
+            CaseEmailCodes.SANCTIONS_CASE_EMAIL,
+        ]:
             return get_importer_site_domain()
         else:
             return get_exporter_site_domain()

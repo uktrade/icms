@@ -1,3 +1,4 @@
+from web.domains.template.constants import TemplateCodes
 from web.types import TypedTextChoices
 
 CELERY_MAIL_QUEUE_NAME = "mail"
@@ -111,23 +112,13 @@ class EmailTypes(TypedTextChoices):
     NEW_USER_WELCOME = ("NEW_USER_WELCOME", "New User Welcome")
     ORG_CONTACT_INVITE = ("ORG_CONTACT_INVITE", "New Organisation Contact Invite")
 
-    # Case emails
-    CONSTABULARY_CASE_EMAIL = ("IMA_CONSTAB_EMAIL", "Constabulary Email")
-    SANCTIONS_CASE_EMAIL = ("IMA_SANCTIONS_EMAIL", "Sanctions Email")
-    HSE_CASE_EMAIL = ("CA_HSE_EMAIL", "Health and Safety Email")
-    BEIS_CASE_EMAIL = ("CA_BEIS_EMAIL", "Business, Energy & Industrial Strategy Email")
 
-    DEACTIVATE_USER_EMAIL = ("DEACTIVATE_USER", "Deactivate User Email")
-    REACTIVATE_USER_EMAIL = ("REACTIVATE_USER", "Reactivate User Email")
+class CaseEmailCodes(TypedTextChoices):
+    """Class containing all TemplateCodes values that have been used to create CaseEmail Records."""
 
-
-USER_MANAGEMENT_EMAILS = [EmailTypes.DEACTIVATE_USER_EMAIL, EmailTypes.REACTIVATE_USER_EMAIL]
-USER_MANAGEMENT_EMAIL_TYPES = [
-    (email_type.value, email_type.label) for email_type in USER_MANAGEMENT_EMAILS
-]
-
-IMPORT_CASE_EMAILS = [EmailTypes.CONSTABULARY_CASE_EMAIL, EmailTypes.SANCTIONS_CASE_EMAIL]
-EXPORT_CASE_EMAILS = [EmailTypes.HSE_CASE_EMAIL, EmailTypes.BEIS_CASE_EMAIL]
-CASE_EMAIL_TYPES = [
-    (email_type.value, email_type.label) for email_type in IMPORT_CASE_EMAILS + EXPORT_CASE_EMAILS
-]
+    CONSTABULARY_CASE_EMAIL = (TemplateCodes.IMA_CONSTAB_EMAIL, "Constabulary Email")
+    SANCTIONS_CASE_EMAIL = (TemplateCodes.IMA_SANCTIONS_EMAIL, "Sanctions Email")
+    HSE_CASE_EMAIL = (TemplateCodes.CA_HSE_EMAIL, "Health and Safety Email")
+    BEIS_CASE_EMAIL = (TemplateCodes.CA_BEIS_EMAIL, "Business, Energy & Industrial Strategy Email")
+    DEACTIVATE_USER_EMAIL = (TemplateCodes.DEACTIVATE_USER, "Deactivate User Email")
+    REACTIVATE_USER_EMAIL = (TemplateCodes.REACTIVATE_USER, "Reactivate User Email")

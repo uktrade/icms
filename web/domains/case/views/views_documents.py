@@ -19,7 +19,7 @@ from web.domains.case.services import document_pack
 from web.domains.case.types import ApplicationsWithCaseEmail, DownloadLink
 from web.domains.case.utils import case_documents_metadata
 from web.flow.models import ProcessTypes
-from web.mail.constants import EmailTypes
+from web.mail.constants import CaseEmailCodes
 from web.mail.emails import (
     send_case_email,
     send_constabulary_deactivated_firearms_email,
@@ -172,9 +172,9 @@ class DownloadCaseEmailDocumentsFormView(DownloadLinkFormViewBase):
     @staticmethod
     def get_application(case_email: CaseEmail) -> ApplicationsWithCaseEmail:
         match case_email.template_code:
-            case EmailTypes.BEIS_CASE_EMAIL:
+            case CaseEmailCodes.BEIS_CASE_EMAIL:
                 return ExportApplication.objects.get(case_emails=case_email).get_specific_model()
-            case EmailTypes.CONSTABULARY_CASE_EMAIL | EmailTypes.SANCTIONS_CASE_EMAIL:
+            case CaseEmailCodes.CONSTABULARY_CASE_EMAIL | CaseEmailCodes.SANCTIONS_CASE_EMAIL:
                 return ImportApplication.objects.get(case_emails=case_email).get_specific_model()
             case _:
                 raise ValueError(f"Email attachments not supported for {case_email.template_code}.")

@@ -320,33 +320,37 @@ Yours sincerely,
 
 EMAIL_CONTENT = [
     (
-        "IMA_APP_UPDATE",
+        Template.Codes.IMA_APP_UPDATE,
         "Request for updates to your application [[CASE_REFERENCE]]",
         APPLICATION_UPDATE_IMPORTER_BODY,
     ),
     (
-        "CA_APPLICATION_UPDATE_EMAIL",
+        Template.Codes.CA_APPLICATION_UPDATE_EMAIL,
         "Request for updates to your application [[CASE_REFERENCE]]",
         APPLICATION_UPDATE_EXPORTER_BODY,
     ),
     (
-        "CA_BEIS_EMAIL",
+        Template.Codes.CA_BEIS_EMAIL,
         "Good manufacturing practice (GMP) application enquiry [[CASE_REFERENCE]]",
         BEIS_EMAIL_BODY,
     ),
     (
-        "IMA_CONSTAB_EMAIL",
+        Template.Codes.IMA_CONSTAB_EMAIL,
         "Import licence Registered Firearms Dealer (RFD) enquiry [[CASE_REFERENCE]]",
         FIREARMS_CONSTABULARY_BODY,
     ),
-    ("IMA_RFI", "Request for more information [[CASE_REFERENCE]]", IMA_RFI_BODY),
-    ("CA_RFI_EMAIL", "Request for more information [[CASE_REFERENCE]]", CA_RFI_BODY),
-    ("CA_HSE_EMAIL", "Biocidal product enquiry [[CASE_REFERENCE]]", HSE_BODY),
-    ("IAR_RFI_EMAIL", "Request for more information [[REQUEST_REFERENCE]]", IAR_RFI_BODY),
-    ("PUBLISH_MAILSHOT", "New mailshot", PUBLISH_MAILSHOT_BODY),
-    ("RETRACT_MAILSHOT", "Retracted mailshot", RETRACT_MAILSHOT_BODY),
+    (Template.Codes.IMA_RFI, "Request for more information [[CASE_REFERENCE]]", IMA_RFI_BODY),
+    (Template.Codes.CA_RFI_EMAIL, "Request for more information [[CASE_REFERENCE]]", CA_RFI_BODY),
+    (Template.Codes.CA_HSE_EMAIL, "Biocidal product enquiry [[CASE_REFERENCE]]", HSE_BODY),
     (
-        "IMA_SANCTIONS_EMAIL",
+        Template.Codes.IAR_RFI_EMAIL,
+        "Request for more information [[REQUEST_REFERENCE]]",
+        IAR_RFI_BODY,
+    ),
+    (Template.Codes.PUBLISH_MAILSHOT, "New mailshot", PUBLISH_MAILSHOT_BODY),
+    (Template.Codes.RETRACT_MAILSHOT, "Retracted mailshot", RETRACT_MAILSHOT_BODY),
+    (
+        Template.Codes.IMA_SANCTIONS_EMAIL,
         "Import sanctions and adhoc licence [[CASE_REFERENCE]]",
         SANCTIONS_BODY,
     ),
@@ -363,10 +367,10 @@ def update_database_email_templates():
 
 def archive_database_email_templates():
     templates = [
-        "STOP_CASE",
-        "CASE_REOPEN",
-        "LICENCE_REVOKE",
-        "CERTIFICATE_REVOKE",
+        Template.Codes.STOP_CASE,
+        Template.Codes.CASE_REOPEN,
+        Template.Codes.LICENCE_REVOKE,
+        Template.Codes.CERTIFICATE_REVOKE,
     ]
     Template.objects.filter(template_code__in=templates).update(is_active=False)
 
@@ -384,7 +388,7 @@ def add_user_management_email_templates():
     Template.objects.create(
         template_title="Your [[PLATFORM]] account has been deactivated",
         template_name="User account deactivated",
-        template_code=EmailTypes.DEACTIVATE_USER_EMAIL,
+        template_code=Template.Codes.DEACTIVATE_USER,
         template_type="EMAIL_TEMPLATE",
         application_domain="UM",
         template_content="""Dear [[FIRST_NAME]],
@@ -401,7 +405,7 @@ Import Licensing Branch
     Template.objects.create(
         template_title="Your [[PLATFORM]] account has been reactivated",
         template_name="User account reactivated",
-        template_code=EmailTypes.REACTIVATE_USER_EMAIL,
+        template_code=Template.Codes.REACTIVATE_USER,
         template_type="EMAIL_TEMPLATE",
         application_domain="UM",
         template_content="""Dear [[FIRST_NAME]],

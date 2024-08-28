@@ -29,7 +29,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpAccessOrExpAccess
 from web.domains.user.utils import user_list_view_qs
 from web.flow.models import ProcessTypes
-from web.mail.constants import EmailTypes
+from web.mail.constants import CaseEmailCodes
 from web.models import SILGoodsSection582Obsolete  # /PS-IGNORE
 from web.models import SILGoodsSection582Other  # /PS-IGNORE
 from web.models import SILSupplementaryReportFirearmSection582Obsolete  # /PS-IGNORE
@@ -340,7 +340,7 @@ class BaseFirearmsLicenceInterface(ReportInterface):
                 constabulary_emails=FilteredRelation(
                     "case_emails",
                     condition=Q(
-                        Q(case_emails__template_code=EmailTypes.CONSTABULARY_CASE_EMAIL),
+                        Q(case_emails__template_code=CaseEmailCodes.CONSTABULARY_CASE_EMAIL),
                         ~Q(case_emails__status=CaseEmail.Status.DRAFT),
                     ),
                 ),
@@ -473,7 +473,7 @@ class IssuedCertificateReportInterface(ReportInterface):
                 hse_email_count=Count(
                     "case_emails",
                     filter=Q(
-                        Q(case_emails__template_code=EmailTypes.HSE_CASE_EMAIL),
+                        Q(case_emails__template_code=CaseEmailCodes.HSE_CASE_EMAIL),
                         ~Q(case_emails__status=CaseEmail.Status.DRAFT),
                     ),
                     distinct=True,
@@ -481,7 +481,7 @@ class IssuedCertificateReportInterface(ReportInterface):
                 beis_email_count=Count(
                     "case_emails",
                     filter=Q(
-                        Q(case_emails__template_code=EmailTypes.BEIS_CASE_EMAIL),
+                        Q(case_emails__template_code=CaseEmailCodes.BEIS_CASE_EMAIL),
                         ~Q(case_emails__status=CaseEmail.Status.DRAFT),
                     ),
                     distinct=True,

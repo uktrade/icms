@@ -1697,7 +1697,7 @@ class TestMailshotsAppearInWorkbasket(AuthTestCase):
         is_to_exporters=False,
         is_to_importers=False,
     ):
-        template = Template.objects.get(template_code="PUBLISH_MAILSHOT")
+        template = Template.objects.get(template_code=Template.Codes.PUBLISH_MAILSHOT)
         mailshot = Mailshot(
             title=title,
             description=description,
