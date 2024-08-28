@@ -40,6 +40,7 @@ from web.models import (
     ClauseQuantity,
     Constabulary,
     Country,
+    DerogationsApplication,
     DFLApplication,
     DFLChecklist,
     ExportApplicationType,
@@ -48,12 +49,16 @@ from web.models import (
     File,
     FirearmsAct,
     FirearmsAuthority,
+    ImportApplicationType,
     ImportContact,
     Importer,
     ImporterAccessRequest,
+    IronSteelApplication,
     Mailshot,
     Office,
     OpenIndividualLicenceApplication,
+    OutwardProcessingTradeApplication,
+    PriorSurveillanceApplication,
     Report,
     SanctionsAndAdhocApplication,
     ScheduleReport,
@@ -63,6 +68,7 @@ from web.models import (
     SILApplication,
     SILChecklist,
     Task,
+    TextilesApplication,
     User,
     WoodQuotaApplication,
     WoodQuotaChecklist,
@@ -476,6 +482,106 @@ def wood_app_submitted(
     case_progress.check_expected_task(app, Task.TaskType.PROCESS)
 
     return app
+
+
+@pytest.fixture()
+def textiles_app_submitted(
+    importer_client, importer, office, importer_one_contact
+) -> TextilesApplication:
+    """Disabled application type - Submitted Textiles Application"""
+
+    iat = ImportApplicationType.Types
+    textiles_app = TextilesApplication.objects.create(
+        status=TextilesApplication.Statuses.SUBMITTED,
+        process_type=TextilesApplication.PROCESS_TYPE,
+        application_type=ImportApplicationType.objects.get(type=iat.TEXTILES),
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
+        importer=importer,
+        importer_office=office,
+    )
+    textiles_app.licences.create(issue_paper_licence_only=True)
+    return textiles_app
+
+
+@pytest.fixture()
+def opt_app_submitted(
+    importer_client, importer, office, importer_one_contact
+) -> OutwardProcessingTradeApplication:
+    """Disabled application type - Submitted Outward Processing Trade Application"""
+
+    iat = ImportApplicationType.Types
+    opt_app = OutwardProcessingTradeApplication.objects.create(
+        status=OutwardProcessingTradeApplication.Statuses.SUBMITTED,
+        process_type=OutwardProcessingTradeApplication.PROCESS_TYPE,
+        application_type=ImportApplicationType.objects.get(type=iat.OPT),
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
+        importer=importer,
+        importer_office=office,
+    )
+    opt_app.licences.create(issue_paper_licence_only=True)
+    return opt_app
+
+
+@pytest.fixture()
+def derogation_app_submitted(
+    importer_client, importer, office, importer_one_contact
+) -> DerogationsApplication:
+    """Disabled application type - Submitted Derogation Application"""
+
+    iat = ImportApplicationType.Types
+    derogation_app = DerogationsApplication.objects.create(
+        status=DerogationsApplication.Statuses.SUBMITTED,
+        process_type=DerogationsApplication.PROCESS_TYPE,
+        application_type=ImportApplicationType.objects.get(type=iat.DEROGATION),
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
+        importer=importer,
+        importer_office=office,
+    )
+    derogation_app.licences.create(issue_paper_licence_only=False)
+    return derogation_app
+
+
+@pytest.fixture()
+def sps_app_submitted(
+    importer_client, importer, office, importer_one_contact
+) -> PriorSurveillanceApplication:
+    """Disabled application type - Submitted Prior Surveillance Application"""
+
+    iat = ImportApplicationType.Types
+    sps_app = PriorSurveillanceApplication.objects.create(
+        status=PriorSurveillanceApplication.Statuses.SUBMITTED,
+        process_type=PriorSurveillanceApplication.PROCESS_TYPE,
+        application_type=ImportApplicationType.objects.get(type=iat.SPS),
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
+        importer=importer,
+        importer_office=office,
+    )
+    sps_app.licences.create(issue_paper_licence_only=False)
+    return sps_app
+
+
+@pytest.fixture()
+def iron_app_submitted(
+    importer_client, importer, office, importer_one_contact
+) -> IronSteelApplication:
+    """Disabled application type - Submitted Iron & Steel Application"""
+
+    iat = ImportApplicationType.Types
+    iron_app = IronSteelApplication.objects.create(
+        status=IronSteelApplication.Statuses.SUBMITTED,
+        process_type=IronSteelApplication.PROCESS_TYPE,
+        application_type=ImportApplicationType.objects.get(type=iat.IRON_STEEL),
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
+        importer=importer,
+        importer_office=office,
+    )
+    iron_app.licences.create(issue_paper_licence_only=False)
+    return iron_app
 
 
 @pytest.fixture()

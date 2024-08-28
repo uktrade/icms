@@ -4945,3 +4945,5 @@ id_product
 3474
 r".+Add
 {{ application_field(process.case_owner
+Outward Processing Trade Application
+Iron & Steel Application
