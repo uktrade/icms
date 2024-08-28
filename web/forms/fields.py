@@ -5,14 +5,14 @@ from typing import Any
 import phonenumber_field.formfields
 from django import forms
 from django.forms import Widget
-from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
+from phonenumber_field.widgets import RegionalPhoneNumberWidget
 
 from .utils import clean_postcode
 from .widgets import DateInput
 
 
 class PhoneNumberField(phonenumber_field.formfields.PhoneNumberField):
-    widget = PhoneNumberInternationalFallbackWidget
+    widget = RegionalPhoneNumberWidget
     max_length = 60
     help_text = "Customary input formats:\n\
     \n\
