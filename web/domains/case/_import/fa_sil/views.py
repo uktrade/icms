@@ -151,6 +151,8 @@ def add_section(
             if form.is_valid():
                 goods = form.save(commit=False)
                 goods.import_application = application
+                goods.description_original = goods.description
+                goods.quantity_original = goods.quantity
                 goods.save()
 
                 return redirect(
@@ -192,6 +194,8 @@ def edit_section(
             if form.is_valid():
                 goods = form.save(commit=False)
                 goods.import_application = application
+                goods.description_original = goods.description
+                goods.quantity_original = goods.quantity
                 goods.save()
 
                 return redirect(
@@ -284,6 +288,38 @@ def response_preparation_edit_goods(
             request,
             "web/domains/case/import/manage/response-prep-edit-form.html",
             context,
+        )
+
+
+@login_required
+@require_POST
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+def response_preparation_reset_goods(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    sil_section_type: str,
+    section_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: models.SILApplication = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        case_progress.application_in_processing(application)
+
+        config = _get_sil_section_resp_prep_config(sil_section_type)
+        goods: types.GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
+
+        goods.description = goods.description_original
+        goods.quantity = goods.quantity_original
+        goods.save()
+
+        return redirect(
+            reverse(
+                "case:prepare-response",
+                kwargs={"application_pk": application.pk, "case_type": "import"},
+            )
         )
 
 

@@ -246,6 +246,14 @@ class TestSILResponsePrepEditGoodsView(AuthTestCase):
                 "sil_section_type": "section5",
             },
         )
+        self.url_reset = reverse(
+            "import:fa-sil:response-prep-reset-goods",
+            kwargs={
+                "application_pk": fa_sil_app_submitted.pk,
+                "section_pk": self.quantity_section.pk,
+                "sil_section_type": "section5",
+            },
+        )
         self.unlimited_quantity_section = SILGoodsSection5.objects.get(
             import_application=fa_sil_app_submitted, description="Unlimited Section 5 goods"
         )
@@ -292,16 +300,30 @@ class TestSILResponsePrepEditGoodsView(AuthTestCase):
         assert response.status_code == HTTPStatus.FOUND, response.context["form"].errors
         self.quantity_section.refresh_from_db()
         assert self.quantity_section.description == "New description"
+        assert self.quantity_section.quantity == 333
 
     def test_update_quantity_section_no_quantity(self):
         response = self.ilb_admin_client.post(
-            self.url_unlimited_quantity,
-            data={"quantity": "", "unlimited_quantity": False, "description": "New description"},
+            self.url,
+            data={"quantity": "", "description": "New description"},
         )
         assert response.status_code == HTTPStatus.OK
-        assert response.context["form"].errors == {
-            "quantity": ["You must enter either a quantity or select unlimited quantity"]
-        }
+        assert response.context["form"].errors == {"quantity": ["You must enter this item"]}
+
+    def test_reset_data_(self):
+        self.ilb_admin_client.post(
+            self.url,
+            data={"quantity": "999", "description": "New description"},
+        )
+        self.quantity_section.refresh_from_db()
+        assert self.quantity_section.description == "New description"
+        assert self.quantity_section.quantity == 999
+
+        self.ilb_admin_client.post(self.url_reset)
+        self.quantity_section.refresh_from_db()
+
+        assert self.quantity_section.description == "Section 5 goods"
+        assert self.quantity_section.quantity == 333
 
 
 class TestSubmitFaSIL:

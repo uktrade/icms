@@ -1,5 +1,6 @@
 import datetime as dt
 import re
+from http import HTTPStatus
 from typing import Any
 
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -265,29 +266,101 @@ def create_in_progress_fa_sil_app(
 
     sil_app = SILApplication.objects.get(pk=app_pk)
 
-    sil_app.goods_section1.create(manufacture=False, description="Section 1 goods", quantity=111)
-    sil_app.goods_section2.create(manufacture=False, description="Section 2 goods", quantity=222)
-    sil_app.goods_section5.create(
-        manufacture=False,
-        description="Section 5 goods",
-        quantity=333,
-        section_5_clause=Section5Clause.objects.first(),
+    # Add section 1 goods
+    response = importer_client.post(
+        reverse(
+            "import:fa-sil:add-section",
+            kwargs={"application_pk": sil_app.pk, "sil_section_type": "section1"},
+        ),
+        {"manufacture": False, "description": "Section 1 goods", "quantity": 111},
     )
-    sil_app.goods_section5.create(
-        manufacture=False,
-        description="Unlimited Section 5 goods",
-        unlimited_quantity=True,
-        section_5_clause=Section5Clause.objects.first(),
+
+    assert response.status_code == HTTPStatus.FOUND
+
+    # Add section 2 goods
+    response = importer_client.post(
+        reverse(
+            "import:fa-sil:add-section",
+            kwargs={"application_pk": sil_app.pk, "sil_section_type": "section2"},
+        ),
+        {"manufacture": False, "description": "Section 2 goods", "quantity": 222},
     )
-    sil_app.goods_section582_obsoletes.create(
-        manufacture=False,
-        description="Section 58 obsoletes goods",
-        quantity=444,
-        obsolete_calibre="Obsolete calibre value",
+
+    assert response.status_code == HTTPStatus.FOUND
+
+    # Add section 5 goods
+    response = importer_client.post(
+        reverse(
+            "import:fa-sil:add-section",
+            kwargs={"application_pk": sil_app.pk, "sil_section_type": "section5"},
+        ),
+        {
+            "manufacture": False,
+            "description": "Section 5 goods",
+            "quantity": 333,
+            "section_5_clause": Section5Clause.objects.first().pk,
+        },
     )
-    sil_app.goods_section582_others.create(
-        manufacture=False, description="Section 58 other goods", quantity=555
+
+    assert response.status_code == HTTPStatus.FOUND
+
+    # Add unlimited section 5 goods
+    response = importer_client.post(
+        reverse(
+            "import:fa-sil:add-section",
+            kwargs={"application_pk": sil_app.pk, "sil_section_type": "section5"},
+        ),
+        {
+            "manufacture": False,
+            "description": "Unlimited Section 5 goods",
+            "unlimited_quantity": True,
+            "section_5_clause": Section5Clause.objects.first().pk,
+        },
     )
+
+    assert response.status_code == HTTPStatus.FOUND
+
+    # Add section 5 obsolete calibre goods
+    response = importer_client.post(
+        reverse(
+            "import:fa-sil:add-section",
+            kwargs={"application_pk": sil_app.pk, "sil_section_type": "section582-obsolete"},
+        ),
+        {
+            "acknowledgement": True,
+            "centrefire": True,
+            "curiosity_ornament": True,
+            "description": "Section 58 obsoletes goods",
+            "manufacture": True,
+            "obsolete_calibre": ".22 Extra Long Maynard",
+            "original_chambering": True,
+            "quantity": 444,
+        },
+    )
+
+    assert response.status_code == HTTPStatus.FOUND
+
+    # Add section 5 other goods
+    response = importer_client.post(
+        reverse(
+            "import:fa-sil:add-section",
+            kwargs={"application_pk": sil_app.pk, "sil_section_type": "section582-other"},
+        ),
+        {
+            "acknowledgement": True,
+            "bore": False,
+            "chamber": False,
+            "curiosity_ornament": True,
+            "description": "Section 58 other goods",
+            "ignition": False,
+            "manufacture": True,
+            "muzzle_loading": True,
+            "quantity": 555,
+            "rimfire": False,
+        },
+    )
+
+    assert response.status_code == HTTPStatus.FOUND
 
     add_app_file(
         client=importer_client,

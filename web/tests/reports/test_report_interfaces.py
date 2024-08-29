@@ -1324,7 +1324,7 @@ class TestFirearmsLicencesInterface:
                     "333 x Section 5 goods to which Section 5(A) of the Firearms Act 1968, as amended, applies.\n"
                     "Unlimited x Unlimited Section 5 goods to which Section 5(A) of the Firearms Act 1968, as amended, applies.\n"
                     "555 x Section 58 other goods to which Section 58(2) of the Firearms Act 1968, as amended, applies.\n"
-                    "444 x Section 58 obsoletes goods chambered in the obsolete calibre Obsolete calibre value to which Section 58(2)"
+                    "444 x Section 58 obsoletes goods chambered in the obsolete calibre .22 Extra Long Maynard to which Section 58(2)"
                     " of the Firearms Act 1968, as amended, applies."
                 ),
                 "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
