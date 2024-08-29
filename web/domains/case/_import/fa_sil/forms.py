@@ -462,42 +462,42 @@ class ResponsePrepBaseForm(forms.ModelForm):
     quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY)
 
 
-class ResponsePrepSILGoodsSection1Form(ResponsePrepBaseForm):
-    class Meta:
-        model = models.SILGoodsSection1
-        fields = ResponsePrepBaseForm.Meta.fields
-
-
-class ResponsePrepSILGoodsSection2Form(ResponsePrepBaseForm):
-    class Meta:
-        model = models.SILGoodsSection2
-        fields = ResponsePrepBaseForm.Meta.fields
-
-
-class ResponsePrepSILGoodsSection5Form(ResponsePrepBaseForm):
-
+class ResponsePrepUnlimitedBaseForm(ResponsePrepBaseForm):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.fields["quantity"].required = False
 
-    class Meta:
-        model = models.SILGoodsSection5
-        fields = ResponsePrepBaseForm.Meta.fields + ("unlimited_quantity",)
+        if self.instance.unlimited_quantity:
+            self.fields["quantity"].required = False
+            self.fields["quantity"].widget = forms.NumberInput(attrs={"placeholder": "Unlimited"})
+            self.fields["quantity"].disabled = True
 
     def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
 
-        quantity = cleaned_data.get("quantity")
-        unlimited_quantity = cleaned_data.get("unlimited_quantity")
-
-        if not quantity and not unlimited_quantity:
-            self.add_error(
-                "quantity", "You must enter either a quantity or select unlimited quantity"
-            )
+        unlimited_quantity = self.instance.unlimited_quantity
 
         if unlimited_quantity:
             cleaned_data["quantity"] = None
+
         return cleaned_data
+
+
+class ResponsePrepSILGoodsSection1Form(ResponsePrepUnlimitedBaseForm):
+    class Meta:
+        model = models.SILGoodsSection1
+        fields = ResponsePrepUnlimitedBaseForm.Meta.fields
+
+
+class ResponsePrepSILGoodsSection2Form(ResponsePrepUnlimitedBaseForm):
+    class Meta:
+        model = models.SILGoodsSection2
+        fields = ResponsePrepUnlimitedBaseForm.Meta.fields
+
+
+class ResponsePrepSILGoodsSection5Form(ResponsePrepUnlimitedBaseForm):
+    class Meta:
+        model = models.SILGoodsSection5
+        fields = ResponsePrepUnlimitedBaseForm.Meta.fields
 
 
 class ResponsePrepSILGoodsSection582ObsoleteForm(ResponsePrepBaseForm):  # /PS-IGNORE

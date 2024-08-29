@@ -38,6 +38,11 @@ urlpatterns = [
                                             views.response_preparation_edit_goods,
                                             name="response-prep-edit-goods",
                                         ),
+                                        path(
+                                            "response-prep-reset-goods/",
+                                            views.response_preparation_reset_goods,
+                                            name="response-prep-reset-goods",
+                                        ),
                                     ]
                                 ),
                             ),

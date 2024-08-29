@@ -1,5 +1,28 @@
 {% extends "web/domains/case/manage/prepare-response.html" %}
 
+{% macro edit_goods_link(process, goods, section) %}
+  <a class="link-button button icon-pencil" data-input_action="edit"
+      href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': goods.pk, "sil_section_type": section}) }}"
+  >Edit</a>
+{% endmacro %}
+
+{% macro reset_data_button(process, goods, section) %}
+  {% if goods.description != goods.description_original or goods.quantity != goods.quantity_original %}
+    <form
+      method="post"
+      action="{{ icms_url('import:fa-sil:response-prep-reset-goods', kwargs={'application_pk': process.pk, 'section_pk': goods.pk, "sil_section_type": section}) }}"
+      class="form-inline">
+      {{ csrf_input }}
+      <button
+        type="submit"
+        class="link-button button icon-undo2"
+        aria-label="Reset Data"
+        data-confirm="Are you sure you want to reset the goods data? Any changes you have made will be lost.">Reset Data
+      </button>
+    </form>
+  {% endif %}
+{% endmacro %}
+
 {% block cover_letter_actions %}
   {% if not readonly_view and not variation_refused %}
     <a
@@ -35,7 +58,7 @@
         <th>Obsolete Calibre</th>
         <th>Quantity</th>
         <th>Units</th>
-        {% if not readonly_view and not variation_refused%}<th>Actions</th>{% endif %}
+        {% if not readonly_view and not variation_refused%}<th colspan="2">Actions</th>{% endif %}
       </tr>
       </thead>
 
@@ -44,13 +67,20 @@
         <tr class="result-row">
           <td>{{ row.description }}</td>
           <td></td>
-          <td>{{ row.quantity }}</td>
+          <td>
+            {% if row.unlimited_quantity %}
+              Unlimited
+            {% else %}
+              {{ row.quantity }}
+            {% endif %}
+          </td>
           <td>units</td>
           {% if not readonly_view and not variation_refused %}
             <td>
-              <a class="link-button button icon-pencil" data-input_action="edit"
-                 href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section1"}) }}"
-              >Edit</a>
+              {{ edit_goods_link(process, row, "section1") }}
+            </td>
+            <td>
+              {{ reset_data_button(process, row, "section1") }}
             </td>
           {% endif %}
         </tr>
@@ -61,13 +91,20 @@
         <tr class="result-row">
           <td>{{ row.description }}</td>
           <td></td>
-          <td>{{ row.quantity }}</td>
+          <td>
+            {% if row.unlimited_quantity %}
+              Unlimited
+            {% else %}
+              {{ row.quantity }}
+            {% endif %}
+          </td>
           <td>units</td>
           {% if not readonly_view and not variation_refused %}
             <td>
-              <a class="link-button button icon-pencil" data-input_action="edit"
-                 href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section2"}) }}"
-              >Edit</a>
+              {{ edit_goods_link(process, row, "section2") }}
+            </td>
+            <td>
+              {{ reset_data_button(process, row, "section2") }}
             </td>
           {% endif %}
         </tr>
@@ -88,9 +125,10 @@
           <td>units</td>
           {% if not readonly_view and not variation_refused %}
             <td>
-              <a class="link-button button icon-pencil" data-input_action="edit"
-                 href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section5"}) }}"
-              >Edit</a>
+              {{ edit_goods_link(process, row, "section5") }}
+            </td>
+            <td>
+              {{ reset_data_button(process, row, "section5") }}
             </td>
           {% endif %}
         </tr>
@@ -105,9 +143,10 @@
           <td>units</td>
           {% if not readonly_view and not variation_refused %}
             <td>
-              <a class="link-button button icon-pencil" data-input_action="edit"
-                 href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section582-obsolete"}) }}"
-              >Edit</a>
+              {{ edit_goods_link(process, row, "section582-obsolete") }}
+            </td>
+            <td>
+              {{ reset_data_button(process, row, "section582-obsolete") }}
             </td>
           {% endif %}
         </tr>
@@ -122,9 +161,10 @@
           <td>units</td>
           {% if not readonly_view and not variation_refused %}
             <td>
-              <a class="link-button button icon-pencil" data-input_action="edit"
-                 href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section582-other"}) }}"
-              >Edit</a>
+              {{ edit_goods_link(process, row, "section582-other") }}
+            </td>
+            <td>
+              {{ reset_data_button(process, row, "section582-other") }}
             </td>
           {% endif %}
         </tr>

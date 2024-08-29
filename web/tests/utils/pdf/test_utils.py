@@ -405,7 +405,7 @@ def test__get_fa_sil_goods(fa_sil_app_submitted, ilb_admin_user):
             333,
         ),
         (
-            "Section 58 obsoletes goods chambered in the obsolete calibre Obsolete calibre value to"
+            "Section 58 obsoletes goods chambered in the obsolete calibre .22 Extra Long Maynard to"
             " which Section 58(2) of the Firearms Act 1968, as amended, applies.",
             444,
         ),
@@ -447,7 +447,7 @@ def test__get_fa_sil_goods(fa_sil_app_submitted, ilb_admin_user):
             666,
         ),
         (
-            "Section 58 obsoletes goods chambered in the obsolete calibre Obsolete calibre value to"
+            "Section 58 obsoletes goods chambered in the obsolete calibre .22 Extra Long Maynard to"
             " which Section 58(2) of the Firearms Act 1968, as amended, applies.",
             444,
         ),
