@@ -4,6 +4,8 @@ from django.urls import include, path
 from . import views
 
 urlpatterns = [
+    path("welcome/", views.NewUserWelcomeView.as_view(), name="user-welcome"),
+    path("welcome/clear/", views.ClearNewUserWelcomeView.as_view(), name="user-welcome-clear"),
     path(
         "<int:user_pk>/",
         include(

@@ -7,6 +7,7 @@ from web.domains.workbasket.actions import ActionConfig
 from web.domains.workbasket.actions.applicant_actions import (
     ClearApplicationAction,
     ClearIssuedDocumentsAction,
+    ShowWelcomeMessageAction,
     SubmitVariationUpdateAction,
     ViewApplicationAction,
     ViewIssuedDocumentsAction,
@@ -200,3 +201,24 @@ class TestApplicantActions:
         action = ClearIssuedDocumentsAction.from_config(config)
 
         assert not action.show_link()
+
+    def test_show_welcome_message_not_shown(self):
+        action = ShowWelcomeMessageAction(self.user)
+
+        assert not action.show_link()
+
+    def test_show_welcome_message_shown(self):
+        self.user.show_welcome_message = True
+        self.user.save()
+
+        action = ShowWelcomeMessageAction(self.user)
+
+        assert action.show_link()
+
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "View Welcome Message"
+        assert wb_action.section_label == "Welcome & Introduction"
+
+        wb_action = action.get_workbasket_actions()[1]
+        assert wb_action.name == "Clear From Workbasket"
+        assert wb_action.section_label == "Welcome & Introduction"

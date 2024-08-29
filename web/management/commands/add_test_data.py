@@ -218,6 +218,7 @@ class Command(BaseCommand):
             organisation=f"{username}_org",
             department=f"{username}_dep",
             date_joined=dt.datetime(2024, 1, 20, tzinfo=dt.UTC),
+            show_welcome_message=False,
         )
 
     def create_import_access_request(self, user):

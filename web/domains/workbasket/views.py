@@ -7,9 +7,12 @@ from django.http.response import HttpResponse
 from django.shortcuts import render
 
 from web.permissions import Perms
+from web.sites import is_exporter_site, is_importer_site
 from web.types import AuthenticatedHttpRequest
 
+from .actions.applicant_actions import ShowWelcomeMessageAction
 from .app_data import get_applicant_qs, get_ilb_admin_qs, get_sanctions_case_officer_qs
+from .base import WorkbasketRow, WorkbasketSection
 from .row import get_workbasket_row_func
 
 
@@ -44,6 +47,30 @@ def show_workbasket(request: AuthenticatedHttpRequest) -> HttpResponse:
         row = get_workbasket_row(r, request.user, is_ilb_admin)
 
         rows.append(row)
+
+    # Add custom welcome action for new users of ICMS (excluding ILB Admins)
+    if is_importer_site(request.site) or is_exporter_site(request.site):
+        welcome_action = ShowWelcomeMessageAction(request.user)
+
+        if welcome_action.show_link() and not is_ilb_admin:
+            actions = welcome_action.get_workbasket_actions()
+            welcome_section = WorkbasketSection(
+                information=actions[0].section_label,  # type: ignore[arg-type]
+                actions=actions,
+            )
+
+            welcome_row = WorkbasketRow(
+                id=-1,  # id is only used for end-to-end tests
+                reference="",
+                subject=f"Account successfully created\n{request.user.full_name}",
+                company="",
+                company_agent="",
+                status="WELCOME_TO_ICMS",
+                timestamp=None,
+                sections=[welcome_section],
+            )
+
+            rows = [welcome_row] + rows
 
     context = {"page_title": "Workbasket", "rows": rows, "page_obj": page_obj}
 

@@ -3,7 +3,7 @@ from typing import Any
 
 import pytest
 from django.urls import reverse
-from pytest_django.asserts import assertRedirects
+from pytest_django.asserts import assertContains, assertRedirects
 
 from web.forms.fields import JQUERY_DATE_FORMAT
 from web.mail.constants import EmailTypes
@@ -417,5 +417,45 @@ def add_user_email(
     )
 
 
-def add_user_phone(user: User, phone: str, type=PhoneNumber.MOBILE) -> PhoneNumber:
-    return PhoneNumber.objects.create(user=user, phone=phone, type=type)
+def add_user_phone(user: User, phone: str, _type=PhoneNumber.MOBILE) -> PhoneNumber:
+    return PhoneNumber.objects.create(user=user, phone=phone, type=_type)
+
+
+class TestNewUserWelcomeView:
+    def test_importer(self, importer_client):
+        url = reverse("user-welcome")
+        response = importer_client.get(url)
+
+        assertContains(response, "Welcome to Apply for an import licence")
+        assertContains(response, "to start importing products")
+
+    def test_exporter(self, exporter_client):
+        url = reverse("user-welcome")
+        response = exporter_client.get(url)
+
+        assertContains(response, "Welcome to Apply for an export certificate")
+        assertContains(response, "to start exporting products")
+
+
+class TestClearNewUserWelcomeView:
+    def test_importer(self, importer_one_contact, importer_client):
+        importer_one_contact.show_welcome_message = True
+        importer_one_contact.save()
+
+        url = reverse("user-welcome-clear")
+        response = importer_client.post(url)
+        assertRedirects(response, reverse("workbasket"))
+
+        importer_one_contact.refresh_from_db()
+        assert not importer_one_contact.show_welcome_message
+
+    def test_exporter(self, exporter_one_contact, exporter_client):
+        exporter_one_contact.show_welcome_message = True
+        exporter_one_contact.save()
+
+        url = reverse("user-welcome-clear")
+        response = exporter_client.post(url)
+        assertRedirects(response, reverse("workbasket"))
+
+        exporter_one_contact.refresh_from_db()
+        assert not exporter_one_contact.show_welcome_message

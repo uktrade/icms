@@ -8,7 +8,7 @@ from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import DocumentPack
 from web.domains.workbasket.base import WorkbasketAction
-from web.models import Task
+from web.models import Task, User
 from web.permissions import Perms
 from web.utils import datetime_format
 
@@ -407,6 +407,35 @@ class ProvideFirearmsReportAction(Action):
                 ),
                 section_label="Firearms Supplementary Reporting",
             )
+        ]
+
+
+class ShowWelcomeMessageAction:
+    """Custom action used to display welcome message.
+
+    Doesn't inherit from Action as it doesn't get applied to every workbasket application row.
+    """
+
+    def __init__(self, user: User) -> None:
+        self.user = user
+
+    def show_link(self) -> bool:
+        return self.user.show_welcome_message
+
+    def get_workbasket_actions(self) -> list[WorkbasketAction]:
+        return [
+            WorkbasketAction(
+                is_post=False,
+                name="View Welcome Message",
+                url=reverse("user-welcome"),
+                section_label="Welcome & Introduction",
+            ),
+            WorkbasketAction(
+                is_post=True,
+                name="Clear From Workbasket",
+                url=reverse("user-welcome-clear"),
+                section_label="Welcome & Introduction",
+            ),
         ]
 
 
