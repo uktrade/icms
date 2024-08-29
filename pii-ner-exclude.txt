@@ -4951,3 +4951,7 @@ silgoodssection1
 edit_goods_link(process
 {{ edit_goods_link(process
 {{ reset_data_button(process
+Action
+View Welcome Message
+Welcome & Introduction
+Clear From Workbasket

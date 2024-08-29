@@ -111,6 +111,16 @@ class User(MigrationBase):
             .iterator(chunk_size=2000)
         )
 
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data = super().data_export(data)
+
+        # This field in V2 defaults to True for new user records.
+        # We don't want to show the welcome message to users from V1
+        data["show_welcome_message"] = False
+
+        return data
+
 
 class PhoneNumber(MigrationBase):
     phone = models.CharField(max_length=60)

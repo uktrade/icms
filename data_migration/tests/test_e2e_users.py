@@ -131,6 +131,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert u1.last_login == dt.datetime(2022, 11, 1, 12, 32, tzinfo=dt.UTC)
     assert u1.icms_v1_user
     assert u1.phone_numbers.count() == 2
+    assert not u1.show_welcome_message
 
     pn1, pn2 = u1.phone_numbers.order_by("pk")
     assert pn1.phone == "12345678"
@@ -181,6 +182,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert u2.emails.count() == 0
     assert u2.last_login == dt.datetime(2022, 11, 1, 12, 32, tzinfo=dt.UTC)
     assert u2.icms_v1_user
+    assert not u1.show_welcome_message
 
     # Importers
 

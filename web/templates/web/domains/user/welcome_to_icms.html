@@ -1,0 +1,19 @@
+{% extends "layout/no-sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block context_header %}Welcome to {{ request.site.name }}{% endblock %}
+
+{% block main_content %}
+  <p class="bold">Welcome to {{ request.site.name }}</p>
+  {% if is_importer_site %}
+    <p><a href="{{ icms_url('access:importer-request') }}">Request importer access</a> to start importing products</p>
+  {% endif %}
+
+  {% if is_exporter_site %}
+    <p><a href="{{ icms_url('access:exporter-request') }}">Request exporter access</a> to start exporting products</p>
+  {% endif %}
+  <div class="info-box info-box-info">
+    If you are an existing user and you have used a different email address to create your GOV.UK One login account than the one you used in ICMS, go to the “<a href="{{ icms_url('account-recovery') }}">Link your existing account</a>” page.
+  </div>
+{% endblock %}

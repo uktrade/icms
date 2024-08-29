@@ -1968,6 +1968,63 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
         )
 
 
+class TestNewUserWelcomeMessageWorkbasket(AuthTestCase):
+    """Test workbasket rows show welcome message for new users."""
+
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
+        _fix_access_request_data()
+
+    def test_workbasket(self):
+        self._test_ilb_admin_wb()
+        self._test_importer_contact_wb()
+        self._test_exporter_contact_wb()
+
+    def _test_ilb_admin_wb(self):
+        expected_rows = {}
+        check_expected_rows(self.ilb_admin_client, expected_rows)
+
+        # ILB Admin should never see welcome message (even if show_welcome_message is True)
+        self.ilb_admin_user.show_welcome_message = True
+        self.ilb_admin_user.save()
+
+        expected_rows = {}
+        check_expected_rows(self.ilb_admin_client, expected_rows)
+
+    def _test_importer_contact_wb(self):
+        check_expected_rows(self.importer_client, {})
+
+        # Now update user to show welcome message.
+        self.importer_user.show_welcome_message = True
+        self.importer_user.save()
+        expected_rows = {
+            "": {
+                "WELCOME_TO_ICMS": {
+                    "Welcome & Introduction": ["View Welcome Message", "Clear From Workbasket"]
+                }
+            }
+        }
+
+        check_expected_rows(self.importer_client, expected_rows)
+
+    def _test_exporter_contact_wb(self):
+        check_expected_rows(self.exporter_client, {})
+
+        # Now update user to show welcome message.
+        self.exporter_user.show_welcome_message = True
+        self.exporter_user.save()
+
+        expected_rows = {
+            "": {
+                "WELCOME_TO_ICMS": {
+                    "Welcome & Introduction": ["View Welcome Message", "Clear From Workbasket"]
+                }
+            }
+        }
+
+        check_expected_rows(self.exporter_client, expected_rows)
+
+
 def check_expected_rows(
     client: Client, expected_rows: dict[str, dict[str, dict[str, list[str]]]]
 ) -> None:

@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import (
 from django.db import transaction
 from django.db.models import QuerySet
 from django.forms import Form
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -19,6 +19,7 @@ from django.views.generic import (
     DetailView,
     FormView,
     RedirectView,
+    TemplateView,
     UpdateView,
 )
 from django.views.generic.detail import SingleObjectMixin
@@ -398,3 +399,21 @@ class OneLoginTestAccountsDetailView(
             "one_login_user": user,
             "linked_one_login_users": linked_one_login_users,
         }
+
+
+class NewUserWelcomeView(LoginRequiredMixin, TemplateView):
+    http_method_names = ["get"]
+    template_name = "web/domains/user/welcome_to_icms.html"
+
+
+class ClearNewUserWelcomeView(LoginRequiredMixin, RedirectView):
+    http_method_names = ["post"]
+
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        self.request.user.show_welcome_message = False
+        self.request.user.save()
+
+        return super().post(request, *args, **kwargs)
+
+    def get_redirect_url(self, *args: Any, **kwargs: Any) -> str:
+        return reverse("workbasket")

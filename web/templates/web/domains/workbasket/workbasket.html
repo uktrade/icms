@@ -93,7 +93,11 @@
         </td>
 
         <td>
-          {{ row.status }}<br>{{ row.timestamp|datetime_format('%d-%b-%Y %H:%M') }}
+          {% if row.status == "WELCOME_TO_ICMS" %}
+            N/A
+          {% else %}
+            {{ row.status }}<br>{{ row.timestamp|datetime_format('%d-%b-%Y %H:%M') }}
+          {% endif %}
         </td>
 
         <td>
