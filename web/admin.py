@@ -1,6 +1,9 @@
+from typing import Any
+
 from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.admin import SiteAdmin
@@ -85,6 +88,55 @@ class EmailTemplateAdmin(admin.ModelAdmin):
         return False
 
 
+def check_no_object_permission_groups_added_or_removed(
+    existing: QuerySet[Group], new: QuerySet[Group]
+) -> None:
+    """Prevent certain groups being modified in the admin site.
+
+    Certain groups should only be modified in ICMS directly because there is extra business logic
+    required.
+    """
+
+    # List of groups that shouldn't be modified in the Admin site.
+    object_permission_groups: list[str] = [
+        Perms.obj.constabulary.get_group_name(),
+        Perms.obj.exporter.get_group_name(),
+        Perms.obj.importer.get_group_name(),
+    ]
+
+    new_groups_added = new.difference(existing).values_list("name", flat=True)
+    existing_groups_removed = existing.difference(new).values_list("name", flat=True)
+
+    for group in object_permission_groups:
+        if group in new_groups_added:
+            raise ValidationError(
+                "The following group should be added in the %(site)s org management screen: %(g)s",
+                code="invalid",
+                params={"site": SiteName.CASEWORKER.value, "g": group},
+            )
+
+        if group in existing_groups_removed:
+            raise ValidationError(
+                "The following group should be removed in the %(site)s org management screen: %(g)s",
+                code="invalid",
+                params={"site": SiteName.CASEWORKER.value, "g": group},
+            )
+
+
+class ICMSUserChangeForm(UserChangeForm):
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+
+        try:
+            check_no_object_permission_groups_added_or_removed(
+                self.instance.groups.all(), cleaned_data.get("groups")
+            )
+        except ValidationError as e:
+            self.add_error("groups", e)
+
+        return cleaned_data
+
+
 class UserEmailInline(admin.TabularInline):
     model = Email
 
@@ -92,6 +144,7 @@ class UserEmailInline(admin.TabularInline):
 class SuperUserUserAdmin(UserAdmin):
     """UserAdmin class for default django admin site"""
 
+    form = ICMSUserChangeForm
     inlines = (UserEmailInline,)
 
 
@@ -237,6 +290,7 @@ def _get_login_index(urls: list[URLPattern | URLResolver]) -> int:
 class ICMSAdminUserAdmin(UserAdmin):
     """UserAdmin class for icms admin site"""
 
+    form = ICMSUserChangeForm
     fieldsets = (
         (None, {"fields": ("username",)}),
         ("Personal info", {"fields": ("first_name", "last_name", "email")}),
