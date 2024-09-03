@@ -528,3 +528,20 @@ GTM_CONTAINER_IDS = {
     "Apply for an export certificate": env.gtm_exporter_container_id,
     "Apply for an import licence": env.gtm_importer_container_id,
 }
+
+# Djando debug toolbar config.
+# Almost exclusively used locally but can be temporarily enabled in deployed environments
+SHOW_DEBUG_TOOLBAR = env.show_debug_toolbar
+if SHOW_DEBUG_TOOLBAR:
+    INSTALLED_APPS += [
+        "debug_toolbar",
+    ]
+
+    MIDDLEWARE += [
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    ]
+
+    DEBUG_TOOLBAR_CONFIG = {
+        "INTERCEPT_REDIRECTS": False,
+        "SHOW_TOOLBAR_CALLBACK": lambda x: SHOW_DEBUG_TOOLBAR,
+    }

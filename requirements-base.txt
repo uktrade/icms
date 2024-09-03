@@ -6,6 +6,7 @@ dj-database-url==2.1.0
 django-celery-results==2.5.1
 django-chunk-upload-handlers==0.0.14
 django-compressor==4.4
+django-debug-toolbar~=4.4
 django-filter==23.4
 django-guardian==2.4.0
 django-htmlmin==0.11.0
