@@ -355,7 +355,7 @@ def get_commodity_details(rec: ImportApplication) -> types.CommodityDetails:
 
 def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     """Selects related tables used for import applications."""
-    model = model.select_related("importer", "contact", "application_type", "case_owner")
+    model = model.select_related("importer", "agent", "contact", "application_type", "case_owner")
     model = model.annotate(order_by_datetime=utils.get_order_by_datetime("import"))
 
     return model
@@ -363,7 +363,7 @@ def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
 
 def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     """Selects related tables used for import applications."""
-    model = model.select_related("exporter", "contact", "case_owner")
+    model = model.select_related("exporter", "agent", "contact", "case_owner")
 
     origin_countries_sub_query = (
         ExportApplication.objects.filter(id=OuterRef("id"))

@@ -390,6 +390,11 @@ class CaseDocumentReference(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey()
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["content_type", "object_id"]),
+        ]
+
     def __str__(self):
         o_id, dt, ref = (self.object_id, self.document_type, self.reference)
         return f"CaseDocumentReference(object_id={o_id}, document_type={dt}, reference={ref})"
