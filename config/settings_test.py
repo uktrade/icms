@@ -67,3 +67,7 @@ GTM_ENABLED = True
 GOV_UK_ONE_LOGIN_AUTHENTICATION_LEVEL = one_login_types.AuthenticationLevel.MEDIUM_LEVEL
 
 SAVE_GENERATED_PDFS = env.save_generated_pdfs
+
+# Disable toolbar if enabled when running tests.
+if SHOW_DEBUG_TOOLBAR:
+    DEBUG_TOOLBAR_CONFIG["SHOW_TOOLBAR_CALLBACK"] = lambda _: False
