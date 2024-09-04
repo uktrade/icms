@@ -299,7 +299,9 @@ class Command(BaseCommand):
 
 
 def add_email(user):
-    Email.objects.create(user=user, email=user.email, portal_notifications=True)
+    Email.objects.create(
+        user=user, email=user.email, portal_notifications=True, is_primary=True, type=Email.WORK
+    )
 
 
 def add_group(user, group_name):
