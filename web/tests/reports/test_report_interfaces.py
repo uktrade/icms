@@ -179,6 +179,7 @@ EXPECTED_ACTIVE_USER_HEADER = [
     "First Name",  # /PS-IGNORE
     "Last Name",  # /PS-IGNORE
     "Email Address",
+    "Primary Email Address",
     "Date Joined",
     "Last Login",
     "Is Importer",
@@ -190,6 +191,7 @@ EXPECTED_ACTIVE_STAFF_USER_HEADER = [
     "First Name",  # /PS-IGNORE
     "Last Name",  # /PS-IGNORE
     "Email Address",
+    "Primary Email Address",
     "Date Joined",
     "Last Login",
 ]
@@ -1351,86 +1353,97 @@ class TestActiveUserInterface:
         assert data["header"] == EXPECTED_ACTIVE_USER_HEADER
         assert data["errors"] == []
 
-        @freeze_time("2024-02-11 12:00:00")
-        def test_get_data(self, importer, ilb_admin_two, importer_client, importer_one_contact):
-            importer_client.force_login(importer_one_contact)
-            # Makes an admin user an importer to make sure they are excluded from the report
-            organisation_add_contact(importer, ilb_admin_two)
+    @freeze_time("2024-02-11 12:00:00")
+    def test_get_data(self, importer, ilb_admin_two, importer_client, importer_one_contact):
+        importer_client.force_login(importer_one_contact)
+        # Makes an admin user an importer to make sure they are excluded from the report
+        organisation_add_contact(importer, ilb_admin_two)
 
-            interface = ActiveUserInterface(self.report_schedule)
-            data = interface.get_data()
-            assert data["results"] == [
-                {
-                    "Businesses": "Test Importer 1",
-                    "Email Address": "I1_main_contact@example.com",  # /PS-IGNORE
-                    "First Name": "I1_main_contact_first_name",  # /PS-IGNORE
-                    "Is Exporter": "No",
-                    "Is Importer": "Yes",
-                    "Last Name": "I1_main_contact_last_name",  # /PS-IGNORE
-                    "Date Joined": "20/01/2024",
-                    "Last Login": "11/02/2024",
-                },
-                {
-                    "Businesses": "Test Importer 1, Test Importer 1 Agent 1",
-                    "Email Address": "I1_A1_main_contact@example.com",  # /PS-IGNORE
-                    "First Name": "I1_A1_main_contact_first_name",  # /PS-IGNORE
-                    "Is Exporter": "No",
-                    "Is Importer": "Yes",
-                    "Last Name": "I1_A1_main_contact_last_name",  # /PS-IGNORE
-                    "Date Joined": "20/01/2024",
-                    "Last Login": "",
-                },
-                {
-                    "Businesses": "Test Importer 2",
-                    "Email Address": "I2_main_contact@example.com",  # /PS-IGNORE
-                    "First Name": "I2_main_contact_first_name",  # /PS-IGNORE
-                    "Is Exporter": "No",
-                    "Is Importer": "Yes",
-                    "Last Name": "I2_main_contact_last_name",  # /PS-IGNORE
-                    "Date Joined": "20/01/2024",
-                    "Last Login": "",
-                },
-                {
-                    "Businesses": "Test Exporter 1",
-                    "Email Address": "E1_main_contact@example.com",  # /PS-IGNORE
-                    "First Name": "E1_main_contact_first_name",  # /PS-IGNORE
-                    "Is Exporter": "Yes",
-                    "Is Importer": "No",
-                    "Last Name": "E1_main_contact_last_name",  # /PS-IGNORE
-                    "Date Joined": "20/01/2024",
-                    "Last Login": "",
-                },
-                {
-                    "Businesses": "Test Exporter 1",
-                    "Email Address": "E1_secondary_contact@example.com",  # /PS-IGNORE
-                    "First Name": "E1_secondary_contact_first_name",  # /PS-IGNORE
-                    "Is Exporter": "Yes",
-                    "Is Importer": "No",
-                    "Last Name": "E1_secondary_contact_last_name",  # /PS-IGNORE
-                    "Date Joined": "20/01/2024",
-                    "Last Login": "",
-                },
-                {
-                    "Businesses": "Test Exporter 1, Test Exporter 1 Agent 1",
-                    "Email Address": "E1_A1_main_contact@example.com",  # /PS-IGNORE
-                    "First Name": "E1_A1_main_contact_first_name",  # /PS-IGNORE
-                    "Is Exporter": "Yes",
-                    "Is Importer": "No",
-                    "Last Name": "E1_A1_main_contact_last_name",  # /PS-IGNORE
-                    "Date Joined": "20/01/2024",
-                    "Last Login": "",
-                },
-                {
-                    "Businesses": "Test Exporter 2",
-                    "Email Address": "E2_main_contact@example.com",  # /PS-IGNORE
-                    "First Name": "E2_main_contact_first_name",  # /PS-IGNORE
-                    "Is Exporter": "Yes",
-                    "Is Importer": "No",
-                    "Last Name": "E2_main_contact_last_name",  # /PS-IGNORE
-                    "Date Joined": "20/01/2024",
-                    "Last Login": "",
-                },
-            ]
+        user_email = importer_one_contact.emails.get(is_primary=True)
+        user_email.email = "I1_main_contact_alt_email@example.com"  # /PS-IGNORE
+        user_email.save()
+
+        interface = ActiveUserInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Businesses": "Test Importer 1",
+                "Email Address": "I1_main_contact@example.com",  # /PS-IGNORE
+                "Primary Email Address": "I1_main_contact_alt_email@example.com",  # /PS-IGNORE
+                "First Name": "I1_main_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "No",
+                "Is Importer": "Yes",
+                "Last Name": "I1_main_contact_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "11/02/2024",
+            },
+            {
+                "Businesses": "Test Importer 1, Test Importer 1 Agent 1",
+                "Email Address": "I1_A1_main_contact@example.com",  # /PS-IGNORE
+                "Primary Email Address": "I1_A1_main_contact@example.com",  # /PS-IGNORE
+                "First Name": "I1_A1_main_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "No",
+                "Is Importer": "Yes",
+                "Last Name": "I1_A1_main_contact_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
+            },
+            {
+                "Businesses": "Test Importer 2",
+                "Email Address": "I2_main_contact@example.com",  # /PS-IGNORE
+                "Primary Email Address": "I2_main_contact@example.com",  # /PS-IGNORE
+                "First Name": "I2_main_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "No",
+                "Is Importer": "Yes",
+                "Last Name": "I2_main_contact_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
+            },
+            {
+                "Businesses": "Test Exporter 1",
+                "Email Address": "E1_main_contact@example.com",  # /PS-IGNORE
+                "Primary Email Address": "E1_main_contact@example.com",  # /PS-IGNORE
+                "First Name": "E1_main_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "Yes",
+                "Is Importer": "No",
+                "Last Name": "E1_main_contact_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
+            },
+            {
+                "Businesses": "Test Exporter 1",
+                "Email Address": "E1_secondary_contact@example.com",  # /PS-IGNORE
+                "Primary Email Address": "E1_secondary_contact@example.com",  # /PS-IGNORE
+                "First Name": "E1_secondary_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "Yes",
+                "Is Importer": "No",
+                "Last Name": "E1_secondary_contact_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
+            },
+            {
+                "Businesses": "Test Exporter 1, Test Exporter 1 Agent 1",
+                "Email Address": "E1_A1_main_contact@example.com",  # /PS-IGNORE
+                "Primary Email Address": "E1_A1_main_contact@example.com",  # /PS-IGNORE
+                "First Name": "E1_A1_main_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "Yes",
+                "Is Importer": "No",
+                "Last Name": "E1_A1_main_contact_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
+            },
+            {
+                "Businesses": "Test Exporter 2",
+                "Email Address": "E2_main_contact@example.com",  # /PS-IGNORE
+                "Primary Email Address": "E2_main_contact@example.com",  # /PS-IGNORE
+                "First Name": "E2_main_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "Yes",
+                "Is Importer": "No",
+                "Last Name": "E2_main_contact_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
+            },
+        ]
 
     @freeze_time("2024-02-11 12:00:00")
     def test_get_data_filtered_by_last_login(
@@ -1444,6 +1457,7 @@ class TestActiveUserInterface:
             {
                 "Businesses": "Test Importer 1",
                 "Email Address": "I1_main_contact@example.com",  # /PS-IGNORE
+                "Primary Email Address": "I1_main_contact@example.com",  # /PS-IGNORE
                 "First Name": "I1_main_contact_first_name",  # /PS-IGNORE
                 "Is Exporter": "No",
                 "Is Importer": "Yes",
@@ -1467,12 +1481,17 @@ class TestActiveStaffUserInterface:
         assert data["header"] == EXPECTED_ACTIVE_STAFF_USER_HEADER
         assert data["errors"] == []
 
-    def test_get_data(self):
+    def test_get_data(self, ilb_admin_two):
+        user_email = ilb_admin_two.emails.get(is_primary=True)
+        user_email.email = "ilb_admin_two_alt_email@example.com"  # /PS-IGNORE
+        user_email.save()
+
         interface = ActiveStaffUserInterface(self.report_schedule)
         data = interface.get_data()
         assert data["results"] == [
             {
                 "Email Address": "ilb_admin_user@example.com",  # /PS-IGNORE
+                "Primary Email Address": "ilb_admin_user@example.com",  # /PS-IGNORE
                 "First Name": "ilb_admin_user_first_name",  # /PS-IGNORE
                 "Last Name": "ilb_admin_user_last_name",  # /PS-IGNORE
                 "Date Joined": "20/01/2024",
@@ -1480,6 +1499,7 @@ class TestActiveStaffUserInterface:
             },
             {
                 "Email Address": "ilb_admin_two@example.com",  # /PS-IGNORE
+                "Primary Email Address": "ilb_admin_two_alt_email@example.com",  # /PS-IGNORE
                 "First Name": "ilb_admin_two_first_name",  # /PS-IGNORE
                 "Last Name": "ilb_admin_two_last_name",  # /PS-IGNORE
                 "Date Joined": "20/01/2024",
@@ -1487,6 +1507,7 @@ class TestActiveStaffUserInterface:
             },
             {
                 "Email Address": "nca_admin_user@example.com",  # /PS-IGNORE
+                "Primary Email Address": "nca_admin_user@example.com",  # /PS-IGNORE
                 "First Name": "nca_admin_user_first_name",  # /PS-IGNORE
                 "Last Name": "nca_admin_user_last_name",  # /PS-IGNORE
                 "Date Joined": "20/01/2024",
@@ -1494,6 +1515,7 @@ class TestActiveStaffUserInterface:
             },
             {
                 "Email Address": "ho_admin_user@example.com",  # /PS-IGNORE
+                "Primary Email Address": "ho_admin_user@example.com",  # /PS-IGNORE
                 "First Name": "ho_admin_user_first_name",  # /PS-IGNORE
                 "Last Name": "ho_admin_user_last_name",  # /PS-IGNORE
                 "Date Joined": "20/01/2024",
@@ -1501,6 +1523,7 @@ class TestActiveStaffUserInterface:
             },
             {
                 "Email Address": "san_admin_user@example.com",  # /PS-IGNORE
+                "Primary Email Address": "san_admin_user@example.com",  # /PS-IGNORE
                 "First Name": "san_admin_user_first_name",  # /PS-IGNORE
                 "Last Name": "san_admin_user_last_name",  # /PS-IGNORE
                 "Date Joined": "20/01/2024",
@@ -1508,6 +1531,7 @@ class TestActiveStaffUserInterface:
             },
             {
                 "Email Address": "import_search_user@example.com",  # /PS-IGNORE
+                "Primary Email Address": "import_search_user@example.com",  # /PS-IGNORE
                 "First Name": "import_search_user_first_name",  # /PS-IGNORE
                 "Last Name": "import_search_user_last_name",  # /PS-IGNORE
                 "Date Joined": "20/01/2024",
@@ -1515,6 +1539,7 @@ class TestActiveStaffUserInterface:
             },
             {
                 "Email Address": "con_user@example.com",  # /PS-IGNORE
+                "Primary Email Address": "con_user@example.com",  # /PS-IGNORE
                 "First Name": "con_user_first_name",  # /PS-IGNORE
                 "Last Name": "con_user_last_name",  # /PS-IGNORE
                 "Date Joined": "20/01/2024",
@@ -1555,9 +1580,12 @@ class TestRegisteredUserInterface:
             ],
         }
 
-    def test_get_data(self, importer, ilb_admin_two):
+    def test_get_data(self, importer, ilb_admin_two, access_request_user):
         # Makes an admin user an importer to make sure they are excluded from the report
         organisation_add_contact(importer, ilb_admin_two)
+        user_email = access_request_user.emails.get(is_primary=True)
+        user_email.email = "access_request_user_alt_email@example.com"  # /PS-IGNORE
+        user_email.save()
 
         interface = RegisteredUserInterface(self.report_schedule)
         data = interface.get_data()
@@ -1565,6 +1593,7 @@ class TestRegisteredUserInterface:
             {
                 "Businesses": "",
                 "Email Address": "access_request_user@example.com",  # /PS-IGNORE
+                "Primary Email Address": "access_request_user_alt_email@example.com",  # /PS-IGNORE
                 "First Name": "access_request_user_first_name",  # /PS-IGNORE
                 "Is Exporter": "No",
                 "Is Importer": "No",

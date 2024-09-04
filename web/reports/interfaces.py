@@ -1221,6 +1221,8 @@ class ActiveUserInterface(ReportInterface):
                     .values_list("content_object__name", flat=True)
                     .distinct()
                 ),
+                primary_email=FilteredRelation("emails", condition=Q(emails__is_primary=True)),
+                primary_email_address=F("primary_email__email"),
                 date_joined_date=F("date_joined__date"),
                 last_login_date=F("last_login__date"),
             )
@@ -1229,6 +1231,7 @@ class ActiveUserInterface(ReportInterface):
                 "first_name",
                 "last_name",
                 "email",
+                "primary_email_address",
                 "date_joined_date",
                 "last_login_date",
                 "exporters",
@@ -1242,6 +1245,9 @@ class ActiveUserInterface(ReportInterface):
             first_name=user["first_name"],
             last_name=user["last_name"],
             email_address=user["email"],
+            primary_email_address=(
+                user["primary_email_address"] if user["primary_email_address"] else user["email"]
+            ),
             is_importer=True if user["importers"] else False,
             is_exporter=True if user["exporters"] else False,
             businesses=", ".join(user["exporters"] + user["importers"]),
@@ -1281,12 +1287,15 @@ class ActiveStaffUserInterface(ReportInterface):
             .annotate(
                 date_joined_date=F("date_joined__date"),
                 last_login_date=F("last_login__date"),
+                primary_email=FilteredRelation("emails", condition=Q(emails__is_primary=True)),
+                primary_email_address=F("primary_email__email"),
             )
             .distinct()
             .values(
                 "first_name",
                 "last_name",
                 "email",
+                "primary_email_address",
                 "date_joined_date",
                 "last_login_date",
             )
@@ -1298,6 +1307,9 @@ class ActiveStaffUserInterface(ReportInterface):
             first_name=user["first_name"],
             last_name=user["last_name"],
             email_address=user["email"],
+            primary_email_address=(
+                user["primary_email_address"] if user["primary_email_address"] else user["email"]
+            ),
             date_joined=user["date_joined_date"],
             last_login=user["last_login_date"],
         )
