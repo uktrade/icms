@@ -141,6 +141,9 @@ sil_data_source_target = {
             QueryModel(queries.sil_application, "sil_application", dm.SILApplication),
             QueryModel(queries.ia_licence, "ia_licence", dm.ImportApplicationLicence),
             QueryModel(
+                queries.ia_legacy_licence_references, "Legacy Doc Refs", dm.ImportCaseDocument
+            ),
+            QueryModel(
                 queries.ia_document_pack_acknowledged,
                 "Import Document Pack Acknowledgement",
                 dm.DocumentPackAcknowledgement,
@@ -444,8 +447,14 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert web.UniqueReference.objects.get(prefix="IMA", year=2022, reference=2345)
 
     assert ia3.reference == "IMA/2022/2346/1"
-    assert ia3.licence_reference is None
+    assert ia2.licence_reference.prefix == "ILD"
+    assert ia2.licence_reference.year is None
+    assert ia3.licence_reference.reference == 123456
     assert web.UniqueReference.objects.get(prefix="IMA", year=2022, reference=2346)
+
+    l3 = ia3.licences.first()
+    l3_doc = l3.document_references.first()
+    assert l3_doc.reference == "123456L"
 
     assert ia1.variation_requests.count() == 0
     assert ia2.variation_requests.count() == 2

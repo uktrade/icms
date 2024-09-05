@@ -70,6 +70,10 @@ class ImportCaseDocument(CaseDocument):
         abstract = True
 
     @classmethod
+    def models_to_populate(cls) -> list[str]:
+        return ["CaseDocument"]
+
+    @classmethod
     def exclude_kwargs(cls) -> dict[str, Any]:
         return {"licence__isnull": True}
 

@@ -40,9 +40,6 @@ WHERE ir.response_type LIKE '%_LICENCE'
 ORDER BY ird.id
 """
 
-#  , dd.signed_datetime
-#  , dd.signed_by_id signed_by_str
-
 ia_licence_docs = r"""
 SELECT
   ird.imad_id licence_id
@@ -83,6 +80,24 @@ WHERE (ir.response_type LIKE '%_LICENCE' OR ir.response_type LIKE '%_COVER')
   AND sld.id > :secure_lob_ref_id
 ORDER BY sld.id
 """
+
+
+# Legacy licence references do not have files associated
+ia_legacy_licence_references = """
+SELECT
+  ird.imad_id licence_id
+  , ir.licence_ref || ir.licence_check_letter reference
+  , CASE WHEN ir.response_type LIKE '%_COVER' THEN 'COVER_LETTER' ELSE 'LICENCE' END document_type
+FROM impmgr.ima_responses ir
+  INNER JOIN impmgr.ima_response_details ird ON ird.ir_id = ir.id
+  INNER JOIN impmgr.xview_ima_details xiad ON xiad.imad_id = ird.imad_id
+  INNER JOIN impmgr.import_application_types iat ON iat.ima_type = xiad.ima_type AND iat.ima_sub_type = xiad.ima_sub_type
+  LEFT JOIN impmgr.xview_ima_rd_di_details xird ON xird.ird_id = ird.id
+  WHERE (ir.response_type LIKE '%_LICENCE' OR ir.response_type LIKE '%_COVER')
+  AND xird.di_id IS NULL
+ORDER BY ird.id
+"""
+
 
 ia_document_pack_acknowledged = """
 SELECT

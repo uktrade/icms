@@ -256,6 +256,22 @@ ia_query_result = {
                 None,  # revoke_reason
                 0,  # revoke_email_sent
             ),
+            (
+                3,  # ima_id
+                13,  # imad_id
+                dt.date(2022, 4, 27),  # licence_start_date
+                dt.date(2023, 6, 30),  # licence_end_date
+                "IMA/2022/2346",  # case_reference
+                0,  # issue_paper_licence_only
+                "AC",  # status
+                2,  # variation_number
+                dt.datetime(2022, 4, 27, 10, 43),  # created_at
+                dt.datetime(2022, 4, 27, 10, 44),  # updated_at
+                dt.datetime(2022, 4, 27, 10, 44),  # case_completion_datetime
+                6,  # document_pack_id
+                None,  # revoke_reason
+                0,  # revoke_email_sent
+            ),
         ],
     ),
     queries.ia_document_pack_acknowledged: (
@@ -365,6 +381,10 @@ ia_query_result = {
             ),
         ],
     ),
+    queries.ia_legacy_licence_references: (
+        [("licence_id",), ("reference",), ("document_type",)],
+        [(13, "123456L", "LICENCE")],
+    ),
     queries.ia_licence_doc_refs: (
         [("prefix",), ("reference_no",), ("uref",)],
         [
@@ -374,6 +394,7 @@ ia_query_result = {
             ("ILD", "1237", "ILD1237"),
             ("ILD", "0001110", "ILD0001110"),
             ("ILD", "0001111", "ILD0001111"),
+            ("ILD", "123456", "ILD123456"),
         ],
     ),
     queries.opt_application: (
@@ -984,7 +1005,7 @@ ia_query_result = {
                 xd.import_contact_xml,  # bought_from_details_xml
                 xd.sr_manual_xml_legacy,  # supplementary_report_xml
                 xd.sil_goods_legacy,  # commodities_xml
-                None,  # licence_uref
+                "ILD123456",  # licence_uref
             ),
         ],
     ),
