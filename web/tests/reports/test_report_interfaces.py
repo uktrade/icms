@@ -863,6 +863,7 @@ class TestSupplementaryFirearmsInterface:
         self.report_schedule = report_schedule
         self.ilb_admin_user = ilb_admin_user
         self.client = importer_client
+        self.today = dt.date.today().strftime("%d/%m/%Y")
 
     def test_get_data_header(self):
         interface = SupplementaryFirearmsInterface(self.report_schedule)
@@ -921,7 +922,7 @@ class TestSupplementaryFirearmsInterface:
                 "Licence Start Date": "01/06/2020",
                 "Make/Model": "Test-Section1",
                 "Means of Transport": "air",
-                "Report Date": "13/02/2024",
+                "Report Date": self.today,
                 "Reported all firearms for licence": "No",
                 "Who Bought From Address": "street value, city value, postcode value, region value, Afghanistan",
                 "Who Bought From Name": "first_name value",
@@ -941,7 +942,7 @@ class TestSupplementaryFirearmsInterface:
                 "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
                 "(including any previous name by which these territories have been known).",
                 "Constabularies": "Avon & Somerset",
-                "Report Date": "13/02/2024",
+                "Report Date": self.today,
                 "Goods Description": "Section 2 goods",
                 "Goods Quantity": 222,
                 "Firearms Exceed Quantity": "No",
@@ -972,7 +973,7 @@ class TestSupplementaryFirearmsInterface:
                 "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
                 "(including any previous name by which these territories have been known).",
                 "Constabularies": "Avon & Somerset",
-                "Report Date": "13/02/2024",
+                "Report Date": self.today,
                 "Goods Description": "Section 5 goods",
                 "Goods Quantity": 333,
                 "Firearms Exceed Quantity": "No",
@@ -1003,7 +1004,7 @@ class TestSupplementaryFirearmsInterface:
                 "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
                 "(including any previous name by which these territories have been known).",
                 "Constabularies": "Avon & Somerset",
-                "Report Date": "13/02/2024",
+                "Report Date": self.today,
                 "Goods Description": "Section 58 obsoletes goods",
                 "Goods Quantity": 444,
                 "Firearms Exceed Quantity": "No",
@@ -1034,7 +1035,7 @@ class TestSupplementaryFirearmsInterface:
                 "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
                 "(including any previous name by which these territories have been known).",
                 "Constabularies": "Avon & Somerset",
-                "Report Date": "13/02/2024",
+                "Report Date": self.today,
                 "Goods Description": "Section 58 other goods",
                 "Goods Quantity": 555,
                 "Firearms Exceed Quantity": "No",
@@ -1119,7 +1120,7 @@ class TestSupplementaryFirearmsInterface:
                 "Licence Start Date": "01/06/2020",
                 "Make/Model": "",
                 "Means of Transport": "air",
-                "Report Date": "13/02/2024",
+                "Report Date": self.today,
                 "Reported all firearms for licence": "No",
                 "Who Bought From Address": "street value, city value, postcode value, region value, Afghanistan",
                 "Who Bought From Name": "first_name value",
@@ -1145,7 +1146,7 @@ class TestSupplementaryFirearmsInterface:
                 "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
                 "(including any previous name by which these territories have been known).",
                 "Constabularies": "Derbyshire",
-                "Report Date": "13/02/2024",
+                "Report Date": self.today,
                 "Goods Description": "goods_description value",
                 "Goods Description with Subsection": "goods_description value",
                 "Goods Quantity": 1,
