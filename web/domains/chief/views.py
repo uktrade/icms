@@ -1,4 +1,5 @@
 import http
+import json
 from typing import Any
 
 import mohawk
@@ -376,3 +377,19 @@ class CheckChiefProgressView(
             raise Exception("Unknown state for application")
 
         return JsonResponse(data={"msg": msg, "reload_workbasket": reload_workbasket})
+
+
+class CheckICMSConnectionView(HawkViewBase):
+    """View used by ICMS-HMRC to test connection to ICMS"""
+
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
+        data = json.loads(request.body.decode("utf-8"))
+
+        if data != {"foo": "bar"}:
+            error_msg = f"Invalid request data: {data}"
+
+            return JsonResponse(status=http.HTTPStatus.BAD_REQUEST, data={"errors": error_msg})
+
+        return JsonResponse(status=http.HTTPStatus.OK, data={"bar": "foo"})
