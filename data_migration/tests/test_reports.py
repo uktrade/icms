@@ -88,6 +88,7 @@ def test_historical_reports(mock_connect, dummy_dm_settings):
 
     sr1 = schedule_reports[0]
     assert sr1.title == "Issued certs report"
+    assert sr1.status == "COMPLETED"
     assert sr1.report == web.Report.objects.get(report_type=ReportType.ISSUED_CERTIFICATES)
     assert sr1.scheduled_by_id == 0
     assert sr1.legacy_report_id == 1001
@@ -115,6 +116,7 @@ def test_historical_reports(mock_connect, dummy_dm_settings):
 
     sr2 = schedule_reports[1]
     assert sr2.title == "Issued licences report"
+    assert sr2.status == "COMPLETED"
     assert sr2.report == web.Report.objects.get(report_type=ReportType.IMPORT_LICENCES)
     assert sr2.scheduled_by_id == 0
     assert sr2.legacy_report_id == 1002
@@ -142,6 +144,7 @@ def test_historical_reports(mock_connect, dummy_dm_settings):
 
     sr3 = schedule_reports[2]
     assert sr3.title == "Access request report"
+    assert sr3.status == "DELETED"
     assert sr3.report == web.Report.objects.get(report_type=ReportType.ACCESS_REQUESTS)
     assert sr3.scheduled_by_id == 0
     assert sr3.legacy_report_id == 1003
@@ -170,6 +173,7 @@ def test_historical_reports(mock_connect, dummy_dm_settings):
 
     sr4 = schedule_reports[3]
     assert sr4.title == "NCA report"
+    assert sr4.status == "COMPLETED"
     assert sr4.report == web.Report.objects.get(report_type=ReportType.SUPPLEMENTARY_FIREARMS)
     assert sr4.scheduled_by_id == 0
     assert sr4.legacy_report_id == 1004
@@ -184,6 +188,7 @@ def test_historical_reports(mock_connect, dummy_dm_settings):
 
     sr5 = schedule_reports[4]
     assert sr5.title == "Firearms report"
+    assert sr5.status == "COMPLETED"
     assert sr5.report == web.Report.objects.get(report_type=ReportType.FIREARMS_LICENCES)
     assert sr5.scheduled_by_id == 0
     assert sr5.legacy_report_id == 1005
