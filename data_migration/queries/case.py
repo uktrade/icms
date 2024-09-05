@@ -20,9 +20,9 @@ SELECT
   , update_status status
   , request_subject
   , request_body request_detail
-  , response_details
+  , response_details response_detail
   , request_date request_datetime
-  , u.request_by_wua_id request_by_id
+  , u.request_by_wua_id requested_by_id
   , response_date response_datetime
   , u.response_by_wua_id response_by_id
   , closed_date closed_datetime
