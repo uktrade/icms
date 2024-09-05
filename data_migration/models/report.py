@@ -41,6 +41,7 @@ class ScheduleReport(MigrationBase):
 
         data["scheduled_by_id"] = ANONYMOUS_USER_PK
         if data["deleted_by_id"]:
+            data["status"] = "DELETED"
             data["deleted_by_id"] = ANONYMOUS_USER_PK
         return data
 
