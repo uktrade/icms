@@ -477,6 +477,47 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert ia2.case_notes.count() == 2
 
     assert ia1.update_requests.count() == 3
+    up1, up2, up3 = ia1.update_requests.order_by("pk")
+
+    assert up1.request_subject == "Test Closed"
+    assert up1.status == "CLOSED"
+    assert up1.request_detail == "Closed Details"
+    assert up1.requested_by_id == 2
+    assert up1.request_datetime == dt.datetime(2021, 1, 2, 7, tzinfo=dt.UTC)
+
+    assert up1.response_detail == "AA"
+    assert up1.response_by_id == 2
+    assert up1.response_datetime == dt.datetime(2021, 1, 3, 7, tzinfo=dt.UTC)
+
+    assert up1.closed_by_id == 2
+    assert up1.closed_datetime == dt.datetime(2021, 1, 4, 7, tzinfo=dt.UTC)
+
+    assert up2.request_subject == "Test Open"
+    assert up2.status == "OPEN"
+    assert up2.request_detail == "Open Details"
+    assert up2.requested_by_id == 2
+    assert up2.request_datetime == dt.datetime(2021, 2, 2, 7, tzinfo=dt.UTC)
+
+    assert up2.response_detail is None
+    assert up2.response_by_id is None
+    assert up2.response_datetime is None
+
+    assert up2.closed_by_id is None
+    assert up2.closed_datetime is None
+
+    assert up3.request_subject is None
+    assert up3.status == "DRAFT"
+    assert up3.request_detail is None
+    assert up3.requested_by_id is None
+    assert up3.request_datetime is None
+
+    assert up3.response_detail is None
+    assert up3.response_by_id is None
+    assert up3.response_datetime is None
+
+    assert up3.closed_by_id is None
+    assert up3.closed_datetime is None
+
     assert ia2.update_requests.count() == 0
 
     cn1, cn2, cn3 = web.CaseNote.objects.order_by("pk")

@@ -48,6 +48,7 @@ FROM impmgr.xview_certificate_app_details xcad
     , gmp_certificate_issued
     , file_folder_id
     , case_note_xml
+    , XMLTYPE.getClobVal(x.update_request_xml) update_request_xml
     , XMLTYPE.getClobVal(x.variations_xml) variations_xml
     , XMLTYPE.getClobVal(x.withdrawal_xml) withdrawal_xml
   FROM
