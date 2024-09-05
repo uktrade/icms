@@ -8,16 +8,16 @@ docker volume rm icms_pgdata icms_redis_data
 # icms_ls_data
 
 echo "Starting web (and related) containers"
-docker-compose up -d web
+docker compose up -d web
 
 echo "Running migrations"
-docker-compose exec web python ./manage.py migrate
+docker compose exec web python ./manage.py migrate
 
 echo "Starting localstack"
 make localstack
 
 echo "Adding dummy data"
-docker-compose exec web python ./manage.py add_dummy_data --password admin
+docker compose exec web python ./manage.py add_dummy_data --password admin
 
 echo "Restarting containers in the background"
 make debug

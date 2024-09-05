@@ -40,52 +40,52 @@ check: flake8 black isort mypy
 ##@ Development
 showmigrations: ## make db migrations
 	unset UID && \
-	docker-compose run --rm web python ./manage.py showmigrations
+	docker compose run --rm web python ./manage.py showmigrations
 
 migrations: ## make db migrations
 	unset UID && \
-	docker-compose run --rm web python ./manage.py makemigrations web && chown "${UID}" web/migrations/*.py
+	docker compose run --rm web python ./manage.py makemigrations web && chown "${UID}" web/migrations/*.py
 
 data_migrations: ## make data_migration migrations
 	unset UID && \
-	docker-compose run --rm web python ./manage.py makemigrations data_migration && chown "${UID}" data_migration/migrations/*.py
+	docker compose run --rm web python ./manage.py makemigrations data_migration && chown "${UID}" data_migration/migrations/*.py
 
 check_migrations: ## Check for missing migrations:
 	unset UID && \
-	docker-compose run --no-TTY --rm web python ./manage.py makemigrations --check --dry-run --settings=config.settings_local
+	docker compose run --no-TTY --rm web python ./manage.py makemigrations --check --dry-run --settings=config.settings_local
 
 migrate: ## execute db migration
 	unset UID && \
-	docker-compose run --rm web python ./manage.py migrate
+	docker compose run --rm web python ./manage.py migrate
 
 check-local: ## run Django check
 	unset UID && \
-	docker-compose run --rm web python ./manage.py check
+	docker compose run --rm web python ./manage.py check
 
 check-development: ## run Django check for development environment settings
 	unset UID && \
 	export DATABASE_URL="unset" && \
 	export ICMS_ALLOWED_HOSTS="unset" && \
-	docker-compose run --rm web python ./manage.py check --settings=config.settings
+	docker compose run --rm web python ./manage.py check --settings=config.settings
 
 check-staging: ## run Django check for staging environment settings
 	unset UID && \
 	export DATABASE_URL="unset" && \
 	export ICMS_ALLOWED_HOSTS="unset" && \
-	docker-compose run --rm web python ./manage.py check --settings=config.settings
+	docker compose run --rm web python ./manage.py check --settings=config.settings
 
 check-staging-with-deploy: ## run Django check for staging environment settings with deploy flag
 	unset UID && \
 	export DATABASE_URL="unset" && \
-	docker-compose run --rm web python ./manage.py check --deploy --settings=config.settings
+	docker compose run --rm web python ./manage.py check --deploy --settings=config.settings
 
 manage: ## execute manage.py
 	unset UID && \
-	docker-compose run --rm web python ./manage.py ${args}
+	docker compose run --rm web python ./manage.py ${args}
 
 add_dummy_data: ## add dummy data
 	unset UID && \
-	docker-compose run --rm web python ./manage.py add_dummy_data --password admin
+	docker compose run --rm web python ./manage.py add_dummy_data --password admin
 
 ##@ Docker
 setup: ## sets up system for first use
@@ -94,58 +94,58 @@ setup: ## sets up system for first use
 
 docker_flake8: ## run flake8
 	unset UID && \
-	docker-compose run --rm web python -m flake8
+	docker compose run --rm web python -m flake8
 
 docker_black: ## run Black in check mode
 	unset UID && \
-	docker-compose run --rm web python -m black --check .
+	docker compose run --rm web python -m black --check .
 
 docker_isort: ## run isort in check mode
 	unset UID && \
-	docker-compose run --rm web python -m isort -j 4 --check .
+	docker compose run --rm web python -m isort -j 4 --check .
 
 docker_mypy: ## run mypy
 	unset UID && \
-	docker-compose run --rm web mypy --config-file=pyproject.toml web data_migration config
+	docker compose run --rm web mypy --config-file=pyproject.toml web data_migration config
 
 docker_drop_all_tables: ## drop all tables
 	unset UID && \
-	docker-compose run --rm web python ./manage.py drop_all_tables --confirm-drop-all-tables
+	docker compose run --rm web python ./manage.py drop_all_tables --confirm-drop-all-tables
 
 pip-check:
-	docker-compose run --rm web pip-check
+	docker compose run --rm web pip-check
 
 pip-tree:
-	docker-compose run --rm web pipdeptree ${args}
+	docker compose run --rm web pipdeptree ${args}
 
 sqlsequencereset: ## Use this command to generate SQL which will fix cases where a sequence is out of sync with its automatically incremented field data
 	unset UID && \
-	docker-compose run --rm web python ./manage.py sqlsequencereset web
+	docker compose run --rm web python ./manage.py sqlsequencereset web
 
 clean: ## removes python cache files from project
 	unset UID && \
-	docker-compose run --rm web find . -type d -name __pycache__ -exec rm -rf {} \+
+	docker compose run --rm web find . -type d -name __pycache__ -exec rm -rf {} \+
 
 requirements-web: ## install javascript dependencies
 	unset UID && \
-	docker-compose run --rm web sh -c "python manage.py npm && python manage.py collect_npm"
+	docker compose run --rm web sh -c "python manage.py npm && python manage.py collect_npm"
 
 collectstatic: ## copies static files to STATIC_ROOT
-	docker-compose run --rm web python ./manage.py collectstatic --noinput --traceback
+	docker compose run --rm web python ./manage.py collectstatic --noinput --traceback
 
 fake_dbt_built: ## Fake build command (builds static files without connection details to backing services)
-	docker-compose run -e BUILD_STEP=True -e COPILOT_ENVIRONMENT_NAME=DUMMY --rm web python ./manage.py collectstatic --noinput --traceback
+	docker compose run -e BUILD_STEP=True -e COPILOT_ENVIRONMENT_NAME=DUMMY --rm web python ./manage.py collectstatic --noinput --traceback
 
 fake_dbt_built_compress: ## Fake build command (Runs django compressor without connection details to backing services)
-	docker-compose run -e BUILD_STEP=True -e COPILOT_ENVIRONMENT_NAME=DUMMY --rm web python manage.py compress --force --engine jinja2
+	docker compose run -e BUILD_STEP=True -e COPILOT_ENVIRONMENT_NAME=DUMMY --rm web python manage.py compress --force --engine jinja2
 
 build: ## build docker containers
-	docker-compose pull
-	docker-compose build
+	docker compose pull
+	docker compose build
 
 shell: ## Starts the Python interactive interpreter
 	unset UID && \
-	docker-compose run --rm web python ./manage.py shell -i python ${args}
+	docker compose run --rm web python ./manage.py shell -i python ${args}
 
 psql: ## Starts psql
 	@unset UID && \
@@ -160,7 +160,7 @@ list_s3: ## list S3 bucket contents on localstack container
 
 query_task_result: ## local development tool to query task results
 	unset UID && \
-	docker-compose run --rm web python ./manage.py query_task_result
+	docker compose run --rm web python ./manage.py query_task_result
 
 ##@ Test
 test: ## run tests (circleci; don't use locally as it produces a coverage report)
@@ -181,10 +181,10 @@ end_to_end_clear_session: ## Clears the session cookies stored after running end
 
 end_to_end_test: ## Run end to end tests in a container
 	make end_to_end_clear_session && \
-	docker-compose run -it --rm playwright-runner pytest -c playwright/pytest.ini  web/end_to_end/ --numprocesses=auto ${args}
+	docker compose run -it --rm playwright-runner pytest -c playwright/pytest.ini  web/end_to_end/ --numprocesses=auto ${args}
 
 end_to_end_test_firearm_chief: end_to_end_clear_session ## Run send applications end to end tests to icms-hmrc
-	docker-compose run -it --rm -e CHIEF_END_TO_END_TEST=1 playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ -k test_can_create_fa_ --numprocesses 3 ${args}
+	docker compose run -it --rm -e CHIEF_END_TO_END_TEST=1 playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ -k test_can_create_fa_ --numprocesses 3 ${args}
 
 end_to_end_test_local: end_to_end_clear_session ## Run end to end tests locally
 	.venv/bin/python -m pytest -c playwright/pytest.ini web/end_to_end/ ${args}
@@ -200,13 +200,13 @@ create_end_to_end_import: ## Create an end to end test using codegen for the imp
 
 ##@ Server
 debug: ## runs system in debug mode
-	docker-compose up -d
+	docker compose up -d
 
 localstack: ## runs localstack (s3) container
-	docker-compose up -d localstack
+	docker compose up -d localstack
 
 down: ## Stops and downs containers
-	docker-compose down --remove-orphans
+	docker compose down --remove-orphans
 
 pdf_visual_regression_test:
 	./run-tests.sh \
