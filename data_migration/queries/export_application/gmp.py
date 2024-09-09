@@ -92,8 +92,8 @@ beis_emails = """
 SELECT
   e.ca_id
   , CASE e.email_status WHEN 'DELETED' THEN 0 ELSE 1 END is_active
-  , e.email_status STATUS
-  , r.email_address  "to"
+  , e.email_status status
+  , r.email_address "to"
   , e.email_subject subject
   , e.email_body "body"
   , e.response_body response

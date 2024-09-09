@@ -2,7 +2,7 @@ constabulary_emails = """
 SELECT
   iad.id imad_id
   , iad.ima_id
-  , x.status email_status
+  , x.status
   , cd.email_address "to"
   , x.email_cc_address_list cc_address_list_str
   , x.email_subject subject
