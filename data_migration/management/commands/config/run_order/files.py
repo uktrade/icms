@@ -367,6 +367,11 @@ file_query_model = [
         {"secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID},
     ),
     QueryModel(
+        queries.ia_legacy_licence_references,
+        "Legacy Import Application Licence References",
+        dm.ImportCaseDocument,
+    ),
+    QueryModel(
         queries.export_certificate_docs,
         "Export Application Certificate Documents",
         dm.ExportCertificateCaseDocumentReferenceData,

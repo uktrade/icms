@@ -26,7 +26,13 @@
       <div class="twelve columns"><span class="prompt north disabledLink">Licence Reference</span></div>
     </div>
     <div class="row">
-      <div class="twelve columns"><a href="{{ cs.licence_reference_link }}">{{ cs.licence_reference }}</a></div>
+      <div class="twelve columns">
+        {% if cs.legacy_case_flag %}
+          <span>{{ cs.licence_reference }}</span>
+        {% else %}
+          <a href="{{ cs.licence_reference_link }}">{{ cs.licence_reference }}</a>
+        {% endif %}
+      </div>
     </div>
   {% endif %}
 

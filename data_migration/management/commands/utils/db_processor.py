@@ -13,7 +13,10 @@ from data_migration.management.commands.utils.db import CONNECTION_CONFIG
 def filtered_file_query_model() -> list[QueryModel]:
     queries = []
     for query in file_query_model:
-        if query.query_name != "Schedule Reports":
+        if query.query_name not in (
+            "Schedule Reports",
+            "Legacy Import Application Licence References",
+        ):
             queries.append(query)
     return queries
 

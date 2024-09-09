@@ -21,7 +21,7 @@
       <td></td>
       <td></td>
       <td>
-        <a 
+        <a
           class="pdf"
           href="{{ static('web/docs/DIT-DBT-NameChangeNotification.pdf') }}"
           target="_blank"
@@ -52,13 +52,16 @@
         {% endif %}
       </td>
       <td>
-        <a href="{{ doc.url }}">
-          {% if process.application_type.type == "FA" %}
-            View Firearms {{ doc.name }}
-          {% else %}
-            View {{ doc.name }}
-          {% endif %}
-        </a>
+        {# Legacy cases do not have a digital document associated #}
+        {% if not process.legacy_case_flag %}
+          <a href="{{ doc.url }}">
+            {% if process.application_type.type == "FA" %}
+              View Firearms {{ doc.name }}
+            {% else %}
+              View {{ doc.name }}
+            {% endif %}
+          </a>
+        {% endif %}
       </td>
     </tr>
   {% endfor %}
