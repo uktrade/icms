@@ -70,6 +70,7 @@ class CaseStatus:
     licence_reference: str | None = None
     licence_reference_link: str | None = None
     licence_validity: str | None = None
+    legacy_case_flag: bool = False
 
 
 @dataclass

@@ -6,11 +6,6 @@ from web import models as web
 
 ia_query_model = [
     QueryModel(queries.ia_licence_doc_refs, "Import Licence Doc References", dm.UniqueReference),
-    QueryModel(
-        queries.ia_legacy_licence_references,
-        "Legacy Import Application Licence References",
-        dm.ImportCaseDocument,
-    ),
     QueryModel(queries.sps_application, "sps_application", dm.PriorSurveillanceApplication),
     QueryModel(
         queries.derogations_application, "derogations_application", dm.DerogationsApplication

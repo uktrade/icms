@@ -89,6 +89,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
             "licences": [
                 {
                     "case_reference": lic.case_reference,
+                    "legacy_case_flag": application.legacy_case_flag,
                     "variation_request": lic.case_reference.split("/")[3:],
                     "issue_paper_licence_only": lic.issue_paper_licence_only,
                     "licence_start_date": lic.licence_start_date.strftime(self.licence_date_format),

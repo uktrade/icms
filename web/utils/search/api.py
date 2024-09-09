@@ -263,6 +263,7 @@ def _get_result_row(
             chief_usage_status=cus,
             licence_start_date=start_date,
             licence_end_date=end_date,
+            legacy_case_flag=rec.legacy_case_flag,
         ),
         applicant_details=types.ApplicantDetails(
             organisation_name=rec.importer.name,
