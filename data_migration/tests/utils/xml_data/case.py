@@ -170,7 +170,7 @@ export_update_xml_1 = """
     <RESPONSE>
       <RESPONDED_DATETIME>2022-09-21T08:31:34</RESPONDED_DATETIME>
       <RESPONDED_BY_WUA_ID>2</RESPONDED_BY_WUA_ID>
-      <RESPONSE_DETAILS>update request response info</RESPONSE_DETAILS>
+      <SUMMARY_OF_CHANGES>update request response info</SUMMARY_OF_CHANGES>
     </RESPONSE>
     <CLOSE>
       <CLOSED_DATETIME>2022-09-21T08:31:34</CLOSED_DATETIME>
@@ -201,7 +201,7 @@ export_update_xml_2 = """
     <RESPONSE>
       <RESPONDED_DATETIME />
       <RESPONDED_BY_WUA_ID />
-      <RESPONSE_DETAILS />
+      <SUMMARY_OF_CHANGES />
     </RESPONSE>
     <CLOSE>
       <CLOSED_DATETIME />

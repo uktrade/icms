@@ -254,7 +254,7 @@ class UpdateExportParser(BaseXmlParser):
         request_detail = get_xml_val(xml, "./REQUEST/BODY")
         request_datetime = datetime_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_DATETIME"))
         requested_by_id = int_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_BY_WUA_ID"))
-        response_detail = get_xml_val(xml, "./RESPONSE/RESPONSE_DETAILS")
+        response_detail = get_xml_val(xml, "./RESPONSE/SUMMARY_OF_CHANGES")
         response_datetime = datetime_or_none(get_xml_val(xml, "./RESPONSE/RESPONDED_DATETIME"))
         response_by_id = int_or_none(get_xml_val(xml, "./RESPONSE/RESPONDED_BY_WUA_ID"))
         closed_datetime = datetime_or_none(get_xml_val(xml, "./CLOSE/CLOSED_DATETIME"))
