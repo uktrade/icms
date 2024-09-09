@@ -1,0 +1,35 @@
+-r requirements-base.in
+
+# add packages needed only for development
+
+Pygments==2.15.0
+black==24.4.2
+boto3-stubs[essential]
+django-extensions==3.2.3
+factory-boy==3.0.1
+faker==4.1.2
+flake8==6.1.0
+freezegun==1.2.2
+ipdb==0.13.13
+isort==5.12.0
+mypy==1.7.1
+pip-check
+pip-tools==7.4.1
+pipdeptree
+pre-commit==3.6.0
+pytest-base-url==2.0.0
+pytest-circleci-parallelized==0.1.0
+pytest-cov==4.1.0
+pytest-django==4.7.0
+pytest-flake8==1.1.1
+pytest-mock==3.12.0
+pytest-xdist==3.5.0
+pytest==7.4.3
+requests-mock==1.10.0
+sqlparse==0.5.0
+types-Pygments==2.14.0.6
+types-openpyxl==3.1.0.0
+types-python-dateutil==2.8.19.4
+types-pytz==2023.3
+types-requests==2.25.0
+types-tqdm==4.65.0.1

@@ -1,0 +1,4 @@
+-r requirements-base.in
+
+# add packages needed only for prod deployments
+django-audit-log-middleware

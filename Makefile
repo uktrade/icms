@@ -118,6 +118,9 @@ pip-check:
 pip-tree:
 	docker compose run --rm web pipdeptree ${args}
 
+update-requirements:
+	docker compose run --rm web ./scripts/update_requirements.sh
+
 sqlsequencereset: ## Use this command to generate SQL which will fix cases where a sequence is out of sync with its automatically incremented field data
 	unset UID && \
 	docker compose run --rm web python ./manage.py sqlsequencereset web
