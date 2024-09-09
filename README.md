@@ -222,30 +222,10 @@ A schema for the database can be generated using the following django-extensions
 
 - `python manage.py graph_models --output=output.png`
 
-## Updating package-lock.json
-Run the following to update the sub-dependencies of pinned packages:
-```bash
-npm i --package-lock-only
-npm audit fix
-```
+## Dependencies
 
-
-## Updating Javascript dependencies (When they get updated):
-Run the following command, this will install dependencies and copy them to the correct place
-
-```bash
-make requirements-web
-```
-
-see the following code for the config:
-
-```
-# icms/config/settings_local.py
-NPM_STATIC_FILES_LOCATION =
-NPM_FILE_PATTERNS
-```
-
-Currently, we only have this config defined in the settings_local.py config file.
+See [Managing dependencies](<documentation/managing-dependencies.md>) for information about installing,
+adding and upgrading dependencies.
 
 ## Deployments
 
