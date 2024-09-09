@@ -3,7 +3,7 @@
 {% block goods_content %}
   <h4>Goods</h4>
   <div class="container setoutForm">
-    {{ application_field(process.category_commodity_group.pk, "Category") }}
+    {{ application_field(process.category_commodity_group.group_code, "Category") }}
     {{ application_field(process.category_licence_description, "Category Description") }}
   </div>
   <table class="setoutList">
