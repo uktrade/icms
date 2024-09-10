@@ -90,7 +90,7 @@ class FirearmsAuthorityFile(MigrationBase):
             FirearmsAuthority.objects.select_related("file_folder")
             .prefetch_related("file_folder__file_targets__files")
             .annotate(row_number=Window(expression=RowNumber()))
-            .exclude(file_folder__file_targets__files__id__isnull=True)
+            .filter(file_folder__file_targets__files__id__isnull=False)
             .values(
                 "row_number",
                 file_id=F("file_folder__file_targets__files__id"),
@@ -181,7 +181,7 @@ class Section5AuthorityFile(MigrationBase):
             Section5Authority.objects.select_related("file_folder")
             .prefetch_related("file_folder__file_targets__files")
             .annotate(row_number=Window(expression=RowNumber()))
-            .exclude(file_folder__file_targets__files__id__isnull=True)
+            .filter(file_folder__file_targets__files__id__isnull=False)
             .values(
                 "row_number",
                 file_id=F("file_folder__file_targets__files__id"),
