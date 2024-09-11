@@ -4969,3 +4969,5 @@ CHUNK_UPLOADER_RAISE_EXCEPTION_ON_VIRUS_FOUND
 Versions
 DeleteMarkers
 VersionId
+Django 4.2.16
+0011_file_report_output_id_schedulereport_generatedreport
