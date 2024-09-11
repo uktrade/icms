@@ -28,7 +28,7 @@
     {% if tooltip %}
       {{ tooltip }}
     {% else %}
-      {% if mark_safe %}
+      {% if mark_safe or field.field.mark_help_text_safe %}
         <p class="helptext">{{ field.help_text|safe }}</p>
       {% else %}
         <p class="helptext">{{ field.help_text }}</p>
