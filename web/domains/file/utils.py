@@ -3,7 +3,9 @@ from collections.abc import Callable, Iterable
 from typing import Any
 
 from django import forms
+from django.conf import settings
 from django.db import models
+from django.template.loader import render_to_string
 from django_chunk_upload_handlers.clam_av import validate_virus_check_result
 from storages.backends.s3boto3 import S3Boto3StorageFile
 
@@ -36,9 +38,7 @@ FILE_EXTENSION_ALLOW_LIST = [
     "xps",
 ]
 
-HELP_TEXT = "Only the following file extensions (types) are allowed to be uploaded: " + ", ".join(
-    FILE_EXTENSION_ALLOW_LIST
-)
+HELP_TEXT = "Compatible file types include " + ", ".join(FILE_EXTENSION_ALLOW_LIST)
 
 IMAGE_EXTENSION_ALLOW_LIST = ("jpeg", "jpg", "png")
 
@@ -48,14 +48,25 @@ VALIDATOR = Callable[[S3Boto3StorageFile], None]
 
 
 class ICMSFileField(forms.FileField):
+    # Used to tell the template to render the help_text as safe
+    mark_help_text_safe = True
+
     def __init__(
         self, *, validators: Iterable[VALIDATOR] = (), help_text: str = HELP_TEXT, **kwargs: Any
     ) -> None:
+        field_help_text = render_to_string(
+            template_name="forms/icms_file_field_helptext.html",
+            context={
+                "help_text": help_text,
+                "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+            },
+        )
+
         super().__init__(
             # order is important: validate_file_extension can delete the file
             # from S3, so has to be after the virus check
             validators=[validate_virus_check_result, validate_file_extension, *validators],
-            help_text=help_text,
+            help_text=field_help_text,
             **kwargs,
         )
 
