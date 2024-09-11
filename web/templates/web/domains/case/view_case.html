@@ -52,49 +52,42 @@
 {% endblock %}
 
 {% block main_content %}
-  {% block application_contact %}
-    <h4 id="view-contact">Contact</h4>
+  {% call application_section("Contact", "view-contact") %}
     {% if not process.contact %}
       <div class="info-box info-box-info">
         There is no contact attached.
       </div>
     {% else %}
-      <div class="container">
-        <div class="row">
-          <div class="three columns">
-            <label class="prompt west">Contact Name</label>
-          </div>
-          <div class="six columns">
-            <span>{{ process.contact }}</span>
-          </div>
-          <div class="three columns"></div>
+      {{ application_field(process.contact, "Contact Name") }}
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">Telephone(s)</label>
         </div>
-
-        <div class="row">
-          <div class="three columns">
-            <label class="prompt west">Telephone(s)</label>
-          </div>
-          <div class="six columns">
-            {% for phone_number in process.contact.phone_numbers.all() %}
-              {{ phone_number.get_type_display() }} - {{ phone_number.phone }}
-              {% if not loop.last %}<br />{% endif %}
-            {% else %}
-              N/A
-            {% endfor %}
-          </div>
-          <div class="three columns"></div>
+        <div class="six columns">
+          {% for phone_number in process.contact.phone_numbers.all() %}
+            {{ phone_number.get_type_display() }} - {{ phone_number.phone }}
+            {% if not loop.last %}<br/>{% endif %}
+          {% else %}
+            N/A
+          {% endfor %}
         </div>
-
-        <div class="row">
-          <div class="three columns">
-            <label class="prompt west">Email</label>
-          </div>
-          <div class="six columns">
-            <span>{{ process.contact.email }}</span>
-          </div>
-          <div class="three columns"></div>
-        </div>
+        <div class="three columns"></div>
       </div>
+      {{ application_field(process.contact.email, "Email") }}
     {% endif %}
-  {% endblock %}
+  {% endcall %}
+
+  {% if process.is_import_application() %}
+    {% call application_section("Importer", "view-importer") %}
+      {{ application_field(process.importer, "Importer") }}
+      {{ application_field(process.importer_office.address + "\n" + process.importer_office.postcode, "Address") }}
+      {{ application_field(process.importer.eori_number|default("N/A", True), "Importer EORI Number") }}
+    {% endcall %}
+  {% else %}
+    {% call application_section("Exporter", "view-exporter") %}
+      {{ application_field(process.exporter, "Exporter") }}
+      {{ application_field(process.exporter_office.address + "\n" + process.exporter_office.postcode, "Address") }}
+    {% endcall %}
+  {% endif %}
+
 {% endblock %}

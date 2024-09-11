@@ -27,9 +27,7 @@
 
 
 {% block main_content %}
-  {% block application_contact %}
-    {{ super() }}
-  {% endblock %}
+  {{ super() }}
 
   {% call application_section("Outward Processing Trade", "view-application-details") %}
     {{ application_field(process.applicant_reference, labels["applicant_reference"], "N/a") }}

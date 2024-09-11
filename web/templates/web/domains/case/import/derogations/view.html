@@ -2,9 +2,7 @@
 
 
 {% block main_content %}
-  {% block application_contact %}
-    {{ super() }}
-  {% endblock %}
+  {{ super() }}
 
   {% call application_section("Derogation from Sanctions Import Ban") %}
     {{ application_field(process.applicant_reference, "Applicant Reference", "N/a") }}
