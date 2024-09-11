@@ -6,6 +6,9 @@
       <a href="#view-contact">Contact</a>
     </li>
     <li>
+      <a href="#view-importer">Importer</a>
+    </li>
+    <li>
       <a href="#view-fa">Firearms and Ammunition</a>
     </li>
     <li>
@@ -28,9 +31,7 @@
 
 
 {% block main_content %}
-  {% block application_contact %}
-    {{ super() }}
-  {% endblock %}
+  {{ super() }}
 
   {% call application_section("Firearms and Ammunition", "view-fa") %}
     {{ application_field(process.applicant_reference, "Applicant Reference", "N/a") }}

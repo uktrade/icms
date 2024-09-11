@@ -102,6 +102,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "web.permissions.context_processors.request_user_object_permissions",
+                "web.domains.case.context_processors.case",
                 "web.auth.context_processors.auth",
                 "web.sites.context_processors.sites",
             ],

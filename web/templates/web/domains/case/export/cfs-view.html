@@ -20,9 +20,7 @@
 {% endblock %}
 
 {% block main_content %}
-  {% block application_contact %}
-    {{ super() }}
-  {% endblock %}
+  {{ super() }}
 
   {% call application_section("Certificate of Free Sale") %}
     {{ application_field(application_countries, "Countries") }}

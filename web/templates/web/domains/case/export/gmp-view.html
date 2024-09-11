@@ -1,9 +1,7 @@
 {% extends "web/domains/case/view_case.html" %}
 
 {% block main_content %}
-  {% block application_contact %}
-    {{ super() }}
-  {% endblock %}
+  {{ super() }}
 
   {% call application_section("Certificate of Good Manufacturing Practice") %}
     {{ application_field(country, "Countries") }}

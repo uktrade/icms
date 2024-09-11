@@ -12,9 +12,7 @@
 {% endblock %}
 
 {% block main_content %}
-  {% block application_contact %}
-    {{ super() }}
-  {% endblock %}
+  {{ super() }}
 
   {% call application_section("Firearms and Ammunition (Deactivated Firearms Licence)") %}
     {{ application_field(process.applicant_reference, "Applicant's Reference", "N/a") }}

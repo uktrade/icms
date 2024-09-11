@@ -1,9 +1,7 @@
 {% extends "web/domains/case/view_case.html" %}
 
 {% block main_content %}
-  {% block application_contact %}
-    {{ super() }}
-  {% endblock %}
+  {{ super() }}
 
   {% call application_section("Iron and Steel (Quota)") %}
     {{ application_field(process.applicant_reference, "Application Reference", "N/a") }}
