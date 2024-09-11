@@ -546,3 +546,10 @@ if SHOW_DEBUG_TOOLBAR:
         "INTERCEPT_REDIRECTS": False,
         "SHOW_TOOLBAR_CALLBACK": lambda x: SHOW_DEBUG_TOOLBAR,
     }
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}

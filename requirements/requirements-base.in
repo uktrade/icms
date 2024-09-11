@@ -51,5 +51,5 @@ reportlab==4.2.2
 requests==2.32.3
 sentry-sdk[django]==2.10.0
 tqdm==4.66.3
-whitenoise==6.6.0
+whitenoise==6.7.0
 xlsxwriter==3.0.1
