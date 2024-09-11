@@ -345,7 +345,7 @@
 html .ui-button.ui-state-disabled:hover,
 html .ui-button.ui-state-disabled:active {
     border: 1px solid #fff;
-    background: #fff url("images/ui-bg_glass_75_ffffff_1x400.png") 50% 50% repeat-x;
+    background: #fff url("fox/images/ui-bg_glass_75_ffffff_1x400.png") 50% 50% repeat-x;
     font-weight: normal;
     color: #333
 }
@@ -400,7 +400,7 @@ a.ui-button:active,
 .ui-button:active,
 .ui-button.ui-state-active:hover {
     border: 1px solid #aaa;
-    background: #fff url("images/ui-bg_glass_65_ffffff_1x400.png") 50% 50% repeat-x;
+    background: #fff url("fox/images/ui-bg_glass_65_ffffff_1x400.png") 50% 50% repeat-x;
     font-weight: normal;
     color: #212121
 }
@@ -422,7 +422,7 @@ a.ui-button:active,
 .ui-widget-content .ui-state-highlight,
 .ui-widget-header .ui-state-highlight {
     border: 1px solid #f70008;
-    background: #fff url("images/ui-bg_glass_55_ffffff_1x400.png") 50% 50% repeat-x;
+    background: #fff url("fox/images/ui-bg_glass_55_ffffff_1x400.png") 50% 50% repeat-x;
     color: #333
 }
 
@@ -490,37 +490,37 @@ a.ui-button:active,
 
 .ui-icon,
 .ui-widget-content .ui-icon {
-    background-image: url("images/ui-icons_222222_256x240.png")
+    background-image: url("fox/images/ui-icons_222222_256x240.png")
 }
 
 .ui-widget-header .ui-icon {
-    background-image: url("images/ui-icons_ffffff_256x240.png")
+    background-image: url("fox/images/ui-icons_ffffff_256x240.png")
 }
 
 .ui-state-hover .ui-icon,
 .ui-state-focus .ui-icon,
 .ui-button:hover .ui-icon,
 .ui-button:focus .ui-icon {
-    background-image: url("images/ui-icons_ffffff_256x240.png")
+    background-image: url("fox/images/ui-icons_ffffff_256x240.png")
 }
 
 .ui-state-active .ui-icon,
 .ui-button:active .ui-icon {
-    background-image: url("images/ui-icons_454545_256x240.png")
+    background-image: url("fox/images/ui-icons_454545_256x240.png")
 }
 
 .ui-state-highlight .ui-icon,
 .ui-button .ui-state-highlight.ui-icon {
-    background-image: url("images/ui-icons_333333_256x240.png")
+    background-image: url("fox/images/ui-icons_333333_256x240.png")
 }
 
 .ui-state-error .ui-icon,
 .ui-state-error-text .ui-icon {
-    background-image: url("images/ui-icons_cd0a0a_256x240.png")
+    background-image: url("fox/images/ui-icons_cd0a0a_256x240.png")
 }
 
 .ui-button .ui-icon {
-    background-image: url("images/ui-icons_333333_256x240.png")
+    background-image: url("fox/images/ui-icons_333333_256x240.png")
 }
 
 .ui-icon-blank {
