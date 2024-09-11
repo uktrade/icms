@@ -20,7 +20,8 @@ SELECT
   END status
   , ir.created_datetime created_at
   , ird.start_datetime updated_at
-  , ird.start_datetime case_completion_datetime
+  , CASE WHEN xiad.legacy_case_flag = 'true' THEN ird.issue_date ELSE ird.start_datetime END case_completion_datetime
+  , ird.issue_date issue_datetime
   , dp.dp_id document_pack_id
   , x.revoke_reason
   , CASE x.revoke_email_sent WHEN 'true' THEN 1 ELSE 0 END revoke_email_sent

@@ -206,6 +206,7 @@ class ImportApplicationLicence(MigrationBase):
     case_reference = models.CharField(max_length=100, null=True, unique=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
+    issue_datetime = models.DateTimeField(null=True)  # For data comparisons only
     document_pack_id = models.IntegerField(unique=True, null=True)
     revoke_reason = models.TextField(null=True)
     revoke_email_sent = models.BooleanField()
@@ -222,7 +223,7 @@ class ImportApplicationLicence(MigrationBase):
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ima_id", "imad_id", "document_pack_id"]
+        return super().get_excludes() + ["ima_id", "imad_id", "document_pack_id", "issue_datetime"]
 
 
 class EndorsementImportApplication(MigrationBase):
