@@ -27,9 +27,9 @@
     <title>{% block page_title %}{{ title }}{% endblock %}</title>
 
     {% compress css file main %}
+      <link rel="stylesheet" type="text/css" href="{{ static('web/css/icomoon/icomoon-png.css') }}">
       <link rel="stylesheet" type="text/css" href="{{ static('web/css/OpenSans/OpenSans.css') }}">
       <link rel="stylesheet" type="text/css" href="{{ static('web/css/icomoon/icomoon.css') }}">
-      <link rel="stylesheet" type="text/css" href="{{ static('web/css/icomoon/icomoon-png.css') }}">
       <link rel="stylesheet" type="text/css" href="{{ static('web/css/fox.css') }}">
       <link rel="stylesheet" type="text/css" href="{{ static('web/css/fox_default_layout.css') }}">
       <link rel="stylesheet" type="text/css" href="{{ static('3rdparty/jodit/jodit.min.css') }}">
