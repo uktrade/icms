@@ -23,13 +23,11 @@
         <th scope="col">Postcode</th>
         <th scope="col">Start Date</th>
         <th scope="col">End Date</th>
-        {% if not read_only %}
-          <th scope="col">Actions</th>
-        {% endif %}
+        <th scope="col">Actions</th>
       </tr>
     </thead>
     <tbody>
-      {% for certificate in verified_certificates %}
+      {% for certificate in verified_certificates.order_by("reference") %}
       <tr>
         {% if not read_only %}
           <td>
@@ -57,16 +55,14 @@
         <td>{{ certificate.postcode }}</td>
         <td>{{ certificate.start_date.strftime('%d-%b-%Y') }}</td>
         <td>{{ certificate.end_date.strftime('%d-%b-%Y') }}</td>
-        {% if not read_only %}
-          <td>
-            <a
-              href="{{ icms_url(
-                         'import:fa:view-authority',
-                         kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}">
-              View Details
-            </a>
-          </td>
-        {% endif %}
+        <td>
+          <a
+            href="{{ icms_url('import:fa:view-authority', kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}"
+            target="_blank" rel="noopener noreferrer"
+          >
+            View Details
+          </a>
+        </td>
       </tr>
       {% endfor %}
     </tbody>
