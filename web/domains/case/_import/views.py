@@ -535,7 +535,8 @@ class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
             importer_office__postcode__istartswith="BT",
             consignment_country__in=eu_countries,
             imi_submitted_by__isnull=True,
-        )
+            legacy_case_flag=False,
+        ).order_by("submit_datetime")
 
         return qs
 
