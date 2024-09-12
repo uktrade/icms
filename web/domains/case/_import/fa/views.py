@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
@@ -30,14 +30,7 @@ from web.domains.case.views.mixins import ApplicationTaskMixin
 from web.domains.case.views.views_search import SearchActionFormBase
 from web.domains.file.utils import create_file_model
 from web.flow.models import ProcessTypes
-from web.models import (
-    FirearmsAuthority,
-    ImportApplication,
-    ImportContact,
-    OpenIndividualLicenceApplication,
-    Task,
-    User,
-)
+from web.models import FirearmsAuthority, ImportApplication, ImportContact, Task, User
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 
@@ -61,49 +54,6 @@ def check_can_edit_application(user: User, application: FaImportApplication) -> 
 
     if not checker.can_edit():
         raise PermissionDenied
-
-
-# Note: this has been replaced by the following:
-# web/domains/case/views/views_email.py -> def manage_case_emails
-# However some functionality in web/domains/case/import/fa/manage-constabulary-emails.html
-# doesn't appear to have been ported over.
-@login_required
-@permission_required(Perms.sys.ilb_admin, raise_exception=True)
-def manage_constabulary_emails(
-    request: AuthenticatedHttpRequest, *, application_pk: int
-) -> HttpResponse:
-    with transaction.atomic():
-        import_application: ImportApplication = get_object_or_404(
-            ImportApplication.objects.select_for_update(), pk=application_pk
-        )
-        application: FaImportApplication = _get_fa_application(import_application)
-
-        case_progress.application_in_processing(application)
-
-        context = {
-            "process": application,
-            "page_title": "Constabulary Emails",
-            "case_type": "import",
-            "constabulary_emails": import_application.constabulary_emails.filter(is_active=True),
-            "show_verified_certificates": False,
-            "verified_certificates": None,
-        }
-
-        if import_application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
-            context.update(
-                {
-                    "show_verified_certificates": True,
-                    "verified_certificates": application.verified_certificates.filter(
-                        is_active=True
-                    ),
-                }
-            )
-
-        return render(
-            request=request,
-            template_name="web/domains/case/import/fa/manage-constabulary-emails.html",
-            context=context,
-        )
 
 
 @login_required
