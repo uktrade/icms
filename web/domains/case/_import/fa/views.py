@@ -31,11 +31,10 @@ from web.domains.case.views.views_search import SearchActionFormBase
 from web.domains.file.utils import create_file_model
 from web.flow.models import ProcessTypes
 from web.models import (
-    DFLApplication,
+    FirearmsAuthority,
     ImportApplication,
     ImportContact,
     OpenIndividualLicenceApplication,
-    SILApplication,
     Task,
     User,
 )
@@ -347,6 +346,14 @@ def manage_certificates(request: AuthenticatedHttpRequest, *, application_pk: in
             extra_context["available_verified_section5"] = available_verified_section5
             extra_context["selected_section5"] = application.verified_section5.all()
 
+        elif application.process_type == ProcessTypes.FA_OIL:
+            verified_certificates = verified_certificates.filter(
+                certificate_type__in=[
+                    FirearmsAuthority.DEACTIVATED_FIREARMS,
+                    FirearmsAuthority.REGISTERED_FIREARMS_DEALER,
+                ]
+            )
+
         context = {
             "process": application,
             "certificates": application.user_imported_certificates.active(),
@@ -572,8 +579,6 @@ def view_authority(
         firearms_authority = get_object_or_404(
             application.importer.firearms_authorities.active(), pk=authority_pk
         )
-
-        case_progress.application_in_progress(application)
 
         context = {
             "process": application,
@@ -845,21 +850,14 @@ def _get_entity_form(
 
 
 def _get_fa_application(application: ImportApplication) -> FaImportApplication:
-    process_type_link = {
-        OpenIndividualLicenceApplication.PROCESS_TYPE: "openindividuallicenceapplication",
-        DFLApplication.PROCESS_TYPE: "dflapplication",
-        SILApplication.PROCESS_TYPE: "silapplication",
-    }
+    if application.process_type not in [
+        ProcessTypes.FA_OIL,
+        ProcessTypes.FA_DFL,
+        ProcessTypes.FA_SIL,
+    ]:
+        raise ValueError(f"Unable to get firearms application for {application.process_type}")
 
-    try:
-        link = process_type_link[application.process_type]
-    except KeyError:
-        raise NotImplementedError(f"Unknown Firearm process_type: {application.process_type}")
-
-    # e.g. application.openindividuallicenceapplication to get access to OpenIndividualLicenceApplication
-    firearms_application: FaImportApplication = getattr(application, link)
-
-    return firearms_application
+    return application.get_specific_model()
 
 
 def _get_supplementary_info_form(application: FaImportApplication) -> FaSupplementaryInfoFormT:

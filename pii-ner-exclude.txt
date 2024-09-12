@@ -4980,3 +4980,6 @@ EORI</label
 {{ application_field(process.importer_office.address + "
 {{ application_field(process.exporter
 {{ application_field(process.exporter_office.address
+{{ application_field(firearms_authority.address
+{{ application_field(firearms_authority.end_date.strftime('%d-%b-%Y'
+{{ application_field(firearms_authority.linked_offices.all()|join("\n\n")|default("N/A
