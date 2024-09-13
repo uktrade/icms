@@ -51,7 +51,7 @@
         <td>{{ certificate.reference }}</td>
         <td>{{ certificate.get_certificate_type_display() }}</td>
         <td>{{ certificate.issuing_constabulary.name }}</td>
-        <td>{{ certificate.address }}</td>
+        <td>{{ certificate.address|nl2br }}</td>
         <td>{{ certificate.postcode }}</td>
         <td>{{ certificate.start_date.strftime('%d-%b-%Y') }}</td>
         <td>{{ certificate.end_date.strftime('%d-%b-%Y') }}</td>
