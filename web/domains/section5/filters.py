@@ -1,19 +1,14 @@
+from django.forms.widgets import CheckboxInput
 from django_filters import BooleanFilter, CharFilter, FilterSet
-
-from web.models import Section5Clause
 
 
 class Section5Filter(FilterSet):
     clause = CharFilter(lookup_expr="icontains", label="Clause")
     description = CharFilter(lookup_expr="icontains", label="Description")
-
-    is_active = BooleanFilter(
+    is_archived = BooleanFilter(
         field_name="is_active",
         lookup_expr="exact",
-        label="Search Archived",
         exclude=True,
+        widget=CheckboxInput,
+        label="Search Archived",
     )
-
-    class Meta:
-        model = Section5Clause
-        fields = ("clause", "description", "is_active")
