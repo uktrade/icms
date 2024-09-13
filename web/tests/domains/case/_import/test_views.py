@@ -1,3 +1,4 @@
+import datetime as dt
 from http import HTTPStatus
 from unittest.mock import patch
 
@@ -10,6 +11,7 @@ from pytest_django.asserts import assertRedirects
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.models import (
+    Country,
     ICMSHMRCChiefRequest,
     ImportApplicationType,
     SILApplication,
@@ -335,3 +337,62 @@ class TestApplicationChoice(AuthTestCase):
 
         response = self.importer_client.get(self.url)
         assert new_application_type_name not in response.content.decode()
+
+
+class TestIMICaseListView(AuthTestCase):
+    url = reverse("import:imi-case-list")
+
+    def test_permission(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_valid_record(self, completed_sil_app):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        # Sil app doesn't show because it has the wrong cc
+        assert len(response.context["imi_list"]) == 0
+
+        # Set consignment_country to a valid country
+        completed_sil_app.consignment_country = Country.util.get_eu_countries().first()
+        completed_sil_app.save()
+
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assert len(response.context["imi_list"]) == 1
+        imi_app = response.context["imi_list"][0]
+
+        assert imi_app.reference == completed_sil_app.reference
+
+    def test_submit_after_2024(self, completed_sil_app):
+        # Set consignment_country to a valid country
+        completed_sil_app.consignment_country = Country.util.get_eu_countries().first()
+        # a 2023 submit datetime should not show
+        completed_sil_app.submit_datetime = dt.datetime(2023, 12, 31, 23, 59, 59, tzinfo=dt.UTC)
+
+        completed_sil_app.save()
+
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assert len(response.context["imi_list"]) == 0
+
+        # Change the submit date to 2024
+        completed_sil_app.submit_datetime = dt.datetime(2024, 1, 1, tzinfo=dt.UTC)
+        completed_sil_app.save()
+
+        # Check record now shows.
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assert len(response.context["imi_list"]) == 1
+        imi_app = response.context["imi_list"][0]
+
+        assert imi_app.reference == completed_sil_app.reference

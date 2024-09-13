@@ -1,3 +1,4 @@
+import datetime as dt
 from typing import Any
 
 import django.forms as django_forms
@@ -520,9 +521,42 @@ def bypass_chief(
 
 
 class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    """Shows a list of cases that need information sending to the EU.
+
+    The logic in V1 is different to the logic added to v2 and is documented in the following ticket:
+    https://uktrade.atlassian.net/browse/ICMSLST-1177
+
+    In case that ticket gets deleted here is a summary of logic provided by ILB:
+
+    IMI is not relevant to the following:
+        - FA-OIL:
+            because they cover types of firearms that we do not need to give notification to the
+            EU Commission. Essentially those that are not section 5.
+        - FA-DFL:
+            because they are not live firearms.
+
+    IMI conditions:
+        BT postcode only:
+            IMI is not relevant to GB because of EU exit. NI is relevant because of the Windsor
+            Framework.
+        SIL:
+            this is the only current firearms licence type which will be used in respect of the
+            firearms that are impacted.
+        EU member state country of consignment:
+            it is only relevant to shipments from EU to NI.
+            This ensures compliance with the requirements of an EU firearms directive which
+            continues to apply to NI .
+
+    It will likely have been originally set up to cover all UK SIL but this will have changed
+    following EU Exit and the impact of the Windsor Framework and has not been picked up as a
+    necessary system change.
+    """
+
+    http_method_names = ["get"]
     permission_required = Perms.page.view_imi
     template_name = "web/domains/case/import/imi/list.html"
     context_object_name = "imi_list"
+    extra_context = {"page_title": "IMI Applications"}
 
     def get_queryset(self) -> "QuerySet[ImportApplication]":
         """Return all applications that have been acknowledged."""
@@ -536,15 +570,11 @@ class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
             consignment_country__in=eu_countries,
             imi_submitted_by__isnull=True,
             legacy_case_flag=False,
-        ).order_by("submit_datetime")
+            # Extra date filter to remove old records noticed in v2 after data migration
+            submit_datetime__gte=dt.datetime(2024, 1, 1, 0, 0, tzinfo=dt.UTC),
+        ).order_by("-submit_datetime")
 
         return qs
-
-    def get_context_data(self, **kwargs: dict[Any, Any]) -> dict[Any, Any]:
-        context = super().get_context_data(**kwargs)
-        context["page_title"] = "IMI Applications"
-
-        return context
 
 
 class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):

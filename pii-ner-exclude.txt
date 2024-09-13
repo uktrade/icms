@@ -4983,3 +4983,6 @@ EORI</label
 {{ application_field(firearms_authority.address
 {{ application_field(firearms_authority.end_date.strftime('%d-%b-%Y'
 {{ application_field(firearms_authority.linked_offices.all()|join("\n\n")|default("N/A
+the EU Commission
+the Windsor Framework
+EU Exit
