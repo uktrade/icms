@@ -4988,3 +4988,8 @@ the Windsor Framework
 EU Exit
 {{ licence.licence_start_date.strftime('%d-%b-%Y'
 {{ licence.licence_end_date.strftime('%d-%b-%Y'
+process.teg_goods_description|default
+{{ licence.licence_start_date.strftime('%d-%b-%Y'
+{{ licence.licence_end_date.strftime('%d-%b-%Y'
+{{ application_field(process.cp_total_value|default
+{{ application_field(process.teg_goods_description|default

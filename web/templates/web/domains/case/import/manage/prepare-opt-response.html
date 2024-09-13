@@ -29,7 +29,7 @@
     <tr class="result-row">
       <td>{{ process.cp_total_quantity }}</td>
       <td>pieces</td>
-      <td>{{ process.cp_total_value }}</td>
+      <td>{{ process.cp_total_value|default("", True) }}</td>
       <td>{{ process.cp_category }}</td>
       <td>{{ process.cp_category_licence_description }}</td>
       {% if not readonly_view and not variation_refused %}
@@ -66,8 +66,8 @@
     <tr class="result-row">
       <td>{{ process.teg_total_quantity }}</td>
       <td>kilos</td>
-      <td>{{ process.teg_total_value }}</td>
-      <td>{{ process.teg_goods_description }}</td>
+      <td>{{ process.teg_total_value|default("", True) }}</td>
+      <td>{{ process.teg_goods_description|default("", True) }}</td>
       {% if not readonly_view and not variation_refused %}
         <td>
           <a class="link-button button icon-pencil" data-input_action="edit"
