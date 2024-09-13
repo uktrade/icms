@@ -5,6 +5,7 @@ from django import forms
 from web.domains.file.utils import ICMSFileField
 from web.forms.fields import JqueryDateField
 from web.forms.widgets import YesNoRadioSelectInline
+from web.models import Country
 
 from .models import ImportContact, UserImportCertificate
 from .types import FaImportApplication
@@ -53,6 +54,10 @@ class ImportContactPersonForm(forms.ModelForm):
             "dealer": "Did you buy from a dealer?",
         }
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["country"].queryset = Country.util.get_all_countries()
+
 
 class ImportContactLegalEntityForm(forms.ModelForm):
     class Meta:
@@ -72,6 +77,10 @@ class ImportContactLegalEntityForm(forms.ModelForm):
             "registration_number": "Registration Number",
             "dealer": "Did you buy from a dealer?",
         }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["country"].queryset = Country.util.get_all_countries()
 
 
 class UserImportCertificateForm(forms.ModelForm):
