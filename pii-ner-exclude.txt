@@ -4986,3 +4986,5 @@ EORI</label
 the EU Commission
 the Windsor Framework
 EU Exit
+{{ licence.licence_start_date.strftime('%d-%b-%Y'
+{{ licence.licence_end_date.strftime('%d-%b-%Y'
