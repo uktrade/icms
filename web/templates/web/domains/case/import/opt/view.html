@@ -59,7 +59,7 @@
       <div class="six columns"><p>Pieces</p></div>
       <div class="three columns"></div>
     </div>
-    {{ application_field(process.cp_total_value, labels["cp_total_value"]) }}
+    {{ application_field(process.cp_total_value|default("", True), labels["cp_total_value"]) }}
     <h4>Commodity Code</h4>
     {% for commodity in process.cp_commodities.all() %}
       <p class="commodity-row">{{ commodity_link(commodity) }}</p>
@@ -77,8 +77,8 @@
       <div class="six columns"><p>kilos</p></div>
       <div class="three columns"></div>
     </div>
-    {{ application_field(process.teg_total_value, labels["teg_total_value"]) }}
-    {{ application_field(process.teg_goods_description, labels["teg_goods_description"]) }}
+    {{ application_field(process.teg_total_value|default("", True), labels["teg_total_value"]) }}
+    {{ application_field(process.teg_goods_description|default("", True), labels["teg_goods_description"]) }}
     <h4>Commodity Code</h4>
     {% for commodity in process.teg_commodities.all() %}
       <p class="commodity-row">{{ commodity_link(commodity) }}</p>
