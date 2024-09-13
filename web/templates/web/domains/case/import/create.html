@@ -14,7 +14,15 @@
 {% block main_content %}
   {% call forms.form(method='post', csrf_input=csrf_input) -%}
     <h3>{{ application_title }}</h3>
-
+    {% if import_application_type.type == "FA" %}
+      <div class="info-box info-box-warning">
+        You must have domestic authority to possess the firearms you are requesting an import licence for.
+        {% if import_application_type.sub_type == "OIL" %}
+          <br>
+          Open Individual Import Licences are not valid for Section 5 items. Please see guidance if you have any other questions.
+        {% endif %}
+      </div>
+    {% endif %}
     {% for field in form %}
       {{ fields.field(field, show_optional_indicator=False) }}
     {% endfor %}
