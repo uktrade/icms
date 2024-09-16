@@ -6,6 +6,7 @@ from web.models import Importer
 class ImporterFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Importer
+        skip_postgeneration_save = True
 
     is_active = True
     type = Importer.ORGANISATION
