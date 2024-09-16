@@ -62,8 +62,12 @@ def fa_sil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.locator("#id_eu_single_market").get_by_text("Yes").click()
     page.locator("#id_eu_single_market").get_by_text("No").click()
     page.locator("#id_manufactured").get_by_text("Yes").click()
-    page.get_by_label("Additional comments").click()
-    page.get_by_label("Additional comments").fill("Additional comments")
+    page.get_by_label(
+        "Please provide any additional information relating to this application that you think might be useful or necessary"
+    ).click()
+    page.get_by_label(
+        "Please provide any additional information relating to this application that you think might be useful or necessary"
+    ).fill("Additional comments")
     page.get_by_role("button", name="Save").click()
 
     #
