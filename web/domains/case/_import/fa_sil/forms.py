@@ -17,7 +17,14 @@ from .widgets import Section5ClauseSelect
 
 
 class FirearmSILFormBase(forms.ModelForm):
-    additional_comments = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows": 4}))
+    additional_comments = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 4}),
+        label=(
+            "Please provide any additional information relating to this application that you think"
+            " might be useful or necessary"
+        ),
+    )
 
     class Meta:
         model = models.SILApplication
