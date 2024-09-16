@@ -1,9 +1,3 @@
-/*! jQuery UI - v1.12.1 - 2017-10-23
-* http://jqueryui.com
-* Includes: draggable.css, core.css, datepicker.css, theme.css
-* To view and modify this theme, visit http://jqueryui.com/themeroller/?scope=&folderName=custom-theme&bgImgOpacityError=95&bgImgOpacityHighlight=55&bgImgOpacityActive=65&bgImgOpacityHover=100&bgImgOpacityDefault=75&bgImgOpacityContent=100&bgImgOpacityHeader=75&cornerRadiusShadow=8px&offsetLeftShadow=-8px&offsetTopShadow=-8px&thicknessShadow=8px&opacityShadow=30&bgImgOpacityShadow=0&bgTextureShadow=flat&bgColorShadow=%23aaaaaa&opacityOverlay=30&bgImgOpacityOverlay=0&bgTextureOverlay=flat&bgColorOverlay=%23aaaaaa&iconColorError=%23cd0a0a&fcError=%23cd0a0a&borderColorError=%23cd0a0a&bgTextureError=flat&bgColorError=%23fef1ec&iconColorHighlight=333333&fcHighlight=333333&borderColorHighlight=%23f70008&bgTextureHighlight=glass&bgColorHighlight=%23ffffff&iconColorActive=%23454545&fcActive=%23212121&borderColorActive=%23aaaaaa&bgTextureActive=glass&bgColorActive=%23ffffff&iconColorHover=%23ffffff&fcHover=%23ffffff&borderColorHover=%231065AF&bgTextureHover=flat&bgColorHover=%231065AF&iconColorDefault=%23333333&fcDefault=%23333333&borderColorDefault=%23ffffff&bgTextureDefault=glass&bgColorDefault=%23ffffff&iconColorContent=%23222222&fcContent=%23222222&borderColorContent=%23e5e5e5&bgTextureContent=flat&bgColorContent=%23ffffff&iconColorHeader=%23ffffff&fcHeader=%23ffffff&borderColorHeader=%23ffffff&bgTextureHeader=flat&bgColorHeader=%231065AF&cornerRadius=0&fwDefault=normal&fsDefault=1.1em&ffDefault='Open%20Sans'%2C%20sans-serif
-* Copyright jQuery Foundation and other contributors; Licensed MIT */
-
 .ui-draggable-handle {
     -ms-touch-action: none;
     touch-action: none
@@ -1472,22 +1466,18 @@ a.ui-button:active,
 }
 
 .tooltipster-box {
-    /* see .tooltipster-base. flex-shrink 1 is only necessary for IE10-
-  and flex-basis auto for IE11- (at least) */
     flex: 1 1 auto;
 }
 
 .tooltipster-content {
     /* prevents an overflow if the user adds padding to the div */
     box-sizing: border-box;
-    /* these make sure we'll be able to detect any overflow */
     max-height: 100%;
     max-width: 100%;
     overflow: auto;
 }
 
 .tooltipster-ruler {
-    /* these let us test the size of the tooltip without overflowing the window */
     bottom: 0;
     left: 0;
     overflow: hidden;
@@ -1496,12 +1486,6 @@ a.ui-button:active,
     top: 0;
     visibility: hidden;
 }
-
-/* ANIMATIONS */
-
-/* Open/close animations */
-
-/* fade */
 
 .tooltipster-fade {
     opacity: 0;
@@ -1516,7 +1500,6 @@ a.ui-button:active,
     opacity: 1;
 }
 
-/* grow */
 
 .tooltipster-grow {
     -webkit-transform: scale(0, 0);
@@ -1546,7 +1529,6 @@ a.ui-button:active,
     transition-timing-function: cubic-bezier(0.175, 0.885, 0.320, 1.15);
 }
 
-/* swing */
 
 .tooltipster-swing {
     opacity: 0;
@@ -1609,7 +1591,6 @@ a.ui-button:active,
     opacity: 0;
 }
 
-/* slide */
 
 .tooltipster-slide {
     -webkit-transition-property: left;
@@ -1641,14 +1622,6 @@ a.ui-button:active,
     opacity: 0;
 }
 
-/* Update animations */
-
-/* We use animations rather than transitions here because
- transition durations may be specified in the style tag due to
- animationDuration, and we try to avoid collisions and the use
- of !important */
-
-/* fade */
 
 @keyframes tooltipster-fading {
     0% {
@@ -1684,7 +1657,6 @@ a.ui-button:active,
     animation: tooltipster-rotating 600ms;
 }
 
-/* scale */
 
 @keyframes tooltipster-scaling {
     50% {
@@ -1699,15 +1671,6 @@ a.ui-button:active,
 .tooltipster-update-scale {
     animation: tooltipster-scaling 600ms;
 }
-
-/**
- * DEFAULT STYLE OF THE SIDETIP PLUGIN
- *
- * All styles are "namespaced" with .tooltipster-sidetip to prevent
- * conflicts between plugins.
- */
-
-/* .tooltipster-box */
 
 .tooltipster-sidetip .tooltipster-box {
     background: #565656;
@@ -1731,7 +1694,6 @@ a.ui-button:active,
     margin-bottom: 8px;
 }
 
-/* .tooltipster-content */
 
 .tooltipster-sidetip .tooltipster-content {
     color: white;
@@ -1739,8 +1701,6 @@ a.ui-button:active,
     padding: 6px 14px;
 }
 
-/* .tooltipster-arrow : will keep only the zone of .tooltipster-arrow-uncropped that
-corresponds to the arrow we want to display */
 
 .tooltipster-sidetip .tooltipster-arrow {
     overflow: hidden;
@@ -2038,16 +1998,8 @@ corresponds to the arrow we want to display */
 
 #downloadBarStatusSpan {
     display: none;
-    /* Start hidden. show() is called from js */
 }
 
-/*
-html5doctor.com Reset Stylesheet
-v1.6.1
-Last Updated: 2010-09-17
-Author: Richard Clark - http://richclarkdesign.com
-Twitter: @rich_clark
-*/
 
 html,
 body,
@@ -2170,14 +2122,12 @@ a {
     background: transparent;
 }
 
-/* change colours to suit your needs */
 ins {
     background-color: #ff9;
     color: #000;
     text-decoration: none;
 }
 
-/* change colours to suit your needs */
 mark {
     background-color: #ff9;
     color: #000;
@@ -4236,7 +4186,6 @@ input[type='checkbox'].radio-relative{
 
 .button-option-label input[type='radio'],
 .button-option-label input[type='checkbox'] {
-    /* Not display: none because of IE bug - http://stackoverflow.com/questions/1252690/ie-hidden-radio-button-not-checked-when-the-corresponding-label-is-clicked */
     position: absolute;
     left: -10000px;
     top: auto;
@@ -4253,7 +4202,6 @@ input[type='checkbox'].radio-relative{
 
 .input-group {
     display: table-row;
-    /*  margin-bottom: 0.8em;*/
 }
 
 .input-group input,
@@ -4396,7 +4344,6 @@ input[type='checkbox'] ~ .error-message {
     padding-left: 0.3em;
 }
 
-/* Date */
 .date-input-container {
     position: relative;
 }
@@ -4423,11 +4370,6 @@ input[type='checkbox'] ~ .error-message {
     color: #333;
 }
 
-/********************************************************************************************
- *
- * Buttons
- *
- ********************************************************************************************/
 a.button {
   display: inline-block;
 }
@@ -4480,7 +4422,6 @@ button[disabled],
     cursor: not-allowed;
 }
 
-/* Button sizes */
 button.big-button,
 a.big-button,
 .big-button,
@@ -4501,8 +4442,6 @@ a.small-button,
     border-radius: 3px;
 }
 
-/* Primary action buttons */
-/* Use these for primary actions that do not affect the state of the data (eg search) */
 button.primary-button,
 a.primary-button,
 .primary-button {
@@ -4534,7 +4473,6 @@ button[disabled].primary-button,
     color: #fff;
 }
 
-/* Positive action buttons */
 button.positive-button,
 a.positive-button,
 .positive-button {
@@ -4566,7 +4504,6 @@ button[disabled].positive-button,
     border-color: #6D9976;
 }
 
-/* Dangerous action buttons */
 button.danger-button,
 a.danger-button,
 .danger-button {
@@ -4588,7 +4525,7 @@ button.danger-button:hover,
 button.danger-button:active,
 .danger-button:active {
     background: #9d1010;
-    box-shadow: inset 0 2px 2 rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0 2px 2px rgba(0, 0, 0, 0.15);
 }
 
 button[disabled].danger-button,
@@ -4780,7 +4717,6 @@ fieldset {
     margin-bottom: 0.1em;
 }
 
-/* Spinner - rotates 360 degrees */
 @keyframes spinner {
     from {
         transform: rotate(0deg);
@@ -4944,13 +4880,13 @@ form .display.closed [value=withdraw] {
 }
 
 .grabbable {
-    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: move;
     cursor: grab;
     cursor: -moz-grab;
     cursor: -webkit-grab;
 }
 
- /* (Optional) Apply a "closed-hand" cursor during drag operation. */
+
 .grabbable:active {
     cursor: grabbing;
     cursor: -moz-grabbing;
@@ -4963,14 +4899,13 @@ form .display.closed [value=withdraw] {
     visibility:visible !important;
 }
 
-/* Remove the bullet points from the ul lists for radio inputs */
+/
 ul.radio-input, ul.radio-input-inline {
     list-style-type: none;
     padding: 0;
     margin: 0;
 }
 
-/* Display the radios inline */
 ul.radio-input-inline > li,
 div.radio-input-inline > div {
     display: inline;
@@ -4994,12 +4929,10 @@ label.radio-label > input[type='checkbox'] {
     padding: 0;
 }
 
-/* Bring the radio button in line with the associated label */
 input.radio-input, input.radio-input-inline {
     top: 0;
 }
 
-/* Hide the selected options from the select2 multiple lists */
 .select2-results__option[aria-selected=true] {
     display: none;
 }
