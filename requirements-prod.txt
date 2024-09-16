@@ -284,7 +284,7 @@ pillow==10.4.0
     #   reportlab
 platformdirs==4.3.2
     # via virtualenv
-playwright==1.45.0
+playwright==1.47.0
     # via -r requirements/requirements-base.in
 pre-commit==3.8.0
     # via django-log-formatter-asim
@@ -308,7 +308,7 @@ pydantic-core==2.23.3
     # via pydantic
 pydantic-settings==2.5.2
     # via -r requirements/requirements-base.in
-pyee==11.1.0
+pyee==12.0.0
     # via playwright
 pyjwt==2.9.0
     # via notifications-python-client

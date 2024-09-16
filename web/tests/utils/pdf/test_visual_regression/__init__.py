@@ -128,4 +128,6 @@ class BaseTestPDFVisualRegression:
             diff_metric = len(set(diff.getdata()))
 
             # we're expecting a number lower than the tolerable difference
-            assert diff_metric <= self.tolerable_difference
+            assert (
+                diff_metric <= self.tolerable_difference
+            ), f"Amount over difference: {diff_metric - self.tolerable_difference}"

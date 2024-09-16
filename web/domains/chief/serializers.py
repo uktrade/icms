@@ -417,7 +417,9 @@ def get_restrictions(application: "ImportApplication", *, limit: int = 2000) -> 
     :param limit: The max number of characters we can send to CHIEF, it can never be more than 2000.
     """
 
-    endorsements = application.endorsements.values_list("content", flat=True)
+    endorsements = application.endorsements.values_list("content", flat=True).order_by(
+        "created_datetime"
+    )
     text = "\n".join(endorsements)
 
     # "<trc>" matches what ICMS V1 does when sending endorsements to CHIEF.

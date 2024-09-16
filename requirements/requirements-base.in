@@ -38,7 +38,7 @@ paramiko~=3.4       # endesive sub-dependency
 pdf2image==1.17.0
 phonenumbers==8.12.12
 pillow~=10.2        # endesive sub-dependency
-playwright==1.45.0
+playwright==1.47.0
 psycopg[c]==3.1.18
 pydantic-settings==2.5.2
 pydantic==2.9.1
