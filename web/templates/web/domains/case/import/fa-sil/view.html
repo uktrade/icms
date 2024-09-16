@@ -143,9 +143,8 @@
       {% include "partial/import-contacts/list.html" %}
     {% endwith %}
   {% endcall %}
-
-  {% call application_section("Misc", "view-misc") %}
-    {{ application_field(process.additional_comments|nl2br, "Additional Comments", "N/a") }}
+  {% call application_section("Additional information", "view-misc") %}
+    {{ application_field(process.additional_comments|nl2br, "Please provide any additional information relating to this application that you think might be useful or necessary", "N/a") }}
   {% endcall %}
 
 {% endblock %}
