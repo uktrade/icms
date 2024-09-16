@@ -18,6 +18,8 @@ asn1crypto==1.5.1
     #   oscrypto
 asttokens==2.4.1
     # via stack-data
+async-timeout==4.0.3
+    # via redis
 attrs==23.2.0
     # via
     #   -r requirements/requirements-base.in
@@ -396,13 +398,13 @@ pycodestyle==2.11.1
     # via flake8
 pycparser==2.22
     # via cffi
-pydantic==2.6.4
+pydantic==2.9.1
     # via
     #   -r requirements/requirements-base.in
     #   pydantic-settings
-pydantic-core==2.16.3
+pydantic-core==2.23.3
     # via pydantic
-pydantic-settings==2.1.0
+pydantic-settings==2.5.2
     # via -r requirements/requirements-base.in
 pyee==11.1.0
     # via playwright
