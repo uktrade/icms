@@ -103,9 +103,9 @@ def get_groups():
             Perms.sys.commodity_admin,
             Perms.sys.manage_sanction_contacts,
             Perms.sys.search_all_cases,
-            # NOTE: This user in V1 will also have some kind of report access that V2 hasn't implemented.
-            # e.g.
-            # Perms.sys.report_access
+            Perms.sys.access_reports,
+            Perms.page.view_report_import_licences,
+            Perms.page.view_report_firearms_licences,
         },
         #
         # "Constabulary Contact" (System group + object permissions to related constabularies)
