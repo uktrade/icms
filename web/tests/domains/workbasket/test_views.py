@@ -1722,6 +1722,7 @@ class TestMailshotsAppearInWorkbasket(AuthTestCase):
         return mailshot
 
 
+@freezegun.freeze_time("2024-09-16 08:53:24")
 class TestAccessRequestsWorkbasket(AuthTestCase):
     ar_user: User
     ar_user_client: Client
@@ -1762,12 +1763,14 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
         ar_user_expected_rows = {
             "ear/1": {
                 "Submitted": {
-                    "Access Request\nFurther Information Requested": ["View", "Respond FIR"]
+                    "Access Request": ["View"],
+                    "Further Information Request, 16-Sep-2024 09:53": ["Respond"],
                 }
             },
             "iar/1": {
                 "Submitted": {
-                    "Access Request\nFurther Information Requested": ["View", "Respond FIR"]
+                    "Access Request": ["View"],
+                    "Further Information Request, 16-Sep-2024 09:53": ["Respond"],
                 }
             },
         }
