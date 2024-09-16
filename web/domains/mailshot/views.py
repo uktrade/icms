@@ -55,7 +55,7 @@ class ReceivedMailshotsView(ModelFilterView):
 
         return importer_access or exporter_acesss
 
-    def get_filterset(self):
+    def get_filterset(self, **kwargs: Any) -> None:
         return super().get_filterset(user=self.request.user)
 
     class Display:

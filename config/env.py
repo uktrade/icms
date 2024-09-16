@@ -156,7 +156,7 @@ class DBTPlatformEnvironment(BaseSettings):
     # Flag to decide if we want to save the PDFs generated as part of the visual regression tests - useful for debugging
     save_generated_pdfs: bool = True
 
-    @computed_field  # type: ignore[misc]
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def allowed_hosts_list(self) -> list[str]:
         if self.build_step:
@@ -165,7 +165,7 @@ class DBTPlatformEnvironment(BaseSettings):
         # Makes an external network request so only call when running on DBT Platform
         return setup_allowed_hosts(self.allowed_hosts)
 
-    @computed_field  # type: ignore[misc]
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def database_config(self) -> dict:
         if self.build_step:
@@ -175,7 +175,7 @@ class DBTPlatformEnvironment(BaseSettings):
             "default": dj_database_url.parse(database_url_from_env("DATABASE_CREDENTIALS")),
         }
 
-    @computed_field  # type: ignore[misc]
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def s3_bucket_config(self) -> dict:
         """Return s3 bucket config that matches keys used in CF"""
@@ -185,7 +185,7 @@ class DBTPlatformEnvironment(BaseSettings):
 
         return {"aws_region": self.aws_region, "bucket_name": self.aws_storage_bucket_name}
 
-    @computed_field  # type: ignore[misc]
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def redis_url(self) -> str:
         if self.build_step:

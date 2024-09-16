@@ -186,17 +186,17 @@ class CloudFoundryEnvironment(BaseSettings):
     # Flag to decide if we want to save the PDFs generated as part of the visual regression tests - useful for debugging
     save_generated_pdfs: bool = True
 
-    @computed_field  # type: ignore[misc]
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def allowed_hosts_list(self) -> list[str]:
         return self.allowed_hosts
 
-    @computed_field  # type: ignore[misc]
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def database_config(self) -> dict:
         return {"default": dj_database_url.parse(str(self.database_url))}
 
-    @computed_field  # type: ignore[misc]
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def s3_bucket_config(self) -> dict:
         if self.vcap_services:
@@ -206,7 +206,7 @@ class CloudFoundryEnvironment(BaseSettings):
 
         return app_bucket_creds
 
-    @computed_field  # type: ignore[misc]
+    @computed_field  # type: ignore[prop-decorator]
     @property
     def redis_url(self) -> str:
         if self.vcap_services:
