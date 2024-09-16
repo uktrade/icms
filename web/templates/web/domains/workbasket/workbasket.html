@@ -70,8 +70,8 @@
       <th>
         <div class="container">
           <div class="row">
-            <div class="six columns break-word">Information</div>
-            <div class="six columns">Actions</div>
+            <div class="seven columns break-word">Information</div>
+            <div class="five columns">Actions</div>
           </div>
         </div>
       </th>
@@ -105,12 +105,12 @@
             {% for action_block in row.sections %}
               <div class="row">
                 {# Information section #}
-                <div class="six columns break-word">
+                <div class="seven columns break-word">
                   <div class="individual-input"><span class="text-widget ">{{ action_block.information|nl2br }}</span></div>
                 </div>
 
                 {# Actions section #}
-                <div class="six columns">
+                <div class="five columns">
                   <table class="nestedList setoutList">
                     <thead>
                     <tr>

@@ -9,11 +9,13 @@ from web.models import (
     AccessRequest,
     ExporterAccessRequest,
     ExporterApprovalRequest,
+    FurtherInformationRequest,
     ImporterAccessRequest,
     ImporterApprovalRequest,
     Mailshot,
     User,
 )
+from web.utils import datetime_format
 
 from .actions import get_workbasket_admin_sections, get_workbasket_applicant_sections
 from .base import WorkbasketAction, WorkbasketRow, WorkbasketSection
@@ -168,21 +170,29 @@ def _get_access_wb_row(
                 is_post=False,
                 name="View",
                 url=reverse("case:view", kwargs={"application_pk": app.pk, "case_type": "access"}),
+                section_label="Access Request",
             )
         ]
 
         for fir_pk in app.annotation_open_fir_pks:
             kwargs = {"application_pk": app.pk, "fir_pk": fir_pk, "case_type": "access"}
+            fir = FurtherInformationRequest.objects.get(pk=fir_pk)
+            requested_at = datetime_format(fir.requested_datetime, "%d-%b-%Y %H:%M")
+            section_label = f"Further Information Request, {requested_at}"
 
             owner_actions.append(
                 WorkbasketAction(
                     is_post=False,
-                    name="Respond FIR",
+                    name="Respond",
                     url=reverse("case:respond-fir", kwargs=kwargs),
+                    section_label=section_label,
                 ),
             )
 
-        r.sections.append(WorkbasketSection(information=information, actions=owner_actions))
+        # add each action as a section (each section label is unique)
+        for action in owner_actions:
+            information = action.section_label  # type:ignore[assignment]
+            r.sections.append(WorkbasketSection(information=information, actions=[action]))
 
     return r
 
