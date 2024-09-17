@@ -64,7 +64,7 @@ class Mailshot(models.Model):
     version = models.PositiveIntegerField(default=0)
 
     # Used in workbasket to clear mailshots
-    cleared_by = models.ManyToManyField("web.User")
+    cleared_by = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
     def get_reference(self) -> str:
         if not self.reference:

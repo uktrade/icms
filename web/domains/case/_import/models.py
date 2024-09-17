@@ -268,7 +268,7 @@ class ImportApplication(ApplicationBase):
     imi_submit_datetime = models.DateTimeField(null=True, verbose_name="Date provided to IMI")
 
     # Used in workbasket to clear applications
-    cleared_by = models.ManyToManyField("web.User")
+    cleared_by = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
     def is_import_application(self) -> bool:
         return True
@@ -406,7 +406,7 @@ class ImportApplicationLicence(DocumentPackBase):
     case_completion_datetime = models.DateTimeField(verbose_name="Case Completion Date", null=True)
 
     # Used in workbasket to clear licences
-    cleared_by = models.ManyToManyField("web.User")
+    cleared_by = models.ManyToManyField(settings.AUTH_USER_MODEL)
     document_references = GenericRelation(
         "CaseDocumentReference", related_query_name="import_application_licences"
     )
