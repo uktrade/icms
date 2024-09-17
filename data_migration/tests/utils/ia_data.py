@@ -556,6 +556,7 @@ ia_query_result = {
             ("exporter_name",),
             ("exporter_address",),
             ("commodities_xml",),
+            ("commodities_response_xml",),
             ("sanction_emails_xml",),
         ],
         [
@@ -583,6 +584,7 @@ ia_query_result = {
                 "Test Exporter",  # exporter_name
                 "123 Somewhere",  # exporter_address
                 xd.sanctions_commodities,  # commodities_xml
+                xd.sanctions_commodities_response,  # commodities_response_xml
                 xd.sanctions_emails,  # sanction_emails_xml
             )
         ],

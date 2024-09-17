@@ -14,6 +14,7 @@ class SanctionsAndAdhocApplication(ImportApplicationBase):
     exporter_name = models.CharField(max_length=4096, null=True)
     exporter_address = models.CharField(max_length=4096, null=True)
     commodities_xml = models.TextField(null=True)
+    commodities_response_xml = models.TextField(null=True)
 
 
 class SanctionsAndAdhocApplicationGoods(MigrationBase):
@@ -25,9 +26,20 @@ class SanctionsAndAdhocApplicationGoods(MigrationBase):
         related_name="+",
     )
 
-    goods_description = models.CharField(max_length=4096)
-    quantity_amount = models.DecimalField(max_digits=14, decimal_places=3)
-    value = models.DecimalField(max_digits=12, decimal_places=2)
+    goods_description = models.CharField(max_length=4096, null=True)
+    quantity_amount = models.DecimalField(max_digits=14, decimal_places=3, null=True)
+    value = models.DecimalField(max_digits=12, decimal_places=2, null=True)
+
+    goods_description_original = models.CharField(max_length=4096, null=True)
+    quantity_amount_original = models.DecimalField(max_digits=14, decimal_places=3, null=True)
+    value_original = models.DecimalField(max_digits=12, decimal_places=2, null=True)
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["goods_description"] = data["goods_description"] or data["goods_description_original"]
+        data["quantity_amount"] = data["quantity_amount"] or data["quantity_amount_original"]
+        data["value"] = data["value"] or data["value_original"]
+        return data
 
 
 class SanctionsAndAdhocSupportingDoc(FileM2MBase):
