@@ -885,7 +885,7 @@ class DFLGoodsResponseParser(BaseXmlParser):
 
             commodity_list = xml_tree.xpath(cls.ROOT_NODE)
 
-            for i, xml in enumerate(commodity_list, start=1):
+            for i, xml in enumerate(commodity_list[::-1], start=1):
                 commodity_desc = get_xml_val(xml, "./COMMODITY_DESC")
 
                 if not commodity_desc:
@@ -1095,11 +1095,49 @@ class SanctionGoodsParser(BaseXmlParser):
             **{
                 "import_application_id": parent_pk,
                 "commodity_id": commodity_id,
-                "goods_description": commodity_desc,
-                "quantity_amount": quantity,
-                "value": value,
+                "goods_description_original": commodity_desc,
+                "quantity_amount_original": quantity,
+                "value_original": value,
             }
         )
+
+
+class SanctionGoodsResponseParser(BaseXmlParser):
+    MODEL = dm.SanctionsAndAdhocApplicationGoods
+    PARENT = dm.SanctionsAndAdhocApplication
+    FIELD = "commodities_response_xml"
+    ROOT_NODE = "/COMMODITY_LIST/COMMODITY"
+    REVERSE_LIST = True
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> None:
+        """Example XML structure
+
+        <COMMODITY>
+          <COMMODITY_ID />
+          <COMMODITY_DESC />
+          <QUANTITY />
+          <UNIT />
+          <VALUE />
+        </COMMODITY>
+        """
+
+        commodity_id = int_or_none(get_xml_val(xml, "./COMMODITY_ID"))
+        commodity_desc = get_xml_val(xml, "./COMMODITY_DESC")
+        quantity = decimal_or_none(get_xml_val(xml, "./QUANTITY"))
+        value = decimal_or_none(get_xml_val(xml, "./VALUE"))
+
+        if not commodity_id:
+            return None
+
+        obj = dm.SanctionsAndAdhocApplicationGoods.objects.get(
+            import_application_id=parent_pk, commodity_id=commodity_id
+        )
+
+        obj.goods_description = commodity_desc or obj.goods_description_original
+        obj.quantity_amount = quantity or obj.quantity_amount_original
+        obj.value = value or obj.value_original
+        obj.save()
 
 
 class WoodContractParser(BaseXmlParser):

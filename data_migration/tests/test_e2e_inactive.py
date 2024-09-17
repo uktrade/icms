@@ -200,7 +200,10 @@ sps_data_source_target = {
     DATA_TYPE_XML,
     {
         "export_application": [],
-        "import_application": [xml_parser.SanctionGoodsParser],
+        "import_application": [
+            xml_parser.SanctionGoodsParser,
+            xml_parser.SanctionGoodsResponseParser,
+        ],
         "user": [],
     },
 )
@@ -398,17 +401,23 @@ def test_import_sps_data(mock_connect, dummy_dm_settings):
 
     assert san.sanctions_goods.count() == 2
     sg1, sg2 = san.sanctions_goods.order_by("pk")
-    assert sg1.goods_description == "More nice things"
+    assert sg1.goods_description_original == "More nice things"
     assert sg1.import_application_id == san.id
+    assert sg1.quantity_amount_original == 1.00
+    assert sg1.value_original == 100
+    assert sg1.commodity_id == 2
+    assert sg1.goods_description == "More nice things"
     assert sg1.quantity_amount == 1.00
     assert sg1.value == 100
-    assert sg1.commodity_id == 2
 
-    assert sg2.goods_description == "Nice things"
+    assert sg2.goods_description_original == "Nice things"
     assert sg2.import_application_id == san.id
-    assert sg2.quantity_amount == 3.00
-    assert sg2.value == 75
+    assert sg2.quantity_amount_original == 3.00
+    assert sg2.value_original == 75
     assert sg2.commodity_id == 1
+    assert sg2.goods_description == "Nice things Override"
+    assert sg2.quantity_amount == 300.00
+    assert sg2.value == 750
 
 
 tex_data_source_target = {

@@ -38,3 +38,22 @@ sanctions_commodities = """
   </COMMODITY>
 </COMMODITY_LIST>
 """
+
+sanctions_commodities_response = """
+<COMMODITY_LIST>
+  <COMMODITY>
+    <COMMODITY_ID>1</COMMODITY_ID>
+    <COMMODITY_DESC>Nice things Override</COMMODITY_DESC>
+    <QUANTITY>300</QUANTITY>
+    <UNIT>UNITS</UNIT>
+    <VALUE>750</VALUE>
+  </COMMODITY>
+  <COMMODITY>
+    <COMMODITY_ID></COMMODITY_ID>
+    <COMMODITY_DESC></COMMODITY_DESC>
+    <QUANTITY></QUANTITY>
+    <UNIT>UNITS</UNIT>
+    <VALUE></VALUE>
+  </COMMODITY>
+</COMMODITY_LIST>
+"""

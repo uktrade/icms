@@ -136,6 +136,7 @@ ia_xml = [
     xml_parser.OPTCpCommodity,
     xml_parser.OPTTegCommodity,
     xml_parser.SanctionGoodsParser,
+    xml_parser.SanctionGoodsResponseParser,
     xml_parser.OILApplicationFirearmAuthorityParser,
     xml_parser.SILApplicationFirearmAuthorityParser,
     xml_parser.SILApplicationSection5AuthorityParser,
