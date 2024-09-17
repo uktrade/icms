@@ -1451,17 +1451,10 @@ a.ui-button:active,
     box-shadow: none;
 }
 
-/* This is the core CSS of Tooltipster */
-
-/* GENERAL STRUCTURE RULES (do not edit this section) */
 
 .tooltipster-base {
-    /* this ensures that a constrained height set by functionPosition,
-  if greater that the natural height of the tooltip, will be enforced
-  in browsers that support display:flex */
     display: flex;
     pointer-events: none;
-    /* this may be overriden in JS for fixed position origins */
     position: absolute;
 }
 
@@ -1470,7 +1463,6 @@ a.ui-button:active,
 }
 
 .tooltipster-content {
-    /* prevents an overflow if the user adds padding to the div */
     box-sizing: border-box;
     max-height: 100%;
     max-width: 100%;
@@ -1559,8 +1551,6 @@ a.ui-button:active,
     transition-timing-function: cubic-bezier(0.230, 0.635, 0.495, 2.4);
 }
 
-/* fall */
-
 .tooltipster-fall {
     -webkit-transition-property: top;
     -moz-transition-property: top;
@@ -1637,8 +1627,6 @@ a.ui-button:active,
     animation: tooltipster-fading 400ms;
 }
 
-/* rotate */
-
 @keyframes tooltipster-rotating {
     25% {
         transform: rotate(-2deg);
@@ -1709,7 +1697,6 @@ a.ui-button:active,
 
 .tooltipster-sidetip.tooltipster-bottom .tooltipster-arrow {
     height: 10px;
-    /* half the width, for centering */
     margin-left: -10px;
     top: 0;
     width: 20px;
@@ -1719,8 +1706,6 @@ a.ui-button:active,
     height: 20px;
     margin-top: -10px;
     right: 0;
-    /* top 0 to keep the arrow from overflowing .tooltipster-base when it has not
-  been positioned yet */
     top: 0;
     width: 10px;
 }
@@ -1729,7 +1714,6 @@ a.ui-button:active,
     height: 20px;
     margin-top: -10px;
     left: 0;
-    /* same as .tooltipster-left .tooltipster-arrow */
     top: 0;
     width: 10px;
 }
@@ -1741,16 +1725,12 @@ a.ui-button:active,
     width: 20px;
 }
 
-/* common rules between .tooltipster-arrow-background and .tooltipster-arrow-border */
-
 .tooltipster-sidetip .tooltipster-arrow-background,
 .tooltipster-sidetip .tooltipster-arrow-border {
     height: 0;
     position: absolute;
     width: 0;
 }
-
-/* .tooltipster-arrow-background */
 
 .tooltipster-sidetip .tooltipster-arrow-background {
     border: 10px solid transparent;
@@ -1780,8 +1760,6 @@ a.ui-button:active,
     top: -3px;
 }
 
-/* .tooltipster-arrow-border */
-
 .tooltipster-sidetip .tooltipster-arrow-border {
     border: 10px solid transparent;
     left: 0;
@@ -1804,8 +1782,6 @@ a.ui-button:active,
     border-top-color: black;
 }
 
-/* tooltipster-arrow-uncropped */
-
 .tooltipster-sidetip .tooltipster-arrow-uncropped {
     position: relative;
 }
@@ -1817,8 +1793,6 @@ a.ui-button:active,
 .tooltipster-sidetip.tooltipster-right .tooltipster-arrow-uncropped {
     left: -10px;
 }
-
-/* FOXopen theme*/
 
 .tooltipster-sidetip.tooltipster-foxopen .tooltipster-box {
     border-radius: 5px;
@@ -1947,14 +1921,11 @@ a.ui-button:active,
     line-height: 0 !important;
 }
 
-/* Force tagger hidden selectors to always be hidden */
 .tagger-hidden {
     display: none !important;
     visibility: hidden !important;
 }
 
-/* Tagger loading input needs to be visible when the page renders, otherwise the CSS width cannot be determined by tagger js - this element is removed on page load
-   Same for HTMLarea and tinyMCE - the original input needs to be "visible" at load time otherwise its size can't be determined */
 .tagger-loading,
 .htmltextarea {
     display: block !important;
@@ -2172,7 +2143,7 @@ table {
     border-spacing: 0;
 }
 
-/* change border colour to suit your needs */
+
 hr {
     display: block;
     height: 1px;
@@ -2239,8 +2210,6 @@ h6 {
 
 .heading-extra-info {
     font-size: 0.7em;
-    /* Fallback for browsers that don't support rem */
-    font-size: 0.7rem;
     font-weight: normal;
     color: #666;
     margin-left: 1em;
@@ -2297,7 +2266,6 @@ body.disabled .modal-popover-container {
     filter: alpha(opacity=1);
 }
 
-/* Top of page blocking styles */
 #iframe-wrapper {
     position: fixed;
     width: 100%;
@@ -2325,7 +2293,6 @@ body.disabled .modal-popover-container {
     filter: alpha(opacity=0);
 }
 
-/* un-reset element focus outline style */
 input:focus,
 button:focus,
 select:focus,
@@ -2341,13 +2308,11 @@ a:active {
     outline: none;
 }
 
-/* un-reset list item style */
 ul,
 ol {
     padding-left: 40px;
 }
 
-/* menu out */
 .menu-out {
     padding-left: 0;
     list-style: none;
@@ -2385,7 +2350,6 @@ ul.flow-across>li {
     vertical-align: middle;
 }
 
-/* menu out dropdowns */
 .dropdown-menu-out {
     display: inline-block;
     position: relative;
@@ -2495,7 +2459,6 @@ ul.flow-across>li {
     margin-top: 3px;
 }
 
-/* menu out - nav */
 nav.menu-out a {
     text-decoration: none;
     padding: 0.4em 1em;
@@ -2508,7 +2471,6 @@ nav.menu-out a.current-nav-item {
     border-radius: 3px;
 }
 
-/* Skip links */
 #skiplinks {
     position: absolute;
     left: -999em;
@@ -2537,7 +2499,6 @@ nav.menu-out a.current-nav-item {
     overflow: hidden;
 }
 
-/* debug info */
 .debug-icon {
     color: #050;
     float: left;
@@ -2565,7 +2526,6 @@ nav.menu-out a.current-nav-item {
     display: list-item;
 }
 
-/* misc */
 .hidden {
     display: none;
 }
@@ -2777,7 +2737,6 @@ ul.small-tabs img {
     clear: both;
 }
 
-/* Multiline tabs */
 ul.multiline-tabs {
     display: block;
 }
@@ -2904,7 +2863,6 @@ ul.modal-popover-actions li {
     cursor: pointer;
 }
 
-/** Needs precedence over rule in .modal-popover-container */
 .contains-popover {
     overflow: hidden;
 }
@@ -3113,16 +3071,6 @@ ul.modal-popover-actions li {
     color: #CF1111;
 }
 
-/* Artfully Masterminded by ZURB */
-
-/* --------------------------------------------------
-:: Grid
-
-This is the mobile-friendly, responsive grid that
-lets Foundation work much of its magic.
-
--------------------------------------------------- */
-
 .container {
     padding: 0;
     width: 100%;
@@ -3134,7 +3082,6 @@ lets Foundation work much of its magic.
     max-width: 1190px;
 }
 
-/* To fix the grid into a certain size, set max-width to width */
 .row .row {
     min-width: 0;
 }
@@ -3215,20 +3162,6 @@ lets Foundation work much of its magic.
     margin-left: 0;
 }
 
-/*
-.one-marginless { width: 8.333%; margin-left: 0; }
-.two-marginless { width: 16.666%; margin-left: 0; }
-.three-marginless { width: 25%; margin-left: 0; }
-.four-marginless { width: 33.333%; margin-left: 0; }
-.five-marginless { width: 41.666%; margin-left: 0; }
-.six-marginless { width: 50%; margin-left: 0; }
-.seven-marginless { width: 58.333%; margin-left: 0; }
-.eight-marginless { width: 66.666%; margin-left: 0; }
-.nine-marginless { width: 75%; margin-left: 0; }
-.ten-marginless { width: 83.333%; margin-left: 0; }
-.eleven-marginless { width: 91.666%; margin-left: 0; }
-.twelve-marginless { width: 100%; margin-left: 0; }
-*/
 .one-column-input,
 .two-column-input,
 .three-column-input,
@@ -3246,7 +3179,6 @@ lets Foundation work much of its magic.
     position: relative;
 }
 
-/* ME - the margins below here need to be recalculated and tested */
 .row .offset-by-one {
     margin-left: 12.97730%;
 }
@@ -3336,7 +3268,6 @@ lets Foundation work much of its magic.
     margin-left: 95.648865%;
 }
 
-/* Source Ordering */
 .push-two {
     left: 17.328435%;
 }
@@ -3420,7 +3351,6 @@ img {
     -ms-interpolation-mode: bicubic;
 }
 
-/* Nicolas Gallagher's micro clearfix */
 .row:before,
 .row:after,
 .clearfix:before,
@@ -3439,17 +3369,12 @@ img {
     zoom: 1;
 }
 
-/* Put a border on sticky elements to force their dimensions to contain the top margin of the first element
-into account (otherwise that top margin spill out of the top of the .sticky element and the offset top of the
-element is calculated incorrectly) */
 .sticky {
     border-top: 1px solid transparent;
     margin-top: -1px;
 }
 
-/*
-IE compat
-*/
+
 .lt-ie8 .one-column-input,
 .lt-ie8 .input-group-addon {
     width: 8.333%;
@@ -3685,7 +3610,6 @@ IE compat
     display: inline-block;
 }
 
-/* Compact lists */
 .compactList th,
 .compactList td {
     padding: 0.5em 1em;
@@ -3696,7 +3620,6 @@ IE compat
     font-weight: 700;
 }
 
-/* Bordered lists */
 .setoutList.borderedList {
     margin: 1em 0;
 }
@@ -3710,12 +3633,10 @@ IE compat
     border: 1px solid #ddd;
 }
 
-/* Auto-width lists */
 .setoutList.autoWidthList {
     width: auto;
 }
 
-/* Nested forms */
 .setoutList .setoutForm,
 .setoutList .setoutForm input,
 .setoutList .setoutForm select,
@@ -3751,14 +3672,12 @@ IE compat
     word-break: normal;
 }
 
-/* Extra info in list cell */
 .setoutList td.list-extra-info,
 .list-extra-info {
     font-size: 0.8em;
     color: #666;
 }
 
-/* Responsive tables */
 @media screen and (max-width: 799px) {
 
     table.responsiveList,
@@ -3801,7 +3720,6 @@ IE compat
     }
 }
 
-/* Pagination */
 .pager {
     padding-left: 0;
 }
@@ -3833,7 +3751,6 @@ IE compat
     background: #0979C6;
 }
 
-/* Result count */
 .result-count {
     text-align: right;
     color: #666;
@@ -3848,7 +3765,6 @@ IE compat
     font-size: 0.8em;
 }
 
-/* formList setous */
 ul.setoutList {
     padding: 0;
     list-style-type: none;
@@ -4165,7 +4081,6 @@ textarea.tight-field,
     width: auto;
 }
 
-/* This changes the Licence For section of Firearms SIL */
 input[type='radio'], input[type='checkbox'] {
     position: absolute;
     top: 0.55em;
@@ -4549,7 +4464,6 @@ input[type='image'],
     border-radius: 0;
 }
 
-/* Button groups */
 ul.grouped {
     _overflow: hidden;
     display: inline-table;
@@ -4611,7 +4525,6 @@ span.big-grouped-button-label {
     font-size: 1.2em;
 }
 
-/* Link buttons */
 button.link-button,
 button.link-button-no-padding,
 a.button.link-button,
@@ -4629,7 +4542,6 @@ button.link-button-no-padding {
     padding: 0;
 }
 
-/* No-prompt actions (icon only) */
 .no-prompt-action::before {
     margin: 0;
 }
@@ -4670,7 +4582,6 @@ fieldset {
     padding: 1em;
 }
 
-/* History Information */
 .history {}
 
 .history-insert {}
@@ -4912,7 +4823,6 @@ div.radio-input-inline > div {
     padding-right: 0.7em;
 }
 
-/* Adjust padding of all but the first list item */
 ul.radio-input > li:not(:first-child) > label {
     margin-top: 0;
     margin-bottom: 0;

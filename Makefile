@@ -133,10 +133,10 @@ requirements-web: ## install javascript dependencies
 	unset UID && \
 	docker compose run --rm web sh -c "python manage.py npm && python manage.py collect_npm"
 
-collectstatic: ## copies static files to STATIC_ROOT
+collectstatic: ## copies static files to STATIC_ROOT if DEBUG=False then the compressed files will be used by the application
 	docker compose run --rm web python ./manage.py collectstatic --noinput --traceback --clear
 	docker compose run --rm web python ./manage.py collectstatic --noinput --traceback
-	docker compose run --rm web python ./manage.py compress --engine jinja2
+	docker compose run --rm web python ./manage.py compress --engine jinja2 --force
 
 
 fake_dbt_built: ## Fake build command (builds static files without connection details to backing services)

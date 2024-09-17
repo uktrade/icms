@@ -40,8 +40,8 @@ GRAPH_MODELS = {
 # minifi html (django-htmlmin)
 HTML_MINIFY = False
 
-# Django Compressor (also set ICMS_DEBUG to False, to trigger compression of js on system start)
-COMPRESS_OFFLINE = False
+# Django Compressor
+COMPRESS_OFFLINE = not DEBUG
 
 # django-ratelimit
 RATELIMIT_ENABLE = False

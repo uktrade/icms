@@ -405,7 +405,7 @@ wcwidth==0.2.13
     # via prompt-toolkit
 webencodings==0.5.1
     # via html5lib
-whitenoise==6.6.0
+whitenoise==6.7.0
     # via -r requirements/requirements-base.in
 wrapt==1.16.0
     # via

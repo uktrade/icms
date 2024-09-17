@@ -342,6 +342,7 @@ HTML_MINIFY = True
 
 # Django Compressor
 COMPRESS_OFFLINE = True
+COMPRESS_STORAGE = "compressor.storage.GzipCompressorFileStorage"
 # COMPRESS_CACHE_BACKEND default value is "default" which for ICMS is a redis cache
 # There is no redis connection at build time in DBT Platform so have a specific cache for
 # django-compressor to use.
@@ -429,11 +430,6 @@ if env.sentry_enabled:
 
 # Settings for production environment
 if APP_ENV == "production":
-    # TODO: ICMSLST-2760 Add whitenoise static file compression.
-    #       Note - commented out code below is for older versions of django.
-    #       compression causes 50 error on server
-    # STATICFILES_STORAGE='whitenoise.storage.CompressedManifestStaticFilesStorage'
-
     INSTALLED_APPS += [  # NOQA
         "django_audit_log_middleware",
     ]
@@ -551,5 +547,5 @@ STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
-    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
 }
