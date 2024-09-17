@@ -141,7 +141,7 @@ class ExportApplication(ExportApplicationABC, ApplicationBase):
     )
 
     # Used in workbasket to clear applications
-    cleared_by = models.ManyToManyField("web.User")
+    cleared_by = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
     def get_edit_view_name(self) -> str:
         if self.process_type == ProcessTypes.COM:
@@ -191,7 +191,7 @@ class ExportApplicationCertificate(DocumentPackBase):
         "CaseDocumentReference", related_query_name="export_application_certificates"
     )
     # Used in workbasket to clear certificates
-    cleared_by = models.ManyToManyField("web.User")
+    cleared_by = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
     def __str__(self):
         ea_pk, st, ca = (self.export_application_id, self.status, self.created_at)
