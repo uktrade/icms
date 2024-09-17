@@ -85,8 +85,8 @@ def test_sil_goods_parse_xml():
     sec1_goods = data[dm.SILGoodsSection1]
     assert len(sec1_goods) == 1
     sec1 = sec1_goods[0]
-    assert sec1.description == "Test Gun"
-    assert sec1.quantity == 5
+    assert sec1.description_original == "Test Gun"
+    assert sec1.quantity_original == 5
     assert sec1.unlimited_quantity is False
     assert sec1.manufacture is False
     assert sec1.legacy_ordinal == 1
@@ -94,8 +94,8 @@ def test_sil_goods_parse_xml():
     sec2_goods = data[dm.SILGoodsSection2]
     assert len(sec2_goods) == 1
     sec2 = sec2_goods[0]
-    assert sec2.description == "Test Rifle"
-    assert sec2.quantity is None
+    assert sec2.description_original == "Test Rifle"
+    assert sec2.quantity_original is None
     assert sec2.unlimited_quantity is True
     assert sec2.manufacture is False
     assert sec2.legacy_ordinal == 2
@@ -103,8 +103,8 @@ def test_sil_goods_parse_xml():
     sec5_goods = data[dm.SILGoodsSection5]
     assert len(sec5_goods) == 1
     sec5 = sec5_goods[0]
-    assert sec5.description == "Test Pistol"
-    assert sec5.quantity == 10
+    assert sec5.description_original == "Test Pistol"
+    assert sec5.quantity_original == 10
     assert sec5.unlimited_quantity is False
     assert sec5.manufacture is False
     assert sec5.section_5_code_id == "5_1_ABA"
@@ -113,17 +113,17 @@ def test_sil_goods_parse_xml():
     sec5_obs_goods = data[dm.SILGoodsSection582Obsolete]  # /PS-IGNORE
     assert len(sec5_obs_goods) == 1
     sec5_obs = sec5_obs_goods[0]
-    assert sec5_obs.description == "Test Revolver"
+    assert sec5_obs.description_original == "Test Revolver"
     assert sec5_obs.obsolete_calibre_legacy_id == 444
-    assert sec5_obs.quantity == 1
+    assert sec5_obs.quantity_original == 1
     assert sec5_obs.manufacture is True
     assert sec5_obs.legacy_ordinal == 4
 
     sec5_other_goods = data[dm.SILGoodsSection582Other]  # /PS-IGNORE
     assert len(sec5_other_goods) == 1
     sec5_other = sec5_other_goods[0]
-    assert sec5_other.description == "Test Other"
-    assert sec5_other.quantity == 1
+    assert sec5_other.description_original == "Test Other"
+    assert sec5_other.quantity_original == 1
     assert sec5_other.manufacture is True
     assert sec5_other.curiosity_ornament is True
     assert sec5_other.ignition is False

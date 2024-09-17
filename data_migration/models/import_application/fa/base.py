@@ -19,6 +19,7 @@ class FirearmBase(ImportApplicationBase):
     know_bought_from = models.BooleanField(null=True)
     commodity_group = models.ForeignKey(CommodityGroup, on_delete=models.SET_NULL, null=True)
     commodities_xml = models.TextField(null=True)
+    commodities_response_xml = models.TextField(null=True)
     user_import_certs_xml = models.TextField(null=True)
     fa_authorities_xml = models.TextField(null=True)
     bought_from_details_xml = models.TextField(null=True)

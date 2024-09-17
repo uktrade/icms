@@ -145,7 +145,9 @@ class SILGoodsSection1(MigrationBase):
     )
     is_active = models.BooleanField(default=True)
     manufacture = models.BooleanField(null=True)
-    description = models.CharField(max_length=4096)
+    description_original = models.CharField(max_length=4096, null=True)
+    quantity_original = models.PositiveBigIntegerField(null=True)
+    description = models.CharField(max_length=4096, null=True)
     quantity = models.PositiveBigIntegerField(null=True)
     unlimited_quantity = models.BooleanField(default=False)
     legacy_ordinal = models.PositiveIntegerField()
@@ -154,6 +156,13 @@ class SILGoodsSection1(MigrationBase):
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + ["legacy_ordinal"]
 
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["description"] = data["description"] or data["description_original"]
+        data["quantity"] = data["quantity"] or data["quantity_original"]
+
+        return data
+
 
 class SILGoodsSection2(MigrationBase):
     import_application = models.ForeignKey(
@@ -161,10 +170,19 @@ class SILGoodsSection2(MigrationBase):
     )
     is_active = models.BooleanField(default=True)
     manufacture = models.BooleanField(null=True)
-    description = models.CharField(max_length=4096)
+    description_original = models.CharField(max_length=4096, null=True)
+    quantity_original = models.PositiveBigIntegerField(null=True)
+    description = models.CharField(max_length=4096, null=True)
     quantity = models.PositiveBigIntegerField(null=True)
     unlimited_quantity = models.BooleanField(default=False)
     legacy_ordinal = models.PositiveIntegerField()
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["description"] = data["description"] or data["description_original"]
+        data["quantity"] = data["quantity"] or data["quantity_original"]
+
+        return data
 
 
 class SILGoodsSection5(MigrationBase):
@@ -176,7 +194,9 @@ class SILGoodsSection5(MigrationBase):
         Section5Clause, on_delete=models.PROTECT, to_field="legacy_code"
     )
     manufacture = models.BooleanField(null=True)
-    description = models.CharField(max_length=4096)
+    description_original = models.CharField(max_length=4096, null=True)
+    quantity_original = models.PositiveBigIntegerField(null=True)
+    description = models.CharField(max_length=4096, null=True)
     quantity = models.PositiveBigIntegerField(null=True)
     unlimited_quantity = models.BooleanField(default=False)
     legacy_ordinal = models.PositiveIntegerField()
@@ -188,6 +208,13 @@ class SILGoodsSection5(MigrationBase):
     @classmethod
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + ["section_5_code_id"]
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["description"] = data["description"] or data["description_original"]
+        data["quantity"] = data["quantity"] or data["quantity_original"]
+
+        return data
 
 
 class SILGoodsSection582Obsolete(MigrationBase):  # /PS-IGNORE
@@ -203,8 +230,10 @@ class SILGoodsSection582Obsolete(MigrationBase):  # /PS-IGNORE
     obsolete_calibre_legacy = models.ForeignKey(
         ObsoleteCalibre, on_delete=models.PROTECT, to_field="legacy_id"
     )
-    description = models.CharField(max_length=4096)
-    quantity = models.PositiveBigIntegerField()
+    description_original = models.CharField(max_length=4096, null=True)
+    quantity_original = models.PositiveBigIntegerField(null=True)
+    description = models.CharField(max_length=4096, null=True)
+    quantity = models.PositiveBigIntegerField(null=True)
     legacy_ordinal = models.PositiveIntegerField()
 
     @classmethod
@@ -214,6 +243,13 @@ class SILGoodsSection582Obsolete(MigrationBase):  # /PS-IGNORE
     @classmethod
     def get_values_kwargs(cls) -> dict[str, Any]:
         return {"obsolete_calibre": F("obsolete_calibre_legacy__name")}
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["description"] = data["description"] or data["description_original"]
+        data["quantity"] = data["quantity"] or data["quantity_original"]
+
+        return data
 
 
 class SILGoodsSection582Other(MigrationBase):  # /PS-IGNORE
@@ -233,9 +269,18 @@ class SILGoodsSection582Other(MigrationBase):  # /PS-IGNORE
     chamber = models.BooleanField(null=True)
     bore = models.BooleanField(null=True)
     bore_details = models.CharField(max_length=50, default="")
-    description = models.CharField(max_length=4096)
-    quantity = models.PositiveBigIntegerField()
+    description_original = models.CharField(max_length=4096, null=True)
+    quantity_original = models.PositiveBigIntegerField(null=True)
+    description = models.CharField(max_length=4096, null=True)
+    quantity = models.PositiveBigIntegerField(null=True)
     legacy_ordinal = models.PositiveIntegerField()
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["description"] = data["description"] or data["description_original"]
+        data["quantity"] = data["quantity"] or data["quantity_original"]
+
+        return data
 
 
 class SILLegacyGoods(MigrationBase):
@@ -243,7 +288,9 @@ class SILLegacyGoods(MigrationBase):
         SILApplication, on_delete=models.PROTECT, related_name="goods_legacy"
     )
     is_active = models.BooleanField(default=True)
-    description = models.CharField(max_length=4096)
+    description_original = models.CharField(max_length=4096, null=True)
+    quantity_original = models.PositiveBigIntegerField(null=True)
+    description = models.CharField(max_length=4096, null=True)
     quantity = models.PositiveBigIntegerField(null=True)
     unlimited_quantity = models.BooleanField(default=False)
     obsolete_calibre_legacy = models.ForeignKey(
@@ -258,6 +305,13 @@ class SILLegacyGoods(MigrationBase):
     @classmethod
     def get_values_kwargs(cls) -> dict[str, Any]:
         return {"obsolete_calibre": F("obsolete_calibre_legacy__name")}
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["description"] = data["description"] or data["description_original"]
+        data["quantity"] = data["quantity"] or data["quantity_original"]
+
+        return data
 
 
 class SILSupplementaryInfo(SupplementaryInfoBase):

@@ -911,6 +911,7 @@ ia_query_result = {
             ("bought_from_details_xml",),
             ("supplementary_report_xml",),
             ("commodities_xml",),
+            ("commodities_response_xml",),
             ("licence_uref_id",),
         ],
         [
@@ -943,6 +944,7 @@ ia_query_result = {
                 None,  # bought_from_details_xml
                 xd.sr_manual_xml_5_goods,  # supplementary_report_xml
                 xd.sil_goods,  # commodities_xml
+                xd.sil_response_goods,  # commodities_response_xml
                 "ILD1234",  # licence_uref
             ),
             (
@@ -974,6 +976,7 @@ ia_query_result = {
                 xd.import_contact_xml,  # bought_from_details_xml
                 xd.sr_upload_xml,  # supplementary_report_xml
                 xd.sil_goods_sec_1,  # commodities_xml
+                None,  # commodities_response_xml
                 "ILD1237",  # licence_uref
             ),
             (
@@ -1005,6 +1008,7 @@ ia_query_result = {
                 xd.import_contact_xml,  # bought_from_details_xml
                 xd.sr_manual_xml_legacy,  # supplementary_report_xml
                 xd.sil_goods_legacy,  # commodities_xml
+                None,  # commodities_response_xml
                 "ILD123456",  # licence_uref
             ),
         ],

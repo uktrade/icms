@@ -254,9 +254,9 @@ class SILGoodsParser(BaseXmlParser):
 
         return {
             "import_application_id": parent_pk,
-            "description": description,
+            "description_original": description,
             "manufacture": str_to_bool(manufacture),
-            "quantity": int_or_none(quantity),
+            "quantity_original": int_or_none(quantity),
         }
 
     @classmethod
@@ -380,6 +380,91 @@ class SILGoodsParser(BaseXmlParser):
                 "obsolete_calibre_legacy_id": int_or_none(obsolete_calibre),
             }
         )
+
+
+class SILGoodsResponseParser(BaseXmlParser):
+    PARENT = dm.SILApplication
+    FIELD = "commodities_response_xml"
+    ROOT_NODE = "/COMMODITY_LIST/COMMODITY"
+
+    @classmethod
+    def get_obj(
+        cls, section: str, ordinal: int, parent_pk: int
+    ) -> (
+        dm.SILGoodsSection1
+        | dm.SILGoodsSection2
+        | dm.SILGoodsSection5
+        | dm.SILGoodsSection582Obsolete  # /PS-IGNORE
+        | dm.SILGoodsSection582Other  # /PS-IGNORE
+        | dm.SILLegacyGoods
+    ):
+        match section:
+            case "SEC1":
+                return dm.SILGoodsSection1.objects.get(
+                    import_application=parent_pk, legacy_ordinal=ordinal
+                )
+            case "SEC2":
+                return dm.SILGoodsSection2.objects.get(
+                    import_application=parent_pk, legacy_ordinal=ordinal
+                )
+            case "SEC5":
+                return dm.SILGoodsSection5.objects.get(
+                    import_application=parent_pk, legacy_ordinal=ordinal
+                )
+            case "OBSOLETE_CALIBRE":
+                return dm.SILGoodsSection582Obsolete.objects.get(  # /PS-IGNORE
+                    import_application=parent_pk, legacy_ordinal=ordinal
+                )
+            case "OTHER":
+                return dm.SILGoodsSection582Other.objects.get(  # /PS-IGNORE
+                    import_application=parent_pk, legacy_ordinal=ordinal
+                )
+            case "LEGACY":
+                return dm.SILLegacyGoods.objects.get(
+                    import_application=parent_pk, legacy_ordinal=ordinal
+                )
+            case _:
+                raise ValueError(f"Unknown SIL Goods Section - {section}")
+
+    @classmethod
+    def parse_xml(cls, batch: BatchT) -> dict:
+        """
+        <COMMODITY_LIST>
+          <COMMODITY />
+            <SECTION />
+            <SECTION_5_CLAUSE />
+            <COMMODITY_DESC />
+            <OBSOLETE_CALIBRE />
+            <QUANTITY />
+        </COMMODITY_LIST>
+        """
+        for parent_pk, xml_str in batch:
+            xml_tree = etree.fromstring(xml_str)
+
+            commodity_list = xml_tree.xpath(cls.ROOT_NODE)
+
+            for i, xml in enumerate(commodity_list, start=1):
+                section = get_xml_val(xml, "./SECTION")
+                commodity_desc = get_xml_val(xml, "./COMMODITY_DESC")
+                quantity = int_or_none(get_xml_val(xml, "./QUANTITY"))
+
+                if not section:
+                    if not commodity_desc:
+                        continue
+
+                    # If there is a commodity description this is an older record with no section
+                    section = "LEGACY"
+
+                obj = cls.get_obj(section, i, parent_pk)
+
+                if not obj:
+                    continue
+
+                obj.description = commodity_desc or obj.description_original
+                obj.quantity = quantity or obj.quantity_original
+                obj.save()
+
+        return {}
 
 
 class SupplementaryReportParser(BaseXmlParser):
