@@ -94,7 +94,7 @@ def send_application_to_chief(
                             )
 
                 # It doesn't have the expected "errors" key
-                except requests.JSONDecodeError:  # type: ignore[attr-defined]
+                except requests.JSONDecodeError:
                     pass
 
             chief_req.save()
