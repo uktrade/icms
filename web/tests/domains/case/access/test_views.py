@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertInHTML, assertRedirects, assertTemplateUsed
 
+from web.flow.models import ProcessTypes
 from web.mail.constants import EmailTypes
 from web.models import AccessRequest, ExporterAccessRequest, ImporterAccessRequest
 from web.permissions import organisation_get_contacts
@@ -15,7 +16,11 @@ from web.sites import (
 )
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
-from web.tests.helpers import check_gov_notify_email_was_sent, get_test_client
+from web.tests.helpers import (
+    check_gov_notify_email_was_sent,
+    get_messages_from_response,
+    get_test_client,
+)
 
 
 class TestAccessRequestListView(AuthTestCase):
@@ -282,6 +287,32 @@ class TestLinkAccessRequest(AuthTestCase):
 
         assert self.ear.link == self.exporter
         assert self.ear.agent_link == self.exporter_agent
+
+    def test_unable_to_link_access_request_with_open_approval(self):
+        # Link the access request
+        data = {"link": self.importer.pk}
+        response = self.ilb_admin_client.post(self.iar_url, data=data)
+        assertRedirects(response, self.iar_url)
+        self.iar.refresh_from_db()
+        assert self.iar.link == self.importer
+
+        # Fake an approval request
+        self.iar.approval_requests.create(
+            process_type=ProcessTypes.ImpApprovalReq, requested_by=self.ilb_admin_user
+        )
+
+        # Check we can't re-link the access request
+        data = {"link": self.importer_two.pk}
+        response = self.ilb_admin_client.post(self.iar_url, data=data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        messages = get_messages_from_response(response)
+
+        assert len(messages) == 1
+        assert messages[0] == (
+            "You cannot re-link this Access Request because you have already started the Approval"
+            " Process. You must first Withdraw / Restart the Approval Request."
+        )
 
 
 class TestCloseAccessRequest(AuthTestCase):
@@ -582,6 +613,44 @@ class TestCloseAccessRequest(AuthTestCase):
 
         org_contacts = organisation_get_contacts(self.exporter_agent)
         assert not org_contacts.contains(self.acc_req_user)
+
+    def test_unable_to_close_access_request_with_open_approval(self):
+        # Link the access request
+        link_url = reverse(
+            "access:link-request", kwargs={"access_request_pk": self.iar.pk, "entity": "importer"}
+        )
+        data = {"link": self.importer.pk}
+        response = self.ilb_admin_client.post(link_url, data=data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        # Fake an approval request
+        self.iar.refresh_from_db()
+        self.iar.approval_requests.create(
+            process_type=ProcessTypes.ImpApprovalReq, requested_by=self.ilb_admin_user
+        )
+
+        # Go to close page and expect to see a message saying we can't close
+        response = self.ilb_admin_client.get(self.iar_url)
+        assert response.status_code == HTTPStatus.OK
+
+        assertInHTML(
+            "You cannot close this Access Request because you have already started the Approval "
+            "Process. To close this Access Request you must first withdraw the Approval Request.",
+            response.content.decode(),
+        )
+
+        # Check posting to the endpoint also prevents closing the access request.
+        response = self.ilb_admin_client.post(
+            self.iar_url, data={"response": AccessRequest.APPROVED}
+        )
+        assert response.status_code == HTTPStatus.FOUND
+
+        messages = get_messages_from_response(response)
+        assert len(messages) == 1
+        assert messages[0] == (
+            "You cannot close this Access Request because you have already started the Approval "
+            "Process. To close this Access Request you must first withdraw the Approval Request."
+        )
 
 
 class TestAccessRequestHistoryView(AuthTestCase):

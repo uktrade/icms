@@ -22,6 +22,7 @@ from web.flow.models import ProcessTypes
 from web.mail import emails
 from web.models import (
     AccessRequest,
+    ApprovalRequest,
     ExporterAccessRequest,
     FurtherInformationRequest,
     ImporterAccessRequest,
@@ -214,7 +215,27 @@ def link_access_request(
 
         case_progress.access_request_in_processing(access_request)
 
+        # Used as context variable and to prevent re-linking
+        has_approval_request = access_request.approval_requests.filter(
+            is_active=True,
+            status__in=[ApprovalRequest.Statuses.OPEN, ApprovalRequest.Statuses.COMPLETED],
+        )
+        org = entity.title()
+
         if request.method == "POST":
+            if has_approval_request:
+                messages.error(
+                    request,
+                    "You cannot re-link this Access Request because you have already started the "
+                    "Approval Process. You must first Withdraw / Restart the Approval Request.",
+                )
+                return redirect(
+                    reverse(
+                        "access:link-request",
+                        kwargs={"access_request_pk": access_request.pk, "entity": entity},
+                    )
+                )
+
             form = form_cls(request.POST, instance=access_request)
 
             if form.is_valid():
@@ -222,7 +243,7 @@ def link_access_request(
 
                 messages.success(
                     request,
-                    f"Successfully linked {entity.title()} to access request."
+                    f"Successfully linked {org} to access request."
                     " Access request can now be closed by navigating to Close Access Request page,"
                     " or approval can be requested via the Access Approval page.",
                 )
@@ -238,9 +259,10 @@ def link_access_request(
         context = {
             "case_type": "access",
             "process": access_request,
+            "has_approval_request": has_approval_request,
             "form": form,
             "show_agent_link": access_request.is_agent_request,
-            "org": entity.title(),
+            "org": org,
             "create_org_url": reverse("importer-list" if entity == "importer" else "exporter-list"),
         }
 
@@ -269,7 +291,26 @@ def close_access_request(
 
         case_progress.access_request_in_processing(access_request)
 
+        has_open_approval_request = access_request.approval_requests.filter(
+            is_active=True, status=ApprovalRequest.Statuses.OPEN
+        )
+
         if request.method == "POST":
+            if has_open_approval_request:
+                messages.error(
+                    request,
+                    "You cannot close this Access Request because you have already started the "
+                    "Approval Process. To close this Access Request you must first withdraw the "
+                    "Approval Request.",
+                )
+
+                return redirect(
+                    reverse(
+                        "access:close-request",
+                        kwargs={"access_request_pk": access_request.pk, "entity": entity},
+                    )
+                )
+
             task = case_progress.get_expected_task(access_request, Task.TaskType.PROCESS)
             form = forms.CloseAccessRequestForm(request.POST, instance=access_request)
 
@@ -303,6 +344,7 @@ def close_access_request(
             "case_type": "access",
             "process": access_request,
             "form": form,
+            "has_open_approval_request": has_open_approval_request,
         }
 
     return render(
