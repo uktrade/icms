@@ -50,17 +50,17 @@
 {%- endmacro %}
 
 {# Renders a single form field with icms styling #}
-{% macro field(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True, show_optional_indicator=True, prompt='west', padding='three', input_cols='six', label_cols='three', lookup=False, mark_safe=False, tooltip_msg_id="", optional_text="") -%}
+{% macro field(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True, show_optional_indicator=True, prompt='west', padding='three', input_cols='six', label_cols='three', lookup=False, mark_safe=False, tooltip_msg_id="", optional_text_override="") -%}
   <div class="row row_{{ field.id_for_label }}" >
-    {{ inline_field_with_label(field, tooltip, checkbox_label, field_description, show_errors, show_optional_indicator, prompt, padding, input_cols, label_cols, lookup, mark_safe, tooltip_msg_id, optional_text) }}
+    {{ inline_field_with_label(field, tooltip, checkbox_label, field_description, show_errors, show_optional_indicator, prompt, padding, input_cols, label_cols, lookup, mark_safe, tooltip_msg_id, optional_text_override) }}
   </div>
 {%- endmacro %}
 
 {# Renders a single INLINE form field with icms styling #}
-{% macro inline_field_with_label(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True, show_optional_indicator=True, prompt='west', padding='three', input_cols='six', label_cols='three', lookup=False, mark_safe=False, tooltip_msg_id="", optional_text="" ) -%}
+{% macro inline_field_with_label(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True, show_optional_indicator=True, prompt='west', padding='three', input_cols='six', label_cols='three', lookup=False, mark_safe=False, tooltip_msg_id="", optional_text_override="" ) -%}
   {% set config=field.field.config %}
 
-  {{ label(field, show_optional_indicator, prompt, label_cols, optional_text) }}
+  {{ label(field, show_optional_indicator, prompt, label_cols, optional_text_override) }}
 
   <div class="{{ input_cols }} columns input-group {% if show_errors and field.errors %}input-error{% endif %}">
     {% if tooltip_msg_id %}
@@ -77,7 +77,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro label(field, show_optional_indicator=True, prompt='west', label_cols='three', optional_text="optional") %}
+{% macro label(field, show_optional_indicator=True, prompt='west', label_cols='three', optional_text_override="") %}
   {% set config=field.field.config %}
 
     <div class="{{ label_cols }} columns">
@@ -86,7 +86,7 @@
       <label for="{{ field.id_for_label }}" class="prompt {{ prompt }}">
         {{field.label}}
         {% if show_optional_label(field, show_optional_indicator) %}
-          <span class="mand-label">{{ optional_text }}</span>
+          <span class="mand-label">{{ optional_text_override if optional_text_override else "optional" }}</span>
         {% endif %}
       </label>
     {% endif %}
