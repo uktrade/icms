@@ -5002,3 +5002,8 @@ object.current_version.start_datetime.strftime('%d-%b-%Y
 ON td.id
 SELECT xtd.t_id template_id
 xtd.template_type
+Withdraw / Restart the Approval Request
+the Approval Process
+the Approval Request
+Approval Process
+Approval

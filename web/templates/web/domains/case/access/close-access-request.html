@@ -11,19 +11,25 @@
     </div>
   {% endif %}
 
-  <div class="container setOutForm">
-    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-      {% for field in form %}
-        {{ fields.field(field) }}
-      {% endfor %}
-      <div class="row">
-        <div class="three columns"></div>
-        <div class="eight columns">
-          <button type="submit" class="button primary-button">Close Access Request</button>
+  {% if has_open_approval_request %}
+    <div class="info-box info-box-info">
+      You cannot close this Access Request because you have already started the Approval Process. To close this Access Request you must first withdraw the Approval Request.
+    </div>
+  {% else %}
+    <div class="container setOutForm">
+      {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+        {% for field in form %}
+          {{ fields.field(field) }}
+        {% endfor %}
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <button type="submit" class="button primary-button">Close Access Request</button>
+          </div>
         </div>
-      </div>
-    {% endcall %}
-  </div>
+      {% endcall %}
+    </div>
+  {% endif %}
 {% endblock %}
 
 {% block page_js %}
