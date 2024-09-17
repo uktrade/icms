@@ -67,6 +67,7 @@ SELECT
   , x.completed_by_id
   , TO_DATE(x.completed_datetime, 'YYYY-MM-DD') completed_datetime
   , XMLTYPE.getClobVal(commodities_xml) commodities_xml
+  , XMLTYPE.getClobVal(commodities_response_xml) commodities_response_xml
   , XMLTYPE.getClobVal(user_import_certs_xml) user_import_certs_xml
   , x.file_folder_id
   , XMLTYPE.getClobVal(x.variations_xml) variations_xml
@@ -88,6 +89,7 @@ CROSS JOIN XMLTABLE('/*'
     , know_bought_from VARCHAR2(10) PATH '/IMA/APP_DETAILS/SH_DETAILS/IS_SELLER_HOLDER_PROVIDED[not(fox-error)]/text()'
     , additional_comments VARCHAR2(4000) PATH '/IMA/APP_DETAILS/FA_DETAILS/ADDITIONAL_INFORMATION[not(fox-error)]/text()'
     , commodities_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/COMMODITY_LIST'
+    , commodities_response_xml XMLTYPE PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COMMODITY_LIST'
     , user_import_certs_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/FIREARMS_CERTIFICATE_LIST'
     , fa_authorities_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/FIREARMS_AUTHORITIES/AUTHORITY_LIST'
     , section5_authorities_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/SECTION5_AUTHORITIES/AUTHORITY_LIST'

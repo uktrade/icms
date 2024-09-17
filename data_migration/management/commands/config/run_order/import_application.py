@@ -144,6 +144,7 @@ ia_xml = [
     xml_parser.ImportContactParser,
     xml_parser.UserImportCertificateParser,
     xml_parser.SILGoodsParser,
+    xml_parser.SILGoodsResponseParser,
     xml_parser.SILSupplementaryReportParser,
     xml_parser.SILReportFirearmParser,
     xml_parser.DFLGoodsCertificateParser,

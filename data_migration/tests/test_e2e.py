@@ -24,6 +24,7 @@ sil_xml_parsers = [
     xml_parser.ConstabularyEmailAttachments,
     xml_parser.ImportContactParser,
     xml_parser.SILGoodsParser,
+    xml_parser.SILGoodsResponseParser,
     xml_parser.SILSupplementaryReportParser,
     xml_parser.SILReportFirearmParser,
     xml_parser.VariationImportParser,
@@ -374,7 +375,20 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
 
     assert web.SILGoodsSection1.objects.filter(**sil1_f).count() == 1
     assert web.SILGoodsSection1.objects.filter(**sil2_f).count() == 1
+
+    sec1 = web.SILGoodsSection1.objects.get(**sil1_f)
+    assert sec1.description_original == "Test Gunt"
+    assert sec1.description == "Test Gun Override"
+    assert sec1.quantity_original == 5
+    assert sec1.quantity == 17
+
     assert web.SILGoodsSection2.objects.filter(**sil1_f).count() == 1
+    sec2 = web.SILGoodsSection2.objects.get(**sil1_f)
+    assert sec2.description_original == "Test Rifle"
+    assert sec2.description == "Test Rifle"
+    assert sec2.quantity_original is None
+    assert sec2.quantity is None
+
     assert web.SILGoodsSection5.objects.filter(**sil1_f).count() == 1
     sec5 = web.SILGoodsSection5.objects.filter(**sil1_f).first()
     assert sec5.section_5_clause.clause == "Test Clause"
