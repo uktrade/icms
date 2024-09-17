@@ -68,13 +68,13 @@ def test_dfl_goods_parse_xml():
 
     assert gc1.dfl_application_id == 1
     assert gc1.deactivated_certificate_reference == "REF B"
-    assert gc1.goods_description == "Test Commodity B"
+    assert gc1.goods_description_original == "Test Commodity B"
     assert gc1.issuing_country_id == 2
     assert gc1.target_id == 5001
 
     assert gc2.dfl_application_id == 1
     assert gc2.deactivated_certificate_reference == "REF A"
-    assert gc2.goods_description == "Test Commodity A"
+    assert gc2.goods_description_original == "Test Commodity A"
     assert gc2.issuing_country_id == 1
     assert gc2.target_id == 5000
 

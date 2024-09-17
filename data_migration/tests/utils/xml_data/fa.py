@@ -557,6 +557,19 @@ dfl_goods_cert = """
 </FA_GOODS_CERTS>
 """.strip()
 
+
+dfl_goods_response = """
+<COMMODITY_LIST>
+  <COMMODITY>
+    <COMMODITY_DESC>Test Commodity A Override</COMMODITY_DESC>
+  </COMMODITY>
+  <COMMODITY>
+    <COMMODITY_DESC></COMMODITY_DESC>
+  </COMMODITY>
+</COMMODITY_LIST>
+""".strip()
+
+
 rfd_cert = """
 <FIREARMS_CERTIFICATE_LIST>
   <FIREARMS_CERTIFICATE>

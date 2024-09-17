@@ -148,6 +148,7 @@ ia_xml = [
     xml_parser.SILSupplementaryReportParser,
     xml_parser.SILReportFirearmParser,
     xml_parser.DFLGoodsCertificateParser,
+    xml_parser.DFLGoodsResponseParser,
     xml_parser.DFLSupplementaryReportParser,
     xml_parser.DFLReportFirearmParser,
     xml_parser.OILSupplementaryReportParser,
