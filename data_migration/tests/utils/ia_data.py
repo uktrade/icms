@@ -744,6 +744,7 @@ ia_query_result = {
             ("constabulary_id",),
             ("supplementary_report_xml",),
             ("fa_goods_certs_xml",),
+            ("commodities_response_xml",),
             ("cover_letter_text",),
             ("withdrawal_xml",),
         ],
@@ -774,6 +775,7 @@ ia_query_result = {
                 1,  # constabulary_id
                 xd.dfl_sr,  # supplementary_report_xml
                 xd.dfl_goods_cert,  # fa_goods_cert_xml
+                xd.dfl_goods_response,  # commodities_response_xml
                 xd.cover_letter_text_dfl_v1,  # cover_letter_text
                 None,  # withdrawal_xml
             ),
@@ -803,6 +805,7 @@ ia_query_result = {
                 1,  # constabulary_id
                 None,  # supplementary_report_xml
                 None,  # fa_goods_cert_xml
+                None,  # commodities_response_xml
                 None,  # cover_letter_text
                 None,  # withdrawal_xml
             ),
@@ -832,6 +835,7 @@ ia_query_result = {
                 1,  # constabulary_id
                 None,  # supplementary_report_xml
                 None,  # fa_goods_cert_xml
+                None,  # commodities_response_xml
                 None,  # cover_letter_text
                 xd.import_withdrawal,  # withdrawal_xml
             ),

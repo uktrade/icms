@@ -41,6 +41,7 @@ class DFLGoodsCertificate(MigrationBase):
         on_delete=models.PROTECT,
         related_name="+",
     )
+    goods_description_original = models.CharField(max_length=4096, null=True)
     goods_description = models.CharField(max_length=4096, null=True)
     deactivated_certificate_reference = models.CharField(max_length=50, null=True)
     legacy_ordinal = models.IntegerField(null=True)
@@ -85,6 +86,7 @@ class DFLGoodsCertificate(MigrationBase):
 
         # Remove id and set file_ptr_id because V2 inherits from File model
         data.pop("id")
+        data["goods_description"] = data["goods_description"] or data["goods_description_original"]
         return data
 
     @classmethod

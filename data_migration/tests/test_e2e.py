@@ -377,7 +377,7 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert web.SILGoodsSection1.objects.filter(**sil2_f).count() == 1
 
     sec1 = web.SILGoodsSection1.objects.get(**sil1_f)
-    assert sec1.description_original == "Test Gunt"
+    assert sec1.description_original == "Test Gun"
     assert sec1.description == "Test Gun Override"
     assert sec1.quantity_original == 5
     assert sec1.quantity == 17
@@ -586,6 +586,7 @@ oil_xml_parsers = [
     xml_parser.OILSupplementaryReportParser,
     xml_parser.OILReportFirearmParser,
     xml_parser.DFLGoodsCertificateParser,
+    xml_parser.DFLGoodsResponseParser,
     xml_parser.DFLSupplementaryReportParser,
     xml_parser.DFLReportFirearmParser,
     xml_parser.WithdrawalImportParser,
@@ -750,11 +751,13 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
 
     assert dfl.goods_certificates.count() == 2
     dfl_goods1, dfl_goods2 = dfl.goods_certificates.order_by("id")
-    assert dfl_goods1.goods_description == "Test Commodity A"
+    assert dfl_goods1.goods_description_original == "Test Commodity A"
+    assert dfl_goods1.goods_description == "Test Commodity A Override"
     assert dfl_goods1.deactivated_certificate_reference == "REF A"
     assert dfl_goods1.issuing_country_id == 1
     assert dfl_goods1.path == "goods/test_a.pdf"
 
+    assert dfl_goods2.goods_description_original == "Test Commodity B"
     assert dfl_goods2.goods_description == "Test Commodity B"
     assert dfl_goods2.deactivated_certificate_reference == "REF B"
     assert dfl_goods2.issuing_country_id == 2

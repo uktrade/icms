@@ -857,10 +857,47 @@ class DFLGoodsCertificateParser(BaseXmlParser):
                 "dfl_application_id": parent_pk,
                 "target_id": int_or_none(target_id),
                 "deactivated_certificate_reference": reference,
-                "goods_description": description,
+                "goods_description_original": description,
                 "issuing_country_id": int_or_none(issuing_country),
             }
         )
+
+
+class DFLGoodsResponseParser(BaseXmlParser):
+    MODEL = dm.DFLGoodsCertificate
+    PARENT = dm.DFLApplication
+    FIELD = "commodities_response_xml"
+    ROOT_NODE = "/COMMODITY_LIST/COMMODITY"
+
+    @classmethod
+    def parse_xml(cls, batch: BatchT) -> ModelListT:
+        """Example XML
+
+        <COMMODITY_LIST>
+          <COMMODITY>
+            <COMMODITY_DESC />
+          </COMMODITY>
+        </COMMODITY_LIST>
+        """
+
+        for parent_pk, xml_str in batch:
+            xml_tree = etree.fromstring(xml_str)
+
+            commodity_list = xml_tree.xpath(cls.ROOT_NODE)
+
+            for i, xml in enumerate(commodity_list, start=1):
+                commodity_desc = get_xml_val(xml, "./COMMODITY_DESC")
+
+                if not commodity_desc:
+                    continue
+
+                obj = dm.DFLGoodsCertificate.objects.get(
+                    dfl_application=parent_pk, legacy_ordinal=i
+                )
+                obj.goods_description = commodity_desc or obj.goods_description_original
+                obj.save()
+
+        return {}
 
 
 class OILApplicationFirearmAuthorityParser(BaseXmlParser):

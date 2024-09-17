@@ -4995,3 +4995,5 @@ process.teg_goods_description|default
 {{ application_field(process.teg_goods_description|default
 requirements-base.in
 Test Gun Override
+Test Commodity A Override
+"Example XML <COMMODITY_LIST
