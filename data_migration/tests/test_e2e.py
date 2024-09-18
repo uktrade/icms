@@ -647,6 +647,7 @@ oil_data_source_target = {
             QueryModel(queries.commodity_type, "commodity_type", dm.CommodityType),
             QueryModel(queries.constabularies, "constabularies", dm.Constabulary),
             QueryModel(queries.template, "templates", dm.Template),
+            QueryModel(queries.template_version, "template versions", dm.TemplateVersion),
         ],
         "file_folder": [
             QueryModel(
@@ -818,6 +819,7 @@ template_data_source_target = {
         (dm.CommodityType, web.CommodityType),
         (dm.ImportApplicationType, web.ImportApplicationType),
         (dm.Template, web.Template),
+        (dm.TemplateVersion, web.TemplateVersion),
         (dm.CFSScheduleParagraph, web.CFSScheduleParagraph),
     ],
 }
@@ -833,6 +835,7 @@ template_data_source_target = {
             QueryModel(queries.commodity_type, "commodity_type", dm.CommodityType),
             QueryModel(queries.ia_type, "ia type", dm.ImportApplicationType),
             QueryModel(queries.template, "template", dm.Template),
+            QueryModel(queries.template_version, "template versions", dm.TemplateVersion),
             QueryModel(queries.cfs_paragraph, "cfs paragraph", dm.CFSScheduleParagraph),
             QueryModel(queries.template_country, "template country", dm.TemplateCountry),
             QueryModel(
@@ -866,7 +869,11 @@ def test_import_template(mock_connect, dummy_dm_settings):
     endorsement_templates = web.Template.objects.filter(template_type="ENDORSEMENT").order_by("pk")
     assert endorsement_templates.count() == 3
 
-    assert list(endorsement_templates.values_list("template_content", flat=True)) == [
+    endorsement_versions = web.TemplateVersion.objects.filter(
+        template__in=endorsement_templates
+    ).order_by("template_id")
+
+    assert list(endorsement_versions.values_list("content", flat=True)) == [
         "First Endorsement",
         "Second Endorsement",
         "Third Endorsement",

@@ -34,6 +34,7 @@ opt_data_source_target = {
         (dm.CommodityGroup, web.CommodityGroup),
         (dm.Commodity, web.Commodity),
         (dm.Template, web.Template),
+        (dm.TemplateVersion, web.TemplateVersion),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -80,6 +81,7 @@ opt_query_model = {
         QueryModel(queries.commodity_group, "commodity_group", dm.CommodityGroup),
         QueryModel(queries.commodity, "commodity", dm.Commodity),
         QueryModel(queries.template, "templates", dm.Template),
+        QueryModel(queries.template_version, "template versions", dm.TemplateVersion),
     ],
 }
 
@@ -174,6 +176,7 @@ sps_data_source_target = {
         (dm.CommodityType, web.CommodityType),
         (dm.Commodity, web.Commodity),
         (dm.Template, web.Template),
+        (dm.TemplateVersion, web.TemplateVersion),
         (dm.UniqueReference, web.UniqueReference),
     ],
     "import_application": [
@@ -254,6 +257,7 @@ sps_data_source_target = {
             QueryModel(queries.commodity_type, "commodity_type", dm.CommodityType),
             QueryModel(queries.commodity, "commodity", dm.Commodity),
             QueryModel(queries.template, "templates", dm.Template),
+            QueryModel(queries.template_version, "template version", dm.TemplateVersion),
         ],
         "user": [
             QueryModel(queries.users, "users", dm.User),
@@ -434,6 +438,7 @@ tex_data_source_target = {
         (dm.CommodityGroup, web.CommodityGroup),
         (dm.Commodity, web.Commodity),
         (dm.Template, web.Template),
+        (dm.TemplateVersion, web.TemplateVersion),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -481,6 +486,7 @@ tex_data_source_target = {
             QueryModel(queries.commodity_group, "commodity_group", dm.CommodityGroup),
             QueryModel(queries.commodity, "commodity", dm.Commodity),
             QueryModel(queries.template, "templates", dm.Template),
+            QueryModel(queries.template_version, "template versions", dm.TemplateVersion),
         ],
         "user": [
             QueryModel(queries.users, "users", dm.User),
