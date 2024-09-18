@@ -73,13 +73,13 @@ class IssuedCertificateReportSerializer(BaseSerializer):
     case_processing_time: str
     total_processing_time: str
     exporter: str
-    contact_full_name: str
     agent: str_or_empty
+    contact_full_name: str
     country: str
-    is_manufacturer: str
-    responsible_person_statement: str
     countries_of_manufacture: str
     product_legislation: str
+    responsible_person_statement: str
+    is_manufacturer: str
     hse_email_count: int
     beis_email_count: int
     application_update_count: int
