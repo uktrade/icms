@@ -4997,3 +4997,8 @@ requirements-base.in
 Test Gun Override
 Test Commodity A Override
 "Example XML <COMMODITY_LIST
+TemplateVersion
+object.current_version.start_datetime.strftime('%d-%b-%Y
+ON td.id
+SELECT xtd.t_id template_id
+xtd.template_type

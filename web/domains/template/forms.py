@@ -13,49 +13,75 @@ from .models import Template
 from .utils import find_invalid_placeholders
 
 
-class DeclarationTemplateForm(forms.ModelForm):
+class TemplateBaseForm(forms.ModelForm):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        instance = kwargs.get("instance")
+
+        if instance:
+            self.fields["content"].initial = instance.template_content
+
+    content = forms.CharField(widget=forms.Textarea(attrs={"rows": 4, "cols": 50}))
+
     class Meta:
         model = Template
-        fields = ("template_name", "template_content")
+        fields = ("template_name", "content")
+
+
+class DeclarationTemplateForm(TemplateBaseForm):
+    class Meta:
+        model = Template
+        fields = TemplateBaseForm.Meta.fields
         labels = {
             "template_name": "Declaration Title",
-            "template_content": "Declaration Text",
+            "content": "Declaration Text",
         }
 
 
-class EmailTemplateForm(forms.ModelForm):
+class EmailTemplateForm(TemplateBaseForm):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        instance = kwargs.get("instance")
+
+        if instance:
+            self.fields["title"].initial = instance.template_title
+
     class Meta:
         model = Template
-        fields = ("template_name", "template_title", "template_content")
+        fields = TemplateBaseForm.Meta.fields + ("title",)
         labels = {
             "template_name": "Email Template Name",
-            "template_title": "Email Subject",
-            "template_content": "Email Body",
+            "title": "Email Subject",
+            "content": "Email Body",
         }
 
+    title = forms.CharField(max_length=4000)
 
-class EndorsementTemplateForm(forms.ModelForm):
+
+class EndorsementTemplateForm(TemplateBaseForm):
     class Meta:
         model = Template
-        fields = ("template_name", "template_content")
+        fields = TemplateBaseForm.Meta.fields
         labels = {
             "template_name": "Endorsement Name",
-            "template_content": "Endorsement Text",
+            "content": "Endorsement Text",
         }
 
 
-class LetterTemplateForm(forms.ModelForm):
+class LetterTemplateForm(TemplateBaseForm):
     class Meta:
         model = Template
-        fields = ("template_name", "template_content")
+        fields = TemplateBaseForm.Meta.fields
         labels = {
             "template_name": "Letter Template Name",
-            "template_content": "Letter",
+            "content": "Letter",
         }
         widgets = {"template_content": forms.Textarea(attrs={"lang": "html"})}
 
     def clean_template_content(self):
-        template_content = self.cleaned_data["template_content"]
+        template_content = self.cleaned_data["content"]
         invalid_placeholders = find_invalid_placeholders(
             template_content, CoverLetterTemplateContext.valid_placeholders
         )
@@ -68,15 +94,15 @@ class LetterTemplateForm(forms.ModelForm):
         return template_content
 
 
-class LetterFragmentForm(forms.ModelForm):
+class LetterFragmentForm(TemplateBaseForm):
     class Meta:
         model = Template
-        fields = ("template_name", "template_content")
+        fields = TemplateBaseForm.Meta.fields
         labels = {
             "template_name": "Fragment Name",
-            "template_content": "Fragment Text",
+            "content": "Fragment Text",
         }
-        widgets = {"template_content": forms.Textarea(attrs={"lang": "html"})}
+        widgets = {"content": forms.Textarea(attrs={"lang": "html"})}
 
 
 class TemplatesFilter(FilterSet):
@@ -106,7 +132,8 @@ class TemplatesFilter(FilterSet):
         template_title is used as the subject line for email templates, and users may want to search by that, but it's
         not necessary to have an additional search field just for template_title."""
         return queryset.filter(
-            Q(template_name__icontains=value) | Q(template_title__icontains=value)
+            Q(template_name__icontains=value)
+            | Q(versions__is_active=True, versions__title__icontains=value)
         )
 
 
@@ -130,13 +157,13 @@ class EndorsementUsageForm(forms.Form):
     )
 
 
-class CFSDeclarationTranslationForm(forms.ModelForm):
+class CFSDeclarationTranslationForm(TemplateBaseForm):
     template_name = forms.CharField(label="CFS Declaration Translation Name")
-    template_content = forms.CharField(label="Translation", widget=forms.Textarea)
+    content = forms.CharField(label="Translation", widget=forms.Textarea)
 
     class Meta:
         model = Template
-        fields = ("template_name", "countries", "template_content")
+        fields = ("template_name", "countries", "content")
         widgets = {
             "countries": s2forms.Select2MultipleWidget,
         }

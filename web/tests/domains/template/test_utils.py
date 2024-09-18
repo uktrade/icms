@@ -36,7 +36,6 @@ from web.models import (
     Template,
 )
 from web.models.shared import YesNoChoices
-from web.tests.domains.template.factory import TemplateFactory
 from web.tests.helpers import CaseURLS
 from web.types import DocumentTypes
 from web.views.actions import EditTemplate
@@ -738,5 +737,5 @@ class TestCreateSchedule:
         assert len(result) == cfs_app_submitted.schedules.count()
 
     def test_no_edit_cfs_schedule_template(self):
-        cfs_schedule_template = TemplateFactory(template_type=Template.CFS_SCHEDULE)
+        cfs_schedule_template = Template.objects.get(template_type=Template.CFS_SCHEDULE)
         assert not EditTemplate().display(cfs_schedule_template)
