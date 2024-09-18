@@ -5007,3 +5007,4 @@ the Approval Process
 the Approval Request
 Approval Process
 Approval
+{{ note.create_datetime|datetime_format("%d %
