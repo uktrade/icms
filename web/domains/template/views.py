@@ -3,8 +3,15 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 
-from web.models import ImportApplicationType
+from web.models import (
+    CFSScheduleParagraph,
+    ImportApplicationType,
+    Template,
+    TemplateVersion,
+    User,
+)
 from web.permissions import Perms
 from web.views import ModelCreateView, ModelFilterView
 from web.views.actions import ArchiveTemplate, EditTemplate, UnarchiveTemplate
@@ -21,7 +28,6 @@ from .forms import (
     LetterTemplateForm,
     TemplatesFilter,
 )
-from .models import CFSScheduleParagraph, Template
 
 
 class UnknownTemplateTypeException(Exception):
@@ -116,6 +122,28 @@ def view_cfs_schedule_translation(request, pk):
     return render(request, "web/domains/template/view-cfs-schedule-translation.html", context)
 
 
+def _create_template_version(
+    template: Template, user: User, title: str | None, content: str | None
+) -> None:
+    current_version = template.current_version
+    if current_version:
+        if title == current_version.title and content == current_version.content:
+            return
+
+        version_number = template.version_no
+        current_version.end_datetime = timezone.now()
+        current_version.is_active = False
+        current_version.save()
+
+    TemplateVersion.objects.create(
+        template=template,
+        created_by=user,
+        title=title,
+        content=content,
+        version_number=version_number + 1,
+    )
+
+
 @login_required
 @permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_template(request, pk):
@@ -136,7 +164,9 @@ def edit_template(request, pk):
     if request.method == "POST":
         form = TemplateForm(request.POST, instance=template)
         if form.is_valid():
-            form.save()
+            template = form.save()
+            data = form.cleaned_data
+            _create_template_version(template, request.user, data.get("title"), data.get("content"))
             messages.success(request, "The template was saved.")
             return redirect(reverse("template-list"))
     else:
@@ -167,6 +197,10 @@ class EndorsementCreateView(ModelCreateView):
 
         template.template_type = Template.ENDORSEMENT
         template.application_domain = Template.IMPORT_APPLICATION
+        data = form.cleaned_data
+        _create_template_version(
+            template, self.request.user, data.get("title"), data.get("content")
+        )
 
         return super().form_valid(form)
 
@@ -216,6 +250,8 @@ def create_cfs_declaration_translation(request):
         form = CFSDeclarationTranslationForm(request.POST)
         if form.is_valid():
             template = form.save()
+            data = form.cleaned_data
+            _create_template_version(template, request.user, data.get("title"), data.get("content"))
             messages.success(request, "CFS Declaration Translation created successfully.")
             return redirect(
                 reverse("template-cfs-declaration-translation-edit", kwargs={"pk": template.pk})
@@ -236,6 +272,8 @@ def edit_cfs_declaration_translation(request, pk):
         form = CFSDeclarationTranslationForm(request.POST, instance=template)
         if form.is_valid():
             template = form.save()
+            data = form.cleaned_data
+            _create_template_version(template, request.user, data.get("title"), data.get("content"))
             return redirect(
                 reverse("template-cfs-declaration-translation-edit", kwargs={"pk": template.pk})
             )

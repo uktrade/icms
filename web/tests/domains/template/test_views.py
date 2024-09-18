@@ -1,11 +1,10 @@
 import pytest
 from pytest_django.asserts import assertInHTML, assertRedirects
 
+from web.models import Template
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.views.actions import ArchiveTemplate, Unarchive, UnarchiveTemplate
-
-from .factory import TemplateFactory
 
 
 class TestTemplateListView(AuthTestCase):
@@ -30,10 +29,9 @@ class TestTemplateListView(AuthTestCase):
         assert response.context_data["page_title"] == "Maintain Templates"
 
     def test_number_of_pages(self):
-        TemplateFactory.create_batch(118, is_active=True)
         response = self.ilb_admin_client.get(self.url, {"template_name_title": ""})
         page = response.context_data["page"]
-        assert page.paginator.num_pages == 5
+        assert page.paginator.num_pages == 2
 
     def test_page_results(self):
         response = self.ilb_admin_client.get(self.url, {"page": "2", "template_name_title": ""})
@@ -49,7 +47,7 @@ class TestTemplateListView(AuthTestCase):
 
     def test_archived_not_editable(self):
         """Making sure that the only visible action for archived templates is the unarchive action"""
-        new_constabulary = TemplateFactory(is_active=False)
+        new_constabulary = Template.objects.filter(is_active=False).first()
         response = self.ilb_admin_client.get(self.url)
         for action in response.context_data["display"].actions:
             if action.display(new_constabulary) is True:
@@ -81,7 +79,7 @@ class TestEndorsementCreateView(AuthTestCase):
 class TestTemplateEditView(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup):
-        self.template = TemplateFactory()
+        self.template = Template.objects.filter(is_active=True).first()
         self.url = f"/template/{self.template.id}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
@@ -106,7 +104,7 @@ class TestTemplateEditView(AuthTestCase):
 class TestTemplateDetailView(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup):
-        self.template = TemplateFactory()
+        self.template = Template.objects.filter(is_active=True).first()
         self.url = f"/template/{self.template.id}/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 

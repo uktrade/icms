@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 from web.types import TypedTextChoices
@@ -55,24 +56,37 @@ class Template(models.Model):
         (ARCHIVED, "Archived"),
     )
 
-    start_datetime = models.DateTimeField(auto_now_add=True, blank=False, null=False)
-    end_datetime = models.DateTimeField(blank=True, null=True)
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    template_name = models.CharField(max_length=100, blank=False, null=False)
+    is_active = models.BooleanField(default=True)
+    template_name = models.CharField(max_length=100)
     template_code = models.CharField(max_length=50, blank=True, null=True)
-    template_type = models.CharField(max_length=50, choices=TYPES, blank=False, null=False)
-    application_domain = models.CharField(max_length=20, choices=DOMAINS, blank=False, null=False)
-
-    # Subject
-    template_title = models.CharField(max_length=4000, blank=False, null=True)
-
-    # everything except CFS schedules uses this; CFS schedules use "paragraphs" (see CFSScheduleParagraph, below)
-    template_content = models.TextField(blank=False, null=True)
-
+    template_type = models.CharField(max_length=50, choices=TYPES)
+    application_domain = models.CharField(max_length=20, choices=DOMAINS)
     countries = models.ManyToManyField("web.Country")
     country_translation_set = models.ForeignKey(
-        "web.CountryTranslationSet", on_delete=models.SET_NULL, blank=False, null=True
+        "web.CountryTranslationSet", on_delete=models.SET_NULL, null=True
     )
+
+    @property
+    def current_version(self) -> "TemplateVersion | None":
+        if not self.versions.exists():
+            return None
+
+        return self.versions.get(is_active=True)
+
+    @property
+    def template_title(self) -> str | None:
+        return self.current_version and self.current_version.title
+
+    @property
+    def template_content(self) -> str | None:
+        return self.current_version and self.current_version.content
+
+    @property
+    def version_no(self) -> int:
+        if not self.current_version:
+            return 0
+
+        return self.current_version.version_number
 
     @property
     def template_status(self):
@@ -94,6 +108,17 @@ class Template(models.Model):
             "-is_active",
             "template_name",
         )
+
+
+class TemplateVersion(models.Model):
+    template = models.ForeignKey(Template, on_delete=models.CASCADE, related_name="versions")
+    start_datetime = models.DateTimeField(auto_now_add=True)
+    end_datetime = models.DateTimeField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    version_number = models.PositiveIntegerField(default=1)
+    title = models.CharField(max_length=4000, null=True)
+    content = models.TextField(null=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
 
 
 class CFSScheduleParagraph(models.Model):
@@ -132,11 +157,11 @@ class CFSScheduleParagraph(models.Model):
         PRODUCTS = ("PRODUCTS", "Products")
 
     template = models.ForeignKey(
-        "web.Template", on_delete=models.CASCADE, blank=False, null=False, related_name="paragraphs"
+        "web.Template", on_delete=models.CASCADE, related_name="paragraphs"
     )
-    order = models.IntegerField(blank=False, null=False)
-    name = models.CharField(max_length=100, blank=False, null=False, choices=ParagraphName.choices)
-    content = models.TextField(blank=False, null=True)
+    order = models.IntegerField()
+    name = models.CharField(max_length=100, choices=ParagraphName.choices)
+    content = models.TextField(null=True)
 
     class Meta:
         ordering = ("order",)

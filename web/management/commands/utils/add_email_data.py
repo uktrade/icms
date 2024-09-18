@@ -1,7 +1,8 @@
 from django.conf import settings
+from django.utils import timezone
 
 from web.mail.constants import EmailTypes
-from web.models import EmailTemplate, Template
+from web.models import EmailTemplate, Template, TemplateVersion
 
 EMAIL_TEMPLATES = [
     (EmailTypes.ACCESS_REQUEST, "6d20993f-7e9f-49b5-8c74-28654e6e84d0"),
@@ -360,9 +361,21 @@ EMAIL_CONTENT = [
 def update_database_email_templates():
     for template_code, subject, body in EMAIL_CONTENT:
         template = Template.objects.get(template_code=template_code)
-        template.template_title = subject
-        template.template_content = body
-        template.save(update_fields=["template_title", "template_content", "start_datetime"])
+        current_version = template.current_version
+
+        if current_version:
+            version_number = template.version_no
+            current_version.is_active = False
+            current_version.end_datetime = timezone.now()
+            current_version.save()
+
+        TemplateVersion.objects.create(
+            template=template,
+            title=subject,
+            content=body,
+            created_by_id=0,
+            version_number=version_number + 1,
+        )
 
 
 def archive_database_email_templates():
@@ -385,13 +398,18 @@ def add_gov_notify_templates():
 
 
 def add_user_management_email_templates():
-    Template.objects.create(
-        template_title="Your [[PLATFORM]] account has been deactivated",
+    template = Template.objects.create(
         template_name="User account deactivated",
         template_code=Template.Codes.DEACTIVATE_USER,
         template_type="EMAIL_TEMPLATE",
         application_domain="UM",
-        template_content="""Dear [[FIRST_NAME]],
+    )
+
+    TemplateVersion.objects.create(
+        template=template,
+        created_by_id=0,
+        title="Your [[PLATFORM]] account has been deactivated",
+        content="""Dear [[FIRST_NAME]],
 
 Your [[PLATFORM]] account has been deactivated.
 
@@ -402,13 +420,19 @@ Yours sincerely
 Import Licensing Branch
 """,
     )
-    Template.objects.create(
-        template_title="Your [[PLATFORM]] account has been reactivated",
+
+    template = Template.objects.create(
         template_name="User account reactivated",
         template_code=Template.Codes.REACTIVATE_USER,
         template_type="EMAIL_TEMPLATE",
         application_domain="UM",
-        template_content="""Dear [[FIRST_NAME]],
+    )
+
+    TemplateVersion.objects.create(
+        template=template,
+        created_by_id=0,
+        title="Your [[PLATFORM]] account has been reactivated",
+        content="""Dear [[FIRST_NAME]],
 
 Welcome back to [[PLATFORM]].
 

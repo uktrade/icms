@@ -24,7 +24,7 @@ from .context import (
     EmailTemplateContext,
     ScheduleParagraphContext,
 )
-from .models import CFSScheduleParagraph, Template
+from .models import CFSScheduleParagraph, Template, TemplateVersion
 
 if TYPE_CHECKING:
     from web.types import DocumentTypes
@@ -78,7 +78,7 @@ def find_invalid_placeholders(content: str, valid_placeholders: list[str]) -> li
     ]
 
 
-def replace_template_values(content: str, context: "TemplateContextProcessor") -> str:
+def replace_template_values(content: str | None, context: "TemplateContextProcessor") -> str:
     """Returns the template content with the placeholders replaced with their value
 
     Calling this function with replacements={'foo': 'bar'} will return the template content
@@ -314,11 +314,12 @@ def fetch_schedule_text(
 
 
 def fetch_cfs_declaration_translations(country: Country) -> list[str]:
-    templates = Template.objects.filter(
+    templates = TemplateVersion.objects.filter(
         is_active=True,
-        template_type=Template.CFS_DECLARATION_TRANSLATION,
-        countries__pk=country.pk,
-        template_content__isnull=False,
-    ).order_by("pk")
+        template__is_active=True,
+        template__template_type=Template.CFS_DECLARATION_TRANSLATION,
+        template__countries__pk=country.pk,
+        content__isnull=False,
+    ).order_by("template_id")
 
-    return list(templates.values_list("template_content", flat=True))
+    return list(templates.values_list("content", flat=True))

@@ -20,6 +20,12 @@
 {% endblock %}
 
 {% block main_content %}
+  {% if object and object.current_version %}
+    <span class="extra-info">
+      Currently viewing version {{ object.version_no }}.
+      Last updated on {{ object.current_version.start_datetime|datetime_format }} by {{ object.current_version.created_by }}.
+    </span>
+  {% endif %}
   <div class="container">
     <div class="row">
       <div class="one columns"></div>

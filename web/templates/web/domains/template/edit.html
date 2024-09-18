@@ -26,6 +26,12 @@
 {% endblock %}
 
 {% block main_content %}
+  {% if object and object.current_version %}
+    <span class="extra-info">
+      Currently editing version {{ object.version_no }}.
+      Last updated on {{ object.current_version.start_datetime|datetime_format }} by {{ object.current_version.created_by }}.
+    </span>
+  {% endif %}
   {% call forms.form(method='post', csrf_input=csrf_input) -%}
     {% for field in form %}
         {{fields.field(field)}}

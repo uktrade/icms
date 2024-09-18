@@ -2,5 +2,11 @@
 
 {% block main_content %}
   <h3>Edit '{{ object.template_name }}' CFS Declaration Translation</h3>
+  {% if object and object.current_version %}
+    <span class="extra-info">
+      Currently editing version {{ object.version_no }}.
+      Last updated on {{ object.current_version.start_datetime|datetime_format }} by {{ object.current_version.created_by }}.
+    </span>
+  {% endif %}
   {{ super() }}
 {% endblock %}
