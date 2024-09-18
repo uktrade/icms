@@ -178,7 +178,8 @@ class BaseFirearmsLicenceSerializer(BaseSerializer):
     eori_number: str_or_empty = pydantic.Field(serialization_alias="TURN Number")
     importer_address: str
     first_submitted_date: date_or_empty
-    final_submitted_date: date_or_empty
+    final_submission_date: date_or_empty
+    licence_authorisation_date: date_or_empty
     licence_start_date: date_or_empty
     licence_expiry_date: date_or_empty
     country_of_origin: str
