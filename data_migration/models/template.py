@@ -40,6 +40,10 @@ class TemplateVersion(MigrationBase):
         content = data["content"]
         template_type = data.pop("template_type")
 
+        # Previous system users are not being migrated to V2, so replace their IDs with 0
+        if data["created_by_id"] in [2488, 1576, 804, 21]:
+            data["created_by_id"] = 0
+
         if not content:
             return data
 

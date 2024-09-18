@@ -1127,12 +1127,14 @@ class SanctionGoodsResponseParser(BaseXmlParser):
         quantity = decimal_or_none(get_xml_val(xml, "./QUANTITY"))
         value = decimal_or_none(get_xml_val(xml, "./VALUE"))
 
-        if not commodity_id:
+        # Handles an issue where there are no original goods data, but there is
+        # response goods data available
+        try:
+            obj = dm.SanctionsAndAdhocApplicationGoods.objects.get(
+                import_application_id=parent_pk, commodity_id=commodity_id
+            )
+        except dm.SanctionsAndAdhocApplicationGoods.DoesNotExist:
             return None
-
-        obj = dm.SanctionsAndAdhocApplicationGoods.objects.get(
-            import_application_id=parent_pk, commodity_id=commodity_id
-        )
 
         obj.goods_description = commodity_desc or obj.goods_description_original
         obj.quantity_amount = quantity or obj.quantity_amount_original
