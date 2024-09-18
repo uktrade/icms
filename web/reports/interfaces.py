@@ -778,12 +778,11 @@ class ImportLicenceInterface(ReportInterface):
                 importer_first_name=F("importer__user__first_name"),
                 importer_last_name=F("importer__user__last_name"),
             )
-            .order_by("-reference")
             .distinct()
         )
         if self.filters.application_type:
             queryset = queryset.filter(application_type__type=self.filters.application_type)
-        queryset = self.add_licence_data_query(queryset)
+        queryset = self.add_licence_data_query(queryset).order_by("-reference")
         return queryset.values(
             "pk",
             "country_of_origin",
