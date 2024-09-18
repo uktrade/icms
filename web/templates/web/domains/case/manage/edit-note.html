@@ -11,9 +11,9 @@
 {% block main_content %}
   <h3>Edit Case Note</h3>
     <fieldset>
-      <legend class="bold">Case Note: {{ note.create_datetime.date()|localize }}</legend>
+      <legend class="bold">Case Note: {{ note.create_datetime|datetime_format("%d %b %Y") }}</legend>
       <div class="extra-info case-item-extra-info">
-          Created by {{ note.created_by }} on {{ note.create_datetime|localize }} {% if note.updated_by %}(Last updated by {{ note.updated_by }} on {{ note.updated_at|localize }}){% endif %}
+          Created by {{ note.created_by }} on {{ note.create_datetime|datetime_format|localize }} {% if note.updated_by %}(Last updated by {{ note.updated_by }} on {{ note.updated_at|datetime_format|localize }}){% endif %}
       </div>
       <br>
 
