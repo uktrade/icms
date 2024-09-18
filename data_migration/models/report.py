@@ -32,18 +32,34 @@ class ScheduleReport(MigrationBase):
             "IMP_FIREARMS_LICENCES": 5,
             "IMP_FA_SUPPLEMENTARY_REPORTS_NCA": 4,
         }
-
-        data["report_id"] = reports[data.pop("report_domain")]
+        report_domain = data.pop("report_domain")
+        data["report_id"] = reports[report_domain]
         data["status"] = "COMPLETED"
         data["legacy_report_id"] = data["id"]
-        data["parameters"] = json.loads(data["parameters"])
-        data["parameters"]["is_legacy_report"] = True
-
+        parameters = json.loads(data["parameters"])
+        data["parameters"] = cls.filter_parameters(parameters, report_domain)
         data["scheduled_by_id"] = ANONYMOUS_USER_PK
         if data["deleted_by_id"]:
             data["status"] = "DELETED"
             data["deleted_by_id"] = ANONYMOUS_USER_PK
         return data
+
+    @classmethod
+    def filter_parameters(cls, data: dict[str, Any], report_domain: str) -> dict[str, Any]:
+        parameters = {"is_legacy_report": True}
+        for key, value in data.items():
+            if key == "application_type" and report_domain in [
+                "IMP_ISSUED_CERTIFICATES",
+                "IMP_DATA_EXTRACT",
+            ]:
+                parameters[key] = value
+            elif key == "request_date_from" and value:
+                parameters["date_from"] = value
+            elif key == "request_date_to" and value:
+                parameters["date_to"] = value
+            elif value:
+                parameters[key] = value
+        return parameters
 
 
 class GeneratedReport(MigrationBase):

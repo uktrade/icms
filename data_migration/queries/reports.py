@@ -43,8 +43,10 @@ SELECT
       , 'date_to' IS end_date
       , 'case_submitted_date_from' IS submit_start_date
       , 'case_submitted_date_to' IS submit_end_date
-      , 'case_closed_date_from' IS submit_start_date
-      , 'case_closed_date_to' IS submit_end_date
+      , 'case_closed_date_from' IS closed_start_date
+      , 'case_closed_date_to' IS closed_end_date
+      , 'request_date_from' IS request_start_date
+      , 'request_date_to' IS request_end_date
       ) AS parameters
 FROM reportmgr.REPORT_SCHEDULES rs
 INNER JOIN REPORTMGR.REPORT_RUNS rr ON rs.id = rr.rs_id
@@ -58,6 +60,8 @@ COLUMNS
   , submit_end_date VARCHAR2(10) PATH '/PARAMETER_LIST/PARAMETER[NAME="SUBMIT_PERIOD"]/VALUE/END_DATE/text()'
   , closed_start_date VARCHAR2(10) PATH '/PARAMETER_LIST/PARAMETER[NAME="CLOSED_PERIOD"]/VALUE/START_DATE/text()'
   , closed_end_date VARCHAR2(10) PATH '/PARAMETER_LIST/PARAMETER[NAME="CLOSED_PERIOD"]/VALUE/END_DATE/text()'
+  , request_start_date VARCHAR2(10) PATH '/PARAMETER_LIST/PARAMETER[NAME="REQUEST_PERIOD"]/VALUE/START_DATE/text()'
+  , request_end_date VARCHAR2(10) PATH '/PARAMETER_LIST/PARAMETER[NAME="REQUEST_PERIOD"]/VALUE/END_DATE/text()'
 ) x
 WHERE rr."DOMAIN" != 'APP_ERRORS'
 ORDER BY rs.id

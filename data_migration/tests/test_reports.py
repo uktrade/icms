@@ -97,10 +97,6 @@ def test_historical_reports(mock_connect, dummy_dm_settings):
     assert sr1.deleted_at is None
     assert sr1.parameters == {
         "application_type": None,
-        "case_closed_date_from": None,
-        "case_closed_date_to": None,
-        "case_submitted_date_from": None,
-        "case_submitted_date_to": None,
         "date_from": "2017-06-01",
         "date_to": "2017-06-30",
         "is_legacy_report": True,
@@ -125,12 +121,10 @@ def test_historical_reports(mock_connect, dummy_dm_settings):
     assert sr2.deleted_at is None
     assert sr2.parameters == {
         "application_type": None,
-        "date_from": None,
-        "date_to": None,
         "case_submitted_date_from": "2017-06-01",
         "case_submitted_date_to": "2017-06-30",
-        "case_closed_date_from": "2017-06-01",
-        "case_closed_date_to": "2017-06-30",
+        "case_closed_date_from": "2017-07-01",
+        "case_closed_date_to": "2017-07-30",
         "is_legacy_report": True,
     }
     assert sr2.generated_files.count() == 1
@@ -153,11 +147,6 @@ def test_historical_reports(mock_connect, dummy_dm_settings):
     assert sr3.deleted_at == dt.datetime(2022, 4, 30, 8, 0, tzinfo=dt.UTC)
     assert sr3.deleted_by_id == 0
     assert sr3.parameters == {
-        "application_type": None,
-        "case_closed_date_from": None,
-        "case_closed_date_to": None,
-        "case_submitted_date_from": None,
-        "case_submitted_date_to": None,
         "date_from": "2020-02-01",
         "date_to": "2020-03-30",
         "is_legacy_report": True,
