@@ -119,148 +119,247 @@ ref_query_result = {
     queries.template: (
         [
             ("id",),
-            ("start_datetime",),
-            ("end_datetime",),
             ("is_active",),
             ("template_name",),
             ("template_code",),
             ("template_type",),
             ("application_domain",),
-            ("template_title",),
-            ("template_content",),
         ],
         [
             (
                 1,  # id
-                dt.datetime.now(),  # start_datetime
-                None,  # end_datetime
                 1,  # is_active
                 "Endorsement 1",  # template_name
                 None,  # template_code
                 "ENDORSEMENT",  # template_type
                 "IMA",  # application_domain
-                "Endorsement 1",  # template_title
-                "First Endorsement",  # template_content
             ),
             (
                 2,  # id
-                dt.datetime.now(),  # start_datetime
-                None,  # end_datetime
                 1,  # is_active
                 "Endorsement 2",  # template_name
                 None,  # template_code
                 "ENDORSEMENT",  # template_type
                 "IMA",  # application_domain
-                "Endorsement 2",  # template_title
-                "Second Endorsement",  # template_content
             ),
             (
                 3,  # id
-                dt.datetime.now(),  # start_datetime
-                None,  # end_datetime
                 1,  # is_active
                 "Endorsement 3",  # template_name
                 None,  # template_code
                 "ENDORSEMENT",  # template_type
                 "IMA",  # application_domain
-                "Endorsement 3",  # template_title
-                "Third Endorsement",  # template_content
             ),
             (
                 4,  # id
-                dt.datetime.now(),  # start_datetime
-                None,  # end_datetime
                 1,  # is_active
                 "Letter 1",  # template_name
                 "COVER_LETTER_1",  # template_code
                 "LETTER_TEMPLATE",  # template_type
                 "IMA",  # application_domain
-                None,  # template_title
-                xd.letter_template,  # template_content
             ),
             (
                 5,  # id
-                dt.datetime.now(),  # start_datetime
-                None,  # end_datetime
                 1,  # is_active
                 "Email 1",  # template_name
                 "EMAIL_1",  # template_code
                 "EMAIL_TEMPLATE",  # template_type
                 "IAR",  # application_domain
-                "Email Subject",  # template_title
-                xd.email_template,  # template_content
             ),
             (
                 6,  # id
-                dt.datetime.now(),  # start_datetime
-                None,  # end_datetime
                 1,  # is_active
                 "CFS Schedule 1",  # template_name
                 "CFS_SCHEDULE_ENGLISH",  # template_code
                 "CFS_SCHEDULE",  # template_type
                 "CA",  # application_domain
-                None,  # template_title
-                None,  # template_content
             ),
             (
                 7,  # id
-                dt.datetime.now(),  # start_datetime
-                None,  # end_datetime
                 1,  # is_active
                 "CFS Declaration Spanish",  # template_name
                 None,  # template_code
                 "CFS_DECLARATION_TRANSLATION",  # template_type
                 "CA",  # application_domain
-                None,  # template_title
-                "Some translated text with &apos; data &apos;",  # template_content
             ),
             (
                 8,  # id
-                dt.datetime.now(),  # start_datetime
-                None,  # end_datetime
                 1,  # is_active
                 "Wood Affidavit",  # template_name
                 "IMA_WD_DECLARATION",  # template_code
                 "DECLARATION",  # template_type
                 "IMA",  # application_domain
-                "Affidavit",  # template_title
-                "Declaration content",  # template_content
             ),
             (
                 9,  # id
-                dt.datetime.now(),  # start_datetime
-                None,  # end_datetime
                 1,  # is_active
                 "Prior Surveillance Declaration",  # template_name
                 "IMA_SPS_DECLARATION",  # template_code
                 "DECLARATION",  # template_type
                 "IMA",  # application_domain
-                "Declaration of Truth",  # template_title
-                "Declaration content",  # template_content
             ),
             (
                 10,  # id
-                dt.datetime.now(),  # start_datetime
-                None,  # end_datetime
                 1,  # is_active
                 "General Declaration of Truth",  # template_name
                 "IMA_GEN_DECLARATION",  # template_code
                 "DECLARATION",  # template_type
                 "IMA",  # application_domain
-                "Declaration of Truth",  # template_title
-                "Declaration content",  # template_content
             ),
             (
                 11,  # id
-                dt.datetime.now(),  # start_datetime
-                None,  # end_datetime
                 0,  # is_active
                 "OPT Declaration",  # template_name
                 "IMA_OPT_DECLARATION",  # template_code
                 "DECLARATION",  # template_type
                 "IMA",  # application_domain
-                "Declaration of Truth",  # template_title
-                "Declaration content",  # template_content
+            ),
+        ],
+    ),
+    queries.template_version: (
+        [
+            ("template_id",),
+            ("start_datetime",),
+            ("end_datetime",),
+            ("is_active",),
+            ("template_type",),
+            ("title",),
+            ("content",),
+            ("version_number",),
+            ("created_by_id",),
+        ],
+        [
+            (
+                1,  # template_id
+                dt.datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "ENDORSEMENT",  # template_type
+                "Endorsement 1",  # title
+                "First Endorsement",  # content
+                1,  # version_number
+                2,  # created_by_id
+            ),
+            (
+                2,  # template_id
+                dt.datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "ENDORSEMENT",  # template_type
+                "Endorsement 2",  # title
+                "Second Endorsement",  # content
+                1,  # version_number
+                2,  # created_by_id
+            ),
+            (
+                3,  # template_id
+                dt.datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "ENDORSEMENT",  # template_type
+                "Endorsement 3",  # title
+                "Third Endorsement",  # content
+                1,  # version_number
+                2,  # created_by_id
+            ),
+            (
+                4,  # template_id
+                dt.datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "LETTER_TEMPLATE",  # template_type
+                None,  # title
+                xd.letter_template,  # content
+                1,  # version_number
+                2,  # created_by_id
+            ),
+            (
+                5,  # template_id
+                dt.datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "EMAIL_TEMPLATE",  # template_type
+                "Email Subject",  # title
+                xd.email_template,  # content
+                1,  # version_number
+                2,  # created_by_id
+            ),
+            (
+                6,  # template_id
+                dt.datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "CFS_SCHEDULE",  # template_type
+                None,  # title
+                None,  # content
+                1,  # version_number
+                2,  # created_by_id
+            ),
+            (
+                7,  # template_id
+                dt.datetime(2020, 1, 12, 7, 30),  # start_datetime
+                dt.datetime.now(),  # end_datetime
+                0,  # is_active
+                "CFS_DECLARATION_TRANSLATION",  # template_type
+                None,  # title
+                "Some translated text",  # content
+                1,  # version_number
+                2,  # created_by_id
+            ),
+            (
+                7,  # template_id
+                dt.datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "CFS_DECLARATION_TRANSLATION",  # template_type
+                None,  # title
+                "Some translated text with &apos; data &apos;",  # content
+                2,  # version_number
+                2,  # created_by_id
+            ),
+            (
+                8,  # template_id
+                dt.datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "DECLARATION",  # template_type
+                "Affidavit",  # title
+                "Declaration content",  # content
+                1,  # version_number
+                2,  # created_by_id
+            ),
+            (
+                9,  # template_id
+                dt.datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "DECLARATION",  # template_type
+                "Declaration of Truth",  # title
+                "Declaration content",  # content
+                1,  # version_number
+                2,  # created_by_id
+            ),
+            (
+                10,  # template_id
+                dt.datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "DECLARATION",  # template_type
+                "Declaration of Truth",  # title
+                "Declaration content",  # content
+                1,  # version_number
+                2,  # created_by_id
+            ),
+            (
+                11,  # template_id
+                dt.datetime.now(),  # start_datetime
+                None,  # end_datetime
+                0,  # is_active
+                "DECLARATION",  # template_type
+                "Declaration of Truth",  # title
+                "Declaration content",  # content
+                1,  # version_number
+                2,  # created_by_id
             ),
         ],
     ),

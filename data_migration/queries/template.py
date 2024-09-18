@@ -1,13 +1,27 @@
 template = """
 SELECT
   xtd.t_id id
-  , td.start_datetime
-  , td.end_datetime
   , CASE xtd.template_status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
   , xtd.template_name
   , xtd.template_mnem template_code
   , xtd.template_type
   , xtd.application_domain
+  , ctry_translation_set_id country_translation_set_id
+FROM impmgr.xview_template_details xtd
+  INNER JOIN impmgr.template_details td ON td.id = xtd.td_id
+WHERE xtd.status_control = 'C'
+  AND xtd.template_name <> 'Test'
+ORDER BY xtd.t_id
+"""
+
+
+template_version = """
+SELECT
+  xtd.t_id template_id
+  , td.start_datetime
+  , td.end_datetime
+  , CASE xtd.status_control WHEN 'C' THEN 1 ELSE 0 END is_active
+  , xtd.template_type
   , CASE
     WHEN xtd.template_type = 'EMAIL_TEMPLATE' THEN xtd.email_subject
     ELSE xtd.declaration_title
@@ -19,13 +33,14 @@ SELECT
     WHEN xtd.template_type = 'EMAIL_TEMPLATE' THEN TO_CLOB(xtd.email_body)
     WHEN xtd.template_type = 'CFS_DECLARATION_TRANSLATION' THEN TO_CLOB(EXTRACT(xtd.translation_body, '/TRANSLATION_BODY/*'))
   END template_content
-  , ctry_translation_set_id country_translation_set_id
+  , xtd.version_no version_number
+  , td.created_by_wua_id created_by_id
 FROM impmgr.xview_template_details xtd
   INNER JOIN impmgr.template_details td ON td.id = xtd.td_id
-WHERE xtd.status_control = 'C'
-  AND xtd.template_name <> 'Test'
+WHERE xtd.template_name <> 'Test'
 ORDER BY xtd.t_id
 """
+
 
 template_country = """
 SELECT
@@ -69,8 +84,8 @@ FROM impmgr.xview_iat_templates iat
 WHERE ima_type <> 'GS'
 """
 
-template_timestamp_update = """
-UPDATE web_template SET start_datetime = data_migration_template.start_datetime
-FROM data_migration_template
-WHERE web_template.id = data_migration_template.id
+template_version_timestamp_update = """
+UPDATE web_templateversion SET start_datetime = dm_tv.start_datetime
+FROM data_migration_templateversion dm_tv
+WHERE web_templateversion.id = dm_tv.id
 """

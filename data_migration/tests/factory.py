@@ -41,7 +41,6 @@ class TemplateFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Template
 
-    start_datetime = timezone.now()
     template_name = factory.fuzzy.FuzzyText(length=6)
     template_code = factory.fuzzy.FuzzyText(length=6)
     template_type = "DECLARATION"

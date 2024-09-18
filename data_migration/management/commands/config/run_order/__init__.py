@@ -83,7 +83,7 @@ TIMESTAMP_UPDATES: list[str] = [
     queries.import_process_order_datetime_update,
     queries.access_request_process_order_datetime_update,
     queries.section5_clause_timestamp_update,
-    queries.template_timestamp_update,
+    queries.template_version_timestamp_update,
     queries.variation_request_timestamp_update,
     queries.withdraw_application_timestamp_update,
     queries.cat_timestamp_update,

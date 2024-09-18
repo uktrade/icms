@@ -19,6 +19,7 @@ ref_query_model = [
         queries.commodity_group_commodity, "commodity_group_commodity", dm.CommodityGroupCommodity
     ),
     QueryModel(queries.template, "template", dm.Template),
+    QueryModel(queries.template_version, "template version", dm.TemplateVersion),
     QueryModel(queries.cfs_paragraph, "cfs paragraph", dm.CFSScheduleParagraph),
     QueryModel(queries.template_country, "template country", dm.TemplateCountry),
     QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
@@ -40,6 +41,7 @@ ref_source_target = source_target_list(
         "CommodityGroup",
         "Commodity",
         "Template",
+        "TemplateVersion",
         "CFSScheduleParagraph",
         "ImportApplicationType",
         "Usage",
