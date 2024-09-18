@@ -686,10 +686,39 @@ class TestImportLicenceInterface:
             }
         ]
 
-    def test_get_data_sil(self, completed_sil_app):
+    def test_get_data_sil_and_oil(self, completed_sil_app, completed_oil_app):
+        # Both types together to check ordering is correct
         interface = ImportLicenceInterface(self.report_schedule)
         data = interface.get_data()
         assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00002",
+                "Licence Ref": "GBOIL0000002C",
+                "Licence Type": "Electronic",
+                "Under Appeal": "",
+                "Ima Type": "FA",
+                "Ima Type Title": "Firearms and Ammunition",
+                "Ima Sub Type": "OIL",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "Open Individual Import Licence",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "Any Country",
+                "Coc Country Name": "Any Country",
+                "Shipping Year": "",
+                "Com Group Name": "",
+                "Commodity Codes": "",
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": False,
+            },
             {
                 "Case Ref": "IMA/2024/00001",
                 "Licence Ref": "GBSIL0000001B",
@@ -717,41 +746,7 @@ class TestImportLicenceInterface:
                 "Licence Start Date": "01/06/2020",
                 "Licence End Date": "31/12/2024",
                 "Importer Printable": False,
-            }
-        ]
-
-    def test_get_data_oil(self, completed_oil_app):
-        interface = ImportLicenceInterface(self.report_schedule)
-        data = interface.get_data()
-        assert data["results"] == [
-            {
-                "Case Ref": "IMA/2024/00001",
-                "Licence Ref": "GBOIL0000001B",
-                "Licence Type": "Electronic",
-                "Under Appeal": "",
-                "Ima Type": "FA",
-                "Ima Type Title": "Firearms and Ammunition",
-                "Ima Sub Type": "OIL",
-                "Variation No": 0,
-                "Status": "COMPLETED",
-                "Ima Sub Type Title": "Open Individual Import Licence",
-                "Importer Name": "Test Importer 1",
-                "Agent Name": "",
-                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
-                "Coo Country Name": "Any Country",
-                "Coc Country Name": "Any Country",
-                "Shipping Year": "",
-                "Com Group Name": "",
-                "Commodity Codes": "",
-                "Initial Submitted Datetime": "01/01/2024 12:00:00",
-                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
-                "Time to Initial Close": "1d 5h 2m",
-                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
-                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
-                "Licence Start Date": "01/06/2020",
-                "Licence End Date": "31/12/2024",
-                "Importer Printable": False,
-            }
+            },
         ]
 
     def test_get_data_wood(self, completed_wood_app):

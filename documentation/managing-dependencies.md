@@ -26,7 +26,7 @@ you should run:
 make setup
 ```
 
-After that, you can run `pip-sync` instead.
+After that, you can run `pip-sync requirements-dev.txt` instead.
 (Note that pip-sync will also remove any installed dependencies that are not specified in the
 lock file, such as removed dependencies or packages manually installed using pip.)
 
@@ -38,7 +38,7 @@ lock file, such as removed dependencies or packages manually installed using pip
 2. Run `make update-requirements` to regenerate all requirements
   Note: This will also update indirect dependencies.
 
-3. Run `pip-sync` to install the new locked dependencies locally. (You can also use
+3. Run `pip-sync requirements-dev.txt` to install the new locked dependencies locally. (You can also use
    `pip install -r requirements-dev.txt`, but that may leave behind redundant packages that
    have been removed which can cause problems.)
 
