@@ -21,6 +21,7 @@ from django.db.models import (
     Value,
 )
 from django.db.models.functions import JSONObject
+from django.utils import timezone
 from pydantic import BaseModel, ConfigDict, SerializeAsAny, ValidationError
 
 from web.domains.case._import.fa.types import FaImportApplication, ReportFirearms
@@ -435,8 +436,8 @@ class BaseFirearmsLicenceInterface(ReportInterface):
             importer=ia["organisation_name"] or import_user_name,
             eori_number=ia["importer_eori_number"],
             importer_address=utils.format_importer_address(ia),
-            first_submitted_date=ia["submit_datetime"].date(),
-            final_submission_date=ia["last_submit_datetime"].date(),
+            first_submitted_date=timezone.localtime(ia["submit_datetime"]).date(),
+            final_submission_date=timezone.localtime(ia["last_submit_datetime"]).date(),
             licence_authorisation_date=licence.start_date,
             licence_start_date=licence.start_date,
             licence_expiry_date=licence.end_date,
@@ -666,7 +667,7 @@ class ImporterAccessRequestInterface(ReportInterface):
         is_agent = ar.is_agent_request
         request_type = f"{ar.REQUEST_TYPE.title()} Access Request"
         return self.ReportSerializer(
-            request_date=ar.submit_datetime.date(),
+            request_date=timezone.localtime(ar.submit_datetime).date(),
             request_type=f"Agent {request_type}" if is_agent else request_type,
             name=ar.organisation_name,
             address=ar.organisation_address.replace("\r", ""),
