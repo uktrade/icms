@@ -119,7 +119,7 @@ class TemplatesFilter(FilterSet):
         label="Template Type",
         empty_label="Any",
     )
-    template_content = CharFilter(lookup_expr="icontains", label="Template Content")
+    template_content = CharFilter(method="filter_content", label="Template Content")
     is_active = ChoiceFilter(choices=Template.STATUS, lookup_expr="exact", label="Template Status")
 
     class Meta:
@@ -127,14 +127,22 @@ class TemplatesFilter(FilterSet):
         fields: list[Any] = []  # Django complains without fields set in the meta
 
     def filter_name_title(self, queryset: QuerySet, name: str, value: str) -> QuerySet:
-        """Search templates by both template_name and template_title.
+        """Search templates by both template_name and versions__title.
 
-        template_title is used as the subject line for email templates, and users may want to search by that, but it's
-        not necessary to have an additional search field just for template_title."""
+        Searching versions should only search the currently active version.
+        title is used as the subject line for email templates, and users may want to search by that, but it's
+        not necessary to have an additional search field just for title."""
         return queryset.filter(
             Q(template_name__icontains=value)
             | Q(versions__is_active=True, versions__title__icontains=value)
-        )
+        ).distinct()
+
+    def filter_content(self, queryset: QuerySet, name: str, value: str) -> QuerySet:
+        """Serach templates by versions__content
+        Searching versions should only search the currently active version."""
+        return queryset.filter(
+            versions__is_active=True, versions__content__icontains=value
+        ).distinct()
 
 
 class EndorsementUsageForm(forms.Form):

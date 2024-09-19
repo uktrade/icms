@@ -134,6 +134,8 @@ def _create_template_version(
         current_version.end_datetime = timezone.now()
         current_version.is_active = False
         current_version.save()
+    else:
+        version_number = 0
 
     TemplateVersion.objects.create(
         template=template,
@@ -193,7 +195,7 @@ class EndorsementCreateView(ModelCreateView):
         """
         Sets readonly fields for this template type and validates other inputs.
         """
-        template = form.instance
+        template = form.save()
 
         template.template_type = Template.ENDORSEMENT
         template.application_domain = Template.IMPORT_APPLICATION
