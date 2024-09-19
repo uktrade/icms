@@ -109,9 +109,6 @@ class Importer(models.Model):
         return self.type == self.ORGANISATION
 
     def __str__(self):
-        if self.is_agent():
-            return f"Agent - {self.display_name}"
-
         return self.display_name
 
     @property

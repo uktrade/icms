@@ -89,5 +89,10 @@
       {{ application_field(process.exporter_office.address + "\n" + process.exporter_office.postcode, "Address") }}
     {% endcall %}
   {% endif %}
-
+  {% if process.agent %}
+    {% call application_section("Agent", "view-agent") %}
+      {{ application_field(process.agent, "Agent") }}
+      {{ application_field(process.agent_office.address + "\n" + process.agent_office.postcode, "Address") }}
+    {% endcall %}
+  {% endif %}
 {% endblock %}

@@ -71,7 +71,6 @@ class TestDegrogationDetailsView(AuthTestCase):
     def test_page_content(self):
         response = self.importer_client.get(self.url)
         assert self.importer.name in response.content.decode()
-        assert self.importer.eori_number in response.content.decode()
 
     def test_save_application_details(self):
         app_ref = "REF64563343"

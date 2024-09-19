@@ -60,10 +60,14 @@
     </span>
   </div>
   <div class="two columns">
-    <label class="prompt west contextItemName">Importer EORI</label>
+    {% if process.agent %}
+      <label class="prompt west contextItemName">Agent</label>
+    {% endif %}
   </div>
   <div class="two columns">
-    <span>{{ process.importer.eori_number|default("N/A", True) }}</span>
+    {% if process.agent %}
+      <span>{{ process.agent }}</span>
+    {% endif %}
   </div>
   <div class="two columns">
     <label class="prompt west contextItemName">Contact</label>
