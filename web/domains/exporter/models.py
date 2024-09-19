@@ -68,9 +68,6 @@ class Exporter(models.Model):
         return self.main_exporter
 
     def __str__(self):
-        if self.is_agent():
-            return f"Agent - {self.name}"
-
         return self.name
 
     class Meta:
