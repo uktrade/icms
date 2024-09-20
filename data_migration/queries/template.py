@@ -25,14 +25,14 @@ SELECT
   , CASE
     WHEN xtd.template_type = 'EMAIL_TEMPLATE' THEN xtd.email_subject
     ELSE xtd.declaration_title
-  END template_title
+  END title
   , CASE
     WHEN xtd.template_type LIKE 'LETTER_%' THEN xtd.letter_body
     WHEN xtd.template_type = 'DECLARATION' THEN TO_CLOB(xtd.declaration_text)
     WHEN xtd.template_type = 'ENDORSEMENT' THEN TO_CLOB(xtd.endorsement_text)
     WHEN xtd.template_type = 'EMAIL_TEMPLATE' THEN TO_CLOB(xtd.email_body)
     WHEN xtd.template_type = 'CFS_DECLARATION_TRANSLATION' THEN TO_CLOB(EXTRACT(xtd.translation_body, '/TRANSLATION_BODY/*'))
-  END template_content
+  END content
   , xtd.version_no version_number
   , td.created_by_wua_id created_by_id
 FROM impmgr.xview_template_details xtd
