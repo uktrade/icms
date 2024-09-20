@@ -138,7 +138,7 @@ class TemplatesFilter(FilterSet):
         ).distinct()
 
     def filter_content(self, queryset: QuerySet, name: str, value: str) -> QuerySet:
-        """Serach templates by versions__content
+        """Search templates by versions__content
         Searching versions should only search the currently active version."""
         return queryset.filter(
             versions__is_active=True, versions__content__icontains=value
