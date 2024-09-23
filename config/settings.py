@@ -199,8 +199,8 @@ else:
     SEND_ALL_EMAILS_TO = []
 
 # Email/phone contacts
-EMAIL_FROM = env.email_from
 ILB_CONTACT_EMAIL = env.ilb_contact_email
+# TODO: Remove this
 ILB_GSI_CONTACT_EMAIL = env.ilb_gsi_contact_email
 ILB_CONTACT_PHONE = env.ilb_contact_phone
 ILB_CONTACT_NAME = env.ilb_contact_name
