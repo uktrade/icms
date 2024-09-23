@@ -99,7 +99,6 @@ class CloudFoundryEnvironment(BaseSettings):
     send_all_emails_to: list[str]
 
     # Email/phone contacts
-    email_from: str = Field(alias="icms_email_from")
     ilb_contact_email: str = Field(alias="icms_ilb_contact_email")
     ilb_gsi_contact_email: str = Field(alias="icms_ilb_gsi_contact_email")
     ilb_contact_phone: str = Field(alias="icms_ilb_contact_phone")

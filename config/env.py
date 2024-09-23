@@ -69,7 +69,6 @@ class DBTPlatformEnvironment(BaseSettings):
     send_all_emails_to: list[str]
 
     # Email/phone contacts
-    email_from: str
     ilb_contact_email: str
     ilb_gsi_contact_email: str
     ilb_contact_phone: str
