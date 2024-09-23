@@ -91,6 +91,11 @@ urlpatterns = [
         "icms/fox/icms/",
         V1ToV2ServiceRenameView.as_view(),
     ),
+    # Users who have bookmarked the old V1 url (extra importer login url)
+    path(
+        "icms/fox/live/IMP_LOGIN/login",
+        V1ToV2ServiceRenameView.as_view(),
+    ),
 ]
 
 if settings.DEBUG:

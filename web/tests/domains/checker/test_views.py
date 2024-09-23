@@ -54,14 +54,16 @@ def test_caseworker_domain_no_access(cw_client):
     url = reverse("checker:certificate-checker")
     response = cw_client.get(url)
 
-    assert response.status_code == HTTPStatus.FORBIDDEN
+    # Allowed for now (as we don't know what site the redirect will point to)
+    assert response.status_code == HTTPStatus.OK
 
 
 def test_importer_domain_no_access(imp_client):
     url = reverse("checker:certificate-checker")
     response = imp_client.get(url)
 
-    assert response.status_code == HTTPStatus.FORBIDDEN
+    # Allowed for now (as we don't know what site the redirect will point to)
+    assert response.status_code == HTTPStatus.OK
 
 
 def test_prepopulate_form(exp_client):
