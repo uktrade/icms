@@ -11,7 +11,6 @@ from web.models import (
     ExportApplication,
     ExportApplicationCertificate,
 )
-from web.sites import require_exporter
 from web.utils import datetime_format
 from web.utils.s3 import create_presigned_url
 
@@ -34,7 +33,6 @@ def _get_export_application_goods(app: ExportApplication) -> str:
 
 @method_decorator(ratelimit(key="ip", rate="10/m", method="POST", block=True), name="post")
 @method_decorator(ratelimit(key="ip", rate="20/m", method="GET", block=True), name="get")
-@method_decorator(require_exporter(check_permission=False), name="dispatch")
 class CheckCertificateView(FormView):
     form_class = CertificateCheckForm
     template_name = "web/domains/checker/certificate-checker.html"
