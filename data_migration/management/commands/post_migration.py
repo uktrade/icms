@@ -10,6 +10,7 @@ from django.db.models import F, TextField, Value
 from django.db.models.expressions import Func
 from guardian.shortcuts import remove_perm
 
+from web.domains.template.utils import add_template_data_on_submit
 from web.management.commands.add_v2_reference_data import (
     add_country_translations,
     add_inactive_countries,
@@ -21,7 +22,14 @@ from web.management.commands.utils.add_email_data import (
     archive_database_email_templates,
     update_database_email_templates,
 )
-from web.models import Constabulary, Exporter, Importer, UniqueReference, User
+from web.models import (
+    Constabulary,
+    Exporter,
+    ImportApplication,
+    Importer,
+    UniqueReference,
+    User,
+)
 from web.permissions import (
     constabulary_add_contact,
     get_org_obj_permissions,
@@ -62,6 +70,7 @@ class Command(BaseCommand):
         update_database_email_templates()
         archive_database_email_templates()
         add_gov_notify_templates()
+        self.add_submitted_app_cover_letters()
 
     def handle(self, *args: Any, **options: Any) -> None:
         skip_refs = options["skip_ref"]
@@ -80,6 +89,12 @@ class Command(BaseCommand):
 
         if not skip_add_data:
             self.add_data_to_v2_additional_models()
+
+    def add_submitted_app_cover_letters(self) -> None:
+        """Adds cover letters to import apps which have been submitted but are not yet processing"""
+        for app in ImportApplication.objects.filter(status=ImportApplication.Statuses.SUBMITTED):
+            if not app.cover_letter_text:
+                add_template_data_on_submit(app)
 
     def create_unique_references(self, ref_type: Ref) -> None:
         """Create UniqueReference objects from ImportApplication.reference, ExportApplication.reference
