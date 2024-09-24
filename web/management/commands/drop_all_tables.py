@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection
 
@@ -15,6 +16,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if not options["confirm_drop_all_tables"]:
             raise CommandError("Command line parameter not set!")
+
+        if settings.APP_ENV == ("production"):
+            raise CommandError("Cannot drop tables in prod environment!")
 
         cursor = connection.cursor()
 
