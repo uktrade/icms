@@ -156,10 +156,6 @@ class DBTPlatformEnvironment(BaseSettings):
     save_generated_pdfs: bool = True
 
     def get_allowed_hosts(self) -> list[str]:
-        if self.build_step:
-            return self.allowed_hosts
-
-        # Makes an external network request so only call when running on DBT Platform
         return setup_allowed_hosts(self.allowed_hosts)
 
     def get_database_config(self) -> dict:
