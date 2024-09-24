@@ -264,8 +264,8 @@ def format_sanctions_pages(pdf_data: bytes, context: dict[str, Any]) -> bytes:
             new_page.setFont("Helvetica-Bold", 10)
             new_page.drawRightString(165, top_margin, "ELECTRONIC LICENCE")
             new_page.setFont("Helvetica", 10)
-            new_page.drawRightString(
-                465,
+            new_page.drawString(
+                168,
                 top_margin,
                 f"issued on {start_date} and sent to HM Revenue and Customs",
             )
