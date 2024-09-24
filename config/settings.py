@@ -33,7 +33,7 @@ DEBUG = env.debug
 WSGI_APPLICATION = "config.wsgi.application"
 APP_ENV = env.app_env
 SECRET_KEY = env.secret_key
-ALLOWED_HOSTS = env.allowed_hosts_list
+ALLOWED_HOSTS = env.get_allowed_hosts()
 FIXTURE_DIRS = [
     BASE_DIR / "data_migration/management/commands/fixtures",
     BASE_DIR / "web/management/commands/fixtures",
@@ -83,7 +83,7 @@ ROOT_URLCONF = "config.urls"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-DATABASES = env.database_config
+DATABASES = env.get_database_config()
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#std-setting-FORM_RENDERER
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
@@ -213,7 +213,7 @@ ICMS_SANCTIONS_EMAIL = env.sanctions_email
 # File storage
 # for https://github.com/uktrade/django-chunk-s3-av-upload-handlers
 
-app_bucket_creds = env.s3_bucket_config
+app_bucket_creds = env.get_s3_bucket_config()
 AWS_REGION = app_bucket_creds.get("aws_region")
 AWS_STORAGE_BUCKET_NAME = app_bucket_creds.get("bucket_name")
 
@@ -272,7 +272,7 @@ CLAM_AV_DOMAIN = env.clam_av_domain
 PATH_STORAGE_FIR = "/documents/fir/"  # start with /
 
 # Celery & Redis shared configuration
-REDIS_URL = env.redis_url
+REDIS_URL = env.get_redis_url()
 # Set use_SSL as we are deployed to CF or DBT Platform
 if REDIS_URL not in [env.local_redis_url, ""]:
     CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}

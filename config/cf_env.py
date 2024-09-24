@@ -1,14 +1,7 @@
 from typing import Annotated, Any
 
 import dj_database_url
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    Field,
-    PostgresDsn,
-    TypeAdapter,
-    computed_field,
-)
+from pydantic import BaseModel, ConfigDict, Field, PostgresDsn, TypeAdapter
 from pydantic.functional_validators import PlainValidator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -185,19 +178,13 @@ class CloudFoundryEnvironment(BaseSettings):
     # Flag to decide if we want to save the PDFs generated as part of the visual regression tests - useful for debugging
     save_generated_pdfs: bool = True
 
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def allowed_hosts_list(self) -> list[str]:
+    def get_allowed_hosts(self) -> list[str]:
         return self.allowed_hosts
 
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def database_config(self) -> dict:
+    def get_database_config(self) -> dict:
         return {"default": dj_database_url.parse(str(self.database_url))}
 
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def s3_bucket_config(self) -> dict:
+    def get_s3_bucket_config(self) -> dict:
         if self.vcap_services:
             app_bucket_creds = self.vcap_services.aws_s3_bucket[0]["credentials"]
         else:
@@ -205,9 +192,7 @@ class CloudFoundryEnvironment(BaseSettings):
 
         return app_bucket_creds
 
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def redis_url(self) -> str:
+    def get_redis_url(self) -> str:
         if self.vcap_services:
             return self.vcap_services.redis[0]["credentials"]["uri"]
 
