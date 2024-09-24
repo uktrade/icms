@@ -33,7 +33,11 @@ DEBUG = env.debug
 WSGI_APPLICATION = "config.wsgi.application"
 APP_ENV = env.app_env
 SECRET_KEY = env.secret_key
-ALLOWED_HOSTS = env.get_allowed_hosts()
+
+# TODO: Revisit in ICMSLST-2974
+# ALLOWED_HOSTS = env.get_allowed_hosts()
+ALLOWED_HOSTS = ["*"]
+
 FIXTURE_DIRS = [
     BASE_DIR / "data_migration/management/commands/fixtures",
     BASE_DIR / "web/management/commands/fixtures",
