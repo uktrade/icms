@@ -56,6 +56,13 @@ def check_can_edit_application(user: User, application: FaImportApplication) -> 
         raise PermissionDenied
 
 
+def check_can_view_application(user: User, application: FaImportApplication) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_view():
+        raise PermissionDenied
+
+
 @login_required
 def manage_import_contacts(
     request: AuthenticatedHttpRequest, *, application_pk: int
@@ -524,7 +531,7 @@ def view_authority(
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        check_can_edit_application(request.user, application)
+        check_can_view_application(request.user, application)
 
         firearms_authority = get_object_or_404(
             application.importer.firearms_authorities.active(), pk=authority_pk
