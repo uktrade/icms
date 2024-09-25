@@ -37,7 +37,7 @@ def get_icms_prod_beat_schedule():
         # },
         "authority_expiring_section_5_email": {
             "task": SEND_AUTHORITY_EXPIRING_SECTION_5_TASK_NAME,
-            "schedule": crontab(hour=7),
+            "schedule": crontab(minute="0", hour="7"),
         },
     }
 
