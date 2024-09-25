@@ -266,9 +266,8 @@ class UsageForm(ModelForm):
                 pk=self.initial["commodity_group"]
             )
 
-        self.fields["application_type"].queryset = ImportApplicationType.objects.filter(
-            is_active=True
-        )
+        # Include inactive for historical usage records
+        self.fields["application_type"].queryset = ImportApplicationType.objects.all()
 
     def clean(self):
         cleaned_data = super().clean()
