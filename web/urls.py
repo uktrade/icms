@@ -86,14 +86,26 @@ urlpatterns = [
         "icms/fox/icms/IMP_CERT_CERTIFICATE_CHECKER/check/",
         V1ToV2RedirectCheckCertificateView.as_view(),
     ),
+    path(
+        "icmsfox5live/fox/icms/IMP_CERT_CERTIFICATE_CHECKER/check/",
+        V1ToV2RedirectCheckCertificateView.as_view(),
+    ),
     # Users who have bookmarked the old V1 url
     path(
         "icms/fox/icms/",
         V1ToV2ServiceRenameView.as_view(),
     ),
+    path(
+        "icmsfox5live/fox/icms/",
+        V1ToV2ServiceRenameView.as_view(),
+    ),
     # Users who have bookmarked the old V1 url (extra importer login url)
     path(
         "icms/fox/live/IMP_LOGIN/login",
+        V1ToV2ServiceRenameView.as_view(),
+    ),
+    path(
+        "icmsfox5live/fox/live/IMP_LOGIN/login",
         V1ToV2ServiceRenameView.as_view(),
     ),
 ]

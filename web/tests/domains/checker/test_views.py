@@ -382,3 +382,9 @@ def test_v1_to_v2_redirect(exp_client):
     response = exp_client.get("/icms/fox/icms/IMP_CERT_CERTIFICATE_CHECKER/check/")
     assert response.status_code == HTTPStatus.MOVED_PERMANENTLY
     assert response.url == reverse("checker:certificate-checker")
+
+
+def test_v1_fox5_to_v2_redirect(exp_client):
+    response = exp_client.get("/icmsfox5live/fox/icms/IMP_CERT_CERTIFICATE_CHECKER/check/")
+    assert response.status_code == HTTPStatus.MOVED_PERMANENTLY
+    assert response.url == reverse("checker:certificate-checker")
