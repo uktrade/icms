@@ -68,6 +68,32 @@ class InProgressApplicationStatusTaskMixin(ApplicationTaskMixin):
     current_status = [ST.IN_PROGRESS, ST.PROCESSING, ST.VARIATION_REQUESTED]
     current_task_type = TT.PREPARE
 
+    # Had to reimplement ApplicationTaskMixin.get_object to handle the update request exception.
+    def get_object(self, queryset: QuerySet | None = None) -> ImpOrExp:
+        """Downcast to specific model class."""
+
+        # Call SingleObjectMixin.get_object() directly
+        application: ImpOrExp = (
+            super(ApplicationTaskMixin, self).get_object(queryset).get_specific_model()
+        )
+
+        self.object = application
+
+        try:
+            check_expected_status(application, self.current_status)
+        except errors.ProcessStatusError as e:
+            # Special case where a case officer creates an update request and then releases ownership.
+            # Release ownership will change the status to SUBMITTED and therefore the
+            # check_expected_status call will raise an exception.
+            if not (
+                application.status == ST.SUBMITTED
+                and not application.case_owner
+                and application.current_update_requests().exists()
+            ):
+                raise e
+
+        return application
+
     def has_object_permission(self) -> bool:
         """Mandatory user object permission checking for the loaded `self.application` record."""
         raise NotImplementedError("has_object_permission must be implemented.")
