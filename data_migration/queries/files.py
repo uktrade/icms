@@ -276,6 +276,40 @@ ORDER BY secure_lob_ref_id
 """
 
 
+access_request_files = """
+SELECT
+  sld.BLOB_DATA
+, fv.filename
+, EXTRACTVALUE(fv.metadata_xml, '/file-metadata/size') file_size
+, fv.content_type
+, fv.created_by_wua_id AS created_by_id
+, fv.created_datetime
+, 'access_request_docs/' || fv.file_id || '-' || fv.filename path
+, iar.id as access_request_id
+, iar.REQUEST_REFERENCE
+, x2.rfi_id
+, vf.SECONDARY_DATA_UREF
+, sld.id as secure_lob_ref_id
+, iar.xml_data as fir_xml
+FROM impmgr.importer_access_requests iar
+CROSS JOIN XMLTABLE('/*'
+  PASSING iar.xml_data
+  COLUMNS
+    fir_xml XMLTYPE PATH '/IMPORTER_ACCESS_REQUEST/RFIS/RFI_LIST'
+) x
+CROSS JOIN XMLTABLE('RFI_LIST/RFI'
+  passing x.fir_xml
+  COLUMNS
+   rfi_id varchar(200) PATH 'RFI_ID/text()'
+) x2
+INNER JOIN DOCLIBMGR.VW_FOLDERS vf ON vf.SECONDARY_DATA_UREF LIKE CONCAT(x2.rfi_id, 'IARRFI')
+INNER JOIN DOCLIBMGR.REVISION_FOLDERS_FILES rff ON vf.F_ID = rff.F_ID
+INNER JOIN DOCLIBMGR.VW_FILE_REVISIONS fv ON fv.FILE_ID = rff.FILE_ID
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(fv.secure_lob_ref).id
+WHERE sld.id > :secure_lob_ref_id
+ORDER BY sld.id
+"""
+
 gmp_application_files = """
 SELECT
   fft.id target_id

@@ -177,7 +177,10 @@ sil_data_source_target = {
         ],
     },
 )
-@mock.patch.dict(DATA_TYPE_XML, {"import_application": sil_xml_parsers, "user": []})
+@mock.patch.dict(
+    DATA_TYPE_XML,
+    {"import_application": sil_xml_parsers, "user": [], "export_application": [], "reference": []},
+)
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, sil_data_source_target)
 @mock.patch.dict(
     DATA_TYPE_M2M,
@@ -205,6 +208,7 @@ sil_data_source_target = {
             (dm.Section5AuthorityFile, web.Section5Authority, "files"),
             (dm.SILUserSection5, web.SILApplication, "user_section5"),
         ],
+        "reference": [],
     },
 )
 @mock.patch.object(oracledb, "connect")
@@ -674,7 +678,10 @@ oil_data_source_target = {
         ],
     },
 )
-@mock.patch.dict(DATA_TYPE_XML, {"import_application": oil_xml_parsers, "user": []})
+@mock.patch.dict(
+    DATA_TYPE_XML,
+    {"import_application": oil_xml_parsers, "user": [], "export_application": [], "reference": []},
+)
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, oil_data_source_target)
 @mock.patch.dict(
     DATA_TYPE_M2M,
@@ -686,6 +693,7 @@ oil_data_source_target = {
         "export_application": [],
         "file": [],
         "user": [],
+        "reference": [],
     },
 )
 @mock.patch.object(oracledb, "connect")
@@ -856,6 +864,7 @@ template_data_source_target = {
             (dm.TemplateCountry, web.Template, "countries"),
             (dm.EndorsementTemplate, web.ImportApplicationType, "endorsements"),
         ],
+        "user": [],
     },
 )
 @mock.patch.object(oracledb, "connect")

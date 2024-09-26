@@ -113,7 +113,7 @@ class Command(BaseCommand):
                         # Required for report files, coverts clob to bytes stream so can be treated like other files
                         data = obj["CLOB_DATA"].read().encode()
                         obj["BLOB_DATA"] = BytesIO(data)
-                    if obj["FILE_SIZE"] > file_size_limit:
+                    if obj["FILE_SIZE"] and int(obj["FILE_SIZE"]) > file_size_limit:
                         s3_web.upload_file_obj_to_s3_in_parts(obj["BLOB_DATA"], obj["PATH"])
                     else:
                         s3_web.upload_file_obj_to_s3(obj["BLOB_DATA"], obj["PATH"])

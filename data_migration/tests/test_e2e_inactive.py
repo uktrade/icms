@@ -101,6 +101,7 @@ opt_m2m = {
         ),
     ],
     "user": [],
+    "reference": [],
 }
 
 opt_xml = {
@@ -220,6 +221,7 @@ sps_data_source_target = {
         "file": [
             (dm.SPSSupportingDoc, web.PriorSurveillanceApplication, "supporting_documents"),
         ],
+        "reference": [],
     },
 )
 @mock.patch.dict(
@@ -497,7 +499,10 @@ tex_data_source_target = {
 )
 @mock.patch.dict(DATA_TYPE_XML, {"import_application": []})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, tex_data_source_target)
-@mock.patch.dict(DATA_TYPE_M2M, {"import_application": [], "file": []})
+@mock.patch.dict(
+    DATA_TYPE_M2M,
+    {"import_application": [], "file": [], "export_application": [], "user": [], "reference": []},
+)
 @mock.patch.object(oracledb, "connect")
 def test_import_textiles_data(mock_connect, dummy_dm_settings):
     mock_connect.return_value = utils.MockConnect()

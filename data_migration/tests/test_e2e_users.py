@@ -90,6 +90,8 @@ user_data_source_target = {
             xml_parser.ApprovalRequestParser,
             xml_parser.AccessFIRParser,
         ],
+        "import_application": [],
+        "export_application": [],
     },
 )
 @mock.patch.object(oracledb, "connect")
@@ -311,7 +313,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
 
     assert web.UniqueReference.objects.get(prefix="IAR", year=None, reference=1)
     assert ar1.process_ptr.process_type == "ImporterAccessRequest"
-    assert ar1.process_ptr.tasks.count() == 1
+    assert ar1.process_ptr.tasks.count() == 0
     assert ar1.reference == "IAR/0001"
     assert ar1.status == "SUBMITTED"
     assert ar1.organisation_name == "Test Org"

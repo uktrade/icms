@@ -673,3 +673,18 @@ class WithdrawApplication(MigrationBase):
     def get_exclude_parameters(cls) -> dict[str, Any]:
         # No concept of draft withdrawal requests in V2. Do not migrate any that haven't been submitted
         return {"status": "DRAFT"}
+
+
+class AccessRequestFile(MigrationBase):
+    # access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE)
+    access_request_id = models.IntegerField(null=True)
+    filename = models.CharField(max_length=300)
+    content_type = models.CharField(max_length=100, null=True)
+    file_size = models.IntegerField()
+    path = models.CharField(max_length=4000)
+    created_datetime = models.DateTimeField()
+    # created_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
+    created_by_id = models.IntegerField(null=True)
+    rfi_id = models.IntegerField(null=True)
+    secondary_data_uref = models.CharField(null=True, max_length=20)
+    fir_xml = models.TextField(null=True)

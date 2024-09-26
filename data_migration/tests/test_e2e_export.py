@@ -167,6 +167,8 @@ export_m2m = {
         (dm.CaseNoteFile, web.CaseNote, "files"),
         (dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
     ],
+    "user": [],
+    "reference": [],
 }
 
 export_xml = {
@@ -189,6 +191,7 @@ export_xml = {
         xml_parser.CFSTemplateProductTypeParser,
     ],
     "import_application": [],
+    "user": [],
 }
 
 

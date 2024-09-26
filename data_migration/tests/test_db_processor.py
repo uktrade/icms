@@ -58,14 +58,12 @@ ORDER BY created_datetime
     def test_get_query_list(self):
         db = OracleDBProcessor(100, None, 1)
         result = [query_model for query_model in db.get_query_list()]
-        assert len(result) == 18
+        assert len(result) == 1
 
     def test_get_filtered_query_list(self):
-        db = OracleDBProcessor(
-            100, ["GMP Application Files", "Further Information Request Files"], 1
-        )
+        db = OracleDBProcessor(100, ["Access Request Files"], 1)
         result = [query_model.query_name for query_model in db.get_query_list()]
-        assert set(result) == {"GMP Application Files", "Further Information Request Files"}
+        assert set(result) == {"Access Request Files"}
 
     @pytest.mark.parametrize(
         "selected_queries,expected_result",

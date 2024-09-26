@@ -65,7 +65,11 @@ class Command(MigrationBaseCommand):
         if not self._get_start_type(data_type):
             return
 
-        query_models = DATA_TYPE_QUERY_MODEL[data_type]
+        query_models = DATA_TYPE_QUERY_MODEL.get(data_type)
+        if not query_models:
+            self.log(f"No Data found for {data_type} Data Export")
+            return
+
         start, query_models = self._get_data_list(query_models)
 
         name = format_name(data_type)

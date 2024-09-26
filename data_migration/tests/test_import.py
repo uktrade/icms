@@ -24,9 +24,13 @@ def test_data_import_not_enabled():
 
 
 ref_data_source_target = {
-    "reference": [(dm.Country, web.Country), (dm.CountryGroup, web.CountryGroup)]
+    "reference": [(dm.Country, web.Country), (dm.CountryGroup, web.CountryGroup)],
+    "export_application": [],
 }
-ref_m2m = {"reference": [(dm.CountryGroupCountry, web.CountryGroup, "countries")]}
+ref_m2m = {
+    "reference": [(dm.CountryGroupCountry, web.CountryGroup, "countries")],
+    "export_application": [],
+}
 
 
 @pytest.mark.django_db
@@ -97,6 +101,7 @@ start_test_source_target = {
         (dm.ObsoleteCalibreGroup, web.ObsoleteCalibreGroup),
     ],
     "file": [],
+    "export_application": [],
 }
 
 
@@ -110,6 +115,7 @@ start_test_data_m2m = {
     ],
     "import_application": [],
     "file": [],
+    "export_application": [],
 }
 
 

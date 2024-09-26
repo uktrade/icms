@@ -58,6 +58,8 @@ report_m2m = {
     "export_application": [],
     "import_application": [],
     "file": [],
+    "user": [],
+    "reference": [],
 }
 
 
