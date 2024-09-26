@@ -18,9 +18,7 @@
           <th>Postcode</th>
           <th>Start Date</th>
           <th>End Date</th>
-          {% if not read_only %}
-            <th>Actions</th>
-          {% endif %}
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -41,14 +39,14 @@
             <td>{{ section.postcode }}</td>
             <td>{{ section.start_date.strftime('%d-%b-%Y') }}</td>
             <td>{{ section.end_date.strftime('%d-%b-%Y') }}</td>
-            {% if not read_only %}
-              <td>
-                <a
-                  href="{{ icms_url('import:fa-sil:view-verified-section5', kwargs={'application_pk': process.pk, 'section5_pk': section.pk}) }}">
+            <td>
+              <a
+                href="{{ icms_url('import:fa-sil:view-verified-section5', kwargs={'application_pk': process.pk, 'section5_pk': section.pk}) }}"
+                target="_blank" rel="noopener noreferrer"
+              >
                 View Details
-                </a>
-              </td>
-            {% endif %}
+              </a>
+            </td>
           </tr>
         {% endfor %}
       </tbody>
@@ -68,9 +66,7 @@
           <th>Postcode</th>
           <th>Start Date</th>
           <th>End Date</th>
-          {% if not read_only %}
-            <th>Actions</th>
-          {% endif %}
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -91,14 +87,14 @@
             <td>{{ section.postcode }}</td>
             <td>{{ section.start_date.strftime('%d-%b-%Y') }}</td>
             <td>{{ section.end_date.strftime('%d-%b-%Y') }}</td>
-            {% if not read_only %}
               <td>
-                <a
-                  href="{{ icms_url('import:fa-sil:view-verified-section5', kwargs={'application_pk': process.pk, 'section5_pk': section.pk}) }}">
+              <a
+                href="{{ icms_url('import:fa-sil:view-verified-section5', kwargs={'application_pk': process.pk, 'section5_pk': section.pk}) }}"
+                target="_blank" rel="noopener noreferrer"
+              >
                 View Details
-                </a>
-              </td>
-            {% endif %}
+              </a>
+            </td>
           </tr>
         {% endfor %}
       </tbody>
