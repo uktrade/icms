@@ -143,7 +143,7 @@ Yours sincerely,
 
 BEIS_EMAIL_BODY = """Dear colleagues
 
-[[CASE_REFERENCE]
+[[CASE_REFERENCE]]
 
 We have received a [[APPLICATION_TYPE]] application from:
 
