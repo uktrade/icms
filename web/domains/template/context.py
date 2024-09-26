@@ -341,10 +341,12 @@ class ScheduleParagraphContext:
             case "MANUFACTURED_AT_NAME":
                 return self.schedule.manufacturer_name
             case "MANUFACTURED_AT_ADDRESS_FLAT":
-                return strip_spaces(
-                    self.schedule.manufacturer_address.upper(),
-                    self.schedule.manufacturer_postcode.upper(),
-                )
+                if self.schedule.manufacturer_postcode:
+                    return strip_spaces(
+                        self.schedule.manufacturer_address.upper(),
+                        self.schedule.manufacturer_postcode.upper(),
+                    )
+                return strip_spaces(self.schedule.manufacturer_address.upper())
             case _:
                 raise ValueError(f"{item} is not a valid schedule paragraph context value")
 
