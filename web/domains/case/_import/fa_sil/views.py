@@ -50,6 +50,13 @@ def check_can_edit_application(user: User, application: models.SILApplication) -
         raise PermissionDenied
 
 
+def check_can_view_application(user: User, application: models.SILApplication) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_view():
+        raise PermissionDenied
+
+
 @login_required
 def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
@@ -498,12 +505,11 @@ def view_verified_section5(
         application = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        check_can_edit_application(request.user, application)
+        check_can_view_application(request.user, application)
+
         section5 = get_object_or_404(
             application.importer.section5_authorities.filter(is_active=True), pk=section5_pk
         )
-
-        case_progress.application_in_progress(application)
 
         context = {
             "process": application,
