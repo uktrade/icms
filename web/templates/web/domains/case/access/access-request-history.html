@@ -1,4 +1,6 @@
 {% extends "layout/no-sidebar.html" %}
+{% from "display/fields.html" import application_field %}
+
 
 {% block main_content %}
   <!-------------------->
@@ -7,6 +9,12 @@
   {% with acc_req = access_request %}
     {% include "web/domains/case/access/partials/access-request-section.html" %}
   {% endwith %}
+
+  {# Extra access request fields to show when viewing a historical record. #}
+  {{ application_field(access_request.get_response_display(), "Response") }}
+  {% if access_request.response == access_request.REFUSED %}
+    {{ application_field(access_request.response_reason, "Refuse Reason") }}
+  {% endif %}
 
   <!---------------------->
   <!-- Approval Request -->
