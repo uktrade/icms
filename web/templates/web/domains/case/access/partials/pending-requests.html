@@ -1,3 +1,11 @@
+
+{% if not request.user.icms_v1_user %}
+  <div class="info-box info-box-info">
+    If you are an existing user and you have used a different email address to create your GOV.UK
+    One login account than the one you used in ICMS, go to the
+    “<a href="{{ icms_url('account-recovery') }}">Link your existing account</a>” page, and do not submit an access request.
+  </div>
+{% endif %}
 <h3>Pending Access Requests</h3>
 
 {% if "web.importer_access" not in perms and "web.exporter_access" not in perms %}
