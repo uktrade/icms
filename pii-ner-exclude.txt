@@ -5016,3 +5016,5 @@ Serach
 ON td.id = xtd.td_id
 MAN ADDRESS MAN POSTCODE
 {{ application_field(section5.start_date.strftime('%d-%b-%Y'
+REFUSED %
+{{ application_field(access_request.response_reason
