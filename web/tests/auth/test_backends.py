@@ -295,6 +295,53 @@ class TestICMSGovUKOneLoginBackend:
         autospec=True,
     )
     @mock.patch("web.auth.backends.send_new_user_welcome_email", autospec=True)
+    def test_user_valid_legacy_user_not_create_case_insensitive(
+        self, mock_send_new_user_welcome_email, db, importer_rf, **mocks
+    ):
+        """Has a user unable to log in and migrate their V1 account as their email contained
+        a combination of upper and lower case letters."""
+
+        User = get_user_model()
+        user = User(
+            username="uSeR@TeSt.CoM",  # /PS-IGNORE
+            email="uSeR@TeSt.CoM",  # /PS-IGNORE
+            first_name="Test",
+            last_name="User",
+            icms_v1_user=True,
+            importer_last_login=make_aware(dt.datetime(2020, 12, 1, 9, 1, 0)),
+        )
+        user.set_password("password")
+        user.save()
+
+        mocks["has_valid_token"].return_value = True
+        mocks["get_userinfo"].return_value = UserInfo(
+            sub="some-unique-key", email="user@test.com", email_verified=True  # /PS-IGNORE
+        )
+
+        user = ICMSGovUKOneLoginBackend().authenticate(request=importer_rf)
+        assert user is not None
+
+        # Username has been migrated to sub value
+        assert user.username == "some-unique-key"
+        assert user.first_name == "Test"
+        assert user.last_name == "User"
+        # Email has been fixed (no longer upper case)
+        assert user.email == "user@test.com"  # /PS-IGNORE
+        assert user.has_usable_password() is False
+        assert user.emails.first().email == "user@test.com"  # /PS-IGNORE
+        assert user.importer_last_login == make_aware(dt.datetime(2024, 1, 1, 12, 0, 0))
+        assert user.exporter_last_login is None
+        assert not mock_send_new_user_welcome_email.called
+
+    @freeze_time("2024-01-01 12:00:00")
+    @mock.patch.multiple(
+        "web.one_login.backends",
+        get_client=mock.DEFAULT,
+        has_valid_token=mock.DEFAULT,
+        get_userinfo=mock.DEFAULT,
+        autospec=True,
+    )
+    @mock.patch("web.auth.backends.send_new_user_welcome_email", autospec=True)
     def test_user_valid_does_not_authenticate_on_invalid_site(
         self, mock_send_new_user_welcome_email, db, caseworker_rf, **mocks
     ):

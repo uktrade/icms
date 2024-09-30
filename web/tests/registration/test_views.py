@@ -50,3 +50,32 @@ class TestLegacyAccountRecoveryView:
         assert self.legacy_user.emails.filter(
             email="one_login_user@example.com"  # /PS-IGNORE
         ).exists()
+
+    def test_migrate_user_success_mixed_case_email(self):
+        self.legacy_user.username = "LeGaCy_UsEr@ExAmPlE.CoM"  # /PS-IGNORE
+        self.legacy_user.email = "LeGaCy_UsEr@ExAmPlE.CoM"  # /PS-IGNORE
+        self.legacy_user.save()
+
+        data = {
+            "legacy_email": "legacy_user@example.com",  # /PS-IGNORE
+            "legacy_password": "TestPassword1!",
+        }
+
+        response = self.one_login_client.post(self.url, data=data)
+        assertRedirects(response, reverse("login-start"), HTTPStatus.FOUND)
+
+        self.one_login_user.refresh_from_db()
+        self.legacy_user.refresh_from_db()
+
+        # one_login_user is now inactive
+        assert self.one_login_user.username == "one_login_id_v1_migrated"
+        assert not self.one_login_user.is_active
+        assert self.one_login_user.email == ""
+        assert not self.one_login_user.has_usable_password()
+
+        # Test legacy_user has been updated
+        assert self.legacy_user.username == "one_login_id"
+        assert self.legacy_user.email == "one_login_user@example.com"  # /PS-IGNORE
+        assert self.legacy_user.emails.filter(
+            email="one_login_user@example.com"  # /PS-IGNORE
+        ).exists()

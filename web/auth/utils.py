@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_legacy_user_by_username(email_address: str) -> User:
-    return User.objects.get(username=email_address, icms_v1_user=True)
+    return User.objects.get(username__iexact=email_address, icms_v1_user=True)
 
 
 def migrate_user(current_user: User, old_icms_user: User) -> None:
