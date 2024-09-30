@@ -6,6 +6,7 @@ from django.urls import reverse
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.workbasket.base import WorkbasketAction
+from web.mail.constants import CaseEmailCodes
 from web.models import Task
 
 from .base import Action, ActionT
@@ -17,6 +18,17 @@ def get_app_processing_label(application: ImpOrExp, active_tasks: list[str]) -> 
     """Returns the app processing label used in several actions."""
 
     section_label = "Application Processing"
+
+    if application.open_case_emails:
+        oce = application.open_case_emails
+        if CaseEmailCodes.BEIS_CASE_EMAIL in oce:
+            section_label += " (Awaiting BEIS Email Response)"
+        if CaseEmailCodes.CONSTABULARY_CASE_EMAIL in oce:
+            section_label += " (Awaiting Constabulary Email Response)"
+        if CaseEmailCodes.HSE_CASE_EMAIL in oce:
+            section_label += " (Awaiting HSE Email Response)"
+        if CaseEmailCodes.SANCTIONS_CASE_EMAIL in oce:
+            section_label += " (Awaiting Sanctions Email Response)"
 
     if Task.TaskType.PREPARE in active_tasks:
         section_label += ", Out for Update"

@@ -265,6 +265,11 @@ class CaseEmail(models.Model):
         CLOSED = ("CLOSED", "Closed")
         DRAFT = ("DRAFT", "Draft")
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["is_active", "status", "template_code"], name="CE_workbasket_idx"),
+        ]
+
     is_active = models.BooleanField(default=True)
     status = models.CharField(max_length=30, default=Status.DRAFT)
 

@@ -96,7 +96,7 @@ class ExportApplication(ExportApplicationABC, ApplicationBase):
     case_notes = models.ManyToManyField("web.CaseNote")
     further_information_requests = models.ManyToManyField("web.FurtherInformationRequest")
     update_requests = models.ManyToManyField("web.UpdateRequest")
-    case_emails = models.ManyToManyField("web.CaseEmail", related_name="+")
+    case_emails = models.ManyToManyField("web.CaseEmail", related_name="export_applications")
 
     submitted_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

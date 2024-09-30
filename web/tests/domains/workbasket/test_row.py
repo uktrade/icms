@@ -5,6 +5,7 @@ from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.workbasket.app_data import (
     _add_user_import_annotations,
+    _get_open_case_emails_annotation,
     _get_open_firs_pk_annotation,
 )
 from web.domains.workbasket.base import WorkbasketSection
@@ -352,6 +353,7 @@ def _get_wood_app_with_annotations(app):
     open_fir_pks_annotation = _get_open_firs_pk_annotation("further_information_requests")
     app = app.annotate(
         annotation_open_fir_pks=open_fir_pks_annotation,
+        open_case_emails=_get_open_case_emails_annotation("import_applications"),
     )
 
     return app.get()

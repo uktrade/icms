@@ -1,14 +1,18 @@
 from itertools import chain
+from typing import Literal
 
 from django.contrib.postgres.aggregates import ArrayAgg, JSONBAgg
+from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import Exists, F, Func, OuterRef, Q, QuerySet, Subquery, Value
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.shared import ImpExpStatus
 from web.flow.models import ProcessTypes
+from web.mail.constants import CaseEmailCodes
 from web.models import (
     AccessRequest,
     ApprovalRequest,
+    CaseEmail,
     ExportApplication,
     Exporter,
     ExporterAccessRequest,
@@ -152,6 +156,7 @@ def get_ilb_admin_qs(user: User) -> chain[QuerySet]:
             annotation_has_withdrawal=EXPORT_HAS_WITHDRAWAL_ANNOTATION,
             active_tasks=ACTIVE_TASK_ANNOTATION,
             annotation_open_fir_pks=open_fir_pks_annotation,
+            open_case_emails=_get_open_case_emails_annotation("export_applications"),
         )
     )
 
@@ -163,6 +168,7 @@ def get_ilb_admin_qs(user: User) -> chain[QuerySet]:
             active_tasks=ACTIVE_TASK_ANNOTATION,
             annotation_has_withdrawal=IMPORT_HAS_WITHDRAWAL_ANNOTATION,
             annotation_open_fir_pks=open_fir_pks_annotation,
+            open_case_emails=_get_open_case_emails_annotation("import_applications"),
         )
     )
 
@@ -171,6 +177,27 @@ def get_ilb_admin_qs(user: User) -> chain[QuerySet]:
         importer_access_requests,
         export_applications,
         import_applications,
+    )
+
+
+def _get_open_case_emails_annotation(
+    related_name: Literal["import_applications", "export_applications"]
+) -> Subquery:
+
+    return ArraySubquery(
+        CaseEmail.objects.filter(
+            status=CaseEmail.Status.OPEN,
+            template_code__in=[
+                CaseEmailCodes.BEIS_CASE_EMAIL,
+                CaseEmailCodes.CONSTABULARY_CASE_EMAIL,
+                CaseEmailCodes.HSE_CASE_EMAIL,
+                CaseEmailCodes.SANCTIONS_CASE_EMAIL,
+            ],
+            is_active=True,
+            **{related_name: OuterRef("pk")},
+        )
+        .values("template_code")
+        .distinct("template_code")
     )
 
 

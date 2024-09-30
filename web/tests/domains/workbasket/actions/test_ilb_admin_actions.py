@@ -12,6 +12,7 @@ from web.domains.workbasket.actions.ilb_admin_actions import (
     TakeOwnershipAction,
     ViewApplicationCaseAction,
 )
+from web.mail.constants import CaseEmailCodes
 from web.models import Task, User, WoodQuotaApplication
 
 ST = ImpExpStatus
@@ -29,6 +30,7 @@ class TestAdminActions:
         # Set the minimum required fields.
         self.app = WoodQuotaApplication(pk=1, importer=importer)
         self.app.annotation_open_fir_pks = []
+        self.app.open_case_emails = []
 
     def test_view_case_action_is_shown(self):
         """A freshly submitted application (no case_owner yet)"""
@@ -222,6 +224,40 @@ class TestAdminActions:
         wb_action = action.get_workbasket_actions()[0]
         assert wb_action.section_label == (
             "Application Processing, Out for Update, Further Information Requested"
+        )
+
+        # Test various out for email messages
+        self.app.active_tasks = []
+        self.app.annotation_open_fir_pks = []
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = TakeOwnershipAction.from_config(config)
+        assert action.show_link()
+
+        self.app.open_case_emails = [CaseEmailCodes.BEIS_CASE_EMAIL]
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "Take Ownership"
+        assert wb_action.section_label == "Application Processing (Awaiting BEIS Email Response)"
+
+        self.app.open_case_emails = [CaseEmailCodes.CONSTABULARY_CASE_EMAIL]
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "Take Ownership"
+        assert (
+            wb_action.section_label
+            == "Application Processing (Awaiting Constabulary Email Response)"
+        )
+
+        self.app.open_case_emails = [CaseEmailCodes.HSE_CASE_EMAIL]
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "Take Ownership"
+        assert wb_action.section_label == "Application Processing (Awaiting HSE Email Response)"
+
+        self.app.open_case_emails = [
+            CaseEmailCodes.SANCTIONS_CASE_EMAIL,
+        ]
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "Take Ownership"
+        assert (
+            wb_action.section_label == "Application Processing (Awaiting Sanctions Email Response)"
         )
 
     def test_take_ownership_action_not_shown(self):
@@ -497,6 +533,7 @@ class TestAdminActions:
         application = WoodQuotaApplication(pk=1, status=ST.VARIATION_REQUESTED, importer=importer)
         application.active_tasks = []  # This is to fake the active_tasks annotation
         application.annotation_open_fir_pks = []
+        application.open_case_emails = []
 
         sections = get_workbasket_admin_sections(user, case_type, application)
         names = []
