@@ -48,7 +48,7 @@ check_migrations: ## Check for missing migrations:
 	docker compose run --no-TTY --rm web python ./manage.py makemigrations --check --dry-run --settings=config.settings_local
 
 migrate: ## execute db migration
-	docker compose run --rm web python ./manage.py migrate
+	docker compose run --rm web python ./manage.py migrate ${args}
 
 check-local: ## run Django check
 	docker compose run --rm web python ./manage.py check

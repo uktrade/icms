@@ -247,7 +247,7 @@ class ImportApplication(ApplicationBase):
     update_requests = models.ManyToManyField("web.UpdateRequest")
     case_notes = models.ManyToManyField("web.CaseNote")
     commodity_group = models.ForeignKey("web.CommodityGroup", on_delete=models.PROTECT, null=True)
-    case_emails = models.ManyToManyField("web.CaseEmail", related_name="+")
+    case_emails = models.ManyToManyField("web.CaseEmail", related_name="import_applications")
     sigl_transmissions = models.ManyToManyField("web.SIGLTransmission")
 
     case_owner = models.ForeignKey(
