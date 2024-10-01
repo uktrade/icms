@@ -221,6 +221,7 @@ def get_sanctions_case_officer_qs(user: User) -> chain[QuerySet]:
             active_tasks=ACTIVE_TASK_ANNOTATION,
             annotation_has_withdrawal=IMPORT_HAS_WITHDRAWAL_ANNOTATION,
             annotation_open_fir_pks=open_fir_pks_annotation,
+            open_case_emails=_get_open_case_emails_annotation("import_applications"),
         )
     )
 
