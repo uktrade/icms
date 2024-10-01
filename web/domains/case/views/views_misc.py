@@ -670,7 +670,9 @@ def get_document_context(
         licence_doc = document_pack.doc_ref_licence_get(licence)
 
         # If issued_document is not None then we are viewing completed documents
-        if application.status == ImpExpStatus.COMPLETED or issued_document:
+        if application.legacy_case_flag:
+            licence_url = None
+        elif application.status == ImpExpStatus.COMPLETED or issued_document:
             licence_url = reverse(
                 "case:view-case-document",
                 kwargs={
@@ -687,7 +689,9 @@ def get_document_context(
             )
 
         context = {
-            "cover_letter_flag": at.cover_letter_flag,
+            "cover_letter_flag": (
+                at.cover_letter_flag if not application.legacy_case_flag else False
+            ),
             "customs_copy": at.type == at.Types.OPT,
             "is_cfs": False,
             "document_reference": licence_doc.reference,
@@ -700,34 +704,30 @@ def get_document_context(
             ProcessTypes.FA_OIL,
             ProcessTypes.FA_SIL,
         ]:
-            cover_letter = document_pack.doc_ref_cover_letter_get(licence)
+            context["type_label"] = "Firearms"
+            if not application.legacy_case_flag:
+                cover_letter = document_pack.doc_ref_cover_letter_get(licence)
 
-            # Firearms application label
-            type_label = "Firearms"
+                if application.status == ImpExpStatus.COMPLETED or issued_document:
+                    cover_letter_url = reverse(
+                        "case:view-case-document",
+                        kwargs={
+                            "application_pk": application.id,
+                            "case_type": "import",
+                            "object_pk": licence.pk,
+                            "casedocumentreference_pk": cover_letter.pk,
+                        },
+                    )
+                else:
+                    cover_letter_url = reverse(
+                        "case:cover-letter-pre-sign",
+                        kwargs={"application_pk": application.pk, "case_type": "import"},
+                    )
 
-            if application.status == ImpExpStatus.COMPLETED or issued_document:
-                cover_letter_url = reverse(
-                    "case:view-case-document",
-                    kwargs={
-                        "application_pk": application.id,
-                        "case_type": "import",
-                        "object_pk": licence.pk,
-                        "casedocumentreference_pk": cover_letter.pk,
-                    },
-                )
-            else:
-                cover_letter_url = reverse(
-                    "case:cover-letter-pre-sign",
-                    kwargs={"application_pk": application.pk, "case_type": "import"},
-                )
-
-            context["cover_letter_url"] = cover_letter_url
-
+                context["cover_letter_url"] = cover_letter_url
         else:
             # if not a firearms application, default to the application type label
-            type_label = at.Types(at.type).label
-
-        context["type_label"] = type_label
+            context["type_label"] = at.Types(at.type).label
     else:
         # A supplied document pack or the current draft pack
         certificate = issued_document or document_pack.pack_draft_get(application)

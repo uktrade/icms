@@ -35,7 +35,7 @@
             </td>
         </tr>
       {% endif %}
-      {% if case_type == "import" %}
+      {% if case_type == "import" and licence_url %}
         <tr>
             <td>{{ type_label }} Licence{{" (Holders Copy)" if customs_copy else ""}}</td>
             {% if show_generation_status %}
@@ -50,7 +50,7 @@
                 </a>
             </td>
         </tr>
-        {% if customs_copy %}
+        {% if customs_copy and licence_url %}
             <tr>
                 <td>{{ type_label }} Licence (Custom's Copy)</td>
                 {% if show_generation_status %}
