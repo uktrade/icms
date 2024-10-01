@@ -80,19 +80,31 @@
   {% if process.is_import_application() %}
     {% call application_section("Importer", "view-importer") %}
       {{ application_field(process.importer, "Importer") }}
-      {{ application_field(process.importer_office.address + "\n" + process.importer_office.postcode, "Address") }}
+      {% if process.importer_office.postcode %}
+        {{ application_field(process.importer_office.address + "\n" + process.importer_office.postcode, "Address") }}
+      {% else %}
+        {{ application_field(process.importer_office.address, "Address") }}
+      {% endif %}
       {{ application_field(process.importer.eori_number|default("N/A", True), "Importer EORI Number") }}
     {% endcall %}
   {% else %}
     {% call application_section("Exporter", "view-exporter") %}
       {{ application_field(process.exporter, "Exporter") }}
-      {{ application_field(process.exporter_office.address + "\n" + process.exporter_office.postcode, "Address") }}
+      {% if process.exporter_office.postcode %}
+        {{ application_field(process.exporter_office.address + "\n" + process.exporter_office.postcode, "Address") }}
+      {% else %}
+        {{ application_field(process.exporter_office.address, "Address") }}
+      {% endif %}
     {% endcall %}
   {% endif %}
   {% if process.agent %}
     {% call application_section("Agent", "view-agent") %}
       {{ application_field(process.agent, "Agent") }}
-      {{ application_field(process.agent_office.address + "\n" + process.agent_office.postcode, "Address") }}
+      {% if process.agent_office.postcode %}
+        {{ application_field(process.agent_office.address + "\n" + process.agent_office.postcode, "Address") }}
+      {% else %}
+        {{ application_field(process.agent_office.address, "Address") }}
+      {% endif %}
     {% endcall %}
   {% endif %}
 {% endblock %}
