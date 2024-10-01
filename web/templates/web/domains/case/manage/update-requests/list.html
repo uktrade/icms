@@ -8,7 +8,8 @@
   {% include "partial/update-request-info-banner.html" %}
 
   {% if update_request %}
-    {% call fieldsets.fieldset("Application Update") %}
+    {% set request_datetime = (" - " + update_request.request_datetime|datetime_format) if update_request.request_datetime else "" %}
+    {% call fieldsets.fieldset("Application Update" + request_datetime) %}
       {% if not readonly_view and update_request.status == "DRAFT" %}
         <a href="{{ icms_url('case:edit-update-request', kwargs={'application_pk': process.pk, 'update_request_pk': update_request.pk, 'case_type': case_type }) }}"
           class="button small-button icon-pencil">
@@ -69,7 +70,8 @@
     {% endif %}
   {% endif %}
   {% for update_request in previous_update_requests %}
-    {% call fieldsets.fieldset("Application Update") %}
+    {% set request_datetime = (" - " + update_request.request_datetime|datetime_format) if update_request.request_datetime else "" %}
+    {% call fieldsets.fieldset("Application Update" + request_datetime) %}
       {% include "partial/update-request-detail.html" %}
     {% endcall %}
   {% endfor %}
