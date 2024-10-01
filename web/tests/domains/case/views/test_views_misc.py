@@ -10,7 +10,12 @@ from django.contrib.messages import get_messages
 from django.core import mail
 from django.urls import reverse
 from django.utils import timezone
-from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
+from pytest_django.asserts import (
+    assertContains,
+    assertNotContains,
+    assertRedirects,
+    assertTemplateUsed,
+)
 
 from web.domains.case.models import DocumentPackBase, WithdrawApplication
 from web.domains.case.services import case_progress, document_pack
@@ -782,6 +787,28 @@ class TestViewIssuedCaseDocumentsView:
         assertContains(response, "<h3>Issued documents (15-Jun-2020 12:44)</h3>")
         assertContains(response, "Firearms Cover Letter")
         assertContains(response, "Firearms Licence")
+
+    def test_get_success_for_legacy_application(self):
+        self.app.legacy_case_flag = True
+        self.app.save()
+
+        self.licence.case_completion_datetime = dt.datetime(2020, 6, 15, 11, 44, 0, tzinfo=dt.UTC)
+        self.licence.save()
+        cover_letter = document_pack.doc_ref_cover_letter_get(self.licence)
+        cover_letter.delete()
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "web/domains/case/view-case-documents.html")
+        assertContains(
+            response,
+            "Firearms and Ammunition (Specific Individual Import Licence) - Issued Documents",
+        )
+
+        # case_completion_datetime timezone is BST so template should render an hour ahead of UTC.
+        assertContains(response, "<h3>Issued documents (15-Jun-2020 12:44)</h3>")
+        assertNotContains(response, "Firearms Cover Letter")
+        assertNotContains(response, "Firearms Licence")
 
 
 def _test_reassign_ownership_view(ilb_admin_client, ilb_admin_user, ilb_admin_two, app, case_type):
