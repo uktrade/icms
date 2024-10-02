@@ -17,6 +17,11 @@ urlpatterns = [
         views.link_access_request,
         name="link-request",
     ),
+    path(
+        "case/<int:access_request_pk>/<orgtype:entity>/link-access-request-agent/",
+        views.LinkOrgAgentAccessRequestUpdateView.as_view(),
+        name="link-access-request-agent",
+    ),
     re_path(
         "^case/(?P<access_request_pk>[0-9]+)/(?P<entity>importer|exporter)/close-access-request/$",
         views.close_access_request,

@@ -245,21 +245,6 @@ class TestLinkAccessRequest(AuthTestCase):
 
         assert self.iar.link == self.importer
 
-    def test_link_importer_agent_access_request(self):
-        assert self.iar.link is None
-        assert self.iar.agent_link is None
-
-        data = {"link": self.importer.pk, "agent_link": self.importer_agent.pk}
-
-        response = self.ilb_admin_client.post(self.iar_url, data=data)
-
-        assertRedirects(response, self.iar_url)
-
-        self.iar.refresh_from_db()
-
-        assert self.iar.link == self.importer
-        assert self.iar.agent_link == self.importer_agent
-
     def test_link_exporter_access_request(self):
         assert self.ear.link is None
 
@@ -272,21 +257,6 @@ class TestLinkAccessRequest(AuthTestCase):
         self.ear.refresh_from_db()
 
         assert self.ear.link == self.exporter
-
-    def test_link_exporter_agent_access_request(self):
-        assert self.ear.link is None
-        assert self.ear.agent_link is None
-
-        data = {"link": self.exporter.pk, "agent_link": self.exporter_agent.pk}
-
-        response = self.ilb_admin_client.post(self.ear_url, data=data)
-
-        assertRedirects(response, self.ear_url)
-
-        self.ear.refresh_from_db()
-
-        assert self.ear.link == self.exporter
-        assert self.ear.agent_link == self.exporter_agent
 
     def test_unable_to_link_access_request_with_open_approval(self):
         # Link the access request
@@ -313,6 +283,91 @@ class TestLinkAccessRequest(AuthTestCase):
             "You cannot re-link this Access Request because you have already started the Approval"
             " Process. You must first Withdraw / Restart the Approval Request."
         )
+
+
+class TestLinkOrgAgentAccessRequestUpdateView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, importer, importer_access_request, exporter, exporter_access_request):
+        self.iar = importer_access_request
+        self.iar.request_type = ImporterAccessRequest.AGENT_ACCESS
+        self.iar.link = importer
+        self.iar.save()
+
+        self.iar_url = reverse(
+            "access:link-access-request-agent",
+            kwargs={"access_request_pk": importer_access_request.pk, "entity": "importer"},
+        )
+
+        self.ear = exporter_access_request
+        self.ear.request_type = ExporterAccessRequest.AGENT_ACCESS
+        self.ear.link = exporter
+        self.ear.save()
+
+        self.ear_url = reverse(
+            "access:link-access-request-agent",
+            kwargs={"access_request_pk": exporter_access_request.pk, "entity": "exporter"},
+        )
+
+    def test_link_importer_agent_access_request(self, ilb_admin_user):
+        assert self.iar.agent_link is None
+
+        data = {"agent_link": self.importer_agent.pk}
+        response = self.ilb_admin_client.post(self.iar_url, data=data, follow=True)
+
+        assert response.resolver_match.view_name == "access:link-request"
+
+        self.iar.refresh_from_db()
+
+        assert self.iar.agent_link == self.importer_agent
+
+    def test_link_exporter_agent_access_request(self):
+        assert self.ear.agent_link is None
+
+        data = {"agent_link": self.exporter_agent.pk}
+
+        response = self.ilb_admin_client.post(self.ear_url, data=data, follow=True)
+        assert response.resolver_match.view_name == "access:link-request"
+
+        self.ear.refresh_from_db()
+        assert self.ear.agent_link == self.exporter_agent
+
+    def test_invalid_importer_agent_chosen(
+        self, agent_importer, importer_two, agent_exporter, exporter_two
+    ):
+        # Link importer 1 agent to importer 2
+        agent_importer.main_importer = importer_two
+        agent_importer.save()
+
+        assert self.iar.agent_link is None
+
+        data = {"agent_link": agent_importer.pk}
+        response = self.ilb_admin_client.post(self.iar_url, data=data, follow=True)
+        assert response.resolver_match.view_name == "access:link-request"
+
+        messages = get_messages_from_response(response)
+        assert len(messages) == 1
+        assert messages[0] == "Unable to link agent."
+
+        self.iar.refresh_from_db()
+        assert self.iar.agent_link is None
+
+    def test_invalid_exporter_agent_chosen(self, agent_exporter, exporter_two):
+        # Link exporter 1 agent to exporter 2
+        agent_exporter.main_exporter = exporter_two
+        agent_exporter.save()
+
+        assert self.ear.agent_link is None
+
+        data = {"agent_link": agent_exporter.pk}
+        response = self.ilb_admin_client.post(self.ear_url, data=data, follow=True)
+        assert response.resolver_match.view_name == "access:link-request"
+
+        messages = get_messages_from_response(response)
+        assert len(messages) == 1
+        assert messages[0] == "Unable to link agent."
+
+        self.ear.refresh_from_db()
+        assert self.ear.agent_link is None
 
 
 class TestCloseAccessRequest(AuthTestCase):
@@ -650,6 +705,41 @@ class TestCloseAccessRequest(AuthTestCase):
         assert messages[0] == (
             "You cannot close this Access Request because you have already started the Approval "
             "Process. To close this Access Request you must first withdraw the Approval Request."
+        )
+
+    def test_unable_to_close_access_request_when_agent_not_linked(self):
+        # Setup the iar to be an agent access request.
+        self.iar.request_type = self.iar.AGENT_ACCESS
+        self.iar.agent_link = None
+        self.iar.save()
+
+        # Link the access request
+        link_url = reverse(
+            "access:link-request", kwargs={"access_request_pk": self.iar.pk, "entity": "importer"}
+        )
+        data = {"link": self.importer.pk}
+        response = self.ilb_admin_client.post(link_url, data=data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        # Go to close page and expect to see a message saying we can't close
+        response = self.ilb_admin_client.get(self.iar_url)
+        assert response.status_code == HTTPStatus.OK
+
+        assertInHTML(
+            "You cannot close this Access Request because you need to link the agent.",
+            response.content.decode(),
+        )
+
+        # Check posting to the endpoint also prevents closing the access request.
+        response = self.ilb_admin_client.post(
+            self.iar_url, data={"response": AccessRequest.APPROVED}
+        )
+        assert response.status_code == HTTPStatus.FOUND
+
+        messages = get_messages_from_response(response)
+        assert len(messages) == 1
+        assert messages[0] == (
+            "You cannot close this Access Request because you need to link the agent."
         )
 
 

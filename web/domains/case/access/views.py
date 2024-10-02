@@ -2,14 +2,19 @@ from typing import Any, Literal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    UserPassesTestMixin,
+)
 from django.db import transaction
 from django.db.models import QuerySet
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.views.generic import DetailView, TemplateView
+from django.utils.decorators import method_decorator
+from django.views.generic import DetailView, TemplateView, UpdateView
 from django_ratelimit import UNSAFE
 from django_ratelimit.decorators import ratelimit
 
@@ -18,6 +23,7 @@ from web.domains.case.access.filters import (
     ImporterAccessRequestFilter,
 )
 from web.domains.case.services import case_progress, reference
+from web.flow.errors import ProcessError
 from web.flow.models import ProcessTypes
 from web.mail import emails
 from web.models import (
@@ -237,9 +243,15 @@ def link_access_request(
                 )
 
             form = form_cls(request.POST, instance=access_request)
+            original_link_pk = access_request.link.pk if access_request.link else None
 
             if form.is_valid():
-                form.save()
+                saved_ar = form.save()
+
+                # Reset agent if org changes.
+                if saved_ar.link.pk != original_link_pk:
+                    saved_ar.agent_link = None
+                    saved_ar.save()
 
                 messages.success(
                     request,
@@ -256,12 +268,25 @@ def link_access_request(
         else:
             form = form_cls(instance=access_request)
 
+        if access_request.is_agent_request:
+            agent_form_cls = (
+                forms.LinkImporterAgentForm if entity == "importer" else forms.LinkExporterAgentForm
+            )
+            agent_form = agent_form_cls(instance=access_request)
+        else:
+            agent_form = None
+
         context = {
             "case_type": "access",
             "process": access_request,
             "has_approval_request": has_approval_request,
             "form": form,
             "show_agent_link": access_request.is_agent_request,
+            "link_access_request_agent_url": reverse(
+                "access:link-access-request-agent",
+                kwargs={"access_request_pk": access_request_pk, "entity": entity},
+            ),
+            "agent_form": agent_form,
             "org": org,
             "create_org_url": reverse("importer-list" if entity == "importer" else "exporter-list"),
         }
@@ -269,6 +294,57 @@ def link_access_request(
     return render(
         request=request, template_name="web/domains/case/access/management.html", context=context
     )
+
+
+@method_decorator(transaction.atomic, name="post")
+class LinkOrgAgentAccessRequestUpdateView(
+    LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, UpdateView
+):
+    permission_required = [Perms.sys.ilb_admin]
+    pk_url_kwarg = "access_request_pk"
+    model = AccessRequest
+    object: ImporterAccessRequest | ExporterAccessRequest
+    http_method_names = ["post"]
+
+    def get_queryset(self):
+        # Call select_for_update for atomic post method
+        return super().get_queryset().select_for_update()
+
+    def get_object(
+        self, queryset: QuerySet[ImporterAccessRequest | ExporterAccessRequest] | None = None
+    ) -> ImporterAccessRequest | ExporterAccessRequest:
+        obj = super().get_object(queryset)
+
+        return obj.get_specific_model()
+
+    def test_func(self):
+        # Override queryset so select_for_update is not called
+        access_request = self.get_object(AccessRequest.objects.all())
+
+        try:
+            case_progress.access_request_in_processing(access_request)
+        except ProcessError:
+            return False
+
+        return True and access_request.is_agent_request
+
+    def get_form_class(self):
+        entity = self.kwargs["entity"]
+
+        return forms.LinkImporterAgentForm if entity == "importer" else forms.LinkExporterAgentForm
+
+    def form_invalid(
+        self, form: forms.LinkImporterAgentForm | forms.LinkExporterAgentForm
+    ) -> HttpResponseRedirect:
+        # This is a post only endpoint so unable to display form errors like normal.
+        messages.warning(self.request, "Unable to link agent.")
+        return redirect(self.get_success_url())
+
+    def get_success_url(self) -> str:
+        return reverse(
+            "access:link-request",
+            kwargs={"access_request_pk": self.object.pk, "entity": self.kwargs["entity"]},
+        )
 
 
 @login_required
@@ -295,6 +371,8 @@ def close_access_request(
             is_active=True, status=ApprovalRequest.Statuses.OPEN
         )
 
+        agent_missing = access_request.is_agent_request and not access_request.agent_link
+
         if request.method == "POST":
             if has_open_approval_request:
                 messages.error(
@@ -302,6 +380,19 @@ def close_access_request(
                     "You cannot close this Access Request because you have already started the "
                     "Approval Process. To close this Access Request you must first withdraw the "
                     "Approval Request.",
+                )
+
+                return redirect(
+                    reverse(
+                        "access:close-request",
+                        kwargs={"access_request_pk": access_request.pk, "entity": entity},
+                    )
+                )
+
+            if agent_missing:
+                messages.error(
+                    request,
+                    "You cannot close this Access Request because you need to link the agent.",
                 )
 
                 return redirect(
@@ -345,6 +436,7 @@ def close_access_request(
             "process": access_request,
             "form": form,
             "has_open_approval_request": has_open_approval_request,
+            "agent_missing": agent_missing,
         }
 
     return render(
@@ -354,7 +446,7 @@ def close_access_request(
     )
 
 
-class AccessRequestHistoryView(PermissionRequiredMixin, DetailView):
+class AccessRequestHistoryView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     # DetailView Config
     model = AccessRequest
     pk_url_kwarg = "access_request_pk"

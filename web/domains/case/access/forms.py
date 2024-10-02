@@ -63,23 +63,7 @@ class ImporterAccessRequestForm(AccessRequestFormBase):
         ]
 
 
-class LinkOrgAccessRequestFormBase(ModelForm):
-    instance: ImporterAccessRequest | ExporterAccessRequest
-
-    def clean(self) -> dict[str, Any]:
-        cleaned_data = super().clean()
-
-        if self.instance.is_agent_request:
-            link = cleaned_data.get("link")
-            agent_link = cleaned_data.get("agent_link")
-
-            if agent_link and agent_link.get_main_org() != link:
-                self.add_error("agent_link", "Agent organisation is not linked to main org.")
-
-        return cleaned_data
-
-
-class LinkImporterAccessRequestForm(LinkOrgAccessRequestFormBase):
+class LinkImporterAccessRequestForm(ModelForm):
     link = ModelChoiceField(
         label="Link Importer",
         help_text=(
@@ -91,24 +75,12 @@ class LinkImporterAccessRequestForm(LinkOrgAccessRequestFormBase):
         widget=ImporterWidget,
     )
 
-    agent_link = ModelChoiceField(
-        label="Link Agent Importer",
-        help_text=(
-            "Search an agent importer to link."
-            " Importers returned are matched against name, registerer number"
-            ", eori number and user name/email."
-        ),
-        queryset=Importer.objects.filter(is_active=True, main_importer__isnull=False),
-        widget=ImporterAgentWidget,
-        required=False,
-    )
-
     class Meta:
         model = ImporterAccessRequest
-        fields = ["link", "agent_link"]
+        fields = ["link"]
 
 
-class LinkExporterAccessRequestForm(LinkOrgAccessRequestFormBase):
+class LinkExporterAccessRequestForm(ModelForm):
     link = ModelChoiceField(
         label="Link Exporter",
         help_text=(
@@ -119,20 +91,72 @@ class LinkExporterAccessRequestForm(LinkOrgAccessRequestFormBase):
         widget=ExporterWidget,
     )
 
+    class Meta:
+        model = ExporterAccessRequest
+        fields = ["link"]
+
+
+class LinkOrgAgentFormBase(ModelForm):
+    instance: ImporterAccessRequest | ExporterAccessRequest
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+
+        link = self.instance.link
+        agent_link = cleaned_data.get("agent_link")
+
+        if agent_link and agent_link.get_main_org() != link:
+            self.add_error("agent_link", "Agent organisation is not linked to main organisation.")
+
+        return cleaned_data
+
+
+class LinkImporterAgentForm(LinkOrgAgentFormBase):
+    class Meta:
+        model = ImporterAccessRequest
+        fields = ["agent_link"]
+
+    agent_link = ModelChoiceField(
+        label="Link Agent Importer",
+        help_text=(
+            "Search an agent importer to link."
+            " Importers returned are matched against name, registerer number"
+            ", eori number and user name/email."
+        ),
+        queryset=Importer.objects.none(),
+        widget=ImporterAgentWidget(attrs={"data-minimum-input-length": 0}),
+        required=True,
+    )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["agent_link"].queryset = Importer.objects.filter(
+            is_active=True, main_importer=self.instance.link
+        )
+
+
+class LinkExporterAgentForm(LinkOrgAgentFormBase):
+    class Meta:
+        model = ExporterAccessRequest
+        fields = ["agent_link"]
+
     agent_link = ModelChoiceField(
         label="Link Agent Exporter",
         help_text=(
             "Search an agent exporter to link."
             " Exporters returned are matched against name and registerer number."
         ),
-        queryset=Exporter.objects.filter(is_active=True, main_exporter__isnull=False),
-        widget=ExporterAgentWidget,
-        required=False,
+        queryset=Exporter.objects.none(),
+        widget=ExporterAgentWidget(attrs={"data-minimum-input-length": 0}),
+        required=True,
     )
 
-    class Meta:
-        model = ExporterAccessRequest
-        fields = ["link", "agent_link"]
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.fields["agent_link"].queryset = Exporter.objects.filter(
+            is_active=True, main_exporter=self.instance.link
+        )
 
 
 class CloseAccessRequestForm(ModelForm):
