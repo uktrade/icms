@@ -15,6 +15,10 @@
     <div class="info-box info-box-info">
       You cannot close this Access Request because you have already started the Approval Process. To close this Access Request you must first withdraw the Approval Request.
     </div>
+  {% elif agent_missing %}
+    <div class="info-box info-box-info">
+      You cannot close this Access Request because you need to link the agent.
+    </div>
   {% else %}
     <div class="container setOutForm">
       {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
