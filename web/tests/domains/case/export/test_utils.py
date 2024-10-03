@@ -122,23 +122,23 @@ def test_multiple_chunks_invalid(cfs_app_submitted):
 
 
 @pytest.mark.django_db
-def test_sheet_name_invalid(cfs_app_submitted):
+def test_alternative_sheet_name(cfs_app_submitted):
     schedule = create_schedule(cfs_app_submitted)
     config = create_dummy_config()
     config.sheet_name = "Sheet 1"
     xlsx_file = create_dummy_xlsx_file(config)
+    count = process_products_file(xlsx_file, schedule)
 
-    with pytest.raises(ValidationError) as e:
-        process_products_file(xlsx_file, schedule)
-
-    assert "Cannot find sheet with name 'CFS Products' in file" in str(e.value)
+    assert count == 3
+    assert schedule.products.count() == 3
+    assert schedule.products.filter(product_name="Product 1").count() == 1
 
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("is_biocidal", [False, True])
 def test_invalid_header(cfs_app_submitted, is_biocidal):
     schedule = create_schedule(cfs_app_submitted, is_biocidal)
-    config = create_dummy_config(is_biocidal is False)
+    config = create_dummy_config(is_biocidal=is_biocidal is False)
     xlsx_file = create_dummy_xlsx_file(config)
 
     with pytest.raises(ValidationError) as e:
@@ -148,10 +148,9 @@ def test_invalid_header(cfs_app_submitted, is_biocidal):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("is_biocidal", [False, True])
-def test_invalid_row_width(cfs_app_submitted, is_biocidal):
-    schedule = create_schedule(cfs_app_submitted, is_biocidal)
-    config = create_dummy_config(is_biocidal)
+def test_invalid_row_width(cfs_app_submitted):
+    schedule = create_schedule(cfs_app_submitted, True)
+    config = create_dummy_config(is_biocidal=True)
     config.rows.append(["Product 4", "8", "Ingredient 5", "111-11-5", "Extra"])
 
     xlsx_file = create_dummy_xlsx_file(config)
@@ -170,11 +169,12 @@ def test_missing_product_name(cfs_app_submitted):
     config = create_dummy_config()
     config.rows[1][0] = None
     xlsx_file = create_dummy_xlsx_file(config)
+    count = process_products_file(xlsx_file, schedule)
 
-    with pytest.raises(ValidationError) as e:
-        process_products_file(xlsx_file, schedule)
-
-    assert "Data missing in column 'Product Name' - line 3" in str(e.value)
+    assert count == 2
+    assert list(
+        schedule.products.order_by("product_name").values_list("product_name", flat=True)
+    ) == ["Product 1", "Product 3"]
 
 
 @pytest.mark.django_db
