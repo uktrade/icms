@@ -100,7 +100,7 @@ class ConstabularyDetailView(ModelDetailView):
 
 
 class ConstabularyContactsBaseView(
-    PermissionRequiredMixin, LoginRequiredMixin, SingleObjectMixin, View
+    LoginRequiredMixin, PermissionRequiredMixin, SingleObjectMixin, View
 ):
     # View config
     http_method_names = ["post"]

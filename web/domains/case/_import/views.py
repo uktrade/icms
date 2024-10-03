@@ -520,7 +520,7 @@ def bypass_chief(
         return redirect(reverse("workbasket"))
 
 
-class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+class IMICaseListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     """Shows a list of cases that need information sending to the EU.
 
     The logic in V1 is different to the logic added to v2 and is documented in the following ticket:
@@ -577,7 +577,7 @@ class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
         return qs
 
 
-class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+class IMICaseDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "web/domains/case/manage/imi-case-detail.html"
     permission_required = Perms.page.view_imi
     pk_url_kwarg = "application_pk"

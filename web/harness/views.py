@@ -16,7 +16,7 @@ from web.types import AuthenticatedHttpRequest
 from . import forms
 
 
-class L10NTestHarnessView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):  # /PS-IGNORE
+class L10NTestHarnessView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):  # /PS-IGNORE
     # PermissionRequiredMixin config
     permission_required = [Perms.page.view_l10n_harness]
 
@@ -60,7 +60,7 @@ class L10NTestHarnessView(PermissionRequiredMixin, LoginRequiredMixin, TemplateV
         }
 
 
-class PermissionTestHarnessView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
+class PermissionTestHarnessView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     # PermissionRequiredMixin config
     permission_required = [Perms.page.view_permission_harness]
 
@@ -84,7 +84,7 @@ def _get_test_users() -> QuerySet[User]:
     )
 
 
-class CreateHarnessDataView(PermissionRequiredMixin, LoginRequiredMixin, View):
+class CreateHarnessDataView(LoginRequiredMixin, PermissionRequiredMixin, View):
     # PermissionRequiredMixin config
     permission_required = [Perms.sys.ilb_admin, Perms.page.view_permission_harness]
 

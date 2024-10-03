@@ -318,7 +318,7 @@ class UserDeactivateFormView(UserReactivateFormView):
 
 @method_decorator(require_caseworker, name="dispatch")
 class OneLoginTestAccountsCreateFormView(
-    UserPassesTestMixin, PermissionRequiredMixin, LoginRequiredMixin, FormView
+    LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, FormView
 ):
     # PermissionRequiredMixin config
     permission_required = Perms.page.view_one_login_test_account_setup
@@ -369,7 +369,7 @@ def create_user_alias(user: User, org: Importer | Exporter, alias: str) -> None:
 
 
 class OneLoginTestAccountsDetailView(
-    UserPassesTestMixin, PermissionRequiredMixin, LoginRequiredMixin, DetailView
+    LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, DetailView
 ):
     # PermissionRequiredMixin config
     permission_required = Perms.page.view_one_login_test_account_setup

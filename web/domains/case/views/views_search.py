@@ -206,7 +206,7 @@ def download_spreadsheet(
 
 @method_decorator(transaction.atomic, name="post")
 class ReopenApplicationView(
-    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+    LoginRequiredMixin, PermissionRequiredMixin, ApplicationTaskMixin, View
 ):
     http_method_names = ["post"]
     permission_required = [Perms.sys.ilb_admin]
@@ -241,7 +241,7 @@ class ReopenApplicationView(
 
 
 class SearchActionFormBase(
-    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, FormView
+    LoginRequiredMixin, PermissionRequiredMixin, ApplicationTaskMixin, FormView
 ):
     """Base class for showing a form view that retains the previous search results."""
 
@@ -544,7 +544,7 @@ class CopyAppOrCATPermissionMixin(PermissionRequiredMixin):
 
 
 @method_decorator(transaction.atomic, name="post")
-class CopyExportApplicationView(CopyAppOrCATPermissionMixin, LoginRequiredMixin, FormView):
+class CopyExportApplicationView(LoginRequiredMixin, CopyAppOrCATPermissionMixin, FormView):
     form_class = CreateExportApplicationForm
     template_name = "web/domains/case/export/copy-application.html"
 
@@ -619,7 +619,7 @@ class CopyExportApplicationView(CopyAppOrCATPermissionMixin, LoginRequiredMixin,
 
 @method_decorator(transaction.atomic, name="post")
 class CreateCATemplateFromExportApplicationView(
-    CopyAppOrCATPermissionMixin, LoginRequiredMixin, FormView
+    LoginRequiredMixin, CopyAppOrCATPermissionMixin, FormView
 ):
     """View for creating a certificate application template from an export application."""
 

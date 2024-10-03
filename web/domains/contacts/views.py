@@ -98,7 +98,7 @@ def delete(
     return redirect(parent_url)
 
 
-class InviteOrgContactView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
+class InviteOrgContactView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     # FormView config
     form_class = InviteOrgContactForm
     template_name = "web/domains/organisation/invite-contact.html"

@@ -306,7 +306,7 @@ class LoginRequiredSelect2AutoResponseView(LoginRequiredMixin, AutoResponseView)
 
 
 class ModelFilterView(
-    PermissionRequiredMixin, LoginRequiredMixin, DataDisplayConfigMixin, ListView
+    LoginRequiredMixin, PermissionRequiredMixin, DataDisplayConfigMixin, ListView
 ):
     paginate_by = 50
     paginate = True
@@ -388,7 +388,7 @@ class ModelFilterView(
 
 
 class ModelCreateView(
-    PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, CreateView
+    LoginRequiredMixin, PermissionRequiredMixin, PageTitleMixin, SuccessMessageMixin, CreateView
 ):
     template_name = "model/edit.html"
 
@@ -397,7 +397,7 @@ class ModelCreateView(
 
 
 class ModelUpdateView(
-    PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView
+    LoginRequiredMixin, PermissionRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView
 ):
     template_name = "model/edit.html"
 
@@ -408,7 +408,7 @@ class ModelUpdateView(
         return f"Editing {self.object}"
 
 
-class ModelDetailView(PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixin, DetailView):
+class ModelDetailView(LoginRequiredMixin, PermissionRequiredMixin, PageTitleMixin, DetailView):
     template_name = "model/view.html"
 
     def _readonly(self, form):

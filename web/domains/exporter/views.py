@@ -62,7 +62,7 @@ class ExporterListAdminView(ModelFilterView):
         actions = [Edit(**opts), CreateExporterAgent(**opts), Archive(**opts), Unarchive(**opts)]
 
 
-class ExporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+class ExporterListUserView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     """Exporter list view showing all exporters the logged-in user has access to."""
 
     permission_required = [Perms.page.view_exporter_details]

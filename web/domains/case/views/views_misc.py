@@ -539,7 +539,7 @@ def authorise_documents(
 
 
 class CheckCaseDocumentGenerationView(
-    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+    LoginRequiredMixin, PermissionRequiredMixin, ApplicationTaskMixin, View
 ):
     # View Config
     http_method_names = ["get"]
@@ -587,7 +587,7 @@ class CheckCaseDocumentGenerationView(
 
 @method_decorator(transaction.atomic, name="post")
 class RecreateCaseDocumentsView(
-    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+    LoginRequiredMixin, PermissionRequiredMixin, ApplicationTaskMixin, View
 ):
     # View Config
     http_method_names = ["post"]
@@ -784,7 +784,7 @@ def cancel_authorisation(
         return redirect(reverse("workbasket"))
 
 
-class ViewIssuedCaseDocumentsView(ApplicationTaskMixin, LoginRequiredMixin, TemplateView):
+class ViewIssuedCaseDocumentsView(LoginRequiredMixin, ApplicationTaskMixin, TemplateView):
     # ApplicationTaskMixin Config
     current_status = [ImpExpStatus.COMPLETED]
 
@@ -819,7 +819,7 @@ class ViewIssuedCaseDocumentsView(ApplicationTaskMixin, LoginRequiredMixin, Temp
 
 @method_decorator(transaction.atomic, name="post")
 class ClearIssuedCaseDocumentsFromWorkbasket(
-    ApplicationAndTaskRelatedObjectMixin, LoginRequiredMixin, View
+    LoginRequiredMixin, ApplicationAndTaskRelatedObjectMixin, View
 ):
     # ApplicationAndTaskRelatedObjectMixin Config
     current_status = [ImpExpStatus.COMPLETED]
@@ -849,7 +849,7 @@ class ClearIssuedCaseDocumentsFromWorkbasket(
 
 
 @method_decorator(transaction.atomic, name="post")
-class ClearCaseFromWorkbasket(ApplicationTaskMixin, LoginRequiredMixin, View):
+class ClearCaseFromWorkbasket(LoginRequiredMixin, ApplicationTaskMixin, View):
     # ApplicationTaskMixin Config
     current_status = [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
 
@@ -901,7 +901,7 @@ def _get_copy_recipients(application: ImpOrExp) -> "QuerySet[User]":
 
 
 class QuickIssueApplicationView(
-    ApplicationTaskMixin, LoginRequiredMixin, PermissionRequiredMixin, View
+    LoginRequiredMixin, PermissionRequiredMixin, ApplicationTaskMixin, View
 ):
     http_method_names = ["post"]
     current_status = [

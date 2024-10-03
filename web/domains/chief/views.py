@@ -212,9 +212,9 @@ class UsageDataCallbackView(HawkViewBase):
 
 @method_decorator(transaction.atomic, name="post")
 class ResendLicenceToChiefView(
-    ApplicationTaskMixin,
-    PermissionRequiredMixin,
     LoginRequiredMixin,
+    PermissionRequiredMixin,
+    ApplicationTaskMixin,
     View,
 ):
     """View to resend a Licence to CHIEF."""
@@ -261,7 +261,7 @@ class ResendLicenceToChiefView(
 
 @method_decorator(transaction.atomic, name="post")
 class RevertLicenceToProcessingView(
-    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+    LoginRequiredMixin, PermissionRequiredMixin, ApplicationTaskMixin, View
 ):
     """View to revert an application with a chief error back to being processed by ILB.
 
@@ -341,7 +341,7 @@ class ChiefRequestDataView(PermissionRequiredMixin, DetailView):
 
 
 class CheckChiefProgressView(
-    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+    LoginRequiredMixin, PermissionRequiredMixin, ApplicationTaskMixin, View
 ):
     # View Config
     http_method_names = ["get"]

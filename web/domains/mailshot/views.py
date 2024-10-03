@@ -69,7 +69,7 @@ class ReceivedMailshotsView(ModelFilterView):
         actions = [ViewReceived()]
 
 
-class MailshotReceivedDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+class MailshotReceivedDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Mailshot
     pk_url_kwarg = "mailshot_pk"
     template_name = "web/domains/mailshot/view_received.html"
@@ -95,7 +95,7 @@ class MailshotReceivedDetailView(PermissionRequiredMixin, LoginRequiredMixin, De
 
 
 class ClearMailshotFromWorkbasketView(
-    PermissionRequiredMixin, LoginRequiredMixin, SingleObjectMixin, View
+    LoginRequiredMixin, PermissionRequiredMixin, SingleObjectMixin, View
 ):
     # View config
     http_method_names = ["post"]
@@ -176,7 +176,7 @@ class MailshotListView(ModelFilterView):
         return mailshots.order_by("-pk")
 
 
-class MailshotCreateView(PermissionRequiredMixin, LoginRequiredMixin, View):
+class MailshotCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
     MAILSHOT_TEMPLATE_CODE = Template.Codes.PUBLISH_MAILSHOT
     permission_required = [Perms.sys.ilb_admin]
 
