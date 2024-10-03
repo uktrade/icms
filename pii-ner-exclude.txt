@@ -5028,3 +5028,16 @@ Application Processing (Awaiting Constabulary Email Response
 Application Processing (Awaiting HSE Email Response
 Application Processing (Awaiting Sanctions Email Response
 self.imp_app & self.imp_app_sanctions
+EXTRACTVALUE(fv.metadata_xml
+RFI_LIST/RFI
+NUMBER PATH
+ON vf
+rff
+ON fv
+FILE_ID
+ON x.rfi_id
+Access Request FIR Files
+ACCESS_REQUEST_ID
+V2 db - Associates
+"Finds the relevant access request fir
+Command.add_file_to_db
