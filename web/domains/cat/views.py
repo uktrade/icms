@@ -63,7 +63,7 @@ from .utils import (
 )
 
 
-class CATListView(PermissionRequiredMixin, LoginRequiredMixin, FilterView):
+class CATListView(LoginRequiredMixin, PermissionRequiredMixin, FilterView):
     template_name = "web/domains/cat/list.html"
     context_object_name = "templates"
     filterset_class = CATFilter
@@ -134,7 +134,7 @@ class CatSteps(StrEnum):
     CFS_SCHEDULE = "cfs-schedule"
 
 
-class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMixin, FormView):
+class CATEditView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin, FormView):
     template_name = "web/domains/cat/edit.html"
     read_only = False  # Determines editing or read-only behaviour.
 
@@ -398,7 +398,7 @@ class CATReadOnlyView(CATEditView):
         return template_in_user_templates(self.request.user, self.object, include_inactive=True)
 
 
-class CATArchiveView(PermissionRequiredMixin, LoginRequiredMixin, View):
+class CATArchiveView(LoginRequiredMixin, PermissionRequiredMixin, View):
     def has_permission(self) -> bool:
         return _has_permission(self.request.user)
 
@@ -416,7 +416,7 @@ class CATArchiveView(PermissionRequiredMixin, LoginRequiredMixin, View):
         return redirect("cat:list")
 
 
-class CATRestoreView(PermissionRequiredMixin, LoginRequiredMixin, View):
+class CATRestoreView(LoginRequiredMixin, PermissionRequiredMixin, View):
     def has_permission(self) -> bool:
         return _has_permission(self.request.user)
 
@@ -453,7 +453,7 @@ class CFSTemplatePermissionRequiredMixin(PermissionRequiredMixin):
 
 
 class CFSScheduleTemplateAddView(
-    SingleObjectMixin, CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View
+    LoginRequiredMixin, SingleObjectMixin, CFSTemplatePermissionRequiredMixin, View
 ):
     # SingleObjectMixin
     model = CertificateApplicationTemplate
@@ -470,7 +470,7 @@ class CFSScheduleTemplateAddView(
         )
 
 
-class CFSScheduleTemplateCopyView(CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View):
+class CFSScheduleTemplateCopyView(LoginRequiredMixin, CFSTemplatePermissionRequiredMixin, View):
     http_method_names = ["post"]
 
     def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -526,7 +526,7 @@ def copy_schedule(schedule: CFSScheduleTemplate, user: User) -> None:
             ingredient.save()
 
 
-class CFSScheduleTemplateDeleteView(CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View):
+class CFSScheduleTemplateDeleteView(LoginRequiredMixin, CFSTemplatePermissionRequiredMixin, View):
     http_method_names = ["post"]
 
     def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -564,7 +564,7 @@ class CFSManufacturerUpdateView(LoginRequiredMixin, CFSTemplatePermissionRequire
         }
 
 
-class CFSManufacturerDeleteView(CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View):
+class CFSManufacturerDeleteView(LoginRequiredMixin, CFSTemplatePermissionRequiredMixin, View):
     http_method_names = ["post"]
 
     def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -589,7 +589,7 @@ class CFSManufacturerDeleteView(CFSTemplatePermissionRequiredMixin, LoginRequire
 
 
 class CFSScheduleTemplateManageProductsView(
-    CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, InlineFormsetView
+    LoginRequiredMixin, CFSTemplatePermissionRequiredMixin, InlineFormsetView
 ):
     object: CFSScheduleTemplate
 
@@ -637,7 +637,7 @@ class CFSScheduleTemplateManageProductsView(
 
 
 class CFSScheduleTemplateProductDownloadSpreadsheetView(
-    CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View
+    LoginRequiredMixin, CFSTemplatePermissionRequiredMixin, View
 ):
     http_method_names = ["get"]
 
@@ -647,7 +647,7 @@ class CFSScheduleTemplateProductDownloadSpreadsheetView(
 
 
 class CFSScheduleTemplateProductUploadSpreadsheetView(
-    CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, FormView
+    LoginRequiredMixin, CFSTemplatePermissionRequiredMixin, FormView
 ):
     """Post only FormView for processing a product template spreadsheet.
 

@@ -18,7 +18,7 @@ from web.utils.s3 import get_file_from_s3
 
 
 # Note: Not currently in use (replaced by DownloadDFLCaseDocumentsFormView)
-class BaseConstabularyDocumentView(PermissionRequiredMixin, LoginRequiredMixin):
+class BaseConstabularyDocumentView(LoginRequiredMixin, PermissionRequiredMixin):
     permission_required = [Perms.page.view_documents_constabulary]
 
     def has_permission(self) -> bool:

@@ -28,7 +28,7 @@ def check_can_view_application(user: User, application: ImpOrExp) -> None:
         raise PermissionDenied
 
 
-class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+class CaseHistoryView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     """Case management view for viewing application variations."""
 
     licence_date_format = "%d %b %Y"

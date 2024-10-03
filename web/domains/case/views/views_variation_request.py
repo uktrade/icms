@@ -31,7 +31,7 @@ from .mixins import ApplicationAndTaskRelatedObjectMixin
 from .utils import get_caseworker_view_readonly_status
 
 
-class VariationRequestManageView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+class VariationRequestManageView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     """ILB Case management view for viewing application variations."""
 
     # PermissionRequiredMixin config
@@ -77,7 +77,7 @@ class VariationRequestManageView(PermissionRequiredMixin, LoginRequiredMixin, De
 
 @method_decorator(transaction.atomic, name="post")
 class VariationRequestCancelView(
-    ApplicationAndTaskRelatedObjectMixin, PermissionRequiredMixin, LoginRequiredMixin, UpdateView
+    LoginRequiredMixin, PermissionRequiredMixin, ApplicationAndTaskRelatedObjectMixin, UpdateView
 ):
     """ILB Case management view for cancelling a request variation.
 
@@ -155,7 +155,7 @@ class VariationRequestCancelView(
 
 @method_decorator(transaction.atomic, name="post")
 class VariationRequestRequestUpdateView(
-    ApplicationAndTaskRelatedObjectMixin, PermissionRequiredMixin, LoginRequiredMixin, UpdateView
+    LoginRequiredMixin, PermissionRequiredMixin, ApplicationAndTaskRelatedObjectMixin, UpdateView
 ):
     """ILB Case management view for requesting an update from the applicant."""
 
@@ -206,10 +206,10 @@ class VariationRequestRequestUpdateView(
 
 @method_decorator(transaction.atomic, name="post")
 class VariationRequestCancelUpdateRequestView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
     ApplicationAndTaskRelatedObjectMixin,
     SingleObjectMixin,
-    PermissionRequiredMixin,
-    LoginRequiredMixin,
     View,
 ):
     """View to allow ILB admin to cancel the variation request update from the applicant."""
@@ -256,7 +256,7 @@ class VariationRequestCancelUpdateRequestView(
 
 @method_decorator(transaction.atomic, name="post")
 class VariationRequestRespondToUpdateRequestView(
-    ApplicationAndTaskRelatedObjectMixin, PermissionRequiredMixin, LoginRequiredMixin, UpdateView
+    LoginRequiredMixin, PermissionRequiredMixin, ApplicationAndTaskRelatedObjectMixin, UpdateView
 ):
     """View used by applicant to update a variation request."""
 

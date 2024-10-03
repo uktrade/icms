@@ -37,7 +37,7 @@ class MissingTranslationsDict(TypedDict):
     remaining: int
 
 
-class CountryListView(PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixin, ListView):
+class CountryListView(LoginRequiredMixin, PermissionRequiredMixin, PageTitleMixin, ListView):
     model = Country
     template_name = "web/domains/country/list.html"
     filterset_class = CountryNameFilter
@@ -58,7 +58,7 @@ class CountryEditView(ModelUpdateView):
     permission_required = Perms.sys.ilb_admin
 
 
-class CountryCreateView(PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixin, FormView):
+class CountryCreateView(LoginRequiredMixin, PermissionRequiredMixin, PageTitleMixin, FormView):
     template_name = "web/domains/country/add.html"
     form_class = CountryCreateForm
     page_title = "Add Country"
@@ -116,7 +116,7 @@ class CountryGroupListView(ModelFilterView):
         return queryset
 
 
-class CountryGroupCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+class CountryGroupCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     # PermissionRequiredMixin config
     permission_required = Perms.sys.ilb_admin
 

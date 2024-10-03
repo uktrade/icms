@@ -614,7 +614,7 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
 
 
 class ViewFirearmsReportDetailView(
-    PermissionRequiredMixin, LoginRequiredMixin, ApplicationTaskMixin, DetailView
+    LoginRequiredMixin, PermissionRequiredMixin, ApplicationTaskMixin, DetailView
 ):
     # PermissionRequiredMixin config
     permission_required = Perms.sys.ilb_admin

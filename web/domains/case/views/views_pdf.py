@@ -24,7 +24,7 @@ from web.utils.pdf.signer import sign_pdf
 from .mixins import ApplicationTaskMixin
 
 
-class DocumentPreviewBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View):
+class DocumentPreviewBase(LoginRequiredMixin, PermissionRequiredMixin, ApplicationTaskMixin, View):
     # ApplicationTaskMixin Config
     current_status = [
         ImpExpStatus.SUBMITTED,

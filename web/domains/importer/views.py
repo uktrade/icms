@@ -124,7 +124,7 @@ class ImporterListAdminView(ModelFilterView):
         ]
 
 
-class ImporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+class ImporterListUserView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     """Importer list view showing all importers the logged-in user has access to."""
 
     permission_required = [Perms.page.view_importer_details]
@@ -177,7 +177,7 @@ class ImporterListRegulatorView(ModelFilterView):
         actions: list[Any] = []
 
 
-class ImporterDetailRegulatorView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+class ImporterDetailRegulatorView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     """Importer detail view used by several groups.
 
     Groups:
