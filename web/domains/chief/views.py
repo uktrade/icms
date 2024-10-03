@@ -9,7 +9,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core import exceptions
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect
@@ -187,13 +187,21 @@ class UsageDataCallbackView(HawkViewBase):
     def _update_import_application_usage_status(self, rec: types.UsageRecord) -> None:
         try:
             licence = ImportApplicationLicence.objects.get(
-                status=ImportApplicationLicence.Status.ACTIVE,
+                status__in=[
+                    ImportApplicationLicence.Status.ACTIVE,
+                    ImportApplicationLicence.Status.REVOKED,
+                ],
                 document_references__document_type=CaseDocumentReference.Type.LICENCE,
                 document_references__reference=rec.licence_ref,
             )
         except ObjectDoesNotExist:
             capture_message(
                 f"licence not found: Unable to set usage status for licence number: {rec.licence_ref}."
+            )
+            return
+        except MultipleObjectsReturned:
+            capture_message(
+                f"multiple licences found: Unable to set usage status for licence number: {rec.licence_ref}."
             )
             return
 

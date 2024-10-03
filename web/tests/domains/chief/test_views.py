@@ -10,7 +10,7 @@ from mohawk.util import parse_authorization_header
 from pytest_django.asserts import assertTemplateUsed
 
 from web.domains.case import tasks
-from web.domains.case.services import case_progress
+from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client, types
 from web.domains.chief import views as chief_views
@@ -473,3 +473,78 @@ class TestRevertLicenceToProcessingView:
 
         case_progress.check_expected_status(self.app, [ImpExpStatus.VARIATION_REQUESTED])
         case_progress.check_expected_task(self.app, Task.TaskType.PROCESS)
+
+
+class TestUsageDataCallbackView:
+    @pytest.fixture(autouse=True)
+    def _setup(
+        self, importer_one_contact, completed_dfl_app, completed_oil_app, monkeypatch, cw_client
+    ):
+        self.client = cw_client
+        self.user = importer_one_contact
+        self.complete_app = completed_dfl_app
+        self.revoked_app = completed_oil_app
+        self.monkeypatch = monkeypatch
+        self.url = reverse("chief:usage-data-callback")
+        document_pack.pack_active_revoke(self.revoked_app, "Testing revoke", False)
+
+        # Fake mohawk when testing the business logic for simplicity and speed.
+        # See TestLicenseDataCallbackAuthentication above for authentication testing
+        mohawk_mock = create_autospec(mohawk)
+
+        # Value mocked: mohawk.Receiver().parsed_header
+        mohawk_mock.Receiver.return_value.parsed_header = parse_authorization_header(
+            'Hawk id="dh37fgj492je"'  # /PS-IGNORE
+            ', ts="1367076201"'
+            ', nonce="NPHgnG"'
+            ', ext="foo bar"'
+            ', mac="CeWHy4d9kbLGhDlkyw2Nh3PJ7SDOdZDa267KH4ZaNMY="'  # /PS-IGNORE
+        )
+
+        # Value mocked: mohawk.Receiver().respond()
+        mohawk_mock.Receiver.return_value.respond.return_value = (
+            'Hawk id="ph37fgj492je"'  # /PS-IGNORE
+            ', ext="foo bar"'
+            ', mac="DeWHy4d9kbLGhDlkyw2Nh3PJ7SDOdZDa267KH4ZaNMY="'  # /PS-IGNORE
+        )
+
+        self.monkeypatch.setattr(chief_views, "mohawk", mohawk_mock)
+
+    def test_post_updates_chief_usage_status(self):
+        assert not self.complete_app.chief_usage_status
+        assert not self.revoked_app.chief_usage_status
+
+        active_licence = document_pack.doc_ref_licence_get(
+            document_pack.pack_active_get(self.complete_app)
+        )
+
+        revoked_licence = document_pack.doc_ref_licence_get(
+            document_pack.pack_revoked_get(self.revoked_app)
+        )
+
+        payload = types.ChiefUsageDataResponseData(
+            usage_data=[
+                types.UsageRecord(licence_ref=active_licence.reference, licence_status="O"),
+                types.UsageRecord(licence_ref=revoked_licence.reference, licence_status="D"),
+            ]
+        )
+
+        response = self.client.post(
+            self.url,
+            data=payload.model_dump(),
+            content_type=JSON_TYPE,
+            HTTP_HAWK_AUTHENTICATION="foo",
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.headers.get("Content-Type") == "application/json"
+
+        response_data = response.json()
+
+        assert response_data == {}
+
+        self.complete_app.refresh_from_db()
+        self.revoked_app.refresh_from_db()
+
+        assert self.complete_app.chief_usage_status == "O"
+        assert self.revoked_app.chief_usage_status == "D"
