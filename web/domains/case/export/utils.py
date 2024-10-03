@@ -127,18 +127,21 @@ def _extract_sheet_header(sheet: Worksheet, is_biocidal: bool = False) -> list[s
 
     header = _get_header(is_biocidal)
     header_data: list[str] = list(next(sheet.values))  # type:ignore[arg-type]
-
     header_row = [col.strip() if col else "" for col in header_data]
 
-    # Check the number of columns with data in xlsx file matches the length of the header
-    if "" in header_row:
-        raise ValidationError(
-            "Number of columns with data do not match the number of columns in the header"
-        )
+    if is_biocidal:
+        # Check the number of columns with data in xlsx file matches the length of the header
+        if "" in header_row:
+            raise ValidationError(
+                "Number of columns with data do not match the number of columns in the header"
+            )
+        # Check the header in the xlsx file matches the expected template header
+        if header != header_row:
+            raise ValidationError("Spreadsheet header does not match the template header")
 
-    # Check the header in the xlsx file matches the expected template header
-    if header != header_row:
-        raise ValidationError("Spreadsheet header does not match the template header")
+    else:
+        if not header or header[:1] != header_row:
+            raise ValidationError("Spreadsheet header does not match the template header")
 
     return header
 
@@ -159,10 +162,12 @@ def _extract_product_data(products_file: File, is_biocidal: bool = False) -> dic
     workbook = load_workbook(filename=io.BytesIO(chunk), read_only=True, data_only=True)
 
     try:
-        if "CFS Products" not in workbook.sheetnames:
-            raise ValidationError("Cannot find sheet with name 'CFS Products' in file")
+        if "CFS Products" in workbook.sheetnames:
+            sheet = workbook["CFS Products"]
+        else:
+            # Take the first sheet if sheet name not found
+            sheet = workbook[workbook.sheetnames[0]]
 
-        sheet = workbook["CFS Products"]
         header = _extract_sheet_header(sheet, is_biocidal)
 
         for row, row_values in enumerate(sheet.values, start=1):
@@ -180,7 +185,7 @@ def _extract_product_data(products_file: File, is_biocidal: bool = False) -> dic
             product_name = row_data.get("Product Name")
 
             if not product_name:
-                raise ValidationError(f"Data missing in column 'Product Name' - line {row}")
+                continue
 
             product = data.get(product_name, ProductData())
 
