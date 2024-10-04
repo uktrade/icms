@@ -195,6 +195,11 @@ def ho_admin_client(ho_admin_user, caseworker_site) -> Client:
 
 
 @pytest.fixture()
+def san_admin_client(san_admin_user, caseworker_site) -> Client:
+    return get_test_client(caseworker_site.domain, san_admin_user)
+
+
+@pytest.fixture()
 def constabulary_client(constabulary_contact, caseworker_site) -> Client:
     return get_test_client(caseworker_site.domain, constabulary_contact)
 
