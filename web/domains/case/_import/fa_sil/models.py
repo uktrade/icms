@@ -132,7 +132,7 @@ class SILGoodsSectionBase(models.Model):
     quantity = models.PositiveBigIntegerField(help_text="Enter a whole number")
 
     # Original applicant fields that cannot be overritten by the case office
-    # TODO ICMSLST-2790 Make fields not nullable when data migration is updated
+    # TODO: ICMSLST-3017 Make fields not nullable when data migration is updated
     description_original = models.CharField(max_length=4096, null=True)
     quantity_original = models.PositiveBigIntegerField(null=True)
 

@@ -70,7 +70,6 @@ from web.models import (
     Task,
     TextilesApplication,
     User,
-    WoodQuotaApplication,
     WoodQuotaChecklist,
 )
 from web.models.shared import YesNoNAChoices
@@ -79,15 +78,17 @@ from web.sites import SiteName
 from web.tests.helpers import CaseURLS, get_test_client
 from web.tests.utils.search.conftest import Build, importer_one_fixture_data  # NOQA
 
+from .application_fixtures import (
+    FirearmsDFLAppFixture,
+    FirearmsOILAppFixture,
+    WoodAppFixture,
+)
 from .application_utils import (
     create_in_progress_cfs_app,
     create_in_progress_com_app,
-    create_in_progress_fa_dfl_app,
-    create_in_progress_fa_oil_app,
     create_in_progress_fa_sil_app,
     create_in_progress_gmp_app,
     create_in_progress_sanctions_app,
-    create_in_progress_wood_app,
     submit_app,
 )
 
@@ -458,12 +459,10 @@ def agent_exporter(db):
 
 
 @pytest.fixture()
-def wood_app_in_progress(
-    importer_client, importer, office, importer_one_contact
-) -> WoodQuotaApplication:
-    """An in progress wood application with a fully valid set of data."""
+def wood_app_in_progress(rf, importer, office, importer_one_contact):
+    wf = WoodAppFixture(rf, importer, office, importer_one_contact)
 
-    app = create_in_progress_wood_app(importer_client, importer, office, importer_one_contact)
+    app = wf.in_progress()
 
     case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
     case_progress.check_expected_task(app, Task.TaskType.PREPARE)
@@ -472,16 +471,10 @@ def wood_app_in_progress(
 
 
 @pytest.fixture()
-def wood_app_submitted(
-    importer_client, importer, office, importer_one_contact
-) -> WoodQuotaApplication:
-    """A valid wood application in the submitted state."""
+def wood_app_submitted(rf, importer, office, importer_one_contact):
+    wf = WoodAppFixture(rf, importer, office, importer_one_contact)
 
-    app = create_in_progress_wood_app(importer_client, importer, office, importer_one_contact)
-
-    submit_app(client=importer_client, view_name="import:wood:submit-quota", app_pk=app.pk)
-
-    app.refresh_from_db()
+    app = wf.submitted()
 
     case_progress.check_expected_status(app, [ImpExpStatus.SUBMITTED])
     case_progress.check_expected_task(app, Task.TaskType.PROCESS)
@@ -590,13 +583,9 @@ def iron_app_submitted(
 
 
 @pytest.fixture()
-def fa_dfl_app_in_progress(
-    importer_client, importer_one_contact, importer, office
-) -> DFLApplication:
-    """An in progress FA-DFL application with a fully valid set of data."""
-
-    # Create the FA-DFL app
-    app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_one_contact)
+def fa_dfl_app_in_progress(rf, importer_one_contact, importer, office) -> DFLApplication:
+    fa_dfl_fixture = FirearmsDFLAppFixture(rf, importer, office, importer_one_contact)
+    app = fa_dfl_fixture.in_progress()
 
     case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
     case_progress.check_expected_task(app, Task.TaskType.PREPARE)
@@ -606,7 +595,7 @@ def fa_dfl_app_in_progress(
 
 @pytest.fixture
 def fa_dfl_agent_app_in_progress(
-    importer_agent_client,
+    rf,
     importer_one_agent_one_contact,
     importer,
     office,
@@ -615,15 +604,15 @@ def fa_dfl_agent_app_in_progress(
 ):
     """An in progress FA-DFL agent application with a fully valid set of data."""
 
-    # Create the FA-DFL agent app
-    app = create_in_progress_fa_dfl_app(
-        importer_agent_client,
+    fa_dfl_fixture = FirearmsDFLAppFixture(
+        rf,
         importer,
         office,
         importer_one_agent_one_contact,
         agent_importer,
         importer_one_agent_office,
     )
+    app = fa_dfl_fixture.in_progress()
 
     case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
     case_progress.check_expected_task(app, Task.TaskType.PREPARE)
@@ -632,14 +621,36 @@ def fa_dfl_agent_app_in_progress(
 
 
 @pytest.fixture()
-def fa_dfl_app_submitted(importer_client, importer, office, importer_one_contact) -> DFLApplication:
-    """A valid FA-DFL application in the submitted state."""
+def fa_dfl_app_submitted(rf, importer, office, importer_one_contact) -> DFLApplication:
+    fa_dfl_fixture = FirearmsDFLAppFixture(rf, importer, office, importer_one_contact)
+    app = fa_dfl_fixture.submitted()
 
-    app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_one_contact)
+    case_progress.check_expected_status(app, [ImpExpStatus.SUBMITTED])
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
 
-    submit_app(client=importer_client, view_name="import:fa-dfl:submit", app_pk=app.pk)
+    return app
 
-    app.refresh_from_db()
+
+@pytest.fixture()
+def fa_dfl_agent_app_submitted(
+    rf,
+    importer_one_agent_one_contact,
+    importer,
+    office,
+    agent_importer,
+    importer_one_agent_office,
+):
+    """A valid FA-DFL agent application in the submitted state."""
+
+    fa_dfl_fixture = FirearmsDFLAppFixture(
+        rf,
+        importer,
+        office,
+        importer_one_agent_one_contact,
+        agent_importer,
+        importer_one_agent_office,
+    )
+    app = fa_dfl_fixture.submitted()
 
     case_progress.check_expected_status(app, [ImpExpStatus.SUBMITTED])
     case_progress.check_expected_task(app, Task.TaskType.PROCESS)
@@ -649,10 +660,10 @@ def fa_dfl_app_submitted(importer_client, importer, office, importer_one_contact
 
 @pytest.fixture()
 def fa_dfl_app_pre_sign(
-    importer_client, importer, office, importer_one_contact, ilb_admin_user, ilb_admin_client
+    rf, importer, office, importer_one_contact, ilb_admin_user, ilb_admin_client
 ) -> DFLApplication:
-    app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_one_contact)
-    submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
+    fa_dfl_fixture = FirearmsDFLAppFixture(rf, importer, office, importer_one_contact)
+    app = fa_dfl_fixture.submitted()
 
     # Taking ownership and begin processing
     ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
@@ -675,61 +686,13 @@ def fa_dfl_app_pre_sign(
 
 
 @pytest.fixture()
-def fa_dfl_agent_app_submitted(
-    importer_agent_client,
-    importer_one_agent_one_contact,
-    importer,
-    office,
-    agent_importer,
-    importer_one_agent_office,
-):
-    """A valid FA-DFL agent application in the submitted state."""
-
-    # Create the FA-DFL agent app
-    app = create_in_progress_fa_dfl_app(
-        importer_agent_client,
-        importer,
-        office,
-        importer_one_agent_one_contact,
-        agent_importer,
-        importer_one_agent_office,
-    )
-
-    submit_app(client=importer_agent_client, view_name="import:fa-dfl:submit", app_pk=app.pk)
-
-    app.refresh_from_db()
-
-    case_progress.check_expected_status(app, [ImpExpStatus.SUBMITTED])
-    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
-
-    return app
-
-
-@pytest.fixture()
-def fa_oil_app_submitted(
-    importer_client, importer, office, importer_one_contact
-) -> OpenIndividualLicenceApplication:
-    """A valid FA OIL application in the submitted state."""
-
-    app = create_in_progress_fa_oil_app(importer_client, importer, office, importer_one_contact)
-
-    submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
-
-    app.refresh_from_db()
-
-    case_progress.check_expected_status(app, [ImpExpStatus.SUBMITTED])
-    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
-
-    return app
-
-
-@pytest.fixture()
 def fa_oil_app_in_progress(
-    importer_client, importer, office, importer_one_contact
+    rf, importer, office, importer_one_contact
 ) -> OpenIndividualLicenceApplication:
     """A valid FA OIL application in the in_progress state."""
 
-    app = create_in_progress_fa_oil_app(importer_client, importer, office, importer_one_contact)
+    fa_oil_fixture = FirearmsOILAppFixture(rf, importer, office, importer_one_contact)
+    app = fa_oil_fixture.in_progress()
 
     case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
     case_progress.check_expected_task(app, Task.TaskType.PREPARE)
@@ -738,11 +701,26 @@ def fa_oil_app_in_progress(
 
 
 @pytest.fixture()
-def fa_oil_app_processing(
-    importer_client, importer, office, importer_one_contact, ilb_admin_user, ilb_admin_client
+def fa_oil_app_submitted(
+    rf, importer, office, importer_one_contact
 ) -> OpenIndividualLicenceApplication:
-    app = create_in_progress_fa_oil_app(importer_client, importer, office, importer_one_contact)
-    submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
+    """A valid FA OIL application in the submitted state."""
+
+    fa_oil_fixture = FirearmsOILAppFixture(rf, importer, office, importer_one_contact)
+    app = fa_oil_fixture.submitted()
+
+    case_progress.check_expected_status(app, [ImpExpStatus.SUBMITTED])
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
+
+    return app
+
+
+@pytest.fixture()
+def fa_oil_app_processing(
+    rf, importer_client, importer, office, importer_one_contact, ilb_admin_user, ilb_admin_client
+) -> OpenIndividualLicenceApplication:
+    fa_oil_fixture = FirearmsOILAppFixture(rf, importer, office, importer_one_contact)
+    app = fa_oil_fixture.submitted()
 
     # Taking ownership and begin processing
     ilb_admin_client.post(CaseURLS.take_ownership(app.pk))

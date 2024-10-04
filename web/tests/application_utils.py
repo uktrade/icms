@@ -1,9 +1,10 @@
 import datetime as dt
 import re
 from http import HTTPStatus
-from typing import Any
+from typing import Any, TypeAlias
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.forms import model_to_dict
 from django.test.client import Client
 from django.urls import reverse
 from freezegun import freeze_time
@@ -15,7 +16,6 @@ from web.models import (
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     CFSSchedule,
-    Commodity,
     Constabulary,
     Country,
     DFLApplication,
@@ -32,180 +32,15 @@ from web.models import (
     User,
     WoodQuotaApplication,
 )
-from web.models.shared import FirearmCommodity
-from web.utils.commodity import get_active_commodities, get_usage_commodities
+from web.utils.commodity import get_usage_commodities
 
-
-def create_in_progress_wood_app(
-    importer_client: Client,
-    importer: Importer,
-    office: Office,
-    contact: User,
-    agent: Importer | None = None,
-    agent_office: Office | None = None,
-) -> WoodQuotaApplication:
-    """Creates a fully valid in progress wood application"""
-
-    # Create the wood app
-    app_pk = create_import_app(
-        client=importer_client,
-        view_name="import:create-wood-quota",
-        importer_pk=importer.pk,
-        office_pk=office.pk,
-        agent_pk=agent.pk if agent else None,
-        agent_office_pk=agent_office.pk if agent_office else None,
-    )
-
-    # Save a valid set of data.
-    wood_commodities = get_active_commodities(Commodity.objects.filter(commodity_type__type="Wood"))
-    form_data = {
-        "contact": contact.pk,
-        "applicant_reference": "Wood App Reference",
-        "shipping_year": dt.date.today().year,
-        "exporter_name": "Some Exporter",
-        "exporter_address": "Some Exporter Address",
-        "exporter_vat_nr": "123456789",
-        "commodity": wood_commodities.first().pk,
-        "goods_description": "Very Woody",
-        "goods_qty": 43,
-        "goods_unit": "cubic metres",
-        "additional_comments": "Nothing more to say",
-    }
-    save_app_data(
-        client=importer_client, view_name="import:wood:edit", app_pk=app_pk, form_data=form_data
-    )
-
-    # Add a contract file to the wood app
-    add_app_file(
-        client=importer_client,
-        view_name="import:wood:add-contract-document",
-        app_pk=app_pk,
-        post_data={"reference": "reference field", "contract_date": "09-Nov-2021"},
-    )
-    wood_app = WoodQuotaApplication.objects.get(pk=app_pk)
-
-    return wood_app
-
-
-def create_in_progress_fa_dfl_app(
-    importer_client: Client,
-    importer: Importer,
-    office: Office,
-    contact: User,
-    agent: Importer | None = None,
-    agent_office: Office | None = None,
-) -> DFLApplication:
-    """Creates a fully valid in progress fa dfl application"""
-
-    app_pk = create_import_app(
-        client=importer_client,
-        view_name="import:create-fa-dfl",
-        importer_pk=importer.pk,
-        office_pk=office.pk,
-        agent_pk=agent.pk if agent else None,
-        agent_office_pk=agent_office.pk if agent_office else None,
-    )
-
-    # Save a valid set of data.
-    dfl_countries = Country.util.get_all_countries()
-    origin_country = dfl_countries[0]
-    consignment_country = dfl_countries[1]
-    constabulary = Constabulary.objects.get(name="Derbyshire")
-    form_data = {
-        "contact": contact.pk,
-        "applicant_reference": "applicant_reference value",
-        "deactivated_firearm": True,
-        "proof_checked": True,
-        "origin_country": origin_country.pk,
-        "consignment_country": consignment_country.pk,
-        "commodity_code": FirearmCommodity.EX_CHAPTER_93.value,
-        "constabulary": constabulary.pk,
-    }
-    save_app_data(
-        client=importer_client, view_name="import:fa-dfl:edit", app_pk=app_pk, form_data=form_data
-    )
-    issuing_country = Country.app.get_fa_dfl_issuing_countries().first()
-
-    # Add a goods file to the fa-dfl app
-    post_data = {
-        "goods_description": "goods_description value",
-        "deactivated_certificate_reference": "deactivated_certificate_reference value",
-        "issuing_country": issuing_country.pk,
-    }
-    add_app_file(
-        client=importer_client,
-        view_name="import:fa-dfl:add-goods",
-        app_pk=app_pk,
-        post_data=post_data,
-    )
-
-    # Set the know_bought_from value
-    form_data = {"know_bought_from": False}
-    importer_client.post(
-        reverse("import:fa:manage-import-contacts", kwargs={"application_pk": app_pk}), form_data
-    )
-
-    dfl_app = DFLApplication.objects.get(pk=app_pk)
-
-    return dfl_app
-
-
-def create_in_progress_fa_oil_app(
-    importer_client: Client,
-    importer: Importer,
-    office: Office,
-    importer_one_contact: User,
-    agent: Importer | None = None,
-    agent_office: Office | None = None,
-) -> OpenIndividualLicenceApplication:
-    app_pk = create_import_app(
-        client=importer_client,
-        view_name="import:create-fa-oil",
-        importer_pk=importer.pk,
-        office_pk=office.pk,
-        agent_pk=agent.pk if agent else None,
-        agent_office_pk=agent_office.pk if agent_office else None,
-    )
-    any_country = Country.objects.get(name="Any Country", is_active=True)
-
-    form_data = {
-        "contact": importer_one_contact.pk,
-        "applicant_reference": "applicant_reference value",
-        "section1": True,
-        "section2": True,
-        "origin_country": any_country.pk,
-        "consignment_country": any_country.pk,
-        "commodity_code": "ex Chapter 93",
-        "know_bought_from": False,
-    }
-    save_app_data(
-        client=importer_client, view_name="import:fa-oil:edit", app_pk=app_pk, form_data=form_data
-    )
-
-    post_data = {
-        "reference": "Certificate Reference Value",
-        "certificate_type": "registered",
-        "constabulary": Constabulary.objects.first().pk,
-        "date_issued": dt.date.today().strftime(JQUERY_DATE_FORMAT),
-        "expiry_date": dt.date.today().strftime(JQUERY_DATE_FORMAT),
-    }
-
-    add_app_file(
-        client=importer_client,
-        view_name="import:fa:create-certificate",
-        app_pk=app_pk,
-        post_data=post_data,
-    )
-
-    # Set the know_bought_from value
-    form_data = {"know_bought_from": False}
-    importer_client.post(
-        reverse("import:fa:manage-import-contacts", kwargs={"application_pk": app_pk}), form_data
-    )
-
-    oil_app = OpenIndividualLicenceApplication.objects.get(pk=app_pk)
-
-    return oil_app
+IMPORT_APPS: TypeAlias = (
+    WoodQuotaApplication
+    | SanctionsAndAdhocApplication
+    | SILApplication
+    | DFLApplication
+    | OpenIndividualLicenceApplication
+)
 
 
 def create_in_progress_fa_sil_app(
@@ -714,6 +549,28 @@ def add_app_file(
     response = client.post(url, form_data)
 
     assert response.status_code == 302
+
+
+def compare_import_application_with_fixture(
+    app: IMPORT_APPS, app_fixture: IMPORT_APPS, app_ignore_keys: list[str]
+) -> None:
+    """Compare the supplied app created using real views with the supplied app_fixture.
+
+    This ensures the app from the test and the fixture do not get out of sync.
+
+    :param app: Application created using the test client / real endpoints
+    :param app_fixture: A fixture with manually created data
+    :param app_ignore_keys: names of fields that aren't suitable for comparing
+    """
+
+    expected_data = model_to_dict(app)
+    fixture_data = model_to_dict(app_fixture)
+
+    common_ignore_keys = ["id", "order_datetime", "process_ptr", "importapplication_ptr"]
+    ignore_keys = common_ignore_keys + app_ignore_keys
+
+    for k in (k for k in expected_data.keys() if k not in ignore_keys):
+        assert expected_data[k] == fixture_data[k], f"Key {k!r} does not match"
 
 
 def submit_app(client: Client, view_name: str, app_pk: int) -> None:

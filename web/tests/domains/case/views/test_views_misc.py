@@ -1,6 +1,5 @@
 import datetime as dt
 from http import HTTPStatus
-from typing import TYPE_CHECKING
 from unittest import mock
 from unittest.mock import Mock
 
@@ -8,6 +7,7 @@ import freezegun
 import pytest
 from django.contrib.messages import get_messages
 from django.core import mail
+from django.test.client import Client
 from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import (
@@ -46,11 +46,6 @@ from web.tests.helpers import (
 from web.utils.pdf.utils import cfs_cover_letter_key_filename
 from web.utils.validation import ApplicationErrors
 
-if TYPE_CHECKING:
-    from django.test.client import Client
-
-    from web.models import WoodQuotaApplication
-
 
 @pytest.fixture
 def wood_application(ilb_admin_client, wood_app_submitted):
@@ -73,7 +68,7 @@ def com_app(ilb_admin_client, com_app_submitted):
     return com_app_submitted
 
 
-def test_take_ownership(ilb_admin_client: "Client", wood_app_submitted):
+def test_take_ownership(ilb_admin_client: Client, wood_app_submitted):
     resp = ilb_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
     assert resp.status_code == 302
 
@@ -83,7 +78,7 @@ def test_take_ownership(ilb_admin_client: "Client", wood_app_submitted):
     case_progress.check_expected_task(wood_app_submitted, Task.TaskType.PROCESS)
 
 
-def test_take_ownership_in_progress(ilb_admin_client: "Client", wood_app_in_progress):
+def test_take_ownership_in_progress(ilb_admin_client: Client, wood_app_in_progress):
     # Can't own an in progress application
     response = ilb_admin_client.post(CaseURLS.take_ownership(wood_app_in_progress.pk))
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -122,7 +117,7 @@ def test_take_ownership_licence_dates(
     assert licence.licence_end_date == expected_licence_end_date
 
 
-def test_manage_case_get(ilb_admin_client: "Client", wood_application):
+def test_manage_case_get(ilb_admin_client: Client, wood_application):
     resp = ilb_admin_client.get(CaseURLS.manage(wood_application.pk))
 
     assert resp.status_code == HTTPStatus.OK
@@ -130,7 +125,7 @@ def test_manage_case_get(ilb_admin_client: "Client", wood_application):
     assertTemplateUsed(resp, "web/domains/case/manage/manage.html")
 
 
-def test_manage_case_close_case(ilb_admin_client: "Client", wood_application):
+def test_manage_case_close_case(ilb_admin_client: Client, wood_application):
     post_data = {"send_email": False}
     response = ilb_admin_client.post(
         CaseURLS.close_case(wood_application.pk), post_data, follow=True
@@ -150,9 +145,7 @@ def test_manage_case_close_case(ilb_admin_client: "Client", wood_application):
     )
 
 
-def test_manage_withdrawals_get(
-    ilb_admin_client: "Client", wood_app_submitted: "WoodQuotaApplication"
-):
+def test_manage_withdrawals_get(ilb_admin_client: Client, wood_app_submitted):
     resp = ilb_admin_client.get(CaseURLS.manage_withdrawals(wood_app_submitted.pk))
     assert resp.status_code == HTTPStatus.OK
 
