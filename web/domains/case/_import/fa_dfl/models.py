@@ -23,7 +23,7 @@ class DFLGoodsCertificate(File):
     goods_description = models.CharField(max_length=4096, verbose_name="Goods Description")
 
     # Field for storing original value from the applicant that is overritten by th case officer
-    # TODO ICMSLST-2790 Make field not nullable when data migration is updated
+    # TODO: ICMSLST-3017 Make field not nullable when data migration is updated
     goods_description_original = models.CharField(max_length=4096, null=True)
 
     deactivated_certificate_reference = models.CharField(

@@ -1,10 +1,98 @@
+import datetime as dt
+
 import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
-from web.models import ImportApplicationLicence
+from web.domains.case.services import case_progress
+from web.domains.case.shared import ImpExpStatus
+from web.models import Commodity, ImportApplicationLicence, Task, WoodQuotaApplication
 from web.models.shared import YesNoNAChoices
+from web.tests.application_utils import (
+    add_app_file,
+    compare_import_application_with_fixture,
+    create_import_app,
+    save_app_data,
+    submit_app,
+)
 from web.tests.helpers import CaseURLS
+from web.utils.commodity import get_active_commodities
+
+
+def test_create_in_progress_wood_application(
+    importer_client, importer, office, importer_one_contact, wood_app_in_progress
+):
+    # Create the wood app
+    app_pk = create_import_app(
+        client=importer_client,
+        view_name="import:create-wood-quota",
+        importer_pk=importer.pk,
+        office_pk=office.pk,
+    )
+
+    # Save a valid set of data.
+    wood_commodities = get_active_commodities(Commodity.objects.filter(commodity_type__type="Wood"))
+    form_data = {
+        "contact": importer_one_contact.pk,
+        "applicant_reference": "Wood App Reference",
+        "shipping_year": dt.date.today().year,
+        "exporter_name": "Some Exporter",
+        "exporter_address": "Some Exporter Address",
+        "exporter_vat_nr": "123456789",
+        "commodity": wood_commodities.first().pk,
+        "goods_description": "Very Woody",
+        "goods_qty": 43,
+        "goods_unit": "cubic metres",
+        "additional_comments": "Nothing more to say",
+    }
+    save_app_data(
+        client=importer_client, view_name="import:wood:edit", app_pk=app_pk, form_data=form_data
+    )
+
+    # Add a contract file to the wood app
+    add_app_file(
+        client=importer_client,
+        view_name="import:wood:add-contract-document",
+        app_pk=app_pk,
+        post_data={"reference": "reference field", "contract_date": "09-Nov-2021"},
+    )
+
+    app = WoodQuotaApplication.objects.get(pk=app_pk)
+    case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
+    case_progress.check_expected_task(app, Task.TaskType.PREPARE)
+
+    # Compare created application using views matches the test fixture
+    compare_import_application_with_fixture(app, wood_app_in_progress, ["contract_documents"])
+
+    # Compare files
+    assert app.supporting_documents.count() == wood_app_in_progress.supporting_documents.count()
+    assert app.contract_documents.count() == wood_app_in_progress.contract_documents.count()
+
+
+def test_submit_wood_application(importer_client, wood_app_in_progress, wood_app_submitted):
+    submit_app(
+        client=importer_client, view_name="import:wood:submit-quota", app_pk=wood_app_in_progress.pk
+    )
+
+    wood_app_in_progress.refresh_from_db()
+
+    case_progress.check_expected_status(wood_app_in_progress, [ImpExpStatus.SUBMITTED])
+    case_progress.check_expected_task(wood_app_in_progress, Task.TaskType.PROCESS)
+
+    # Compare created application using views matches the test fixture
+    compare_import_application_with_fixture(
+        wood_app_in_progress, wood_app_submitted, ["contract_documents", "reference"]
+    )
+
+    # Compare files
+    assert (
+        wood_app_in_progress.supporting_documents.count()
+        == wood_app_submitted.supporting_documents.count()
+    )
+    assert (
+        wood_app_in_progress.contract_documents.count()
+        == wood_app_submitted.contract_documents.count()
+    )
 
 
 @pytest.fixture

@@ -23,12 +23,106 @@ from web.models import (
     User,
 )
 from web.models.shared import FirearmCommodity
+from web.tests.application_utils import (
+    add_app_file,
+    compare_import_application_with_fixture,
+    create_import_app,
+    save_app_data,
+    submit_app,
+)
 from web.tests.auth import AuthTestCase
 from web.tests.helpers import CaseURLS, check_page_errors, get_test_client
 
 
 def _get_view_url(view_name, kwargs=None):
     return reverse(f"import:fa-dfl:{view_name}", kwargs=kwargs)
+
+
+def test_create_in_progress_fa_dfl_application(
+    importer_client, importer, office, importer_one_contact, fa_dfl_app_in_progress
+):
+    app_pk = create_import_app(
+        client=importer_client,
+        view_name="import:create-fa-dfl",
+        importer_pk=importer.pk,
+        office_pk=office.pk,
+    )
+
+    # Save a valid set of data.
+    dfl_countries = Country.util.get_all_countries()
+    origin_country = dfl_countries[0]
+    consignment_country = dfl_countries[1]
+    constabulary = Constabulary.objects.get(name="Derbyshire")
+    form_data = {
+        "contact": importer_one_contact.pk,
+        "applicant_reference": "applicant_reference value",
+        "deactivated_firearm": True,
+        "proof_checked": True,
+        "origin_country": origin_country.pk,
+        "consignment_country": consignment_country.pk,
+        "commodity_code": FirearmCommodity.EX_CHAPTER_93.value,
+        "constabulary": constabulary.pk,
+    }
+    save_app_data(
+        client=importer_client, view_name="import:fa-dfl:edit", app_pk=app_pk, form_data=form_data
+    )
+    issuing_country = Country.app.get_fa_dfl_issuing_countries().first()
+
+    # Add a goods file to the fa-dfl app
+    post_data = {
+        "goods_description": "goods_description value",
+        "deactivated_certificate_reference": "deactivated_certificate_reference value",
+        "issuing_country": issuing_country.pk,
+    }
+    add_app_file(
+        client=importer_client,
+        view_name="import:fa-dfl:add-goods",
+        app_pk=app_pk,
+        post_data=post_data,
+    )
+
+    # Set the know_bought_from value
+    form_data = {"know_bought_from": False}
+    importer_client.post(
+        reverse("import:fa:manage-import-contacts", kwargs={"application_pk": app_pk}), form_data
+    )
+
+    dfl_app = DFLApplication.objects.get(pk=app_pk)
+
+    case_progress.check_expected_status(dfl_app, [ImpExpStatus.IN_PROGRESS])
+    case_progress.check_expected_task(dfl_app, Task.TaskType.PREPARE)
+
+    # Compare created application using views matches the test fixture
+    compare_import_application_with_fixture(dfl_app, fa_dfl_app_in_progress, ["goods_certificates"])
+
+    # Compare files
+    assert dfl_app.goods_certificates.count() == fa_dfl_app_in_progress.goods_certificates.count()
+
+
+def test_submit_fa_dfl_application(importer_client, fa_dfl_app_in_progress, fa_dfl_app_submitted):
+    submit_app(
+        client=importer_client, view_name="import:fa-dfl:submit", app_pk=fa_dfl_app_in_progress.pk
+    )
+
+    fa_dfl_app_in_progress.refresh_from_db()
+
+    case_progress.check_expected_status(fa_dfl_app_in_progress, [ImpExpStatus.SUBMITTED])
+    case_progress.check_expected_task(fa_dfl_app_in_progress, Task.TaskType.PROCESS)
+
+    # Compare created application using views matches the test fixture
+    compare_import_application_with_fixture(
+        fa_dfl_app_in_progress, fa_dfl_app_in_progress, ["goods_certificates", "reference"]
+    )
+
+    # Compare files
+    assert (
+        fa_dfl_app_in_progress.goods_certificates.count()
+        == fa_dfl_app_submitted.goods_certificates.count()
+    )
+
+    # Check both the submitted app and the fixture have a linked supplementary_info record.
+    assert fa_dfl_app_in_progress.supplementary_info
+    assert fa_dfl_app_submitted.supplementary_info
 
 
 @pytest.fixture
