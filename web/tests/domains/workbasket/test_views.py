@@ -42,9 +42,11 @@ class TestApplicationInProgressWorkbasket(AuthTestCase):
         fa_dfl_agent_app_in_progress,
         com_app_in_progress,
         com_agent_app_in_progress,
+        sanctions_app_in_progress,
     ):
         self.imp_app = fa_dfl_app_in_progress
         self.imp_agent_app = fa_dfl_agent_app_in_progress
+        self.imp_app_sanctions = sanctions_app_in_progress
         self.exp_app = com_app_in_progress
         self.exp_agent_app = com_agent_app_in_progress
 
@@ -52,6 +54,7 @@ class TestApplicationInProgressWorkbasket(AuthTestCase):
 
     def test_workbasket(self):
         self._test_ilb_admin_wb()
+        self._test_sanctions_admin_wb()
         self._test_importer_contact_wb()
         self._test_importer_agent_wb()
         self._test_exporter_contact_wb()
@@ -61,10 +64,14 @@ class TestApplicationInProgressWorkbasket(AuthTestCase):
         expected_rows = {}
         check_expected_rows(self.ilb_admin_client, expected_rows)
 
+    def _test_sanctions_admin_wb(self):
+        expected_rows = {}
+        check_expected_rows(self.san_admin_client, expected_rows)
+
     def _test_importer_contact_wb(self):
         expected_rows = {
-            # self.imp_app.reference == "Not Assigned"
-            "Not Assigned": {"In Progress": {"Prepare Application": ["Resume", "Cancel"]}}
+            # self.imp_app & self.imp_app_sanctions have the exact same row
+            "Not Assigned": {"In Progress": {"Prepare Application": ["Resume", "Cancel"]}},
         }
 
         check_expected_rows(self.importer_client, expected_rows)
@@ -121,9 +128,11 @@ class TestApplicationSubmittedWorkbasket(AuthTestCase):
         fa_dfl_agent_app_submitted,
         com_app_submitted,
         com_agent_app_submitted,
+        sanctions_app_submitted,
     ):
         self.imp_app = fa_dfl_app_submitted
         self.imp_agent_app = fa_dfl_agent_app_submitted
+        self.imp_app_sanctions = sanctions_app_submitted
         self.exp_app = com_app_submitted
         self.exp_agent_app = com_agent_app_submitted
 
@@ -131,6 +140,7 @@ class TestApplicationSubmittedWorkbasket(AuthTestCase):
 
     def test_workbasket(self):
         self._test_ilb_admin_wb()
+        self._test_sanctions_admin_wb()
         self._test_importer_contact_wb()
         self._test_importer_agent_wb()
         self._test_exporter_contact_wb()
@@ -144,6 +154,9 @@ class TestApplicationSubmittedWorkbasket(AuthTestCase):
             self.imp_agent_app.reference: {
                 "Submitted": {"Application Processing": ["Take Ownership", "View"]}
             },
+            self.imp_app_sanctions.reference: {
+                "Submitted": {"Application Processing": ["Take Ownership", "View"]}
+            },
             self.exp_app.reference: {
                 "Submitted": {"Application Processing": ["Take Ownership", "View"]}
             },
@@ -153,18 +166,32 @@ class TestApplicationSubmittedWorkbasket(AuthTestCase):
         }
         check_expected_rows(self.ilb_admin_client, expected_rows)
 
+    def _test_sanctions_admin_wb(self):
+        expected_rows = {
+            self.imp_app_sanctions.reference: {
+                "Submitted": {"Application Processing": ["Take Ownership", "View"]}
+            }
+        }
+        check_expected_rows(self.san_admin_client, expected_rows)
+
     def _test_importer_contact_wb(self):
         expected_rows = {
             self.imp_app.reference: {
                 "Submitted": {"Application Submitted": ["Request Withdrawal", "View Application"]}
-            }
+            },
+            self.imp_app_sanctions.reference: {
+                "Submitted": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+            },
         }
 
         check_expected_rows(self.importer_client, expected_rows)
 
         _remove_edit_permission(self.importer_user, self.imp_app.importer)
         expected_rows = {
-            self.imp_app.reference: {"Submitted": {"Application Submitted": ["View Application"]}}
+            self.imp_app.reference: {"Submitted": {"Application Submitted": ["View Application"]}},
+            self.imp_app_sanctions.reference: {
+                "Submitted": {"Application Submitted": ["View Application"]}
+            },
         }
         check_expected_rows(self.importer_client, expected_rows)
 
@@ -229,9 +256,11 @@ class TestApplicationManagedWorkbasket(AuthTestCase):
         fa_dfl_agent_app_submitted,
         com_app_submitted,
         com_agent_app_submitted,
+        sanctions_app_submitted,
     ):
         self.imp_app = fa_dfl_app_submitted
         self.imp_agent_app = fa_dfl_agent_app_submitted
+        self.imp_app_sanctions = sanctions_app_submitted
         self.exp_app = com_app_submitted
         self.exp_agent_app = com_agent_app_submitted
 
@@ -242,9 +271,11 @@ class TestApplicationManagedWorkbasket(AuthTestCase):
         self.ilb_admin_client.post(CaseURLS.take_ownership(self.imp_agent_app.pk, "import"))
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_app.pk, "export"))
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_agent_app.pk, "export"))
+        self.san_admin_client.post(CaseURLS.take_ownership(self.imp_app_sanctions.pk, "import"))
 
     def test_workbasket(self):
         self._test_ilb_admin_wb()
+        self._test_sanctions_admin_wb()
         self._test_importer_contact_wb()
         self._test_importer_agent_wb()
         self._test_exporter_contact_wb()
@@ -263,18 +294,32 @@ class TestApplicationManagedWorkbasket(AuthTestCase):
         }
         check_expected_rows(self.ilb_admin_two_client, expected_rows)
 
+    def _test_sanctions_admin_wb(self):
+        expected_rows = {
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Processing": ["Manage"]}
+            },
+        }
+        check_expected_rows(self.san_admin_client, expected_rows)
+
     def _test_importer_contact_wb(self):
         expected_rows = {
             self.imp_app.reference: {
                 "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
-            }
+            },
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+            },
         }
 
         check_expected_rows(self.importer_client, expected_rows)
 
         _remove_edit_permission(self.importer_user, self.imp_app.importer)
         expected_rows = {
-            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}},
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            },
         }
         check_expected_rows(self.importer_client, expected_rows)
 
@@ -339,9 +384,11 @@ class TestApplicationWithdrawalWorkbasket(AuthTestCase):
         fa_dfl_agent_app_submitted,
         com_app_submitted,
         com_agent_app_submitted,
+        sanctions_app_submitted,
     ):
         self.imp_app = fa_dfl_app_submitted
         self.imp_agent_app = fa_dfl_agent_app_submitted
+        self.imp_app_sanctions = sanctions_app_submitted
         self.exp_app = com_app_submitted
         self.exp_agent_app = com_agent_app_submitted
 
@@ -350,11 +397,15 @@ class TestApplicationWithdrawalWorkbasket(AuthTestCase):
         # Take ownership of a few cases (different actions if not owned)
         self.ilb_admin_client.post(CaseURLS.take_ownership(self.imp_app.pk, "import"))
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_agent_app.pk, "export"))
+        self.san_admin_client.post(CaseURLS.take_ownership(self.imp_app_sanctions.pk, "import"))
 
         # Withdraw each app
         form_data = {"reason": "Test withdrawal"}
         self.importer_client.post(
             CaseURLS.withdrawal_case(self.imp_app.pk, "import"), data=form_data
+        )
+        self.importer_client.post(
+            CaseURLS.withdrawal_case(self.imp_app_sanctions.pk, "import"), data=form_data
         )
         self.importer_agent_client.post(
             CaseURLS.withdrawal_case(self.imp_agent_app.pk, "import"), data=form_data
@@ -368,6 +419,7 @@ class TestApplicationWithdrawalWorkbasket(AuthTestCase):
 
     def test_workbasket(self):
         self._test_ilb_admin_wb()
+        self._test_sanctions_admin_wb()
         self._test_importer_contact_wb()
         self._test_importer_agent_wb()
         self._test_exporter_contact_wb()
@@ -418,18 +470,35 @@ class TestApplicationWithdrawalWorkbasket(AuthTestCase):
         }
         check_expected_rows(self.ilb_admin_two_client, expected_rows)
 
+    def _test_sanctions_admin_wb(self):
+        expected_rows = {
+            self.imp_app_sanctions.reference: {
+                "Processing": {
+                    "Application Processing": ["Manage"],
+                    "Withdraw Pending": ["Withdrawal Request"],
+                }
+            },
+        }
+        check_expected_rows(self.san_admin_client, expected_rows)
+
     def _test_importer_contact_wb(self):
         expected_rows = {
             self.imp_app.reference: {
                 "Processing": {"Application Submitted": ["Pending Withdrawal", "View Application"]}
-            }
+            },
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Submitted": ["Pending Withdrawal", "View Application"]}
+            },
         }
 
         check_expected_rows(self.importer_client, expected_rows)
 
         _remove_edit_permission(self.importer_user, self.imp_app.importer)
         expected_rows = {
-            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}},
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            },
         }
         check_expected_rows(self.importer_client, expected_rows)
 
@@ -494,9 +563,11 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
         fa_dfl_agent_app_submitted,
         com_app_submitted,
         com_agent_app_submitted,
+        sanctions_app_submitted,
     ):
         self.imp_app = fa_dfl_app_submitted
         self.imp_agent_app = fa_dfl_agent_app_submitted
+        self.imp_app_sanctions = sanctions_app_submitted
         self.exp_app = com_app_submitted
         self.exp_agent_app = com_agent_app_submitted
 
@@ -507,6 +578,7 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
         self.ilb_admin_client.post(CaseURLS.take_ownership(self.imp_agent_app.pk, "import"))
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_app.pk, "export"))
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_agent_app.pk, "export"))
+        self.san_admin_client.post(CaseURLS.take_ownership(self.imp_app_sanctions.pk, "import"))
 
         # Create FIR for each app.
         for client, app in (
@@ -514,6 +586,7 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
             (self.ilb_admin_client, self.imp_agent_app),
             (self.ilb_admin_two_client, self.exp_app),
             (self.ilb_admin_two_client, self.exp_agent_app),
+            (self.san_admin_client, self.imp_app_sanctions),
         ):
             case_type = "import" if app.is_import_application() else "export"
 
@@ -531,6 +604,7 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
 
     def test_workbasket(self):
         self._test_ilb_admin_wb()
+        self._test_sanctions_admin_wb()
         self._test_importer_contact_wb()
         self._test_importer_agent_wb()
         self._test_exporter_contact_wb()
@@ -557,6 +631,14 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
         }
         check_expected_rows(self.ilb_admin_two_client, expected_rows)
 
+    def _test_sanctions_admin_wb(self):
+        expected_rows = {
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Processing, Further Information Requested": ["Manage"]}
+            },
+        }
+        check_expected_rows(self.san_admin_client, expected_rows)
+
     def _test_importer_contact_wb(self):
         expected_rows = {
             self.imp_app.reference: {
@@ -565,14 +647,24 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
                     # Offset time by an hour as it's BST
                     "Further Information Request, 26 Jul 2023 07:38:16": ["Respond"],
                 }
-            }
+            },
+            self.imp_app_sanctions.reference: {
+                "Processing": {
+                    "Application Submitted": ["Request Withdrawal", "View Application"],
+                    # Offset time by an hour as it's BST
+                    "Further Information Request, 26 Jul 2023 07:38:16": ["Respond"],
+                }
+            },
         }
 
         check_expected_rows(self.importer_client, expected_rows)
 
         _remove_edit_permission(self.importer_user, self.imp_app.importer)
         expected_rows = {
-            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}},
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            },
         }
         check_expected_rows(self.importer_client, expected_rows)
 
@@ -649,9 +741,11 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
         fa_dfl_agent_app_submitted,
         com_app_submitted,
         com_agent_app_submitted,
+        sanctions_app_submitted,
     ):
         self.imp_app = fa_dfl_app_submitted
         self.imp_agent_app = fa_dfl_agent_app_submitted
+        self.imp_app_sanctions = sanctions_app_submitted
         self.exp_app = com_app_submitted
         self.exp_agent_app = com_agent_app_submitted
 
@@ -662,6 +756,7 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
         self.ilb_admin_client.post(CaseURLS.take_ownership(self.imp_agent_app.pk, "import"))
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_app.pk, "export"))
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_agent_app.pk, "export"))
+        self.san_admin_client.post(CaseURLS.take_ownership(self.imp_app_sanctions.pk, "import"))
 
         # Create Application Update Request for each app.
         form_data = {"request_subject": "subject", "request_detail": "detail", "send": "true"}
@@ -702,6 +797,15 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
             data=form_data,
         )
 
+        response = self.san_admin_client.post(
+            CaseURLS.add_draft_update_request(self.imp_app_sanctions.pk, "import"), follow=True
+        )
+        update_request_pk = response.resolver_match.kwargs["update_request_pk"]
+        self.san_admin_client.post(
+            CaseURLS.edit_update_requests(self.imp_app_sanctions.pk, update_request_pk, "import"),
+            data=form_data,
+        )
+
         # Start changes on several of them (shows different actions)
         ur_pk = self.imp_app.update_requests.first().pk
         self.importer_client.post(CaseURLS.start_update_request(self.imp_app.pk, ur_pk, "import"))
@@ -711,10 +815,9 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
             CaseURLS.start_update_request(self.exp_agent_app.pk, ur_pk, "export")
         )
 
-        CaseURLS.start_update_request(application_pk=1, update_request_pk=1, case_type="import")
-
     def test_workbasket(self):
         self._test_ilb_admin_wb()
+        self._test_sanctions_admin_wb()
         self._test_importer_contact_wb()
         self._test_importer_agent_wb()
         self._test_exporter_contact_wb()
@@ -741,6 +844,14 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
         }
         check_expected_rows(self.ilb_admin_two_client, expected_rows)
 
+    def _test_sanctions_admin_wb(self):
+        expected_rows = {
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Processing, Out for Update": ["Manage"]}
+            },
+        }
+        check_expected_rows(self.san_admin_client, expected_rows)
+
     def _test_importer_contact_wb(self):
         expected_rows = {
             self.imp_app.reference: {
@@ -748,14 +859,23 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
                     "Application Submitted": ["Request Withdrawal", "View Application"],
                     "Application Update in Progress": ["Resume Update"],
                 }
-            }
+            },
+            self.imp_app_sanctions.reference: {
+                "Processing": {
+                    "Application Submitted": ["Request Withdrawal", "View Application"],
+                    "Application Update Requested": ["Respond to Update Request"],
+                }
+            },
         }
 
         check_expected_rows(self.importer_client, expected_rows)
 
         _remove_edit_permission(self.importer_user, self.imp_app.importer)
         expected_rows = {
-            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}},
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            },
         }
         check_expected_rows(self.importer_client, expected_rows)
 
@@ -829,9 +949,11 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
         fa_dfl_agent_app_submitted,
         com_app_submitted,
         com_agent_app_submitted,
+        sanctions_app_submitted,
     ):
         self.imp_app = fa_dfl_app_submitted
         self.imp_agent_app = fa_dfl_agent_app_submitted
+        self.imp_app_sanctions = sanctions_app_submitted
         self.exp_app = com_app_submitted
         self.exp_agent_app = com_agent_app_submitted
 
@@ -842,6 +964,7 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
         self.ilb_admin_client.post(CaseURLS.take_ownership(self.imp_agent_app.pk, "import"))
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_app.pk, "export"))
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_agent_app.pk, "export"))
+        self.san_admin_client.post(CaseURLS.take_ownership(self.imp_app_sanctions.pk, "import"))
 
         #
         # Complete checklists (import only)
@@ -872,6 +995,9 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
         self.ilb_admin_two_client.post(
             CaseURLS.prepare_response(self.exp_agent_app.pk, "export"), data=form_data
         )
+        self.san_admin_client.post(
+            CaseURLS.prepare_response(self.imp_app_sanctions.pk, "import"), data=form_data
+        )
 
         #
         # Set licence details (import only)
@@ -899,9 +1025,13 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
         self.ilb_admin_two_client.post(
             CaseURLS.start_authorisation(self.exp_agent_app.pk, "export")
         )
+        self.san_admin_client.post(
+            CaseURLS.start_authorisation(self.imp_app_sanctions.pk, "import")
+        )
 
     def test_workbasket(self):
         self._test_ilb_admin_wb()
+        self._test_sanctions_admin_wb()
         self._test_importer_contact_wb()
         self._test_importer_agent_wb()
         self._test_exporter_contact_wb()
@@ -922,18 +1052,34 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
         }
         check_expected_rows(self.ilb_admin_two_client, expected_rows)
 
+    def _test_sanctions_admin_wb(self):
+        expected_actions = ["Authorise Documents", "Cancel Authorisation", "View Case"]
+
+        expected_rows = {
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Authorise Documents": expected_actions}
+            },
+        }
+        check_expected_rows(self.san_admin_client, expected_rows)
+
     def _test_importer_contact_wb(self):
         expected_rows = {
             self.imp_app.reference: {
                 "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
-            }
+            },
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+            },
         }
 
         check_expected_rows(self.importer_client, expected_rows)
 
         _remove_edit_permission(self.importer_user, self.imp_app.importer)
         expected_rows = {
-            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}},
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            },
         }
         check_expected_rows(self.importer_client, expected_rows)
 
@@ -998,9 +1144,11 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
         fa_dfl_agent_app_submitted,
         com_app_submitted,
         com_agent_app_submitted,
+        sanctions_app_submitted,
     ):
         self.imp_app = fa_dfl_app_submitted
         self.imp_agent_app = fa_dfl_agent_app_submitted
+        self.imp_app_sanctions = sanctions_app_submitted
         self.exp_app = com_app_submitted
         self.exp_agent_app = com_agent_app_submitted
 
@@ -1011,6 +1159,7 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
         self.ilb_admin_client.post(CaseURLS.take_ownership(self.imp_agent_app.pk, "import"))
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_app.pk, "export"))
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_agent_app.pk, "export"))
+        self.san_admin_client.post(CaseURLS.take_ownership(self.imp_app_sanctions.pk, "import"))
 
         #
         # Complete checklists (import only)
@@ -1041,6 +1190,9 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
         self.ilb_admin_two_client.post(
             CaseURLS.prepare_response(self.exp_agent_app.pk, "export"), data=form_data
         )
+        self.san_admin_client.post(
+            CaseURLS.prepare_response(self.imp_app_sanctions.pk, "import"), data=form_data
+        )
 
         #
         # Set licence details (import only)
@@ -1068,22 +1220,23 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
         self.ilb_admin_two_client.post(
             CaseURLS.start_authorisation(self.exp_agent_app.pk, "export")
         )
+        self.san_admin_client.post(
+            CaseURLS.start_authorisation(self.imp_app_sanctions.pk, "import")
+        )
 
         #
         # Authorise Documents
         with patch("web.domains.case.views.views_misc.create_case_document_pack", autospec=True):
-            form_data = {"password": "test"}
+            self.ilb_admin_client.post(CaseURLS.authorise_documents(self.imp_app.pk, "import"))
             self.ilb_admin_client.post(
-                CaseURLS.authorise_documents(self.imp_app.pk, "import"), data=form_data
+                CaseURLS.authorise_documents(self.imp_agent_app.pk, "import")
             )
-            self.ilb_admin_client.post(
-                CaseURLS.authorise_documents(self.imp_agent_app.pk, "import"), data=form_data
-            )
+            self.ilb_admin_two_client.post(CaseURLS.authorise_documents(self.exp_app.pk, "export"))
             self.ilb_admin_two_client.post(
-                CaseURLS.authorise_documents(self.exp_app.pk, "export"), data=form_data
+                CaseURLS.authorise_documents(self.exp_agent_app.pk, "export")
             )
-            self.ilb_admin_two_client.post(
-                CaseURLS.authorise_documents(self.exp_agent_app.pk, "export"), data=form_data
+            self.san_admin_client.post(
+                CaseURLS.authorise_documents(self.imp_app_sanctions.pk, "import")
             )
 
         with freezegun.freeze_time("2023-07-27 10:06:00"):
@@ -1092,9 +1245,11 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
             create_document_pack_on_success(self.imp_agent_app.pk, self.ilb_admin_user.pk)
             create_document_pack_on_success(self.exp_app.pk, self.ilb_admin_two_user.pk)
             create_document_pack_on_success(self.exp_agent_app.pk, self.ilb_admin_two_user.pk)
+            create_document_pack_on_success(self.imp_app_sanctions.pk, self.san_admin_user.pk)
 
     def test_workbasket(self):
         self._test_ilb_admin_wb()
+        self._test_sanctions_admin_wb()
         self._test_importer_contact_wb()
         self._test_importer_agent_wb()
         self._test_exporter_contact_wb()
@@ -1129,18 +1284,39 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
         expected_rows = {}
         check_expected_rows(self.ilb_admin_two_client, expected_rows)
 
+    def _test_sanctions_admin_wb(self):
+        expected_rows = {
+            self.imp_app_sanctions.reference: {
+                "Processing": {
+                    "CHIEF Wait": [
+                        "(TEST) Bypass CHIEF",
+                        "(TEST) Bypass CHIEF induce failure",
+                        "Monitor Progress",
+                    ],
+                    "Application Processing": ["View Case"],
+                },
+            },
+        }
+        check_expected_rows(self.san_admin_client, expected_rows)
+
     def _test_importer_contact_wb(self):
         expected_rows = {
             self.imp_app.reference: {
                 "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
-            }
+            },
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+            },
         }
 
         check_expected_rows(self.importer_client, expected_rows)
 
         _remove_edit_permission(self.importer_user, self.imp_app.importer)
         expected_rows = {
-            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}},
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            },
         }
         check_expected_rows(self.importer_client, expected_rows)
 
@@ -1222,9 +1398,11 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
         fa_dfl_agent_app_submitted,
         com_app_submitted,
         com_agent_app_submitted,
+        sanctions_app_submitted,
     ):
         self.imp_app = fa_dfl_app_submitted
         self.imp_agent_app = fa_dfl_agent_app_submitted
+        self.imp_app_sanctions = sanctions_app_submitted
         self.exp_app = com_app_submitted
         self.exp_agent_app = com_agent_app_submitted
 
@@ -1235,6 +1413,7 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
         self.ilb_admin_client.post(CaseURLS.take_ownership(self.imp_agent_app.pk, "import"))
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_app.pk, "export"))
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_agent_app.pk, "export"))
+        self.san_admin_client.post(CaseURLS.take_ownership(self.imp_app_sanctions.pk, "import"))
 
         #
         # Complete checklists (import only)
@@ -1265,6 +1444,9 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
         self.ilb_admin_two_client.post(
             CaseURLS.prepare_response(self.exp_agent_app.pk, "export"), data=form_data
         )
+        self.san_admin_client.post(
+            CaseURLS.prepare_response(self.imp_app_sanctions.pk, "import"), data=form_data
+        )
 
         #
         # Set licence details (import only)
@@ -1292,22 +1474,23 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
         self.ilb_admin_two_client.post(
             CaseURLS.start_authorisation(self.exp_agent_app.pk, "export")
         )
+        self.san_admin_client.post(
+            CaseURLS.start_authorisation(self.imp_app_sanctions.pk, "import")
+        )
 
         #
         # Authorise Documents
         with patch("web.domains.case.views.views_misc.create_case_document_pack", autospec=True):
-            form_data = {"password": "test"}
+            self.ilb_admin_client.post(CaseURLS.authorise_documents(self.imp_app.pk, "import"))
             self.ilb_admin_client.post(
-                CaseURLS.authorise_documents(self.imp_app.pk, "import"), data=form_data
+                CaseURLS.authorise_documents(self.imp_agent_app.pk, "import")
             )
-            self.ilb_admin_client.post(
-                CaseURLS.authorise_documents(self.imp_agent_app.pk, "import"), data=form_data
-            )
+            self.ilb_admin_two_client.post(CaseURLS.authorise_documents(self.exp_app.pk, "export"))
             self.ilb_admin_two_client.post(
-                CaseURLS.authorise_documents(self.exp_app.pk, "export"), data=form_data
+                CaseURLS.authorise_documents(self.exp_agent_app.pk, "export")
             )
-            self.ilb_admin_two_client.post(
-                CaseURLS.authorise_documents(self.exp_agent_app.pk, "export"), data=form_data
+            self.san_admin_client.post(
+                CaseURLS.authorise_documents(self.imp_app_sanctions.pk, "import")
             )
 
         with freezegun.freeze_time("2023-07-27 10:06:00"):
@@ -1316,6 +1499,7 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
             create_document_pack_on_success(self.imp_agent_app.pk, self.ilb_admin_user.pk)
             create_document_pack_on_success(self.exp_app.pk, self.ilb_admin_two_user.pk)
             create_document_pack_on_success(self.exp_agent_app.pk, self.ilb_admin_two_user.pk)
+            create_document_pack_on_success(self.imp_app_sanctions.pk, self.san_admin_user.pk)
 
             #
             # Bypass chief for import applications
@@ -1336,9 +1520,19 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
                         kwargs={"application_pk": self.imp_agent_app.pk, "chief_status": "success"},
                     )
                 )
+                self.san_admin_client.post(
+                    reverse(
+                        "import:bypass-chief",
+                        kwargs={
+                            "application_pk": self.imp_app_sanctions.pk,
+                            "chief_status": "success",
+                        },
+                    )
+                )
 
     def test_workbasket(self):
         self._test_ilb_admin_wb()
+        self._test_sanctions_admin_wb()
         self._test_importer_contact_wb()
         self._test_importer_agent_wb()
         self._test_exporter_contact_wb()
@@ -1350,6 +1544,10 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
 
         expected_rows = {}
         check_expected_rows(self.ilb_admin_two_client, expected_rows)
+
+    def _test_sanctions_admin_wb(self):
+        expected_rows = {}
+        check_expected_rows(self.san_admin_client, expected_rows)
 
     def _test_importer_contact_wb(self):
         # Main org contacts see completed agent applications.
@@ -1365,6 +1563,13 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
             self.imp_agent_app.reference: {
                 "Completed": {"Application View": ["View Application", "Clear"]}
             },
+            self.imp_app_sanctions.reference: {
+                "Completed": {
+                    "Application View": ["View Application", "Clear"],
+                    # Offset time by an hour as it's BST
+                    "Documents Issued 27-Jul-2023 11:06": ["View Issued Documents", "Clear"],
+                }
+            },
         }
 
         check_expected_rows(self.importer_client, expected_rows)
@@ -1375,6 +1580,9 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
                 "Completed": {"Application View": ["View Application", "Clear"]}
             },
             self.imp_agent_app.reference: {
+                "Completed": {"Application View": ["View Application", "Clear"]}
+            },
+            self.imp_app_sanctions.reference: {
                 "Completed": {"Application View": ["View Application", "Clear"]}
             },
         }
@@ -1456,15 +1664,19 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
     """Test workbasket rows where each case has been completed."""
 
     @pytest.fixture(autouse=True)
-    def setup(self, _setup, fa_dfl_app_submitted, fa_dfl_agent_app_submitted):
+    def setup(
+        self, _setup, fa_dfl_app_submitted, fa_dfl_agent_app_submitted, sanctions_app_submitted
+    ):
         self.imp_app = fa_dfl_app_submitted
         self.imp_agent_app = fa_dfl_agent_app_submitted
+        self.imp_app_sanctions = sanctions_app_submitted
 
         _fix_access_request_data()
 
         # Take ownership of cases (two case officers)
         self.ilb_admin_client.post(CaseURLS.take_ownership(self.imp_app.pk, "import"))
         self.ilb_admin_client.post(CaseURLS.take_ownership(self.imp_agent_app.pk, "import"))
+        self.san_admin_client.post(CaseURLS.take_ownership(self.imp_app_sanctions.pk, "import"))
 
         #
         # Complete checklists (import only)
@@ -1489,6 +1701,9 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
         self.ilb_admin_client.post(
             CaseURLS.prepare_response(self.imp_agent_app.pk, "import"), data=form_data
         )
+        self.san_admin_client.post(
+            CaseURLS.prepare_response(self.imp_app_sanctions.pk, "import"), data=form_data
+        )
 
         #
         # Set licence details (import only)
@@ -1512,22 +1727,26 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
         # Start authorisation
         self.ilb_admin_client.post(CaseURLS.start_authorisation(self.imp_app.pk, "import"))
         self.ilb_admin_client.post(CaseURLS.start_authorisation(self.imp_agent_app.pk, "import"))
+        self.san_admin_client.post(
+            CaseURLS.start_authorisation(self.imp_app_sanctions.pk, "import")
+        )
 
         #
         # Authorise Documents
         with patch("web.domains.case.views.views_misc.create_case_document_pack", autospec=True):
-            form_data = {"password": "test"}
+            self.ilb_admin_client.post(CaseURLS.authorise_documents(self.imp_app.pk, "import"))
             self.ilb_admin_client.post(
-                CaseURLS.authorise_documents(self.imp_app.pk, "import"), data=form_data
+                CaseURLS.authorise_documents(self.imp_agent_app.pk, "import")
             )
-            self.ilb_admin_client.post(
-                CaseURLS.authorise_documents(self.imp_agent_app.pk, "import"), data=form_data
+            self.san_admin_client.post(
+                CaseURLS.authorise_documents(self.imp_app_sanctions.pk, "import")
             )
 
         with freezegun.freeze_time("2023-07-27 10:06:00"):
             # Manually call success task as we've faked creating the documents.
             create_document_pack_on_success(self.imp_app.pk, self.ilb_admin_user.pk)
             create_document_pack_on_success(self.imp_agent_app.pk, self.ilb_admin_user.pk)
+            create_document_pack_on_success(self.imp_app_sanctions.pk, self.san_admin_user.pk)
 
             #
             # Bypass chief for import applications
@@ -1541,16 +1760,25 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
                         kwargs={"application_pk": self.imp_app.pk, "chief_status": "failure"},
                     )
                 )
-
                 self.ilb_admin_client.post(
                     reverse(
                         "import:bypass-chief",
                         kwargs={"application_pk": self.imp_agent_app.pk, "chief_status": "failure"},
                     )
                 )
+                self.san_admin_client.post(
+                    reverse(
+                        "import:bypass-chief",
+                        kwargs={
+                            "application_pk": self.imp_app_sanctions.pk,
+                            "chief_status": "failure",
+                        },
+                    )
+                )
 
     def test_workbasket(self):
         self._test_ilb_admin_wb()
+        self._test_sanctions_admin_wb()
         self._test_importer_contact_wb()
         self._test_importer_agent_wb()
 
@@ -1571,18 +1799,35 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
         }
         check_expected_rows(self.ilb_admin_client, expected_rows)
 
+    def _test_sanctions_admin_wb(self):
+        expected_rows = {
+            self.imp_app_sanctions.reference: {
+                "Processing": {
+                    "CHIEF Error": ["Show Licence Details"],
+                    "Application Processing": ["View"],
+                }
+            },
+        }
+        check_expected_rows(self.san_admin_client, expected_rows)
+
     def _test_importer_contact_wb(self):
         expected_rows = {
             self.imp_app.reference: {
                 "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
-            }
+            },
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+            },
         }
 
         check_expected_rows(self.importer_client, expected_rows)
 
         _remove_edit_permission(self.importer_user, self.imp_app.importer)
         expected_rows = {
-            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}},
+            self.imp_app_sanctions.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            },
         }
         check_expected_rows(self.importer_client, expected_rows)
 
@@ -1630,6 +1875,7 @@ class TestMailshotsAppearInWorkbasket(AuthTestCase):
 
     def test_workbasket(self):
         self._test_ilb_admin_wb()
+        self._test_sanctions_admin_wb()
         self._test_importer_contact_wb()
         self._test_importer_agent_wb()
         self._test_exporter_contact_wb()
@@ -1638,6 +1884,10 @@ class TestMailshotsAppearInWorkbasket(AuthTestCase):
     def _test_ilb_admin_wb(self):
         expected_rows = {}
         check_expected_rows(self.ilb_admin_client, expected_rows)
+
+    def _test_sanctions_admin_wb(self):
+        expected_rows = {}
+        check_expected_rows(self.san_admin_client, expected_rows)
 
     def _test_importer_contact_wb(self):
         expected_rows = {
@@ -1755,6 +2005,7 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+        check_expected_rows(self.san_admin_client, {})
 
     def test_access_request_submitted_further_information_requested(self):
         self._add_fir(self.iar, FurtherInformationRequest.OPEN)
@@ -1781,6 +2032,7 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request\nFurther Information Requested": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+        check_expected_rows(self.san_admin_client, {})
 
     def test_access_request_submitted_further_information_responded(self):
         self._add_fir(
@@ -1807,6 +2059,7 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+        check_expected_rows(self.san_admin_client, {})
 
     def test_access_request_approval_requested_not_assigned(self):
         add_approval_request(self.iar, self.ilb_admin_user)
@@ -1823,6 +2076,7 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request\nApproval Requested": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+        check_expected_rows(self.san_admin_client, {})
 
         importer_user_expected_rows = {"iar/1": {"Open": {"Approval Request": ["Take Ownership"]}}}
         check_expected_rows(self.importer_client, importer_user_expected_rows)
@@ -1847,6 +2101,7 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request\nApproval Requested": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+        check_expected_rows(self.san_admin_client, {})
 
         importer_user_expected_rows = {"iar/1": {"Open": {"Approval Request": ["Manage"]}}}
         check_expected_rows(self.importer_client, importer_user_expected_rows)
@@ -1884,6 +2139,7 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request\nApproval Complete": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+        check_expected_rows(self.san_admin_client, {})
 
         importer_user_expected_rows = {}
         check_expected_rows(self.importer_client, importer_user_expected_rows)
@@ -1921,6 +2177,7 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request\nApproval Complete": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+        check_expected_rows(self.san_admin_client, {})
 
         importer_user_expected_rows = {}
         check_expected_rows(self.importer_client, importer_user_expected_rows)
@@ -1942,6 +2199,7 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
 
         ilb_expected_rows = {}
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+        check_expected_rows(self.san_admin_client, {})
 
     def test_access_request_complete_rejected(self):
         self.iar.status = AccessRequest.Statuses.CLOSED
@@ -1959,6 +2217,7 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
 
         ilb_expected_rows = {}
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+        check_expected_rows(self.san_admin_client, {})
 
     def _add_fir(self, ar: AccessRequest, status: str, **kwargs) -> None:
         ar.further_information_requests.create(
@@ -1980,6 +2239,7 @@ class TestNewUserWelcomeMessageWorkbasket(AuthTestCase):
 
     def test_workbasket(self):
         self._test_ilb_admin_wb()
+        self._test_sanctions_admin_wb()
         self._test_importer_contact_wb()
         self._test_exporter_contact_wb()
 
@@ -1993,6 +2253,17 @@ class TestNewUserWelcomeMessageWorkbasket(AuthTestCase):
 
         expected_rows = {}
         check_expected_rows(self.ilb_admin_client, expected_rows)
+
+    def _test_sanctions_admin_wb(self):
+        expected_rows = {}
+        check_expected_rows(self.san_admin_client, expected_rows)
+
+        # Sanctions Admin should never see welcome message (even if show_welcome_message is True)
+        self.san_admin_user.show_welcome_message = True
+        self.san_admin_user.save()
+
+        expected_rows = {}
+        check_expected_rows(self.san_admin_client, expected_rows)
 
     def _test_importer_contact_wb(self):
         check_expected_rows(self.importer_client, {})
@@ -2037,7 +2308,7 @@ def check_expected_rows(
     rows: list[WorkbasketRow] = response.context["rows"]
 
     # Check the references match
-    assert sorted([r.reference for r in rows]) == sorted(expected_rows.keys())
+    assert sorted({r.reference for r in rows}) == sorted(expected_rows.keys())
 
     # iterate over rows and check the data in expected_rows
     for row in rows:

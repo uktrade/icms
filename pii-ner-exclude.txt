@@ -5027,3 +5027,4 @@ Application Processing (Awaiting BEIS
 Application Processing (Awaiting Constabulary Email Response
 Application Processing (Awaiting HSE Email Response
 Application Processing (Awaiting Sanctions Email Response
+self.imp_app & self.imp_app_sanctions
