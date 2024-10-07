@@ -117,13 +117,7 @@ def _get_access_wb_row(
 
     r.subject = ProcessTypes(app.process_type).label
 
-    r.company = "\n".join(
-        [
-            f"{app.submitted_by} {app.submitted_by.email}",
-            app.organisation_name,
-            app.organisation_address,
-        ]
-    )
+    r.company = app.organisation_name
 
     r.status = app.get_status_display()
 
