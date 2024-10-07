@@ -2005,7 +2005,11 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
-        check_expected_rows(self.san_admin_client, {})
+
+        san_expected_rows = {
+            "iar/1": {"Submitted": {"Access Request": ["Manage"]}},
+        }
+        check_expected_rows(self.san_admin_client, san_expected_rows)
 
     def test_access_request_submitted_further_information_requested(self):
         self._add_fir(self.iar, FurtherInformationRequest.OPEN)
@@ -2032,7 +2036,11 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request\nFurther Information Requested": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
-        check_expected_rows(self.san_admin_client, {})
+
+        san_expected_rows = {
+            "iar/1": {"Submitted": {"Access Request\nFurther Information Requested": ["Manage"]}},
+        }
+        check_expected_rows(self.san_admin_client, san_expected_rows)
 
     def test_access_request_submitted_further_information_responded(self):
         self._add_fir(
@@ -2059,7 +2067,11 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
-        check_expected_rows(self.san_admin_client, {})
+
+        san_expected_rows = {
+            "iar/1": {"Submitted": {"Access Request": ["Manage"]}},
+        }
+        check_expected_rows(self.san_admin_client, san_expected_rows)
 
     def test_access_request_approval_requested_not_assigned(self):
         add_approval_request(self.iar, self.ilb_admin_user)
@@ -2076,7 +2088,11 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request\nApproval Requested": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
-        check_expected_rows(self.san_admin_client, {})
+
+        san_expected_rows = {
+            "iar/1": {"Submitted": {"Access Request\nApproval Requested": ["Manage"]}},
+        }
+        check_expected_rows(self.san_admin_client, san_expected_rows)
 
         importer_user_expected_rows = {"iar/1": {"Open": {"Approval Request": ["Take Ownership"]}}}
         check_expected_rows(self.importer_client, importer_user_expected_rows)
@@ -2101,7 +2117,11 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request\nApproval Requested": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
-        check_expected_rows(self.san_admin_client, {})
+
+        san_expected_rows = {
+            "iar/1": {"Submitted": {"Access Request\nApproval Requested": ["Manage"]}},
+        }
+        check_expected_rows(self.san_admin_client, san_expected_rows)
 
         importer_user_expected_rows = {"iar/1": {"Open": {"Approval Request": ["Manage"]}}}
         check_expected_rows(self.importer_client, importer_user_expected_rows)
@@ -2139,7 +2159,11 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request\nApproval Complete": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
-        check_expected_rows(self.san_admin_client, {})
+
+        san_expected_rows = {
+            "iar/1": {"Submitted": {"Access Request\nApproval Complete": ["Manage"]}},
+        }
+        check_expected_rows(self.san_admin_client, san_expected_rows)
 
         importer_user_expected_rows = {}
         check_expected_rows(self.importer_client, importer_user_expected_rows)
@@ -2177,7 +2201,11 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
             "iar/1": {"Submitted": {"Access Request\nApproval Complete": ["Manage"]}},
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
-        check_expected_rows(self.san_admin_client, {})
+
+        san_expected_rows = {
+            "iar/1": {"Submitted": {"Access Request\nApproval Complete": ["Manage"]}},
+        }
+        check_expected_rows(self.san_admin_client, san_expected_rows)
 
         importer_user_expected_rows = {}
         check_expected_rows(self.importer_client, importer_user_expected_rows)

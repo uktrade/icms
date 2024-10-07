@@ -209,10 +209,24 @@ def _get_approval_request_annotation(
 
 
 def get_sanctions_case_officer_qs(user: User) -> chain[QuerySet]:
-    app_filters = get_caseworker_app_filters(user)
+    submitted = AccessRequest.Statuses.SUBMITTED
     # Annotations used on every row to improve performance
     open_fir_pks_annotation = _get_open_firs_pk_annotation("further_information_requests")
+    importer_access_requests = (
+        ImporterAccessRequest.objects.filter(is_active=True, status=submitted)
+        .annotate(
+            annotation_open_fir_pks=open_fir_pks_annotation,
+            annotation_has_open_approval_request=_get_approval_request_annotation(
+                ImporterApprovalRequest, ApprovalRequest.Statuses.OPEN
+            ),
+            annotation_has_complete_approval_request=_get_approval_request_annotation(
+                ImporterApprovalRequest, ApprovalRequest.Statuses.COMPLETED
+            ),
+        )
+        .select_related("submitted_by")
+    )
 
+    app_filters = get_caseworker_app_filters(user)
     import_applications = (
         ImportApplication.objects.filter(*app_filters, process_type=ProcessTypes.SANCTIONS)
         .exclude(decision=ImportApplication.REFUSE)
@@ -225,7 +239,7 @@ def get_sanctions_case_officer_qs(user: User) -> chain[QuerySet]:
         )
     )
 
-    return chain(import_applications)
+    return chain(importer_access_requests, import_applications)
 
 
 def get_applicant_qs(user: User) -> chain[QuerySet]:
