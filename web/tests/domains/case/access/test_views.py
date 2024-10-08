@@ -23,7 +23,7 @@ from web.tests.helpers import (
 )
 
 
-class TestAccessRequestListView(AuthTestCase):
+class TestImporterAccessRequestListView(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(
         self,
@@ -31,7 +31,24 @@ class TestAccessRequestListView(AuthTestCase):
     ):
         self.url = reverse("access:importer-list")
 
-    def test_list_importer_access_request_ok(self, importer_access_request):
+    @pytest.fixture
+    def refused_access_request(self):
+        ImporterAccessRequest.objects.create(
+            process_type=ImporterAccessRequest.PROCESS_TYPE,
+            request_type=ImporterAccessRequest.AGENT_ACCESS,
+            status=ImporterAccessRequest.Statuses.CLOSED,
+            response=ImporterAccessRequest.REFUSED,
+            submitted_by_id=0,
+            last_updated_by_id=0,
+            reference="IAR/392",
+            organisation_name="Big Company",
+            organisation_address="1 Main Street",
+            agent_name="Test Agent",
+            agent_address="1 Agent House",
+            response_reason="Test refusing request",
+        )
+
+    def test_list_importer_access_request_ok(self, importer_access_request, refused_access_request):
         response = self.importer_client.get(self.url)
         assert response.status_code == 403
 
@@ -39,7 +56,10 @@ class TestAccessRequestListView(AuthTestCase):
 
         assert response.status_code == 200
         assert "Search Importer Access Requests" in response.content.decode()
-        assert response.context["object_list"].count() == 1
+        assert response.context["page"].object_list.count() == 0
+
+        response = self.ilb_admin_client.get(f"{self.url}?q=IAR")
+        assert response.context["page"].object_list.count() == 2
 
     def test_prefilled_importer_name(self):
         """Tests that the importer_name query parameter is used to prefill the search form."""
@@ -48,6 +68,13 @@ class TestAccessRequestListView(AuthTestCase):
         assert response.status_code == HTTPStatus.OK
         context = response.context
         assert context["filter"].form.fields["q"].initial == "Import Ltd"
+
+    def test_search_by_reference(self, importer_access_request, refused_access_request):
+        response = self.ilb_admin_client.get(f"{self.url}?q=IAR/392")
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["page"].object_list.count() == 1
+        access_request = response.context["page"].object_list.get()
+        assert access_request.reference == "IAR/392"
 
 
 class TestExporterAccessRequestListView(AuthTestCase):
@@ -58,7 +85,24 @@ class TestExporterAccessRequestListView(AuthTestCase):
     ):
         self.url = reverse("access:exporter-list")
 
-    def test_list_exporter_access_request_ok(self):
+    @pytest.fixture
+    def refused_access_request(self):
+        ExporterAccessRequest.objects.create(
+            process_type=ExporterAccessRequest.PROCESS_TYPE,
+            request_type=ExporterAccessRequest.AGENT_ACCESS,
+            status=ExporterAccessRequest.Statuses.CLOSED,
+            response=ExporterAccessRequest.REFUSED,
+            submitted_by_id=0,
+            last_updated_by_id=0,
+            reference="EAR/4324",
+            organisation_name="Big Company",
+            organisation_address="1 Main Street",
+            agent_name="Test Agent",
+            agent_address="1 Agent House",
+            response_reason="Test refusing request",
+        )
+
+    def test_list_exporter_access_request_ok(self, exporter_access_request, refused_access_request):
         response = self.exporter_client.get(self.url)
 
         assert response.status_code == 403
@@ -67,7 +111,10 @@ class TestExporterAccessRequestListView(AuthTestCase):
 
         assert response.status_code == 200
         assert "Search Exporter Access Requests" in response.content.decode()
-        assert response.context["object_list"].count() == 1
+        assert response.context["page"].object_list.count() == 0
+
+        response = self.ilb_admin_client.get(f"{self.url}?q=EAR")
+        assert response.context["page"].object_list.count() == 2
 
     def test_prefilled_exporter_name(self):
         """Tests that the exporter_name query parameter is used to prefill the search form."""
@@ -76,6 +123,13 @@ class TestExporterAccessRequestListView(AuthTestCase):
         assert response.status_code == HTTPStatus.OK
         context = response.context
         assert context["filter"].form.fields["q"].initial == "Export Ltd"
+
+    def test_search_by_reference(self, importer_access_request, refused_access_request):
+        response = self.ilb_admin_client.get(f"{self.url}?q=EAR/4324")
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["page"].object_list.count() == 1
+        access_request = response.context["page"].object_list.get()
+        assert access_request.reference == "EAR/4324"
 
 
 class TestImporterAccessRequestView(AuthTestCase):

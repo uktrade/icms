@@ -53,7 +53,7 @@ class ListImporterAccessRequest(ModelFilterView):
         fields = [
             "submit_datetime",
             ("submitted_by", "submitted_by_email"),
-            "request_type",
+            ("reference", "request_type"),
             ("organisation_name", "organisation_address", "organisation_registered_number"),
             "link",
             "response",
@@ -64,6 +64,7 @@ class ListImporterAccessRequest(ModelFilterView):
             "submitted_by": {"header": "Requested By"},
             "submitted_by_email": {"header": "Email"},
             "request_type": {"header": "Request Type", "method": "get_request_type_display"},
+            "reference": {"header": "Reference"},
             "organisation_name": {"header": "Name"},
             "organisation_address": {"header": "Address"},
             "organisation_registered_number": {"header": "Registered Number"},
@@ -84,7 +85,7 @@ class ListExporterAccessRequest(ModelFilterView):
         fields = [
             "submit_datetime",
             ("submitted_by", "submitted_by_email"),
-            "request_type",
+            ("reference", "request_type"),
             ("organisation_name", "organisation_address", "organisation_registered_number"),
             "link",
             "response",
@@ -95,6 +96,7 @@ class ListExporterAccessRequest(ModelFilterView):
             "submitted_by": {"header": "Requested By"},
             "submitted_by_email": {"header": "Email"},
             "request_type": {"header": "Request Type", "method": "get_request_type_display"},
+            "reference": {"header": "Reference"},
             "organisation_name": {"header": "Name"},
             "organisation_address": {"header": "Address"},
             "organisation_registered_number": {"header": "Registered Number"},

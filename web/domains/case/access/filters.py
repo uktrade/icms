@@ -9,7 +9,7 @@ class ImporterAccessRequestFilter(FilterSet):
         method="filter_access_request",
         label="Search",
         help_text="""
-            Search Importer Access Requests. Results returned are matched against organisation name,
+            Search Importer Access Requests. Results returned are matched against reference, organisation name,
             organisation registered number, agent name, linked importer name and submitted by.
         """,
     )
@@ -34,6 +34,7 @@ class ImporterAccessRequestFilter(FilterSet):
             | Q(link__user__last_name__icontains=value)
             | Q(submitted_by__first_name__icontains=value)
             | Q(submitted_by__last_name__icontains=value)
+            | Q(reference__icontains=value)
         )
 
     @property
@@ -49,7 +50,7 @@ class ExporterAccessRequestFilter(FilterSet):
         method="filter_access_request",
         label="Search",
         help_text="""
-            Search Exporter Access Requests. Results returned are matched against organisation name,
+            Search Exporter Access Requests. Results returned are matched against reference, organisation name,
             organisation registered number, agent name, linked exporter name and submitted by.
         """,
     )
@@ -72,6 +73,7 @@ class ExporterAccessRequestFilter(FilterSet):
             | Q(link__name__icontains=value)
             | Q(submitted_by__first_name__icontains=value)
             | Q(submitted_by__last_name__icontains=value)
+            | Q(reference__icontains=value)
         )
 
     @property
