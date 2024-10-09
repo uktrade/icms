@@ -182,6 +182,11 @@ class CloseAccessRequestForm(ModelForm):
             )
 
         if response == AccessRequest.APPROVED:
+            if not self.instance.link:
+                self.add_error(
+                    "response", "You must link an organisation before approving the access request."
+                )
+
             if self.instance.is_agent_request and not self.instance.agent_link:
                 self.add_error(
                     "response", "You must link an agent before approving the agent access request."

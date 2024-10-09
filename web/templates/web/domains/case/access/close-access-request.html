@@ -4,20 +4,9 @@
 
 {% block main_content %}
   <h3>Close Access Request</h3>
-  {% if not process.link %}
-    <div class="info-box info-box-warning">
-    NOTE: If approving an access request without linking to an Importer/Exporter, you will have to manually
-    add the user to the relevant Importer/Exporter.
-    </div>
-  {% endif %}
-
   {% if has_open_approval_request %}
     <div class="info-box info-box-info">
       You cannot close this Access Request because you have already started the Approval Process. To close this Access Request you must first withdraw the Approval Request.
-    </div>
-  {% elif agent_missing %}
-    <div class="info-box info-box-info">
-      You cannot close this Access Request because you need to link the agent.
     </div>
   {% else %}
     <div class="container setOutForm">
