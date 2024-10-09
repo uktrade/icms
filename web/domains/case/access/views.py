@@ -48,6 +48,7 @@ class ListImporterAccessRequest(ModelFilterView):
     model = ImporterAccessRequest
     permission_required = Perms.sys.ilb_admin
     page_title = "Search Importer Access Requests"
+    ordering = "-submit_datetime"
 
     class Display:
         fields = [
@@ -80,6 +81,7 @@ class ListExporterAccessRequest(ModelFilterView):
     model = ExporterAccessRequest
     permission_required = Perms.sys.ilb_admin
     page_title = "Search Exporter Access Requests"
+    ordering = "-submit_datetime"
 
     class Display:
         fields = [
