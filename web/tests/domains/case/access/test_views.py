@@ -455,11 +455,16 @@ class TestCloseAccessRequest(AuthTestCase):
         response = self.ilb_admin_client.get(self.iar_url)
         assert response.status_code == HTTPStatus.OK
 
-        # Test we can always close (even without linking)
-        assertInHTML(
-            '<button type="submit" class="button primary-button">Close Access Request</button>',
-            response.content.decode(),
+        response = self.ilb_admin_client.post(
+            self.iar_url, data={"response": AccessRequest.APPROVED}
         )
+        assert response.status_code == 200
+        assert response.context["form"].errors == {
+            "response": ["You must link an organisation before approving the access request."]
+        }
+
+        self.iar.link = self.importer
+        self.iar.save()
 
         response = self.ilb_admin_client.post(
             self.iar_url, data={"response": AccessRequest.APPROVED}
@@ -481,6 +486,54 @@ class TestCloseAccessRequest(AuthTestCase):
                 "request_type": "Importer",
                 "icms_url": get_importer_site_domain(),
                 "is_agent": "no",
+                "has_been_refused": "no",
+                "service_name": "apply for an import licence",
+            },
+        )
+
+    def test_close_importer_agent_access_request_approve(self):
+        # Convert self.iar to an agent access request type
+        self.iar.request_type = ImporterAccessRequest.AGENT_ACCESS
+        self.iar.save()
+
+        response = self.ilb_admin_client.get(self.iar_url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.ilb_admin_client.post(
+            self.iar_url, data={"response": AccessRequest.APPROVED}
+        )
+        assert response.status_code == 200
+        assert response.context["form"].errors == {
+            "response": [
+                "You must link an organisation before approving the access request.",
+                "You must link an agent before approving the agent access request.",
+            ]
+        }
+
+        self.iar.link = self.importer
+        self.iar.agent_link = self.importer_agent
+        self.iar.save()
+
+        response = self.ilb_admin_client.post(
+            self.iar_url, data={"response": AccessRequest.APPROVED}
+        )
+        assert response.status_code == 302
+
+        self.iar.refresh_from_db()
+        assert self.iar.response == AccessRequest.APPROVED
+
+        check_gov_notify_email_was_sent(
+            1,
+            [self.iar.submitted_by.email],
+            EmailTypes.ACCESS_REQUEST_CLOSED,
+            {
+                "agent": "Agent ",
+                "organisation": "Import Ltd",
+                "outcome": "Approved",
+                "reason": "",
+                "request_type": "Importer",
+                "icms_url": get_importer_site_domain(),
+                "is_agent": "yes",
                 "has_been_refused": "no",
                 "service_name": "apply for an import licence",
             },
@@ -519,12 +572,8 @@ class TestCloseAccessRequest(AuthTestCase):
     def test_close_exporter_access_request_approve(self):
         response = self.ilb_admin_client.get(self.ear_url)
         assert response.status_code == HTTPStatus.OK
-
-        # Test we can always close (even without linking)
-        assertInHTML(
-            '<button type="submit" class="button primary-button">Close Access Request</button>',
-            response.content.decode(),
-        )
+        self.ear.link = self.exporter
+        self.ear.save()
 
         response = self.ilb_admin_client.post(
             self.ear_url, data={"response": AccessRequest.APPROVED}
@@ -759,41 +808,6 @@ class TestCloseAccessRequest(AuthTestCase):
         assert messages[0] == (
             "You cannot close this Access Request because you have already started the Approval "
             "Process. To close this Access Request you must first withdraw the Approval Request."
-        )
-
-    def test_unable_to_close_access_request_when_agent_not_linked(self):
-        # Setup the iar to be an agent access request.
-        self.iar.request_type = self.iar.AGENT_ACCESS
-        self.iar.agent_link = None
-        self.iar.save()
-
-        # Link the access request
-        link_url = reverse(
-            "access:link-request", kwargs={"access_request_pk": self.iar.pk, "entity": "importer"}
-        )
-        data = {"link": self.importer.pk}
-        response = self.ilb_admin_client.post(link_url, data=data)
-        assert response.status_code == HTTPStatus.FOUND
-
-        # Go to close page and expect to see a message saying we can't close
-        response = self.ilb_admin_client.get(self.iar_url)
-        assert response.status_code == HTTPStatus.OK
-
-        assertInHTML(
-            "You cannot close this Access Request because you need to link the agent.",
-            response.content.decode(),
-        )
-
-        # Check posting to the endpoint also prevents closing the access request.
-        response = self.ilb_admin_client.post(
-            self.iar_url, data={"response": AccessRequest.APPROVED}
-        )
-        assert response.status_code == HTTPStatus.FOUND
-
-        messages = get_messages_from_response(response)
-        assert len(messages) == 1
-        assert messages[0] == (
-            "You cannot close this Access Request because you need to link the agent."
         )
 
 

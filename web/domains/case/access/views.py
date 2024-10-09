@@ -391,19 +391,6 @@ def close_access_request(
                     )
                 )
 
-            if agent_missing:
-                messages.error(
-                    request,
-                    "You cannot close this Access Request because you need to link the agent.",
-                )
-
-                return redirect(
-                    reverse(
-                        "access:close-request",
-                        kwargs={"access_request_pk": access_request.pk, "entity": entity},
-                    )
-                )
-
             task = case_progress.get_expected_task(access_request, Task.TaskType.PROCESS)
             form = forms.CloseAccessRequestForm(request.POST, instance=access_request)
 
@@ -417,9 +404,7 @@ def close_access_request(
                 task.finished = timezone.now()
                 task.save()
 
-                # If approving with a link add the user to the org.
-                # An access request can still be approved without linking (Preserving old behaviour)
-                if access_request.response == AccessRequest.APPROVED and access_request.link:
+                if access_request.response == AccessRequest.APPROVED:
                     if access_request.is_agent_request:
                         org = access_request.agent_link
                     else:
