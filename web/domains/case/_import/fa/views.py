@@ -29,6 +29,7 @@ from web.domains.case.utils import view_application_file
 from web.domains.case.views.mixins import ApplicationTaskMixin
 from web.domains.case.views.views_search import SearchActionFormBase
 from web.domains.file.utils import create_file_model
+from web.flow import errors
 from web.flow.models import ProcessTypes
 from web.models import FirearmsAuthority, ImportApplication, ImportContact, Task, User
 from web.permissions import AppChecker, Perms
@@ -124,9 +125,7 @@ def create_import_contact(
         if application.status == application.Statuses.COMPLETED:
             template = "web/domains/case/import/fa/provide-report/import-contacts.html"
         else:
-            case_progress.check_expected_status(
-                application, [ImpExpStatus.IN_PROGRESS, ImpExpStatus.PROCESSING]
-            )
+            case_progress.application_in_progress(application)
             case_progress.check_expected_task(application, Task.TaskType.PREPARE)
             template = "web/domains/case/import/fa/import-contacts/create.html"
 
@@ -184,9 +183,7 @@ def edit_import_contact(
         if application.status == application.Statuses.COMPLETED:
             template = "web/domains/case/import/fa/provide-report/import-contacts.html"
         else:
-            case_progress.check_expected_status(
-                application, [ImpExpStatus.IN_PROGRESS, ImpExpStatus.PROCESSING]
-            )
+            case_progress.application_in_progress(application)
             case_progress.check_expected_task(application, Task.TaskType.PREPARE)
             template = "web/domains/case/import/fa/import-contacts/edit.html"
 
@@ -234,11 +231,24 @@ def delete_import_contact(
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_can_edit_application(request.user, application)
-
-        case_progress.check_expected_status(
-            application, [ImpExpStatus.IN_PROGRESS, ImpExpStatus.COMPLETED]
-        )
-
+        try:
+            case_progress.check_expected_status(
+                application,
+                [
+                    ImpExpStatus.IN_PROGRESS,
+                    ImpExpStatus.PROCESSING,
+                    ImpExpStatus.VARIATION_REQUESTED,
+                    ImpExpStatus.COMPLETED,
+                ],
+            )
+        except errors.ProcessStatusError as e:
+            # Check if application is out for update with ownership released
+            if not (
+                application.status == ImpExpStatus.SUBMITTED
+                and not application.case_owner
+                and application.current_update_requests().exists()
+            ):
+                raise e
         contact = application.importcontact_set.get(pk=contact_pk)
 
         if application.status == ImpExpStatus.COMPLETED:

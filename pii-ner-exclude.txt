@@ -5044,3 +5044,4 @@ Command.add_file_to_db
 EAR/4324
 f"Key {k!r}
 "Compare the supplied app
+Ignore ProcessStatusError
