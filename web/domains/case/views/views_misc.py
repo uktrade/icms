@@ -571,13 +571,15 @@ class CheckCaseDocumentGenerationView(
 
 @method_decorator(transaction.atomic, name="post")
 class RecreateCaseDocumentsView(
-    LoginRequiredMixin, PermissionRequiredMixin, ApplicationTaskMixin, View
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    case_progress.AuthorisedApplicationTaskMixin,
+    View,
 ):
     # View Config
     http_method_names = ["post"]
 
-    # ApplicationTaskMixin Config
-    current_status = [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+    # AuthorisedApplicationTaskMixin Config
     current_task_type = Task.TaskType.DOCUMENT_ERROR
     next_task_type = Task.TaskType.DOCUMENT_SIGNING
 
@@ -768,10 +770,9 @@ def cancel_authorisation(
         return redirect(reverse("workbasket"))
 
 
-class ViewIssuedCaseDocumentsView(LoginRequiredMixin, ApplicationTaskMixin, TemplateView):
-    # ApplicationTaskMixin Config
-    current_status = [ImpExpStatus.COMPLETED]
-
+class ViewIssuedCaseDocumentsView(
+    LoginRequiredMixin, case_progress.CompleteApplicationTaskMixin, TemplateView
+):
     # TemplateView Config
     http_method_names = ["get"]
     template_name = "web/domains/case/view-case-documents.html"
@@ -833,11 +834,9 @@ class ClearIssuedCaseDocumentsFromWorkbasket(
 
 
 @method_decorator(transaction.atomic, name="post")
-class ClearCaseFromWorkbasket(LoginRequiredMixin, ApplicationTaskMixin, View):
-    # ApplicationTaskMixin Config
-    current_status = [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
-
-    # View Config
+class ClearCaseFromWorkbasket(
+    LoginRequiredMixin, case_progress.CompleteOrRevokedApplicationTaskMixin, View
+):
     http_method_names = ["post"]
 
     def has_object_permission(self) -> bool:
@@ -885,14 +884,9 @@ def _get_copy_recipients(application: ImpOrExp) -> "QuerySet[User]":
 
 
 class QuickIssueApplicationView(
-    LoginRequiredMixin, PermissionRequiredMixin, ApplicationTaskMixin, View
+    LoginRequiredMixin, PermissionRequiredMixin, case_progress.ProcessingApplicationTaskMixin, View
 ):
     http_method_names = ["post"]
-    current_status = [
-        ImpExpStatus.PROCESSING,
-        ImpExpStatus.VARIATION_REQUESTED,
-    ]
-    current_task_type = Task.TaskType.PROCESS
     permission_required = [Perms.sys.ilb_admin]
 
     def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:

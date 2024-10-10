@@ -2,6 +2,7 @@ from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
@@ -98,7 +99,9 @@ def edit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         return render(request, "web/domains/case/import/fa-dfl/edit.html", context)
 
 
-class DFLGoodsCertificateDetailView(case_progress.InProgressApplicationStatusTaskMixin, DetailView):
+class DFLGoodsCertificateDetailView(
+    LoginRequiredMixin, case_progress.InProgressApplicationStatusTaskMixin, DetailView
+):
     http_method_names = ["get"]
     template_name = "web/domains/case/import/fa-dfl/goods-list.html"
 

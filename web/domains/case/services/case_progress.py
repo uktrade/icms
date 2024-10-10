@@ -35,6 +35,11 @@ __all__ = [
     # View Mixins
     #
     "InProgressApplicationStatusTaskMixin",
+    "ProcessingApplicationTaskMixin",
+    "AuthorisedApplicationTaskMixin",
+    "CompleteApplicationTaskMixin",
+    "CompleteOrRevokedApplicationTaskMixin",
+    "ClosedApplicationTaskMixin",
 ]
 
 
@@ -78,7 +83,10 @@ def application_in_progress(application: ImpOrExp) -> None:
 
 
 class InProgressApplicationStatusTaskMixin(ApplicationTaskMixin):
-    """Mixin for class based views that is equivalent to case_progress.application_in_progress()"""
+    """Mixin to check the application is in progress with the applicant.
+
+    This is equivalent to case_progress.application_in_progress()
+    """
 
     current_status = [ST.IN_PROGRESS, ST.PROCESSING, ST.VARIATION_REQUESTED]
     current_task_type = TT.PREPARE
@@ -150,6 +158,17 @@ def approval_request_in_processing(application: ApprovalRequest) -> None:
     check_expected_status(application, expected_status)  # type:ignore[arg-type]
 
 
+class ProcessingApplicationTaskMixin(ApplicationTaskMixin):
+    """Mixin to check the application is processing.
+
+    Note this currently differs from case_progress.application_in_processing().
+    That function also checks for ST.SUBMITTED.
+    """
+
+    current_status = [ST.PROCESSING, ST.VARIATION_REQUESTED]
+    current_task_type = TT.PROCESS
+
+
 def application_is_authorised(application: ImpOrExp) -> None:
     """Check if an application has been authorised."""
 
@@ -158,6 +177,16 @@ def application_is_authorised(application: ImpOrExp) -> None:
 
     check_expected_status(application, expected_status)
     check_expected_task(application, expected_task)
+
+
+class AuthorisedApplicationTaskMixin(ApplicationTaskMixin):
+    """Mixin to check the application is authorised.
+
+    This is equivalent to case_progress.application_is_authorised()
+    """
+
+    current_status = [ST.PROCESSING, ST.VARIATION_REQUESTED]
+    current_task_type = TT.AUTHORISE
 
 
 def application_is_with_chief(application: ImpOrExp) -> None:
@@ -178,6 +207,25 @@ def application_is_complete(application: ImpOrExp, include_revoked: bool = False
         expected_status = [ST.COMPLETED]
 
     check_expected_status(application, expected_status)
+
+
+class CompleteApplicationTaskMixin(ApplicationTaskMixin):
+    """Mixin to check the application is complete."""
+
+    current_status = [ST.COMPLETED]
+
+
+class CompleteOrRevokedApplicationTaskMixin(ApplicationTaskMixin):
+    """Mixin to check the application is complete or revoked."""
+
+    current_status = [ST.COMPLETED, ST.REVOKED]
+
+
+class ClosedApplicationTaskMixin(ApplicationTaskMixin):
+    """Mixin to check the application has been stopped or withdrawn."""
+
+    current_status = [ST.STOPPED, ST.WITHDRAWN]
+    current_task_type = None
 
 
 def check_expected_status(application: Process, expected_statuses: list[ImpExpStatus]) -> None:

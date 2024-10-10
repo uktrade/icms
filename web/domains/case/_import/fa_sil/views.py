@@ -2,6 +2,7 @@ from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
@@ -91,7 +92,9 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
         return render(request, "web/domains/case/import/fa-sil/edit.html", context)
 
 
-class SILGoodsCertificateDetailView(case_progress.InProgressApplicationStatusTaskMixin, DetailView):
+class SILGoodsCertificateDetailView(
+    LoginRequiredMixin, case_progress.InProgressApplicationStatusTaskMixin, DetailView
+):
     http_method_names = ["get"]
     template_name = "web/domains/case/import/fa-sil/goods/list.html"
 
