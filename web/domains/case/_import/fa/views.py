@@ -26,7 +26,6 @@ from web.domains.case._import.fa_sil.forms import (
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import view_application_file
-from web.domains.case.views.mixins import ApplicationTaskMixin
 from web.domains.case.views.views_search import SearchActionFormBase
 from web.domains.file.utils import create_file_model
 from web.flow.models import ProcessTypes
@@ -605,13 +604,13 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
 
 
 class ViewFirearmsReportDetailView(
-    LoginRequiredMixin, PermissionRequiredMixin, ApplicationTaskMixin, DetailView
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    case_progress.CompleteOrRevokedApplicationTaskMixin,
+    DetailView,
 ):
     # PermissionRequiredMixin config
     permission_required = Perms.sys.ilb_admin
-
-    # ApplicationTaskMixin config
-    current_status = [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
 
     # DetailView config
     http_method_names = ["get"]

@@ -206,15 +206,12 @@ def download_spreadsheet(
 
 @method_decorator(transaction.atomic, name="post")
 class ReopenApplicationView(
-    LoginRequiredMixin, PermissionRequiredMixin, ApplicationTaskMixin, View
+    LoginRequiredMixin, PermissionRequiredMixin, case_progress.ClosedApplicationTaskMixin, View
 ):
     http_method_names = ["post"]
     permission_required = [Perms.sys.ilb_admin]
 
     # ApplicationTaskMixin Config
-    current_status = [ImpExpStatus.STOPPED, ImpExpStatus.WITHDRAWN]
-    current_task_type = None
-
     next_status = ImpExpStatus.SUBMITTED
     next_task_type = Task.TaskType.PROCESS
 
