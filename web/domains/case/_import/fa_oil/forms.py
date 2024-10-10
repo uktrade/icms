@@ -35,10 +35,14 @@ class FirearmOILFormBase(forms.ModelForm):
 
         locked_location_field_kwargs = {"help_text": None, "empty_label": None, "disabled": True}
         self.fields["origin_country"] = forms.ModelChoiceField(
-            queryset=self.origin_country_qs, **locked_location_field_kwargs
+            queryset=self.origin_country_qs,
+            label="Country Of Origin",
+            **locked_location_field_kwargs,
         )
         self.fields["consignment_country"] = forms.ModelChoiceField(
-            queryset=self.consignment_country_qs, **locked_location_field_kwargs
+            queryset=self.consignment_country_qs,
+            label="Country Of Consignment",
+            **locked_location_field_kwargs,
         )
 
         self.fields["contact"].queryset = application_contacts(self.instance)
