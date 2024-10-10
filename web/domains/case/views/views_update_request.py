@@ -10,7 +10,6 @@ from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case import forms
 from web.domains.case.services import case_progress
-from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task, get_case_page_title
 from web.domains.template.utils import get_application_update_template_data
@@ -339,10 +338,7 @@ def start_update_request(
             model_class.objects.select_for_update(), pk=application_pk
         )
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(
-            application,
-            [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED],
-        )
+        case_progress.application_in_processing(application)
 
         update_requests = application.update_requests.filter(is_active=True)
         try:

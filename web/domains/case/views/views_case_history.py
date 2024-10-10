@@ -6,7 +6,6 @@ from django.urls import reverse
 from django.views.generic import DetailView
 
 from web.domains.case.services import case_progress, document_pack
-from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.flow import errors
 from web.flow.models import ProcessTypes
@@ -45,11 +44,10 @@ class CaseHistoryView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
         # Admin can view case history when revoked, an applicant can't
         try:
             if self.request.user.has_perm(Perms.sys.ilb_admin):
-                expected = [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
+                case_progress.application_is_complete(application, include_revoked=True)
             else:
-                expected = [ImpExpStatus.COMPLETED]
+                case_progress.application_is_complete(application)
 
-            case_progress.check_expected_status(application, expected)
         except errors.ProcessError:
             return False
 

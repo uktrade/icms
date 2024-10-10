@@ -16,7 +16,6 @@ from web.domains.case._import.fa.forms import ImportContactKnowBoughtFromForm
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
 from web.domains.case.services import case_progress
-from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     get_application_form,
     redirect_after_submit,
@@ -470,7 +469,7 @@ def add_report_firearm_manual(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+        case_progress.application_is_complete(application)
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -527,7 +526,7 @@ def edit_report_firearm_manual(
         )
 
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+        case_progress.application_is_complete(application)
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
         report_firearm: DFLSupplementaryReportFirearm = report.firearms.get(pk=report_firearm_pk)
@@ -577,7 +576,7 @@ def add_report_firearm_upload(
         )
 
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+        case_progress.application_is_complete(application)
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -658,7 +657,7 @@ def add_report_firearm_no_firearm(
         )
 
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+        case_progress.application_is_complete(application)
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -693,7 +692,7 @@ def delete_report_firearm(
         )
 
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+        case_progress.application_is_complete(application)
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)

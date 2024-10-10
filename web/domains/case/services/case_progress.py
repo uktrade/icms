@@ -14,11 +14,15 @@ __all__ = [
     #
     # Functions to check an application is at a particular point in the application process
     #
+    "application_in_draft",
     "application_in_progress",
+    "application_in_submitted",
     "application_in_processing",
     "access_request_in_processing",
+    "approval_request_in_processing",
     "application_is_authorised",
     "application_is_with_chief",
+    "application_is_complete",
     #
     # Utility functions
     #
@@ -34,15 +38,26 @@ __all__ = [
 ]
 
 
-# Consider splitting to the following if required in the future:
-#   - def application_in_progress
-#   - def application_in_progress_update_request
-#   - def application_in_progress_variation_request
-def application_in_progress(application: ImpOrExp) -> None:
-    """Check if the application is in progress with the applicant."""
+def application_in_draft(application: ImpOrExp) -> None:
+    """Check if an application is in draft.
 
-    # A fresh new application (IN_PROGRESS)
-    # An update request (PROCESSING / VARIATION_REQUESTED)
+    This will be true when the app is first being created.
+    """
+    expected_status = [ST.IN_PROGRESS]
+    expected_task = TT.PREPARE
+
+    check_expected_status(application, expected_status)
+    check_expected_task(application, expected_task)
+
+
+def application_in_progress(application: ImpOrExp) -> None:
+    """Check if the application is in progress with the applicant.
+
+    This will be true for the following:
+        - A fresh application IN_PROGRESS
+        - An update request (PROCESSING / VARIATION_REQUESTED)
+    """
+
     expected_status = [ST.IN_PROGRESS, ST.PROCESSING, ST.VARIATION_REQUESTED]
     expected_task = TT.PREPARE
 
@@ -99,6 +114,16 @@ class InProgressApplicationStatusTaskMixin(ApplicationTaskMixin):
         raise NotImplementedError("has_object_permission must be implemented.")
 
 
+def application_in_submitted(application: ImpOrExp) -> None:
+    """Check if an application has been submitted and ready to be processed by a caseworker."""
+
+    expected_status = [ST.SUBMITTED, ST.VARIATION_REQUESTED]
+    expected_task = TT.PROCESS
+
+    check_expected_status(application, expected_status)
+    check_expected_task(application, expected_task)
+
+
 def application_in_processing(application: ImpOrExp) -> None:
     """Check if an application is being processed by a caseworker."""
 
@@ -143,6 +168,16 @@ def application_is_with_chief(application: ImpOrExp) -> None:
 
     check_expected_status(application, expected_status)
     check_expected_task(application, expected_task)
+
+
+def application_is_complete(application: ImpOrExp, include_revoked: bool = False) -> None:
+    """Check if the application is complete or optionally revoked"""
+    if include_revoked:
+        expected_status = [ST.COMPLETED, ST.REVOKED]
+    else:
+        expected_status = [ST.COMPLETED]
+
+    check_expected_status(application, expected_status)
 
 
 def check_expected_status(application: Process, expected_statuses: list[ImpExpStatus]) -> None:

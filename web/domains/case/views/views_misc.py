@@ -23,7 +23,6 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task, get_case_page_title
-from web.flow import errors
 from web.flow.models import ProcessTypes
 from web.mail.constants import EmailTypes
 from web.mail.emails import (
@@ -79,12 +78,7 @@ def cancel_case(
         )
 
         check_can_edit_application(request.user, application)
-
-        try:
-            case_progress.check_expected_status(application, [ImpExpStatus.IN_PROGRESS])
-            case_progress.check_expected_task(application, Task.TaskType.PREPARE)
-        except errors.ProcessError:
-            raise PermissionDenied
+        case_progress.application_in_draft(application)
 
         application.delete()
 
@@ -109,11 +103,7 @@ def withdraw_case(
         )
 
         check_can_edit_application(request.user, application)
-
-        case_progress.check_expected_status(
-            application,
-            [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED],
-        )
+        case_progress.application_in_processing(application)
 
         if request.method == "POST":
             form = forms.WithdrawForm(request.POST)
@@ -172,10 +162,7 @@ def archive_withdrawal(
         )
 
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(
-            application,
-            [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED],
-        )
+        case_progress.application_in_processing(application)
 
         withdrawal = get_object_or_404(application.withdrawals, pk=withdrawal_pk)
         withdrawal.status = WithdrawApplication.Statuses.DELETED
@@ -284,10 +271,7 @@ def take_ownership(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        case_progress.check_expected_status(
-            application, [ImpExpStatus.SUBMITTED, ImpExpStatus.VARIATION_REQUESTED]
-        )
-        case_progress.check_expected_task(application, Task.TaskType.PROCESS)
+        case_progress.application_in_submitted(application)
 
         if application.status == model_class.Statuses.SUBMITTED:
             application.status = model_class.Statuses.PROCESSING
