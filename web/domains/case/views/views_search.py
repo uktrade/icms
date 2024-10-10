@@ -492,7 +492,8 @@ class RevokeCaseView(SearchActionFormBase):
         """Revoke the licence before redirecting to the success url."""
         # This view allows both completed and revoked.
         # The POST form submission only allows an application in the completed state.
-        case_progress.check_expected_status(self.application, [ImpExpStatus.COMPLETED])
+        case_progress.application_is_complete(self.application)
+
         email_applicants = form.cleaned_data["send_email"]
         reason = form.cleaned_data["reason"]
         is_import = self.application.is_import_application()

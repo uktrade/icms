@@ -494,11 +494,6 @@ def bypass_chief(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
 
-        case_progress.check_expected_status(
-            application,
-            [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED, ImpExpStatus.REVOKED],
-        )
-
         # Get the latest fake ICMSHMRCChiefRequest record
         chief_req = ICMSHMRCChiefRequest.objects.latest("pk")
 

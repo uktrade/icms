@@ -14,7 +14,6 @@ from django.views.generic import DetailView
 from web.domains.case import forms as case_forms
 from web.domains.case.forms import SubmitForm
 from web.domains.case.services import case_progress
-from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     get_application_form,
     redirect_after_submit,
@@ -639,7 +638,7 @@ def add_report_firearm_manual(
         )
 
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+        case_progress.application_is_complete(application)
 
         supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
         report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -698,7 +697,7 @@ def add_report_firearm_upload(
         )
 
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+        case_progress.application_is_complete(application)
 
         supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
         report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -784,7 +783,7 @@ def edit_report_firearm_manual(
         )
 
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+        case_progress.application_is_complete(application)
 
         supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
         report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -842,7 +841,7 @@ def add_report_firearm_no_firearm(
         )
 
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+        case_progress.application_is_complete(application)
 
         supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
         report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -879,7 +878,7 @@ def delete_report_firearm(
         )
 
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+        case_progress.application_is_complete(application)
 
         supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
         report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)

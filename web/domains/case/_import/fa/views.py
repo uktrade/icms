@@ -29,9 +29,8 @@ from web.domains.case.utils import view_application_file
 from web.domains.case.views.mixins import ApplicationTaskMixin
 from web.domains.case.views.views_search import SearchActionFormBase
 from web.domains.file.utils import create_file_model
-from web.flow import errors
 from web.flow.models import ProcessTypes
-from web.models import FirearmsAuthority, ImportApplication, ImportContact, Task, User
+from web.models import FirearmsAuthority, ImportApplication, ImportContact, User
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 
@@ -126,7 +125,6 @@ def create_import_contact(
             template = "web/domains/case/import/fa/provide-report/import-contacts.html"
         else:
             case_progress.application_in_progress(application)
-            case_progress.check_expected_task(application, Task.TaskType.PREPARE)
             template = "web/domains/case/import/fa/import-contacts/create.html"
 
         if request.method == "POST":
@@ -184,7 +182,6 @@ def edit_import_contact(
             template = "web/domains/case/import/fa/provide-report/import-contacts.html"
         else:
             case_progress.application_in_progress(application)
-            case_progress.check_expected_task(application, Task.TaskType.PREPARE)
             template = "web/domains/case/import/fa/import-contacts/edit.html"
 
         if request.method == "POST":
@@ -231,24 +228,10 @@ def delete_import_contact(
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_can_edit_application(request.user, application)
-        try:
-            case_progress.check_expected_status(
-                application,
-                [
-                    ImpExpStatus.IN_PROGRESS,
-                    ImpExpStatus.PROCESSING,
-                    ImpExpStatus.VARIATION_REQUESTED,
-                    ImpExpStatus.COMPLETED,
-                ],
-            )
-        except errors.ProcessStatusError as e:
-            # Check if application is out for update with ownership released
-            if not (
-                application.status == ImpExpStatus.SUBMITTED
-                and not application.case_owner
-                and application.current_update_requests().exists()
-            ):
-                raise e
+
+        if application.status != ImpExpStatus.COMPLETED:
+            case_progress.application_in_progress(application)
+
         contact = application.importcontact_set.get(pk=contact_pk)
 
         if application.status == ImpExpStatus.COMPLETED:
@@ -568,9 +551,7 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(
-            application, [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
-        )
+        case_progress.application_is_complete(application, include_revoked=True)
 
         form_class = _get_supplementary_info_form(application)
 
@@ -680,7 +661,7 @@ def create_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+        case_progress.application_is_complete(application)
 
         supplementary_info: FaSupplementaryInfo = application.supplementary_info
         form_class = _get_supplementary_report_form(application)
@@ -729,7 +710,7 @@ def edit_report(
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_can_edit_application(request.user, application)
-        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+        case_progress.application_is_complete(application)
 
         supplementary_info: FaSupplementaryInfo = application.supplementary_info
         report: FaSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
