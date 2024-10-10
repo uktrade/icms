@@ -76,9 +76,31 @@ class TestManageImportContactsView:
             reverse("import:fa:manage-import-contacts", kwargs={"application_pk": self.app.pk}),
             HTTPStatus.FOUND,
         )
-
         self.app.refresh_from_db()
         assert self.app.know_bought_from is True
+
+    @pytest.mark.parametrize(
+        "know_bought_from,exp_msg",
+        (
+            (
+                False,
+                "You will be asked to provide this information after the import licence has been issued. An export authority cannot issue a "
+                "firearms export licence until this information has been provided",
+            ),
+            (
+                True,
+                "You must provide details of who you plan to buy/obtain these items from using one of the Add Who Bought From buttons below.",
+            ),
+        ),
+    )
+    def test_messaging(self, importer_client, know_bought_from, exp_msg):
+        self.app.importcontact_set.all().delete()
+        response = importer_client.post(
+            self.url, data={"know_bought_from": know_bought_from}, follow=True
+        )
+        assert exp_msg in response.content.decode("utf-8")
+        self.app.refresh_from_db()
+        assert self.app.know_bought_from is know_bought_from
 
     def test_form_errors(self, importer_client):
         # Test field is required

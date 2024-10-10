@@ -51,7 +51,7 @@ class ImportContact(models.Model):
     last_name = models.CharField(max_length=200, null=True, blank=True)
     registration_number = models.CharField(max_length=200, null=True, blank=True)
     street = models.CharField(max_length=200, verbose_name="Street and Number")
-    city = models.CharField(max_length=200, verbose_name="Town/City")
+    city = models.CharField(max_length=200, verbose_name="Town / City")
     postcode = models.CharField(max_length=200, null=True, blank=True)
     region = models.CharField(max_length=200, null=True, blank=True)
     country = models.ForeignKey(

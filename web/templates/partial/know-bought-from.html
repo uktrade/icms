@@ -1,6 +1,10 @@
-{% set display_warning = process.know_bought_from == False %}
-
-<div id="know-bought-from-info-box" class="info-box info-box-info" style="display: {{ 'block' if display_warning else 'none' }}">
-  You will be asked to provide this information after the import licence has been issued.
-  An export authority cannot issue a firearms export licence until this information has been provided.
-</div>
+{% if process.know_bought_from == False %}
+  <div class="info-box info-box-warning">
+    You will be asked to provide this information after the import licence has been issued.
+    An export authority cannot issue a firearms export licence until this information has been provided
+  </div>
+{% elif process.know_bought_from == True %}
+  <div class="info-box info-box-warning">
+    You must provide details of who you plan to buy/obtain these items from using one of the Add Who Bought From buttons below.
+  </div>
+{% endif %}
