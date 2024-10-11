@@ -5,6 +5,7 @@ import pytest
 from django.urls import reverse, reverse_lazy
 from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
+from web.domains.case.shared import ImpExpStatus
 from web.models import (
     CertificateApplicationTemplate,
     CertificateOfFreeSaleApplication,
@@ -180,11 +181,15 @@ class TestFlow(AuthTestCase):
         assert task.is_active is True
 
         # declaration of truth
+        assert appl.decision is None
         response = self.exporter_client.post(url_submit, data={"confirmation": "I AGREE"})
         assertRedirects(response, "/workbasket/")
 
-        appl.refresh_from_db()
-        assert appl.status == "SUBMITTED"
+        # Check decision is approved
+        self.appl.refresh_from_db()
+        assert self.appl.decision == self.appl.APPROVE
+
+        assert appl.status == ImpExpStatus.SUBMITTED
 
         # a new task has been created
         assert appl.tasks.count() == 2
@@ -254,8 +259,14 @@ class TestSubmitCom(AuthTestCase):
         self.url = reverse("export:com-submit", kwargs={"application_pk": self.appl.pk})
 
     def test_submit_ok(self):
+        assert self.appl.decision is None
+
         response = self.exporter_client.post(self.url, data={"confirmation": "I AGREE"})
         assertRedirects(response, "/workbasket/", fetch_redirect_response=False)
+
+        # Check decision is approved
+        self.appl.refresh_from_db()
+        assert self.appl.decision == self.appl.APPROVE
 
     def test_submit_no_auth(self):
         response = self.importer_client.post(self.url, data={"confirmation": "I AGREE"})

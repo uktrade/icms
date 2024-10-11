@@ -509,8 +509,9 @@ def _test_export_search_by_status(app_type: str, case_status: str, user: User, e
 
 
 def _test_search_by_response_decision(importer_conf: FixtureData):
+    # All submitted apps default to APPROVE so set one to REFUSE to test search
     submitted_application = WoodQuotaApplication.objects.get(applicant_reference="Wood ref 3")
-    submitted_application.decision = ApplicationBase.APPROVE
+    submitted_application.decision = ApplicationBase.REFUSE
     submitted_application.save()
 
     search_terms = SearchTerms(
@@ -520,7 +521,8 @@ def _test_search_by_response_decision(importer_conf: FixtureData):
     )
     results = search_applications(search_terms, importer_conf.request.user)
 
-    assert results.total_rows == 0
+    assert results.total_rows == 1
+    check_application_references(results.records, "Wood ref 3")
 
     search_terms = SearchTerms(
         case_type="import",
@@ -529,9 +531,9 @@ def _test_search_by_response_decision(importer_conf: FixtureData):
     )
     results = search_applications(search_terms, importer_conf.request.user)
 
-    assert results.total_rows == 1
+    assert results.total_rows == 2
 
-    check_application_references(results.records, "Wood ref 3")
+    check_application_references(results.records, "Wood ref 2", "Wood ref 1")
 
 
 def _test_search_by_importer_or_agent_name(importer_conf: FixtureData):

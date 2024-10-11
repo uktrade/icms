@@ -70,6 +70,8 @@ def test_create_in_progress_wood_application(
 
 
 def test_submit_wood_application(importer_client, wood_app_in_progress, wood_app_submitted):
+    assert wood_app_in_progress.decision is None
+
     submit_app(
         client=importer_client, view_name="import:wood:submit-quota", app_pk=wood_app_in_progress.pk
     )
@@ -93,6 +95,9 @@ def test_submit_wood_application(importer_client, wood_app_in_progress, wood_app
         wood_app_in_progress.contract_documents.count()
         == wood_app_submitted.contract_documents.count()
     )
+
+    # Check decision is approved
+    assert wood_app_in_progress.decision == wood_app_in_progress.APPROVE
 
 
 @pytest.fixture

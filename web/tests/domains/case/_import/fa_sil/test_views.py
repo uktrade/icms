@@ -18,7 +18,7 @@ from web.domains.case._import.fa_sil.models import (
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.models import ImportApplicationLicence, SILApplication, Task
-from web.tests.application_utils import create_import_app, save_app_data
+from web.tests.application_utils import create_import_app, save_app_data, submit_app
 from web.tests.auth import AuthTestCase
 from web.tests.helpers import check_page_errors
 from web.utils.validation import ApplicationErrors, PageErrors
@@ -331,6 +331,15 @@ class TestSubmitFaSIL:
     def setup(self, importer_client, fa_sil_app_in_progress):
         self.app = fa_sil_app_in_progress
         self.client = importer_client
+
+    def test_submit_valid(self):
+        assert self.app.decision is None
+
+        submit_app(self.client, "import:fa-sil:submit", self.app.pk)
+
+        # Check decision is approved
+        self.app.refresh_from_db()
+        assert self.app.decision == self.app.APPROVE
 
     def test_submit_catches_incorrect_licence_for(self):
         # The app has a goods line for every section (so let's disable a section)

@@ -535,6 +535,9 @@ def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact
     submit the application
     """
 
+    app = DFLApplication.objects.get(pk=dfl_app_pk)
+    assert app.decision is None
+
     edit_url = _get_view_url("edit", {"application_pk": dfl_app_pk})
     add_goods_url = _get_view_url("add-goods", kwargs={"application_pk": dfl_app_pk})
     know_bought_from_url = reverse(
@@ -592,6 +595,9 @@ def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact
 
     # And it has a draft licence
     assert application.licences.filter(status=ImportApplicationLicence.Status.DRAFT).exists()
+
+    # Check decision is approved
+    assert application.decision == application.APPROVE
 
 
 class TestEditDFLGoodsDescription:

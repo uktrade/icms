@@ -570,7 +570,12 @@ def compare_import_application_with_fixture(
     ignore_keys = common_ignore_keys + app_ignore_keys
 
     for k in (k for k in expected_data.keys() if k not in ignore_keys):
-        assert expected_data[k] == fixture_data[k], f"Key {k!r} does not match"
+        expected = expected_data[k]
+        fixture = fixture_data[k]
+
+        assert (
+            expected == fixture
+        ), f"Key {k!r} does not match (expected: {expected!r}, ficture: {fixture!r})"
 
 
 def submit_app(client: Client, view_name: str, app_pk: int) -> None:

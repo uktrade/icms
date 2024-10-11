@@ -113,6 +113,9 @@ def test_get_app_errors_application_refused_has_errors(
 def test_get_app_errors_application_approval_null_has_errors(
     wood_application: WoodQuotaApplication,
 ):
+    wood_application.decision = None
+    wood_application.save()
+
     errors = get_app_errors(wood_application, "import")
 
     assert errors.has_errors()

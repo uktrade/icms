@@ -120,6 +120,11 @@ def submit_application(app: ImpOrExp, request: AuthenticatedHttpRequest, task: T
     else:
         app.status = app.Statuses.SUBMITTED
 
+    # Default the app decision to approve the first time the app is submitted.
+    # ILB indicated this is the preference and will reject if they need to.
+    if app.decision is None:
+        app.decision = app.APPROVE
+
     current_date_time = timezone.now()
     if not app.submit_datetime:
         app.submit_datetime = current_date_time

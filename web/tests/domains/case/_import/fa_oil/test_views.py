@@ -94,6 +94,8 @@ def test_create_in_progress_fa_oil_application(
 
 
 def test_submit_fa_oil_application(importer_client, fa_oil_app_in_progress, fa_oil_app_submitted):
+    assert fa_oil_app_in_progress.decision is None
+
     submit_app(
         client=importer_client,
         view_name="import:fa-oil:submit-oil",
@@ -119,6 +121,9 @@ def test_submit_fa_oil_application(importer_client, fa_oil_app_in_progress, fa_o
     # Check both the submitted app and the fixture have a linked supplementary_info record.
     assert fa_oil_app_in_progress.supplementary_info
     assert fa_oil_app_submitted.supplementary_info
+
+    # Check decision is approved
+    assert fa_oil_app_in_progress.decision == fa_oil_app_in_progress.APPROVE
 
 
 class TestImportAppplicationCreateView(AuthTestCase):

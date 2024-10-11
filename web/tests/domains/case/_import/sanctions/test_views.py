@@ -20,6 +20,7 @@ from web.models import (
     UpdateRequest,
 )
 from web.sites import SiteName, get_caseworker_site_domain
+from web.tests.application_utils import submit_app
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.domains.case._import.factory import (
@@ -402,6 +403,15 @@ class TestSubmitSanctions:
         self.url = reverse(
             "import:sanctions:submit-sanctions", kwargs={"application_pk": self.app.pk}
         )
+
+    def test_submit_valid(self):
+        assert self.app.decision is None
+
+        submit_app(self.client, "import:sanctions:submit-sanctions", self.app.pk)
+
+        # Check decision is approved
+        self.app.refresh_from_db()
+        assert self.app.decision == self.app.APPROVE
 
     def test_submit_catches_duplicate_commodities(self):
         sanction_usage = get_usage_records(ImportApplicationType.Types.SANCTION_ADHOC).filter(
