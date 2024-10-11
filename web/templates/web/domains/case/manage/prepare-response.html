@@ -52,8 +52,8 @@
     {% endcall %}
   {% endif %}
 
-
-  {% if process.application_approved %}
+  {# Show editable content to caseworker yet to approve or approved or readonly content when decision is approved #}
+  {% if process.application_approved or (not readonly_view and process.decision == None) %}
     {% if process.status == "REVOKED" %}
       <div class="info-box info-box-warning"><div class="screen-reader-only">Warning information box,</div>
         The licence for the following quantities has been revoked:
@@ -195,11 +195,11 @@
       {% endif %}
     {% endblock %}
 
-    {% elif readonly_view and process.decision == process.REFUSE %}
-      {{ application_field("Refuse Application", "Decision") }}
-      {{ application_field(process.refuse_reason, "Refuse Reason") }}
-    {% elif readonly_decision %}
-      {{ application_field(process.get_decision_display(), "Decision") }}
+  {% elif readonly_view and process.decision == process.REFUSE %}
+    {{ application_field("Refuse Application", "Decision") }}
+    {{ application_field(process.refuse_reason, "Refuse Reason") }}
+  {% elif readonly_decision %}
+    {{ application_field(process.get_decision_display(), "Decision") }}
   {% endif %}
 {% endblock %}
 
