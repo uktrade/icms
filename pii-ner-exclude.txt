@@ -5071,3 +5071,10 @@ Constabulary Email Missing Attachments
 "Finds the constabulary emails
 row['FILE_TARGET_ID
 "Finds the relevant
+x.sent_datetime
+x.target_id
+x.select_flag
+"Finds the files
+V2 db
+Email Attachments
+Missing Constabulary Email Attachments
