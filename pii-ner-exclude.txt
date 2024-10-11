@@ -5050,3 +5050,24 @@ Email Assignee
 non-EU
 {{ application_field('No'
 Section 5 Authority Documents</h6
+x.content_type
+x.file_size
+DECMGR.FILE_VERSIONS
+Constabulary Email Missing Attachments
+"Finds the constabulary emails
+row['FILE_TARGET_ID
+"Finds the relevant
+x.content_type
+x.file_size
+DECMGR.FILE_VERSIONS
+Constabulary Email Missing Attachments
+"Finds the constabulary emails
+row['FILE_TARGET_ID
+"Finds the relevant
+x.content_type
+x.file_size
+DECMGR.FILE_VERSIONS
+Constabulary Email Missing Attachments
+"Finds the constabulary emails
+row['FILE_TARGET_ID
+"Finds the relevant
