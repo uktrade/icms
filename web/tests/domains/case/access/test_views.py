@@ -1,3 +1,4 @@
+import datetime as dt
 from http import HTTPStatus
 
 import pytest
@@ -473,6 +474,8 @@ class TestCloseAccessRequest(AuthTestCase):
 
         self.iar.refresh_from_db()
         assert self.iar.response == AccessRequest.APPROVED
+        assert self.iar.closed_datetime.date() == dt.date.today()
+        assert self.iar.closed_by == self.ilb_admin_user
 
         check_gov_notify_email_was_sent(
             1,
@@ -521,6 +524,8 @@ class TestCloseAccessRequest(AuthTestCase):
 
         self.iar.refresh_from_db()
         assert self.iar.response == AccessRequest.APPROVED
+        assert self.iar.closed_datetime.date() == dt.date.today()
+        assert self.iar.closed_by == self.ilb_admin_user
 
         check_gov_notify_email_was_sent(
             1,
@@ -551,6 +556,8 @@ class TestCloseAccessRequest(AuthTestCase):
         self.iar.refresh_from_db()
         assert self.iar.response == AccessRequest.REFUSED
         assert self.iar.response_reason == "test refuse"
+        assert self.iar.closed_datetime.date() == dt.date.today()
+        assert self.iar.closed_by == self.ilb_admin_user
 
         check_gov_notify_email_was_sent(
             1,
@@ -582,6 +589,8 @@ class TestCloseAccessRequest(AuthTestCase):
 
         self.ear.refresh_from_db()
         assert self.ear.response == AccessRequest.APPROVED
+        assert self.ear.closed_datetime.date() == dt.date.today()
+        assert self.ear.closed_by == self.ilb_admin_user
 
         check_gov_notify_email_was_sent(
             1,
@@ -612,6 +621,8 @@ class TestCloseAccessRequest(AuthTestCase):
         self.ear.refresh_from_db()
         assert self.ear.response == AccessRequest.REFUSED
         assert self.ear.response_reason == "test refuse"
+        assert self.ear.closed_datetime.date() == dt.date.today()
+        assert self.ear.closed_by == self.ilb_admin_user
 
         check_gov_notify_email_was_sent(
             1,
