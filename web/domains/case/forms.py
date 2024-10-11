@@ -299,18 +299,19 @@ class ReassignOwnershipBaseForm(forms.ModelForm):
     email_assignee = forms.fields.BooleanField(
         required=False,
         widget=forms.CheckboxInput,
-        help_text="Select to send an email to the person you are assigning the case to",
+        label="Email Assignee",
     )
     comment = forms.fields.CharField(
         max_length=250,
         widget=forms.Textarea,
         required=False,
-        label="Add Comment",
+        label="Add comment",
         help_text="Text entered here will be added as a case note on the case and marked for attention",
     )
 
     class Meta:
         fields = ("case_owner", "email_assignee", "comment")
+        labels = {"case_owner": "Case Owner"}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -332,12 +333,14 @@ class ReassignOwnershipImport(ReassignOwnershipBaseForm):
     class Meta:
         model = ImportApplication
         fields = ReassignOwnershipBaseForm.Meta.fields
+        labels = ReassignOwnershipBaseForm.Meta.labels
 
 
 class ReassignOwnershipExport(ReassignOwnershipBaseForm):
     class Meta:
         model = ExportApplication
         fields = ReassignOwnershipBaseForm.Meta.fields
+        labels = ReassignOwnershipBaseForm.Meta.labels
 
 
 class DownloadDocumentsFormBase(forms.Form):
