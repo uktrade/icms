@@ -63,6 +63,8 @@
       {% endfor %}
     </tbody>
   </table>
+{% elif read_only %}
+  {{ application_field('No', 'Details provided') }}
 {% endif %}
 
 {% if not read_only %}

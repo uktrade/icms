@@ -16,15 +16,15 @@
 
 {% block main_content %}
   {% include "partial/case/save-info-box.html" %}
-  <h3>Certificates/Documents</h3>
+  <h4>Certificates/Documents</h4>
   {% include "partial/certificates/list-verified.html" %}
 
-  <h3>Other Certificates</h3>
+  <h6>Other Certificates</h6>
   {% include "partial/certificates/list.html" %}
 
   {# Application specific certificates #}
   {% if process.process_type == "SILApplication" and process.section5 %}
-      <h3>Section 5 Authorities</h3>
+      <h4>Section 5 Authorities</h4>
       {% with read_only = False %}
         {% include "web/domains/case/import/partials/fa-sil/verified-section5-authorities.html" %}
       {% endwith %}

@@ -52,6 +52,17 @@ class FirearmSILFormBase(forms.ModelForm):
             "manufactured": YesNoRadioSelectInline,
         }
 
+        help_texts = {
+            "origin_country": (
+                "If the goods originate from more than one country,"
+                " select the group (e.g. Any EU Country) that best describes this."
+            ),
+            "consignment_country": (
+                "If the goods are consigned/dispatched from more than one country,"
+                " select the group (e.g. Any EU Country) that best describes this."
+            ),
+        }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
