@@ -93,9 +93,9 @@ def manage_case_emails(
     case_emails = (
         application.case_emails.filter(is_active=True)
         # Show most recent first
-        .order_by("-pk")
+        .order_by("-sent_datetime", "-pk")
         # Count the emails oldest to newest
-        .annotate(email_num=Window(expression=RowNumber(), order_by="pk"))
+        .annotate(email_num=Window(expression=RowNumber(), order_by=["sent_datetime", "pk"]))
     )
 
     file_metadata = case_documents_metadata(application.get_specific_model())
