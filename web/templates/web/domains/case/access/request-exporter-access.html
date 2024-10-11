@@ -4,6 +4,15 @@
 {% block page_title %}Request Exporter Access{% endblock %}
 {% block context_header %}Request Exporter Access{% endblock %}
 
+{% block css %}
+  {{ super() }}
+  <style>
+      a.respond-to-fir {
+          padding-left: 1em;
+      }
+  </style>
+{% endblock %}
+
 {% block main_content %}
 <div class="no-sidebar" id="content">
     <div id="content-ie8-float">

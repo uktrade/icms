@@ -1,18 +1,12 @@
 <table responsiveList class="setoutList">
   <thead>
     <tr>
-      <th scope="col">Reference
-      </th>
-      <th scope="col">Requested Date
-      </th>
-      <th scope="col">Request Type
-      </th>
-      <th scope="col">Organisation Name / Address
-      </th>
-      <th scope="col">Agent Name / Address
-      </th>
-      <th scope="col">Further Information Requests
-      </th>
+      <th scope="col">Reference</th>
+      <th scope="col">Requested Date</th>
+      <th scope="col">Request Type</th>
+      <th scope="col">Organisation Name / Address</th>
+      <th scope="col">Agent Name / Address</th>
+      <th scope="col">Further Information Requests</th>
     </tr>
   </thead>
   {% for request in requests %}
@@ -21,7 +15,7 @@
       <span class="text-widget ">{{request.reference or request.pk}}</span>
     </td>
     <td>
-      <span class="text-widget ">{{request.submit_datetime}}</span>
+      <span class="text-widget ">{{request.submit_datetime|datetime_format }}</span>
     </td>
     <td>
       <span class="text-widget ">{{request.get_request_type_display()}}</span>
@@ -35,19 +29,11 @@
       <p class="test-widget">{{request.agent_address}}</p>
     </td>
     <td>
-      <table class="setoutList nestedList">
-        <thead>
-          <tr>
-            <th colspan="2" class="listPrompt">Further Information Requests</th>
-          </tr>
-          <tr>
-            <th scope="col">Requested
-            </th>
-            <th scope="col">Respond
-            </th>
-          </tr>
-        </thead>
-      </table>
+      {% set firs = request.further_information_requests.filter(is_active=True, status="OPEN").order_by("requested_datetime") %}
+      {% for fir in firs %}
+        {% set url = icms_url("case:respond-fir", kwargs={"application_pk": request.pk, "case_type": "access", "fir_pk": fir.pk}) %}
+        <p>Requested {{ fir.requested_datetime|datetime_format }} <a class="respond-to-fir" href="{{ url }}">Respond</a></p>
+      {% endfor %}
     </td>
   </tr>
   {% endfor %}
