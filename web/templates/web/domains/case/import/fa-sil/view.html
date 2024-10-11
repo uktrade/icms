@@ -18,13 +18,10 @@
       <a href="#view-certificates">Certificates</a>
     </li>
     <li>
-      <a href="#view-licence-for">Goods - Licence For</a>
-    </li>
-    <li>
       <a href="#view-from">Details of who bought from</a>
     </li>
     <li>
-      <a href="#view-misc">Misc</a>
+      <a href="#view-misc">Additional information</a>
     </li>
   </ul>
 {% endblock %}
@@ -103,8 +100,6 @@
     {{ application_field(process.commodity_code, "Commodity Code") }}
 
     <hr />
-
-    <h5 id="view-licence-for"> Licence for</h5>
     {% with read_only = True %}
       {% include "web/domains/case/import/fa-sil/goods/section1-boxes.html" %}
       {% include "web/domains/case/import/fa-sil/goods/section2-boxes.html" %}
@@ -116,27 +111,15 @@
   {% endcall %}
 
   {% call application_section("Certificates/Documents", "view-certificates") %}
-    <h5>Verified Firearms Authorities</h5>
-    {% with read_only=True %}
-      {% include "partial/certificates/list-verified.html" %}
-    {% endwith %}
-
-    <h5>Other Certificates</h5>
     {% with read_only = True %}
+      {% include "partial/certificates/list-verified.html" %}
+      <h6>Other Certificates</h6>
       {% include "partial/certificates/list.html" %}
+      {% include "web/domains/case/import/partials/fa-sil/verified-section5-authorities.html" %}
+      {% include "web/domains/case/import/partials/fa-sil/user-section5-authorities.html" %}
     {% endwith %}
-
-    <hr />
-
-    <h5>Section 5 Authorities</h5>
-      {% with read_only = True %}
-        {% include "web/domains/case/import/partials/fa-sil/verified-section5-authorities.html" %}
-      {% endwith %}
-      {% with read_only = True %}
-        {% include "web/domains/case/import/partials/fa-sil/user-section5-authorities.html" %}
-      {% endwith %}
+    <hr /><hr />
   {% endcall %}
-
 
   {% call application_section("Details of who bought from", "view-from") %}
     {% with read_only = True %}

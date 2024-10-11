@@ -5048,3 +5048,5 @@ Ignore ProcessStatusError
 the Add Who Bought From buttons
 Email Assignee
 non-EU
+{{ application_field('No'
+Section 5 Authority Documents</h6
