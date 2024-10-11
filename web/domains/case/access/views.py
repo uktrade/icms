@@ -400,6 +400,8 @@ def close_access_request(
                 access_request = form.save(commit=False)
 
                 access_request.status = AccessRequest.Statuses.CLOSED
+                access_request.closed_datetime = timezone.now()
+                access_request.closed_by = request.user
                 access_request.save()
 
                 task.is_active = False
