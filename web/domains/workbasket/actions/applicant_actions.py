@@ -256,7 +256,7 @@ class WithdrawApplicationAction(Action):
         if self.application.annotation_has_withdrawal:
             name = "Pending Withdrawal"
         else:
-            name = "Request Withdrawal"
+            name = "Withdraw"
 
         return [
             WorkbasketAction(
