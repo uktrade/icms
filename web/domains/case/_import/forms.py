@@ -223,6 +223,9 @@ class LicenceDateAndPaperLicenceForm(LicenceDateForm):
     class Meta:
         model = ImportApplicationLicence
         fields = LicenceDateForm.Meta.fields + ("issue_paper_licence_only",)
+        help_texts = {
+            "issue_paper_licence_only": "Yes - if shipped from EU country. No - if shipped from non-EU country.",
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
