@@ -50,15 +50,15 @@
         {% set app_approved = process.status == "PROCESSING" and process.decision == "APPROVE" %}
         {% if process.is_import_application() %}
           {% if app_approved or (process.status == "VARIATION_REQUESTED" and process.variation_decision == "APPROVE") %}
-            <input type="submit" class="button" value="Quick Issue" data-confirm="Are you sure you want to issue this licence?"/>
+            <input type="submit" class="button primary-button" value="Quick Issue" data-confirm="Are you sure you want to issue this licence?"/>
           {% else %}
-            <input type="button" class="button" value="Quick Issue" data-modal-message="The case must be approved to issue a licence."/>
+            <input type="button" class="button primary-button" value="Quick Issue" data-modal-message="The case must be approved to issue a licence."/>
           {% endif %}
         {% else %}
           {% if app_approved or (process.status == "VARIATION_REQUESTED") %}
-            <input type="submit" class="button" value="Quick Issue" data-confirm="Are you sure you want to issue this certificate?"/>
+            <input type="submit" class="button primary-button" value="Quick Issue" data-confirm="Are you sure you want to issue this certificate?"/>
           {% else %}
-            <input type="button" class="button" value="Quick Issue" data-modal-message="The case must be approved to issue a certificate."/>
+            <input type="button" class="button primary-button" value="Quick Issue" data-modal-message="The case must be approved to issue a certificate."/>
           {% endif %}
         {% endif %}
       </form>
