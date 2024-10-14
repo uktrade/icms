@@ -3,14 +3,9 @@
 <ul class="menu-out">
   {{ icms_link(request, icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'import'}), process.get_reference()) }}
 
-  {# Specific import application links #}
+  {# Checklist links #}
   {% if process.process_type == "OpenIndividualLicenceApplication" %}
     {{ icms_link(request, icms_url('import:fa-oil:manage-checklist', kwargs={'application_pk': process.pk}), 'Checklist') }}
-
-    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Constabulary Emails') }}
-
-  {% elif process.process_type == "SanctionsAndAdhocApplication" %}
-    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Sanction Emails') }}
 
   {% elif process.process_type == "WoodQuotaApplication" %}
     {{ icms_link(request, icms_url('import:wood:manage-checklist', kwargs={'application_pk': process.pk}), 'Checklist') }}
@@ -21,12 +16,8 @@
   {% elif process.process_type == "DFLApplication" %}
     {{ icms_link(request, icms_url('import:fa-dfl:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
 
-    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Constabulary Emails') }}
-
   {% elif process.process_type == "SILApplication" %}
     {{ icms_link(request, icms_url('import:fa-sil:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
-
-    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Constabulary Emails') }}
 
   {% elif process.process_type == "OutwardProcessingTradeApplication" %}
     {{ icms_link(request, icms_url('import:opt:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
@@ -36,7 +27,6 @@
 
   {% elif process.process_type == "ISQuotaApplication" %}
     {{ icms_link(request, icms_url('import:ironsteel:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
-
   {% endif %}
 
   {% set all_vr = process.variation_requests.all() %}
@@ -53,6 +43,20 @@
     {{ icms_link(request, icms_url('case:manage-withdrawals', kwargs={'application_pk': process.pk, 'case_type': 'import'}),
                   'Application Withdrawals (' + processed|string + '/' + total|string + ')') }}
   {% endwith %}
+
+  {# Case email links #}
+  {% if process.process_type == "OpenIndividualLicenceApplication" %}
+    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Constabulary Emails') }}
+
+  {% elif process.process_type == "SanctionsAndAdhocApplication" %}
+    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Sanction Emails') }}
+
+  {% elif process.process_type == "DFLApplication" %}
+    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Constabulary Emails') }}
+
+  {% elif process.process_type == "SILApplication" %}
+    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Constabulary Emails') }}
+  {% endif %}
 
   {% with total = process.update_requests.filter(is_active=True).count(),
           processed = process.update_requests.filter(is_active=True).exclude(status="OPEN").count() %}
