@@ -177,10 +177,10 @@ class TestApplicationSubmittedWorkbasket(AuthTestCase):
     def _test_importer_contact_wb(self):
         expected_rows = {
             self.imp_app.reference: {
-                "Submitted": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Submitted": {"Application Submitted": ["Withdraw", "View Application"]}
             },
             self.imp_app_sanctions.reference: {
-                "Submitted": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Submitted": {"Application Submitted": ["Withdraw", "View Application"]}
             },
         }
 
@@ -198,7 +198,7 @@ class TestApplicationSubmittedWorkbasket(AuthTestCase):
     def _test_importer_agent_wb(self):
         expected_rows = {
             self.imp_agent_app.reference: {
-                "Submitted": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Submitted": {"Application Submitted": ["Withdraw", "View Application"]}
             }
         }
 
@@ -215,7 +215,7 @@ class TestApplicationSubmittedWorkbasket(AuthTestCase):
     def _test_exporter_contact_wb(self):
         expected_rows = {
             self.exp_app.reference: {
-                "Submitted": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Submitted": {"Application Submitted": ["Withdraw", "View Application"]}
             }
         }
 
@@ -230,7 +230,7 @@ class TestApplicationSubmittedWorkbasket(AuthTestCase):
     def _test_exporter_agent_wb(self):
         expected_rows = {
             self.exp_agent_app.reference: {
-                "Submitted": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Submitted": {"Application Submitted": ["Withdraw", "View Application"]}
             }
         }
 
@@ -305,10 +305,10 @@ class TestApplicationManagedWorkbasket(AuthTestCase):
     def _test_importer_contact_wb(self):
         expected_rows = {
             self.imp_app.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             },
             self.imp_app_sanctions.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             },
         }
 
@@ -326,7 +326,7 @@ class TestApplicationManagedWorkbasket(AuthTestCase):
     def _test_importer_agent_wb(self):
         expected_rows = {
             self.imp_agent_app.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             }
         }
 
@@ -343,7 +343,7 @@ class TestApplicationManagedWorkbasket(AuthTestCase):
     def _test_exporter_contact_wb(self):
         expected_rows = {
             self.exp_app.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             }
         }
 
@@ -358,7 +358,7 @@ class TestApplicationManagedWorkbasket(AuthTestCase):
     def _test_exporter_agent_wb(self):
         expected_rows = {
             self.exp_agent_app.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             }
         }
 
@@ -643,14 +643,14 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
         expected_rows = {
             self.imp_app.reference: {
                 "Processing": {
-                    "Application Submitted": ["Request Withdrawal", "View Application"],
+                    "Application Submitted": ["Withdraw", "View Application"],
                     # Offset time by an hour as it's BST
                     "Further Information Request, 26 Jul 2023 07:38:16": ["Respond"],
                 }
             },
             self.imp_app_sanctions.reference: {
                 "Processing": {
-                    "Application Submitted": ["Request Withdrawal", "View Application"],
+                    "Application Submitted": ["Withdraw", "View Application"],
                     # Offset time by an hour as it's BST
                     "Further Information Request, 26 Jul 2023 07:38:16": ["Respond"],
                 }
@@ -672,7 +672,7 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
         expected_rows = {
             self.imp_agent_app.reference: {
                 "Processing": {
-                    "Application Submitted": ["Request Withdrawal", "View Application"],
+                    "Application Submitted": ["Withdraw", "View Application"],
                     # Offset time by an hour as it's BST
                     "Further Information Request, 26 Jul 2023 07:38:16": ["Respond"],
                 }
@@ -693,7 +693,7 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
         expected_rows = {
             self.exp_app.reference: {
                 "Processing": {
-                    "Application Submitted": ["Request Withdrawal", "View Application"],
+                    "Application Submitted": ["Withdraw", "View Application"],
                     # Offset time by an hour as it's BST
                     "Further Information Request, 26 Jul 2023 07:38:16": ["Respond"],
                 }
@@ -712,7 +712,7 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
         expected_rows = {
             self.exp_agent_app.reference: {
                 "Processing": {
-                    "Application Submitted": ["Request Withdrawal", "View Application"],
+                    "Application Submitted": ["Withdraw", "View Application"],
                     # Offset time by an hour as it's BST
                     "Further Information Request, 26 Jul 2023 07:38:16": ["Respond"],
                 }
@@ -856,13 +856,13 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
         expected_rows = {
             self.imp_app.reference: {
                 "Processing": {
-                    "Application Submitted": ["Request Withdrawal", "View Application"],
+                    "Application Submitted": ["Withdraw", "View Application"],
                     "Application Update in Progress": ["Resume Update"],
                 }
             },
             self.imp_app_sanctions.reference: {
                 "Processing": {
-                    "Application Submitted": ["Request Withdrawal", "View Application"],
+                    "Application Submitted": ["Withdraw", "View Application"],
                     "Application Update Requested": ["Respond to Update Request"],
                 }
             },
@@ -883,7 +883,7 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
         expected_rows = {
             self.imp_agent_app.reference: {
                 "Processing": {
-                    "Application Submitted": ["Request Withdrawal", "View Application"],
+                    "Application Submitted": ["Withdraw", "View Application"],
                     "Application Update Requested": ["Respond to Update Request"],
                 }
             }
@@ -903,7 +903,7 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
         expected_rows = {
             self.exp_app.reference: {
                 "Processing": {
-                    "Application Submitted": ["Request Withdrawal", "View Application"],
+                    "Application Submitted": ["Withdraw", "View Application"],
                     "Application Update Requested": ["Respond to Update Request"],
                 }
             }
@@ -921,7 +921,7 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
         expected_rows = {
             self.exp_agent_app.reference: {
                 "Processing": {
-                    "Application Submitted": ["Request Withdrawal", "View Application"],
+                    "Application Submitted": ["Withdraw", "View Application"],
                     "Application Update in Progress": ["Resume Update"],
                 }
             }
@@ -1065,10 +1065,10 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
     def _test_importer_contact_wb(self):
         expected_rows = {
             self.imp_app.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             },
             self.imp_app_sanctions.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             },
         }
 
@@ -1086,7 +1086,7 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
     def _test_importer_agent_wb(self):
         expected_rows = {
             self.imp_agent_app.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             }
         }
 
@@ -1103,7 +1103,7 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
     def _test_exporter_contact_wb(self):
         expected_rows = {
             self.exp_app.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             }
         }
 
@@ -1118,7 +1118,7 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
     def _test_exporter_agent_wb(self):
         expected_rows = {
             self.exp_agent_app.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             }
         }
 
@@ -1302,10 +1302,10 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
     def _test_importer_contact_wb(self):
         expected_rows = {
             self.imp_app.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             },
             self.imp_app_sanctions.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             },
         }
 
@@ -1323,7 +1323,7 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
     def _test_importer_agent_wb(self):
         expected_rows = {
             self.imp_agent_app.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             }
         }
 
@@ -1813,10 +1813,10 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
     def _test_importer_contact_wb(self):
         expected_rows = {
             self.imp_app.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             },
             self.imp_app_sanctions.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             },
         }
 
@@ -1834,7 +1834,7 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
     def _test_importer_agent_wb(self):
         expected_rows = {
             self.imp_agent_app.reference: {
-                "Processing": {"Application Submitted": ["Request Withdrawal", "View Application"]}
+                "Processing": {"Application Submitted": ["Withdraw", "View Application"]}
             }
         }
 

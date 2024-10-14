@@ -72,14 +72,14 @@ def test_actions_submitted(app_submitted, importer_one_contact):
 
     user_row = get_row(app_submitted, importer_one_contact, False)
 
-    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
+    _check_actions(user_row.sections, expected_actions={"Withdraw", "View Application"})
 
 
 def test_actions_processing(app_processing, importer_one_contact):
     get_row = get_workbasket_row_func(app_processing.process_type)
     user_row = get_row(app_processing, importer_one_contact, False)
 
-    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
+    _check_actions(user_row.sections, expected_actions={"Withdraw", "View Application"})
 
 
 def test_actions_fir_withdrawal_update_request(app_processing, importer_one_contact):
@@ -117,7 +117,7 @@ def test_actions_authorise(app_processing, importer_one_contact):
     get_row = get_workbasket_row_func(app_processing.process_type)
     user_row = get_row(app_processing, importer_one_contact, False)
 
-    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
+    _check_actions(user_row.sections, expected_actions={"Withdraw", "View Application"})
 
 
 def test_actions_bypass_chief(app_processing, importer_one_contact):
@@ -126,12 +126,12 @@ def test_actions_bypass_chief(app_processing, importer_one_contact):
 
     user_row = get_row(app_processing, importer_one_contact, False)
 
-    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
+    _check_actions(user_row.sections, expected_actions={"Withdraw", "View Application"})
 
     _update_task(app_processing, Task.TaskType.CHIEF_ERROR)
     user_row = get_row(app_processing, importer_one_contact, False)
 
-    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
+    _check_actions(user_row.sections, expected_actions={"Withdraw", "View Application"})
 
 
 def test_actions_completed(app_completed, importer_one_contact):

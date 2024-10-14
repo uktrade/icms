@@ -79,7 +79,7 @@ class TestApplicantActions:
                 if status in valid_statuses:
                     assert action.show_link()
                     wb_action = action.get_workbasket_actions()[0]
-                    expected_name = "Pending Withdrawal" if has_withdrawal else "Request Withdrawal"
+                    expected_name = "Pending Withdrawal" if has_withdrawal else "Withdraw"
 
                     assert wb_action.name == expected_name
                     assert wb_action.section_label == "Application Submitted"
