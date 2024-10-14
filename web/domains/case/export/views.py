@@ -946,7 +946,7 @@ def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                     reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
                 )
 
-        form_valid = SubmitGMPForm(data=model_to_dict(application), instance=application).is_valid()
+        form_valid = EditGMPForm(data=model_to_dict(application), instance=application).is_valid()
         show_iso_table = (
             form_valid
             and application.gmp_certificate_issued == application.CertificateTypes.ISO_22716
