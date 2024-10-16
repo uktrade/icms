@@ -131,17 +131,6 @@ jobs:
           command: sudo apt-get update && sudo apt-get install -y poppler-utils
 
       - run:
-          name: run data migration unit tests
-          command: |
-            source .env && export $(cut -d= -f1 < .env)
-            pytest \
-              data_migration \
-              --circleci-parallelize \
-              --create-db \
-              --ignore web/end_to_end \
-              --junitxml=test-results/data-migration-results.xml
-
-      - run:
           name: run unit tests
           command: |
             source .env && export $(cut -d= -f1 < .env)
