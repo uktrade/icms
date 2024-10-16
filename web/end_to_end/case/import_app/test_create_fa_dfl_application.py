@@ -76,7 +76,7 @@ def fa_dfl_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_label("Deactivated Certificate Reference").click()
     page.get_by_label("Deactivated Certificate Reference").fill("test")
 
-    page.get_by_role("combobox", name="Issuing Country").select_option("23")
+    page.get_by_role("combobox", name="Issuing Country").select_option("131")  # Spain
     page.get_by_label("Document").set_input_files(sample_upload_file)
     page.get_by_role("button", name="Save").click()
 

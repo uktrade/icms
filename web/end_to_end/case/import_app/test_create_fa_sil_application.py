@@ -233,8 +233,8 @@ def fa_sil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_label("Registration Number").fill("Registration number")
     page.get_by_label("Street and Number").click()
     page.get_by_label("Street and Number").fill("1 street")
-    page.get_by_label("Town/City").click()
-    page.get_by_label("Town/City").fill("Town")
+    page.get_by_label("Town / City").click()
+    page.get_by_label("Town / City").fill("Town")
     page.get_by_label("Postcode").click()
     page.get_by_label("Postcode").fill("S112ZZ")  # /PS-IGNORE
     page.get_by_label("Region").click()
