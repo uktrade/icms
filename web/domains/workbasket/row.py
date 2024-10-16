@@ -79,7 +79,7 @@ def _get_case_wb_row(app: ImpOrExp, user: User, is_ilb_admin: bool) -> Workbaske
 
     r.reference = app.get_reference()
 
-    r.timestamp = app.created
+    r.timestamp = app.submit_datetime or app.created
 
     r.status = app.get_status_display()
 
@@ -121,7 +121,7 @@ def _get_access_wb_row(
 
     r.status = app.get_status_display()
 
-    r.timestamp = app.created
+    r.timestamp = app.submit_datetime or app.created
 
     info_rows = ["Access Request"]
 
@@ -213,7 +213,7 @@ def _get_approval_wb_row(
 
     r.status = app.get_status_display()
 
-    r.timestamp = app.created
+    r.timestamp = app.request_date or app.created
 
     information = "Approval Request"
 
