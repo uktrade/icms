@@ -1,3 +1,5 @@
+import datetime as dt
+
 import pytest
 from django.test import override_settings
 
@@ -29,6 +31,8 @@ def app_in_progress(db, importer, importer_one_contact):
 @pytest.fixture
 def app_submitted(db, importer, importer_one_contact):
     app = _create_wood_app(importer, importer_one_contact, ImpExpStatus.SUBMITTED)
+    app.submit_datetime = dt.datetime.now()
+    app.save()
     return _get_wood_app_with_annotations(app)
 
 
@@ -64,6 +68,8 @@ def test_actions_in_progress(app_in_progress, importer_one_contact):
     get_row = get_workbasket_row_func(app_in_progress.process_type)
     user_row = get_row(app_in_progress, importer_one_contact, False)
 
+    assert user_row.timestamp == app_in_progress.created
+
     _check_actions(user_row.sections, expected_actions={"Resume", "Cancel"})
 
 
@@ -71,6 +77,8 @@ def test_actions_submitted(app_submitted, importer_one_contact):
     get_row = get_workbasket_row_func(app_submitted.process_type)
 
     user_row = get_row(app_submitted, importer_one_contact, False)
+
+    assert user_row.timestamp == app_submitted.submit_datetime
 
     _check_actions(user_row.sections, expected_actions={"Withdraw", "View Application"})
 
