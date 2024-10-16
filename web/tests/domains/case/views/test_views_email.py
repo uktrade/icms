@@ -32,7 +32,7 @@ class TestViewEmail(AuthTestCase):
             "This screen is used to email relevant constabularies. You may attach multiple"
             " firearms certificates to a single email. You can also record responses from the constabulary."
         )
-        assert resp.context["email_title"] == "Emails"
+        assert resp.context["email_title"] == "Constabulary Emails"
         assert resp.context["email_subtitle"] == ""
         assert resp.context["no_emails_msg"] == "There aren't any emails."
 

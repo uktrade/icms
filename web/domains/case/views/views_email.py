@@ -1,9 +1,7 @@
-from typing import TYPE_CHECKING
-
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
-from django.db.models import BooleanField, ExpressionWrapper, Q, Window
+from django.db.models import BooleanField, ExpressionWrapper, Q, QuerySet, Window
 from django.db.models.functions import RowNumber
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -36,9 +34,6 @@ from web.types import AuthenticatedHttpRequest
 
 from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
-
 
 @login_required
 @permission_required(Perms.sys.ilb_admin, raise_exception=True)
@@ -58,30 +53,29 @@ def manage_case_emails(
     no_emails_msg = "There aren't any emails."
     # Used in template to change how case email attachments get displayed.
     is_firearms_application = False
+    info_email = ""
 
     if application.process_type in [ProcessTypes.FA_OIL, ProcessTypes.FA_DFL, ProcessTypes.FA_SIL]:
+        email_title = "Constabulary Emails"
         info_email = (
             "This screen is used to email relevant constabularies. You may attach multiple"
             " firearms certificates to a single email. You can also record responses from the constabulary."
         )
         is_firearms_application = True
 
-    elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
+    elif application.process_type == ProcessTypes.CFS:
         email_title = "Health and Safety Executive (HSE) Checks"
         email_subtitle = "HSE Emails"
         info_email = "Biocidal products: this screen is used to email and record responses from the Health and Safety Executive."
         no_emails_msg = "There aren't any HSE emails."
 
-    else:
-        info_email = ""
+    elif application.process_type == ProcessTypes.SANCTIONS:
+        email_title = "Sanction Emails"
 
     verified_section_5_authorities = []
     verified_firearms_authorities = []
 
-    if application.process_type in [
-        SILApplication.PROCESS_TYPE,
-        OpenIndividualLicenceApplication.PROCESS_TYPE,
-    ]:
+    if application.process_type in [ProcessTypes.FA_SIL, ProcessTypes.FA_OIL]:
         # it's a SIL or OIL application, get the verified firearm authorities
         today_date = timezone.now().date()
         specific_application = application.get_specific_model()
@@ -402,7 +396,7 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
         return CaseEmailConfig(application=application, file_qs=files, file_metadata=file_metadata)
 
     elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
-        app_files: "QuerySet[GMPFile]" = application.supporting_documents.filter(is_active=True)
+        app_files: QuerySet[GMPFile] = application.supporting_documents.filter(is_active=True)
         ft = GMPFile.Type
         ct = CertificateOfGoodManufacturingPracticeApplication.CertificateTypes
 
