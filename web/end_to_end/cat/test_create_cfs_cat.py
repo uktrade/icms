@@ -77,8 +77,8 @@ def test_can_create_cfs_cat(pages: conftest.UserPages) -> None:
         page.get_by_text("Manual").click()
         page.get_by_label("Postcode").click()
         page.get_by_label("Postcode").fill("s111S")
-        page.get_by_label("Address", exact=True).click()
-        page.get_by_label("Address", exact=True).fill("Address line one")
+        page.get_by_label("Address optional").click()
+        page.get_by_label("Address optional").fill("Address line one")
         page.get_by_role("button", name="Save").click()
 
         # Add, edit and delete a few products.
@@ -138,7 +138,7 @@ def test_can_create_cfs_cat(pages: conftest.UserPages) -> None:
         page.get_by_label("Close this message").click()
 
 
-def test_can_create_cfs_cat_biocidal_schdedule(pages: conftest.UserPages) -> None:
+def test_can_create_cfs_cat_biocidal_schedule(pages: conftest.UserPages) -> None:
     with pages.exp_page() as page:
         # Create a new CFS Certificate Application Template
         page.get_by_role("link", name="Admin").click()
@@ -218,8 +218,8 @@ def test_can_create_cfs_cat_biocidal_schdedule(pages: conftest.UserPages) -> Non
         page.get_by_text("Manual").click()
         page.get_by_label("Postcode").click()
         page.get_by_label("Postcode").fill("s111S")
-        page.get_by_label("Address", exact=True).click()
-        page.get_by_label("Address", exact=True).fill("Address line one")
+        page.get_by_label("Address optional").click()
+        page.get_by_label("Address optional").fill("Address line one")
         page.get_by_role("button", name="Save").click()
 
         # Add a product to schedule 2
