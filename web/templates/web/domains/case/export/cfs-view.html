@@ -7,6 +7,7 @@
       input[type='checkbox'].disabled-cb {
           position: relative;
           top: 0;
+          margin: 0 1.3em 0 0;
       }
   </style>
 {% endblock %}
@@ -55,14 +56,13 @@
         <div class="three columns">
           <label class="prompt west">{{ labels["schedule_statements_accordance_with_standards"] }}</label>
         </div>
-        <div class="six columns">
+        <div class="nine columns">
           <input
             class="disabled-cb" type="checkbox" aria-label="These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK law" disabled="disabled"
             {{ 'checked="checked"' if schedule.schedule_statements_accordance_with_standards else "" }}
           >
           These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK law
         </div>
-        <div class="three columns"></div>
       </div>
 
       {% if show_schedule_statements_is_responsible_person %}
@@ -70,14 +70,13 @@
           <div class="three columns">
             <label class="prompt west">{{ labels["schedule_statements_is_responsible_person"] }}</label>
           </div>
-          <div class="six columns">
+          <div class="nine columns">
             <input
               class="disabled-cb" type="checkbox" aria-label="I am the responsible person as defined by Cosmetic Regulation No 1223/2009 as applicable in GB. I am the person responsible for ensuring that the products listed in this schedule meet the safety requirements set out in that Regulation." disabled="disabled"
               {{ 'checked="checked"' if schedule.schedule_statements_is_responsible_person else "" }}
             >
             I am the responsible person as defined by Cosmetic Regulation No 1223/2009 as applicable in GB. I am the person responsible for ensuring that the products listed in this schedule meet the safety requirements set out in that Regulation.
           </div>
-          <div class="three columns"></div>
         </div>
       {% endif %}
     {% endcall %}
