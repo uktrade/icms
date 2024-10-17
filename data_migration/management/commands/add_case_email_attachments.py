@@ -7,7 +7,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 from data_migration import models as dm
 from data_migration.management.commands.utils.db_processor import OracleDBProcessor
-from data_migration.utils.format import adjust_icms_v1_datetime
+from data_migration.utils.format import adjust_icms_v1_datetime, datetime_or_none
 from web.models import CaseEmail, File
 from web.utils import s3 as s3_web
 
@@ -37,10 +37,10 @@ WHERE fft_id = :file_target_id
 beis_email_attachments_files = """
 SELECT
   e.ca_id
-  , e.email_body "body"
   , x.sent_datetime
   , x.target_id
   , x.select_flag
+  , x.status
 FROM impmgr.xview_cert_app_beis_emails e
 INNER JOIN impmgr.certificate_app_details cad ON cad.id = e.cad_id
 CROSS JOIN XMLTABLE('
@@ -68,7 +68,7 @@ CROSS JOIN XMLTABLE('
 ) x
 WHERE e.status_control = 'C'
 AND x.email_id = e.email_id
-AND e.status <> ' DELETED'
+AND x.status <> 'DELETED'
 ORDER BY e.cad_id, e.email_id
 """
 
@@ -88,6 +88,7 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
         self.dry_run = options["dry_run"]
         self.add_files_constabulary_email_attachments()
+        self.add_beis_email_attachments()
 
     def add_beis_email_attachments(self) -> None:
         """Finds the files attached to the BEIS emails V1 and links the attachments to CaseEmail in V2"""
@@ -99,17 +100,16 @@ class Command(BaseCommand):
             try:
                 while True:
                     row = next(rows)
-                    self.add_attachements_to_beis_email(row)
+                    self.add_attachments_to_beis_email(row)
             except StopIteration:
                 pass
 
     def add_attachments_to_beis_email(self, row: dict[str, Any]) -> None:
         email_data = dict(
             ca_id=row["CA_ID"],
-            body=row["BODY"],
             status=row["STATUS"],
-            sent_datetime=adjust_icms_v1_datetime(row["SENT_DATETIME"]),
-            template_code=["CA_BEIS_EMAIL"],
+            sent_datetime=datetime_or_none(row["SENT_DATETIME"]),
+            template_code="CA_BEIS_EMAIL",
         )
 
         dm_case_email = dm.CaseEmail.objects.get(**email_data)
@@ -122,7 +122,7 @@ class Command(BaseCommand):
         files = app.supporting_documents.filter(pk__in=dm_file_pks)
 
         if self.dry_run:
-            print(f"{app.reference} - Adding {files.count()} files to BEIS Email")
+            self.stdout.write(f"{app.reference} - Adding {files.count()} files to BEIS Email")
             return
 
         for file in files:
@@ -144,8 +144,8 @@ class Command(BaseCommand):
             .distinct()
         )
 
-        for obj in qs:
-            with db.execute_query(sql, {"file_target_id": obj.file_target_id}) as rows:
+        for file_target_id in qs:
+            with db.execute_query(sql, {"file_target_id": file_target_id}) as rows:
                 try:
                     while True:
                         row = next(rows)
@@ -157,7 +157,7 @@ class Command(BaseCommand):
                     pass
 
     def upload_file_to_s3(self, row: dict[str, Any]) -> None:
-        """Uploads fir attachment file to S3."""
+        """Uploads constabulary email attachment file to S3."""
         file_size_limit = 5 * 1024**2
         if self.dry_run:
             return
