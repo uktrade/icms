@@ -1,5 +1,6 @@
 import base64
 import logging
+import urllib.parse
 from typing import Any
 
 import requests
@@ -11,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def api_get_companies(query_string: str) -> dict[str, Any]:
+    query_string = urllib.parse.quote_plus(query_string)
     url = _get_companies_url(query_string)
     response = requests.get(url, headers=_get_auth_header())
 
