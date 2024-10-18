@@ -13,6 +13,8 @@ from web.utils.sentry import capture_exception
 @login_required
 @require_POST
 def postcode_lookup(request: AuthenticatedHttpRequest) -> JsonResponse:
+    if "postcode" not in request.POST:
+        return JsonResponse({"error_msg": "Missing required field postcode"}, status=400)
     postcode = request.POST["postcode"]
 
     try:

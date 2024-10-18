@@ -1,7 +1,6 @@
-import datetime as dt
-
 import pytest
 from django.test import override_settings
+from django.utils import timezone
 
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
@@ -31,7 +30,7 @@ def app_in_progress(db, importer, importer_one_contact):
 @pytest.fixture
 def app_submitted(db, importer, importer_one_contact):
     app = _create_wood_app(importer, importer_one_contact, ImpExpStatus.SUBMITTED)
-    app.submit_datetime = dt.datetime.now()
+    app.submit_datetime = timezone.now()
     app.save()
     return _get_wood_app_with_annotations(app)
 
