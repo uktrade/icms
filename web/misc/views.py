@@ -13,6 +13,8 @@ from web.utils.sentry import capture_exception
 @login_required
 @require_POST
 def postcode_lookup(request: AuthenticatedHttpRequest) -> JsonResponse:
+    if "postcode" not in request.POST:
+        return JsonResponse({"error_msg": "Missing required field postcode"}, status=400)
     postcode = request.POST["postcode"]
 
     try:
@@ -41,6 +43,8 @@ def postcode_lookup(request: AuthenticatedHttpRequest) -> JsonResponse:
 @login_required
 @require_POST
 def company_lookup(request: AuthenticatedHttpRequest) -> JsonResponse:
+    if "query" not in request.POST:
+        return JsonResponse({"error_msg": "Missing required field query"}, status=400)
     query = request.POST["query"]
 
     companies = api_get_companies(query)
