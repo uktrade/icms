@@ -350,9 +350,14 @@ def _get_organisation(application: "ImportApplication") -> types.OrganisationDat
     eori_number = _get_eori_number(importer, office)
     address_lines = _get_address_lines(office)
 
+    if not importer.is_organisation():
+        name = importer.user.full_name
+    else:
+        name = importer.name
+
     return types.OrganisationData(
         eori_number=eori_number,
-        name=importer.name,
+        name=name,
         address=types.AddressData(
             # max address lines is 5
             **address_lines,
