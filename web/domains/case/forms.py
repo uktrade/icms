@@ -127,11 +127,11 @@ class WithdrawResponseForm(forms.ModelForm):
 class ResponsePreparationBaseForm(forms.ModelForm):
     class Meta:
         fields = ("decision", "refuse_reason")
-        widgets = {"refuse_reason": forms.Textarea}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["decision"].required = True
+        self.fields["refuse_reason"].widget = forms.Textarea({"rows": 10})
 
     def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
