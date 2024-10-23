@@ -1,3 +1,4 @@
+import os
 import traceback
 from typing import Literal
 
@@ -16,6 +17,11 @@ def init_sentry(sentry_dsn: str, sentry_environment: str) -> None:
         dsn=sentry_dsn,
         environment=sentry_environment,
         integrations=[DjangoIntegration(), RedisIntegration()],
+        enable_tracing=True,
+        sample_rate=0.01,
+        traces_sample_rate=0.01,  # reduce the number of performance traces
+        enable_backpressure_handling=True,  # ensure that when sentry is overloaded, we back off and wait
+        release=os.getenv("GIT_TAG"),
     )
 
     global sentry_initialized
