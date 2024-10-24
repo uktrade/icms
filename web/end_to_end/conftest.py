@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session")
-def browser_context_args_fixture(browser_context_args: Dict[str, Any]) -> Dict[str, Any]:
+def browser_context_args(browser_context_args: Dict[str, Any]) -> Dict[str, Any]:
     return {**browser_context_args, "viewport": {"width": 1920, "height": 1080}}
 
 
@@ -133,8 +133,8 @@ def debug_page(page: Page) -> None:
 
 
 @pytest.fixture()
-def pages(browser: Browser, browser_context_args_fixture: Dict[str, Any]) -> UserPages:
-    return UserPages(browser, browser_context_args_fixture)
+def pages(browser: Browser, browser_context_args: Dict[str, Any]) -> UserPages:
+    return UserPages(browser, browser_context_args)
 
 
 @pytest.fixture()

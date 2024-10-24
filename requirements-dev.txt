@@ -609,3 +609,4 @@ zope-interface==7.0.3
 # The following packages are considered to be unsafe in a requirements file:
 # pip
 # setuptools
+pytest-playwright==0.5.2
