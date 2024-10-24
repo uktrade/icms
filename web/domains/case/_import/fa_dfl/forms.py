@@ -1,3 +1,4 @@
+import re
 from typing import Any
 
 from django import forms
@@ -68,7 +69,7 @@ class SubmitFaDFLForm(FirearmDFLFormBase):
     """
 
 
-class AddDLFGoodsCertificateForm(forms.ModelForm):
+class AddDFLGoodsCertificateForm(forms.ModelForm):
     document = ICMSFileField(required=True)
 
     class Meta:
@@ -92,8 +93,12 @@ class AddDLFGoodsCertificateForm(forms.ModelForm):
         countries = Country.app.get_fa_dfl_issuing_countries()
         self.fields["issuing_country"].queryset = countries
 
+    def clean_goods_description(self):
+        description = self.cleaned_data["goods_description"]
+        return re.sub(r"\s+", " ", description.strip())
 
-class EditDLFGoodsCertificateForm(forms.ModelForm):
+
+class EditDFLGoodsCertificateForm(forms.ModelForm):
     class Meta:
         model = models.DFLGoodsCertificate
         fields = ("goods_description", "deactivated_certificate_reference", "issuing_country")
@@ -111,6 +116,10 @@ class EditDLFGoodsCertificateForm(forms.ModelForm):
         countries = Country.app.get_fa_dfl_issuing_countries()
         self.fields["issuing_country"].queryset = countries
 
+    def clean_goods_description(self):
+        description = self.cleaned_data["goods_description"]
+        return re.sub(r"\s+", " ", description.strip())
+
 
 class EditDFLGoodsCertificateDescriptionForm(forms.ModelForm):
     class Meta:
@@ -123,6 +132,10 @@ class EditDFLGoodsCertificateDescriptionForm(forms.ModelForm):
                 " You must list only one deactivated firearm per goods line."
             )
         }
+
+    def clean_goods_description(self):
+        description = self.cleaned_data["goods_description"]
+        return re.sub(r"\s+", " ", description.strip())
 
 
 class DFLChecklistForm(ChecklistBaseForm):
