@@ -202,6 +202,9 @@ class TestSanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             goods_description="old desc",
             quantity_amount=5,
             value=5,
+            goods_description_original="old desc",
+            quantity_amount_original=5,
+            value_original=5,
             import_application=self.process,
         )
 
@@ -290,6 +293,9 @@ class TestSanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             goods_description="old desc",
             quantity_amount=5,
             value=5,
+            goods_description_original="old desc",
+            quantity_amount_original=5,
+            value_original=5,
             import_application=self.process,
         )
         data = {
@@ -325,6 +331,9 @@ class TestSanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             goods_description="desc",
             quantity_amount=5,
             value=5,
+            goods_description_original="desc",
+            quantity_amount_original=5,
+            value_original=5,
             import_application=self.process,
         )
         assert len(SanctionsAndAdhocApplicationGoods.objects.all()) == 2
@@ -413,15 +422,33 @@ class TestSubmitSanctions:
 
         self.app.sanctions_goods.all().delete()
         self.app.sanctions_goods.create(
-            commodity=commodity, goods_description="Goods 1", quantity_amount=1, value=1
+            commodity=commodity,
+            goods_description="Goods 1",
+            quantity_amount=1,
+            value=1,
+            goods_description_original="Goods 1",
+            quantity_amount_original=1,
+            value_original=1,
         )
 
         self.app.sanctions_goods.create(
-            commodity=commodity, goods_description="Goods 2 (dupe)", quantity_amount=1, value=1
+            commodity=commodity,
+            goods_description="Goods 2 (dupe)",
+            quantity_amount=1,
+            value=1,
+            goods_description_original="Goods 2 (dupe)",
+            quantity_amount_original=1,
+            value_original=1,
         )
 
         self.app.sanctions_goods.create(
-            commodity=another_commodity, goods_description="Goods 3", quantity_amount=1, value=1
+            commodity=another_commodity,
+            goods_description="Goods 3",
+            quantity_amount=1,
+            value=1,
+            goods_description_original="Goods 3",
+            quantity_amount_original=1,
+            value_original=1,
         )
 
         response = self.client.get(self.url)
@@ -455,7 +482,13 @@ class TestSubmitSanctions:
         self.app.sanctions_goods.all().delete()
         # Add an invalid commodity
         self.app.sanctions_goods.create(
-            commodity=commodity, goods_description="Goods 1", quantity_amount=1, value=1
+            commodity=commodity,
+            goods_description="Goods 1",
+            quantity_amount=1,
+            value=1,
+            goods_description_original="Goods 1",
+            quantity_amount_original=1,
+            value_original=1,
         )
 
         response = self.client.get(self.url)
