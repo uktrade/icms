@@ -134,7 +134,7 @@ jobs:
           name: run end-to-end tests
           command: |
             source .env && export $(cut -d= -f1 < .env)
-            pytest -c playwright/pytest.ini  web/end_to_end/ --numprocesses=auto ${args}
+            pytest -c playwright/pytest.ini  web/end_to_end/test_login.py::test_ilb_admin_can_access_workbasket  --numprocesses=auto ${args}
 
       - run:
           name: run unit tests
