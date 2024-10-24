@@ -190,6 +190,9 @@ if is_copilot():
     else:
         # When deployed read values from environment variables
         env = DBTPlatformEnvironment()  # type:ignore[call-arg]
+elif "CIRCLECI" in os.environ:
+    # CircleCI CloudFoundryEnvironment
+    env = CloudFoundryEnvironment(_env_prefix="ICMS_")  # type:ignore[call-arg]
 else:
     # Cloud Foundry environment
     env = CloudFoundryEnvironment()  # type:ignore[call-arg]
