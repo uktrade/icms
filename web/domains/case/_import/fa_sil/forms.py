@@ -431,9 +431,6 @@ class SILChecklistOptionalForm(SILChecklistForm):
 class ResponsePrepBaseForm(forms.ModelForm):
     """Base class form for editing description and quantity in the response preparation screen"""
 
-    class Meta:
-        fields = ("description", "quantity")
-
     quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY)
 
     def clean_description(self):
@@ -464,31 +461,31 @@ class ResponsePrepUnlimitedBaseForm(ResponsePrepBaseForm):
 class ResponsePrepSILGoodsSection1Form(ResponsePrepUnlimitedBaseForm):
     class Meta:
         model = models.SILGoodsSection1
-        fields = ResponsePrepUnlimitedBaseForm.Meta.fields
+        fields = ("description", "quantity")
 
 
 class ResponsePrepSILGoodsSection2Form(ResponsePrepUnlimitedBaseForm):
     class Meta:
         model = models.SILGoodsSection2
-        fields = ResponsePrepUnlimitedBaseForm.Meta.fields
+        fields = ("description", "quantity")
 
 
 class ResponsePrepSILGoodsSection5Form(ResponsePrepUnlimitedBaseForm):
     class Meta:
         model = models.SILGoodsSection5
-        fields = ResponsePrepUnlimitedBaseForm.Meta.fields
+        fields = ("description", "quantity")
 
 
 class ResponsePrepSILGoodsSection582ObsoleteForm(ResponsePrepBaseForm):  # /PS-IGNORE
     class Meta:
         model = models.SILGoodsSection582Obsolete  # /PS-IGNORE
-        fields = ResponsePrepBaseForm.Meta.fields
+        fields = ("description", "quantity")
 
 
 class ResponsePrepSILGoodsSection582OtherForm(ResponsePrepBaseForm):  # /PS-IGNORE
     class Meta:
         model = models.SILGoodsSection582Other  # /PS-IGNORE
-        fields = ResponsePrepBaseForm.Meta.fields
+        fields = ("description", "quantity")
 
 
 class SILCoverLetterTemplateForm(forms.Form):
