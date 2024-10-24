@@ -1,3 +1,4 @@
+import re
 from typing import Any
 
 from django import forms
@@ -117,6 +118,10 @@ class GoodsForm(forms.ModelForm):
 
         self.fields["commodity"].queryset = get_usage_commodities(usage_records)
 
+    def clean_goods_description(self):
+        description = self.cleaned_data["goods_description"]
+        return re.sub(r"\s+", " ", description.strip())
+
 
 class GoodsSanctionsLicenceForm(forms.ModelForm):
     class Meta:
@@ -128,3 +133,7 @@ class GoodsSanctionsLicenceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["commodity"].disabled = True
+
+    def clean_goods_description(self):
+        description = self.cleaned_data["goods_description"]
+        return re.sub(r"\s+", " ", description.strip())

@@ -37,13 +37,13 @@ from web.utils.validation import (
 )
 
 from .forms import (
-    AddDLFGoodsCertificateForm,
+    AddDFLGoodsCertificateForm,
     DFLChecklistForm,
     DFLChecklistOptionalForm,
     DFLSupplementaryReportFirearmForm,
     DFLSupplementaryReportUploadFirearmForm,
     EditDFLGoodsCertificateDescriptionForm,
-    EditDLFGoodsCertificateForm,
+    EditDFLGoodsCertificateForm,
     EditFaDFLForm,
     SubmitFaDFLForm,
 )
@@ -143,7 +143,7 @@ def add_goods_certificate(
         case_progress.application_in_progress(application)
 
         if request.method == "POST":
-            form = AddDLFGoodsCertificateForm(data=request.POST, files=request.FILES)
+            form = AddDFLGoodsCertificateForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():
                 document: S3Boto3StorageFile = form.cleaned_data.get("document")
@@ -165,7 +165,7 @@ def add_goods_certificate(
                     reverse("import:fa-dfl:list-goods", kwargs={"application_pk": application_pk})
                 )
         else:
-            form = AddDLFGoodsCertificateForm()
+            form = AddDFLGoodsCertificateForm()
 
         context = {
             "process": application,
@@ -192,7 +192,7 @@ def edit_goods_certificate(
         document = application.goods_certificates.filter(is_active=True).get(pk=document_pk)
 
         if request.method == "POST":
-            form = EditDLFGoodsCertificateForm(data=request.POST, instance=document)
+            form = EditDFLGoodsCertificateForm(data=request.POST, instance=document)
 
             if form.is_valid():
                 goods_cert = form.save(commit=False)
@@ -204,7 +204,7 @@ def edit_goods_certificate(
                 )
 
         else:
-            form = EditDLFGoodsCertificateForm(instance=document)
+            form = EditDFLGoodsCertificateForm(instance=document)
 
         context = {
             "process": application,
