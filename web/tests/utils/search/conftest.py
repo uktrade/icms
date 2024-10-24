@@ -380,6 +380,9 @@ class Build:
                 goods_description=f"Some goods: {com}",
                 quantity_amount=123,
                 value=123,
+                goods_description_original=f"Some goods: {com}",
+                quantity_amount_original=123,
+                value_original=123,
             )
 
         _submit_application(application, importer_conf)
