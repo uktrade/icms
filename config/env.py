@@ -181,7 +181,7 @@ class DBTPlatformEnvironment(BaseSettings):
         return self.celery_broker_url
 
 
-class CircleCIEnvironment(BaseSettings):
+class CircleCIEnvironment(DBTPlatformEnvironment):
     model_config = SettingsConfigDict(
         extra="ignore",
         validate_default=False,
