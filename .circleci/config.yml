@@ -134,8 +134,8 @@ jobs:
           name: setup test server
           command: |
             source .env && export $(cut -d= -f1 < .env)
-            python manage.py migrate
-            python manage.py collectstatic
+            python manage.py migrate --no-input
+            python manage.py collectstatic --no-input
 
       - run:
           name: starting test server
