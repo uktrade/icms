@@ -47,13 +47,15 @@
 
   {% if process.supplementary_info.is_complete %}
     {% if not process.supplementary_info.reports.exists() %}
+
       <div class="info-box info-box-info">
         The applicant has completed the supplementary information without any firearms reports due to the following reason:
         <br><br>
         {{ process.supplementary_info.no_report_reason }}
       </div>
     {% endif %}
-
+    <h3>Complete Supplementary Reporting</h3>
+    <div class="section-break"></div>
     {{ application_field(process.supplementary_info.completed_by, "Report Completed By") }}
     {{ application_field(process.supplementary_info.completed_datetime|datetime_format('%d-%b-%Y'), "Date Reporting Completed") }}
 
