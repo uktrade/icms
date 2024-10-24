@@ -130,12 +130,18 @@ jobs:
           name: install poppler
           command: sudo apt-get update && sudo apt-get install -y poppler-utils
 
+      - run:
+          name: setup test server
+          command: |
+            source .env && export $(cut -d= -f1 < .env)
+            python manage.py migrate
+            python manage.py collectstatic
 
       - run:
           name: starting test server
           command: |
-            source .env && export $(cut -d= -f1 < .env)
             python manage.py runserver
+          background: true
 
       - run:
           name: run end-to-end tests
