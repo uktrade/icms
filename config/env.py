@@ -181,6 +181,14 @@ class DBTPlatformEnvironment(BaseSettings):
         return self.celery_broker_url
 
 
+class CircleCIEnvironment(BaseSettings):
+    model_config = SettingsConfigDict(
+        extra="ignore",
+        validate_default=False,
+        env_prefix="ICMS_",
+    )
+
+
 if is_copilot():
     if "BUILD_STEP" in os.environ:
         # When building use the fake settings in .env.circleci
@@ -192,7 +200,7 @@ if is_copilot():
         env = DBTPlatformEnvironment()  # type:ignore[call-arg]
 elif "CIRCLECI" in os.environ:
     # CircleCI CloudFoundryEnvironment
-    env = CloudFoundryEnvironment(_env_prefix="ICMS_")  # type:ignore[call-arg]
+    env = CircleCIEnvironment()  # type:ignore[call-arg]
 else:
     # Cloud Foundry environment
     env = CloudFoundryEnvironment()  # type:ignore[call-arg]
