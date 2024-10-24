@@ -134,7 +134,7 @@ jobs:
           name: run end-to-end tests
           command: |
             source .env && export $(cut -d= -f1 < .env)
-            pytest web/end_to_end --junitxml=test-results/end-to-end-test-results.xml
+            pytest -c playwright/pytest.ini  web/end_to_end/ --numprocesses=auto ${args}
 
       - run:
           name: run unit tests
