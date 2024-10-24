@@ -7,6 +7,7 @@ from django.test import override_settings
 from django.urls import reverse, reverse_lazy
 from pytest_django.asserts import assertRedirects
 
+from web.domains.case.export.forms import CreateExportApplicationForm
 from web.domains.case.forms_search import ImportSearchForm
 from web.domains.contacts.widgets import ContactWidget
 from web.one_login.utils import get_one_login_logout_url
@@ -252,3 +253,25 @@ class TestLoginRequiredSelect2AutoResponseView(AuthTestCase):
         response = self.anonymous_client.get(self.url)
 
         assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_exporter_search(self, exporter_client, exporter):
+        response = exporter_client.get(
+            reverse("export:create-application", kwargs={"type_code": "cfs"})
+        )
+        create_app_form: CreateExportApplicationForm = response.context["form"]
+        exporter_widget: ContactWidget = create_app_form.fields["exporter"].widget
+        qd = QueryDict(mutable=True)
+        qd.update({"term": "Test", "field_id": exporter_widget.field_id})
+        url = reverse("login-required-select2-view") + f"?{qd.urlencode()}"
+
+        response = exporter_client.get(url)
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {
+            "more": False,
+            "results": [
+                {
+                    "id": 1,
+                    "text": "Test Exporter 1",
+                },
+            ],
+        }
