@@ -49,7 +49,7 @@ class CreateExportApplicationForm(forms.Form):
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Exporter",
             },
-            search_fields=("name__icontains"),
+            search_fields=("name__icontains",),
         ),
     )
     exporter_office = forms.ModelChoiceField(
