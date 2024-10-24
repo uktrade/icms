@@ -1,3 +1,4 @@
+import re
 from typing import Any
 
 from django import forms
@@ -116,7 +117,42 @@ class SubmitFaSILForm(FirearmSILFormBase):
             self.add_error("other_description", "You must enter this item")
 
 
-class SILGoodsSection1Form(forms.ModelForm):
+class SILGoodsSectionBase(forms.ModelForm):
+    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["manufacture"].required = True
+
+    def clean_manufacture(self):
+        manufactured_before_1900 = self.cleaned_data["manufacture"]
+        if manufactured_before_1900:
+            raise forms.ValidationError(
+                "If your firearm was manufactured before 1900 then an import licence is not required."
+            )
+
+        return manufactured_before_1900
+
+    def clean_description(self):
+        description = self.cleaned_data["description"]
+        return re.sub(r"\s+", " ", description.strip())
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        quantity = cleaned_data.get("quantity")
+        unlimited_quantity = cleaned_data.get("unlimited_quantity")
+
+        if not quantity and not unlimited_quantity:
+            self.add_error(
+                "quantity", "You must enter either a quantity or select unlimited quantity"
+            )
+
+        if unlimited_quantity:
+            cleaned_data["quantity"] = None
+
+
+class SILGoodsSection1Form(SILGoodsSectionBase):
     class Meta:
         model = models.SILGoodsSection1
         fields = ("manufacture", "description", "quantity", "unlimited_quantity")
@@ -125,37 +161,8 @@ class SILGoodsSection1Form(forms.ModelForm):
             "description": forms.Textarea({"rows": 3}),
         }
 
-    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY, required=False)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["manufacture"].required = True
-
-    def clean_manufacture(self):
-        manufactured_before_1900 = self.cleaned_data["manufacture"]
-        if manufactured_before_1900:
-            raise forms.ValidationError(
-                "If your firearm was manufactured before 1900 then an import licence is not required."
-            )
-
-        return manufactured_before_1900
-
-    def clean(self):
-        cleaned_data = super().clean()
-
-        quantity = cleaned_data.get("quantity")
-        unlimited_quantity = cleaned_data.get("unlimited_quantity")
-
-        if not quantity and not unlimited_quantity:
-            self.add_error(
-                "quantity", "You must enter either a quantity or select unlimited quantity"
-            )
-
-        if unlimited_quantity:
-            cleaned_data["quantity"] = None
-
-
-class SILGoodsSection2Form(forms.ModelForm):
+class SILGoodsSection2Form(SILGoodsSectionBase):
     class Meta:
         model = models.SILGoodsSection2
         fields = ("manufacture", "description", "quantity", "unlimited_quantity")
@@ -164,37 +171,8 @@ class SILGoodsSection2Form(forms.ModelForm):
             "description": forms.Textarea({"rows": 3}),
         }
 
-    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY, required=False)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["manufacture"].required = True
-
-    def clean_manufacture(self):
-        manufactured_before_1900 = self.cleaned_data["manufacture"]
-        if manufactured_before_1900:
-            raise forms.ValidationError(
-                "If your firearm was manufactured before 1900 then an import licence is not required."
-            )
-
-        return manufactured_before_1900
-
-    def clean(self):
-        cleaned_data = super().clean()
-
-        quantity = cleaned_data.get("quantity")
-        unlimited_quantity = cleaned_data.get("unlimited_quantity")
-
-        if not quantity and not unlimited_quantity:
-            self.add_error(
-                "quantity", "You must enter either a quantity or select unlimited quantity"
-            )
-
-        if unlimited_quantity:
-            cleaned_data["quantity"] = None
-
-
-class SILGoodsSection5Form(forms.ModelForm):
+class SILGoodsSection5Form(SILGoodsSectionBase):
     class Meta:
         model = models.SILGoodsSection5
         fields = (
@@ -209,35 +187,6 @@ class SILGoodsSection5Form(forms.ModelForm):
             "manufacture": YesNoRadioSelectInline,
             "description": forms.Textarea({"rows": 3}),
         }
-
-    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY, required=False)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["manufacture"].required = True
-
-    def clean_manufacture(self):
-        manufactured_before_1900 = self.cleaned_data["manufacture"]
-        if manufactured_before_1900:
-            raise forms.ValidationError(
-                "If your firearm was manufactured before 1900 then an import licence is not required."
-            )
-
-        return manufactured_before_1900
-
-    def clean(self):
-        cleaned_data = super().clean()
-
-        quantity = cleaned_data.get("quantity")
-        unlimited_quantity = cleaned_data.get("unlimited_quantity")
-
-        if not quantity and not unlimited_quantity:
-            self.add_error(
-                "quantity", "You must enter either a quantity or select unlimited quantity"
-            )
-
-        if unlimited_quantity:
-            cleaned_data["quantity"] = None
 
 
 class SILGoodsSection582ObsoleteForm(forms.ModelForm):  # /PS-IGNORE
@@ -280,6 +229,10 @@ class SILGoodsSection582ObsoleteForm(forms.ModelForm):  # /PS-IGNORE
         self.fields["obsolete_calibre"].choices = [("", "---------")] + [
             (calibre.name, calibre.name) for calibre in calibres
         ]
+
+    def clean_description(self):
+        description = self.cleaned_data["description"]
+        return re.sub(r"\s+", " ", description.strip())
 
     def clean_curiosity_ornament(self):
         curiosity_ornament = self.cleaned_data["curiosity_ornament"]
@@ -374,6 +327,10 @@ class SILGoodsSection582OtherForm(forms.ModelForm):  # /PS-IGNORE
         self.fields["ignition"].required = True
         self.fields["chamber"].required = True
         self.fields["bore"].required = True
+
+    def clean_description(self):
+        description = self.cleaned_data["description"]
+        return re.sub(r"\s+", " ", description.strip())
 
     def clean_curiosity_ornament(self):
         curiosity_ornament = self.cleaned_data["curiosity_ornament"]
@@ -478,6 +435,10 @@ class ResponsePrepBaseForm(forms.ModelForm):
         fields = ("description", "quantity")
 
     quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY)
+
+    def clean_description(self):
+        description = self.cleaned_data["description"]
+        return re.sub(r"\s+", " ", description.strip())
 
 
 class ResponsePrepUnlimitedBaseForm(ResponsePrepBaseForm):
