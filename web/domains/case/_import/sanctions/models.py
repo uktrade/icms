@@ -44,11 +44,10 @@ class SanctionsAndAdhocApplicationGoods(models.Model):
         ),
     )
 
-    # Original values from applicant that cannot be overritten by case officer
-    # TODO: ICMSLST-3017 Make fields not nullable when data migration is updated
-    goods_description_original = models.CharField(max_length=4096, null=True)
-    quantity_amount_original = models.DecimalField(max_digits=14, decimal_places=3, null=True)
-    value_original = models.DecimalField(max_digits=12, decimal_places=2, null=True)
+    # Original values from applicant that cannot be overritten by the case officer
+    goods_description_original = models.CharField(max_length=4096)
+    quantity_amount_original = models.DecimalField(max_digits=14, decimal_places=3)
+    value_original = models.DecimalField(max_digits=12, decimal_places=2)
 
     def __str__(self):
         return (
