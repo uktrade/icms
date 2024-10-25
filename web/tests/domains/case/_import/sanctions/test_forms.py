@@ -3,28 +3,19 @@ import pytest
 from web.domains.case._import.sanctions.forms import (
     EditSanctionsAndAdhocLicenceForm,
     GoodsForm,
+    GoodsSanctionsLicenceForm,
     SubmitSanctionsAndAdhocLicenceForm,
 )
-from web.models import Commodity, Country, Task
+from web.models import Commodity, Country
 from web.tests.auth import AuthTestCase
-from web.tests.domains.case._import.factory import (
-    SanctionsAndAdhocLicenseApplicationFactory,
-)
 
 
 class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup):
+    def setup(self, _setup, sanctions_app_in_progress):
         self.valid_country = Country.util.get_all_countries().get(name="Iran")
-
-        self.process = SanctionsAndAdhocLicenseApplicationFactory.create(
-            status="IN_PROGRESS",
-            importer=self.importer,
-            created_by=self.importer_user,
-            last_updated_by=self.importer_user,
-            origin_country=Country.objects.get(name="Belarus"),
-        )
-        Task.objects.create(process=self.process, task_type=Task.TaskType.PREPARE)
+        self.process = sanctions_app_in_progress
+        self.goods = self.process.sanctions_goods.first()
 
     def test_sa_form_valid(self):
         data = {
@@ -57,6 +48,7 @@ class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
         }
         form = GoodsForm(data, application=self.process)
         assert form.is_valid() is True
+        assert form.cleaned_data["goods_description"] == "test desc"
 
     def test_goods_form_invalid(self):
         data = {}
@@ -133,3 +125,34 @@ class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
 
         form = GoodsForm(application=self.process)
         assert form.fields["commodity"].queryset.exists()
+
+    def test_goods_form_description_cleaned(self):
+        data = {
+            "commodity": Commodity.objects.get(commodity_code="9013109000").pk,
+            "goods_description": " some\r\n goods \t description\n  ",
+            "quantity_amount": 5,
+            "value": 5,
+        }
+        form = GoodsForm(data, application=self.process)
+        assert form.is_valid() is True
+        assert form.cleaned_data["goods_description"] == "some goods description"
+
+    def test_goods_sanction_licence_form(self):
+        data = {
+            "goods_description": "some goods description",
+            "quantity_amount": 5,
+            "value": 5,
+        }
+        form = GoodsSanctionsLicenceForm(data=data, instance=self.goods)
+        assert form.is_valid() is True
+        assert form.cleaned_data["goods_description"] == "some goods description"
+
+    def test_goods_sanction_licence_form_description_cleaned(self):
+        data = {
+            "goods_description": " some\r\n goods \t description\n  ",
+            "quantity_amount": 5,
+            "value": 5,
+        }
+        form = GoodsSanctionsLicenceForm(data=data, instance=self.goods)
+        assert form.is_valid() is True
+        assert form.cleaned_data["goods_description"] == "some goods description"
