@@ -135,7 +135,7 @@ class SILGoodsSectionBase(forms.ModelForm):
 
     def clean_description(self):
         description = self.cleaned_data["description"]
-        return re.sub(r"\s+", " ", description.strip())
+        return re.sub(r"\s+", " ", description)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -232,7 +232,7 @@ class SILGoodsSection582ObsoleteForm(forms.ModelForm):  # /PS-IGNORE
 
     def clean_description(self):
         description = self.cleaned_data["description"]
-        return re.sub(r"\s+", " ", description.strip())
+        return re.sub(r"\s+", " ", description)
 
     def clean_curiosity_ornament(self):
         curiosity_ornament = self.cleaned_data["curiosity_ornament"]
@@ -330,7 +330,7 @@ class SILGoodsSection582OtherForm(forms.ModelForm):  # /PS-IGNORE
 
     def clean_description(self):
         description = self.cleaned_data["description"]
-        return re.sub(r"\s+", " ", description.strip())
+        return re.sub(r"\s+", " ", description)
 
     def clean_curiosity_ornament(self):
         curiosity_ornament = self.cleaned_data["curiosity_ornament"]
@@ -435,7 +435,7 @@ class ResponsePrepBaseForm(forms.ModelForm):
 
     def clean_description(self):
         description = self.cleaned_data["description"]
-        return re.sub(r"\s+", " ", description.strip())
+        return re.sub(r"\s+", " ", description)
 
 
 class ResponsePrepUnlimitedBaseForm(ResponsePrepBaseForm):
