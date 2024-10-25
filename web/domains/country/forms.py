@@ -2,9 +2,10 @@ from typing import Any
 
 from django.forms import Form, ModelChoiceField, ModelForm
 from django.forms.widgets import Textarea
-from django_filters import CharFilter, FilterSet
+from django_filters import CharFilter, ChoiceFilter, FilterSet
 
 from .models import Country, CountryGroup, CountryTranslation, CountryTranslationSet
+from .types import CountryGroupName
 
 
 class CountryNameFilter(FilterSet):
@@ -20,13 +21,14 @@ class CountryNameFilter(FilterSet):
 
 
 class CountryGroupNameFilter(FilterSet):
-    country_group_name = CharFilter(
-        field_name="name", lookup_expr="icontains", label="Country Group Name"
+    name = ChoiceFilter(
+        choices=CountryGroupName.choices,
+        label="Country Group Name",
     )
 
     class Meta:
         model = CountryGroup
-        fields: list[Any] = []
+        fields: list[Any] = ["name"]
 
 
 class CountryCreateForm(Form):
