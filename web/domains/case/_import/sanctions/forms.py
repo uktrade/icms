@@ -120,7 +120,7 @@ class GoodsForm(forms.ModelForm):
 
     def clean_goods_description(self):
         description = self.cleaned_data["goods_description"]
-        return re.sub(r"\s+", " ", description.strip())
+        return re.sub(r"\s+", " ", description)
 
 
 class GoodsSanctionsLicenceForm(forms.ModelForm):
@@ -136,4 +136,4 @@ class GoodsSanctionsLicenceForm(forms.ModelForm):
 
     def clean_goods_description(self):
         description = self.cleaned_data["goods_description"]
-        return re.sub(r"\s+", " ", description.strip())
+        return re.sub(r"\s+", " ", description)

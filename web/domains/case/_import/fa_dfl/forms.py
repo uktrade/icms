@@ -95,7 +95,7 @@ class AddDFLGoodsCertificateForm(forms.ModelForm):
 
     def clean_goods_description(self):
         description = self.cleaned_data["goods_description"]
-        return re.sub(r"\s+", " ", description.strip())
+        return re.sub(r"\s+", " ", description)
 
 
 class EditDFLGoodsCertificateForm(forms.ModelForm):
@@ -118,7 +118,7 @@ class EditDFLGoodsCertificateForm(forms.ModelForm):
 
     def clean_goods_description(self):
         description = self.cleaned_data["goods_description"]
-        return re.sub(r"\s+", " ", description.strip())
+        return re.sub(r"\s+", " ", description)
 
 
 class EditDFLGoodsCertificateDescriptionForm(forms.ModelForm):
@@ -135,7 +135,7 @@ class EditDFLGoodsCertificateDescriptionForm(forms.ModelForm):
 
     def clean_goods_description(self):
         description = self.cleaned_data["goods_description"]
-        return re.sub(r"\s+", " ", description.strip())
+        return re.sub(r"\s+", " ", description)
 
 
 class DFLChecklistForm(ChecklistBaseForm):
