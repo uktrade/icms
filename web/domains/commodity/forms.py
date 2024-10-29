@@ -203,7 +203,7 @@ class CommodityGroupForm(ModelForm):
         labels = {"group_description": "Group Description", "group_name": "Display Name"}
         widgets = {"group_description": Textarea(attrs={"rows": 5, "cols": 20})}
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
         group_type = cleaned_data.get("group_type")
 
@@ -218,6 +218,7 @@ class CommodityGroupForm(ModelForm):
             group_code = cleaned_data.get("group_code", "")
             if group_type == CommodityGroup.AUTO and len(group_code) != 4:
                 self.add_error("group_code", "Group Code should be four characters long")
+        return cleaned_data
 
 
 class CommodityGroupEditForm(CommodityGroupForm):
@@ -269,8 +270,11 @@ class UsageForm(ModelForm):
         # Include inactive for historical usage records
         self.fields["application_type"].queryset = ImportApplicationType.objects.all()
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
+
+        if self.errors:
+            return cleaned_data
 
         application_type = cleaned_data["application_type"]
         country = cleaned_data["country"]

@@ -433,33 +433,6 @@ def view_upload_document(
 
 @login_required
 @require_POST
-def add_report_firearm_no_firearm(
-    request: AuthenticatedHttpRequest, *, application_pk: int, report_pk: int
-) -> HttpResponse:
-    with transaction.atomic():
-        application: OpenIndividualLicenceApplication = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
-        )
-
-        check_can_edit_application(request.user, application)
-
-        case_progress.application_is_complete(application)
-
-        supplementary_info: OILSupplementaryInfo = application.supplementary_info
-        report: OILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
-
-        OILSupplementaryReportFirearm.objects.create(report=report, is_no_firearm=True)
-
-        return redirect(
-            reverse(
-                "import:fa:edit-report",
-                kwargs={"application_pk": application.pk, "report_pk": report.pk},
-            )
-        )
-
-
-@login_required
-@require_POST
 def delete_report_firearm(
     request: AuthenticatedHttpRequest,
     *,

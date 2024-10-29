@@ -209,6 +209,11 @@ def importer_client(importer_one_contact, importer_site) -> Client:
 
 
 @pytest.fixture()
+def importer_two_client(importer_two_contact, importer_site) -> Client:
+    return get_test_client(importer_site.domain, importer_two_contact)
+
+
+@pytest.fixture()
 def importer_agent_client(importer_one_agent_one_contact, importer_site) -> Client:
     return get_test_client(importer_site.domain, importer_one_agent_one_contact)
 
@@ -508,6 +513,15 @@ def textiles_app_submitted(
         importer_office=office,
     )
     textiles_app.licences.create(issue_paper_licence_only=True)
+    textiles_app.supporting_documents.add(
+        File.objects.create(
+            path="dummy-path",
+            filename="dummy-filename",
+            content_type="application/pdf",
+            file_size=100,
+            created_by_id=0,
+        )
+    )
     return textiles_app
 
 
@@ -548,6 +562,16 @@ def sps_app_submitted(
         importer_office=office,
     )
     sps_app.licences.create(issue_paper_licence_only=False)
+
+    sps_app.supporting_documents.add(
+        File.objects.create(
+            path="dummy-path",
+            filename="dummy-filename",
+            content_type="application/pdf",
+            file_size=100,
+            created_by_id=0,
+        )
+    )
     return sps_app
 
 
@@ -1049,7 +1073,7 @@ def completed_sil_app(fa_sil_app_submitted, ilb_admin_client, ilb_admin_user):
 def completed_sil_app_with_supplementary_report(completed_sil_app, importer_client):
     app = completed_sil_app
     report = _add_supplementary_report_to_app(app, importer_client)
-    add_section_1_firearm_url = CaseURLS.fa_sil_report_manual_add(
+    add_section_1_firearm_url = CaseURLS.fa_sil_report_firearm_manual_add(
         app.pk, report.pk, app.goods_section1.first().pk, "section1"
     )
     importer_client.post(
@@ -1062,7 +1086,7 @@ def completed_sil_app_with_supplementary_report(completed_sil_app, importer_clie
         },
     )
 
-    add_section_5_firearm_url = CaseURLS.fa_sil_report_manual_add(
+    add_section_5_firearm_url = CaseURLS.fa_sil_report_firearm_manual_add(
         app.pk, report.pk, app.goods_section5.first().pk, "section5"
     )
     importer_client.post(
@@ -1074,7 +1098,7 @@ def completed_sil_app_with_supplementary_report(completed_sil_app, importer_clie
             "serial_number": "555555555555",
         },
     )
-    add_section_2_firearm_url = CaseURLS.fa_sil_report_manual_add(
+    add_section_2_firearm_url = CaseURLS.fa_sil_report_firearm_manual_add(
         app.pk, report.pk, app.goods_section2.first().pk, "section2"
     )
     importer_client.post(
@@ -1086,7 +1110,7 @@ def completed_sil_app_with_supplementary_report(completed_sil_app, importer_clie
             "serial_number": "22222222222",
         },
     )
-    add_section_5_ob_firearm_url = CaseURLS.fa_sil_report_manual_add(
+    add_section_5_ob_firearm_url = CaseURLS.fa_sil_report_firearm_manual_add(
         app.pk, report.pk, app.goods_section582_obsoletes.first().pk, "section582-obsolete"
     )
     importer_client.post(
@@ -1098,7 +1122,7 @@ def completed_sil_app_with_supplementary_report(completed_sil_app, importer_clie
             "serial_number": "5555555555551",
         },
     )
-    add_section_5_other_firearm_url = CaseURLS.fa_sil_report_manual_add(
+    add_section_5_other_firearm_url = CaseURLS.fa_sil_report_firearm_manual_add(
         app.pk, report.pk, app.goods_section582_others.first().pk, "section582-other"
     )
     importer_client.post(
@@ -1118,7 +1142,7 @@ def completed_sil_app_with_supplementary_report(completed_sil_app, importer_clie
 def completed_sil_app_with_uploaded_supplementary_report(completed_sil_app, importer_client):
     app = completed_sil_app
     report = _add_supplementary_report_to_app(app, importer_client)
-    upload_section_1_firearm_url = CaseURLS.fa_sil_report_upload_add(
+    upload_section_1_firearm_url = CaseURLS.fa_sil_report_firearm_upload_add(
         app.pk, report.pk, app.goods_section1.first().pk, "section1"
     )
     importer_client.post(
@@ -1126,28 +1150,28 @@ def completed_sil_app_with_uploaded_supplementary_report(completed_sil_app, impo
         data={"file": SimpleUploadedFile("section1.png", b"file_content")},
     )
 
-    upload_section_5_firearm_url = CaseURLS.fa_sil_report_upload_add(
+    upload_section_5_firearm_url = CaseURLS.fa_sil_report_firearm_upload_add(
         app.pk, report.pk, app.goods_section5.first().pk, "section5"
     )
     importer_client.post(
         upload_section_5_firearm_url,
         data={"file": SimpleUploadedFile("section5.png", b"file_content")},
     )
-    upload_section_2_firearm_url = CaseURLS.fa_sil_report_upload_add(
+    upload_section_2_firearm_url = CaseURLS.fa_sil_report_firearm_upload_add(
         app.pk, report.pk, app.goods_section2.first().pk, "section2"
     )
     importer_client.post(
         upload_section_2_firearm_url,
         data={"file": SimpleUploadedFile("section2.png", b"file_content")},
     )
-    upload_section_5_ob_firearm_url = CaseURLS.fa_sil_report_upload_add(
+    upload_section_5_ob_firearm_url = CaseURLS.fa_sil_report_firearm_upload_add(
         app.pk, report.pk, app.goods_section582_obsoletes.first().pk, "section582-obsolete"
     )
     importer_client.post(
         upload_section_5_ob_firearm_url,
         data={"file": SimpleUploadedFile("section582-obsolete.png", b"file_content")},
     )
-    upload_section_5_other_firearm_url = CaseURLS.fa_sil_report_upload_add(
+    upload_section_5_other_firearm_url = CaseURLS.fa_sil_report_firearm_upload_add(
         app.pk, report.pk, app.goods_section582_others.first().pk, "section582-other"
     )
     importer_client.post(

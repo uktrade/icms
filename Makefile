@@ -124,7 +124,7 @@ test: ## run tests (circleci; don't use locally as it produces a coverage report
 		--cov=config \
 		--cov-report xml:test-reports/cov.xml \
 		--maxprocesses=2 \
-		--cov-fail-under 77 ${args}
+		--cov-fail-under 87 ${args}
 
 migration_test: ## Run data migration tests
 	./run-tests.sh data_migration --create-db --numprocesses 2 ${args}

@@ -52,9 +52,7 @@ class TestManageImportContactsView:
     @pytest.fixture(autouse=True)
     def setup(self, dfl_app):
         self.app = dfl_app
-        self.url = reverse(
-            "import:fa:manage-import-contacts", kwargs={"application_pk": self.app.pk}
-        )
+        self.url = CaseURLS.fa_manage_import_contacts(self.app.pk)
 
     def test_permission(self, ilb_admin_client, importer_client, exporter_client):
         response = ilb_admin_client.get(self.url)
@@ -73,7 +71,7 @@ class TestManageImportContactsView:
 
         assertRedirects(
             response,
-            reverse("import:fa:manage-import-contacts", kwargs={"application_pk": self.app.pk}),
+            self.url,
             HTTPStatus.FOUND,
         )
         self.app.refresh_from_db()
@@ -122,10 +120,7 @@ class TestCreateImportContactView:
     @pytest.fixture(autouse=True)
     def setup(self, dfl_app):
         self.app = dfl_app
-        self.url = reverse(
-            "import:fa:create-import-contact",
-            kwargs={"application_pk": self.app.pk, "entity": ImportContact.LEGAL},
-        )
+        self.url = CaseURLS.fa_create_import_contact(self.app.pk, ImportContact.LEGAL)
 
     def test_permission(self, ilb_admin_client, importer_client, exporter_client):
         response = ilb_admin_client.get(self.url)
@@ -167,7 +162,7 @@ class TestCreateImportContactView:
 
         assertRedirects(
             response,
-            reverse("import:fa:manage-import-contacts", kwargs={"application_pk": self.app.pk}),
+            CaseURLS.fa_manage_import_contacts(self.app.pk),
             HTTPStatus.FOUND,
         )
 
@@ -256,7 +251,7 @@ class TestEditImportContactView:
 
         assertRedirects(
             response,
-            reverse("import:fa:manage-import-contacts", kwargs={"application_pk": self.app.pk}),
+            CaseURLS.fa_manage_import_contacts(self.app.pk),
             HTTPStatus.FOUND,
         )
 

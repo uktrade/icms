@@ -7,6 +7,7 @@
       manual_firearms = report.get_report_firearms(is_manual=True),
       upload_firearms = report.get_report_firearms(is_upload=True),
       no_firearms = report.get_report_firearms(is_no_firearm=True),
+      fa_subtype = 'oil',
       read_only = False
     %}
       {% include "web/domains/case/import/fa/partials/report-firearm-list.html" %}
