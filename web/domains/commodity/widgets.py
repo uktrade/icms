@@ -53,9 +53,12 @@ class UsageCountryWidget(ICMSModelSelect2Widget):
         if queryset is None:
             queryset = self.get_queryset()
 
-        application_type_pk: str | None = dependent_fields.get("application_type")
+        application_type_pk: str = dependent_fields.get("application_type", "")
 
-        if not application_type_pk:
+        if (
+            not application_type_pk.isdigit()
+            or not ImportApplicationType.objects.filter(pk=application_type_pk).exists()
+        ):
             return queryset.none()
 
         group_name = self._get_country_of_origin_group_name(application_type_pk)

@@ -1,5 +1,5 @@
-import re
 from http import HTTPStatus
+from unittest import mock
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -32,10 +32,6 @@ from web.tests.application_utils import (
 )
 from web.tests.auth import AuthTestCase
 from web.tests.helpers import CaseURLS, check_page_errors, get_test_client
-
-
-def _get_view_url(view_name, kwargs=None):
-    return reverse(f"import:fa-dfl:{view_name}", kwargs=kwargs)
 
 
 def test_create_in_progress_fa_dfl_application(
@@ -83,9 +79,7 @@ def test_create_in_progress_fa_dfl_application(
 
     # Set the know_bought_from value
     form_data = {"know_bought_from": False}
-    importer_client.post(
-        reverse("import:fa:manage-import-contacts", kwargs={"application_pk": app_pk}), form_data
-    )
+    importer_client.post(CaseURLS.fa_manage_import_contacts(app_pk), form_data)
 
     dfl_app = DFLApplication.objects.get(pk=app_pk)
 
@@ -125,31 +119,11 @@ def test_submit_fa_dfl_application(importer_client, fa_dfl_app_in_progress, fa_d
     assert fa_dfl_app_submitted.supplementary_info
 
 
-@pytest.fixture
-def dfl_app_pk(importer_client, office, importer):
-    """Creates a fa-dfl application to be used in tests, also tests the create-fa-dfl endpoint"""
-
-    url = reverse("import:create-fa-dfl")
-    post_data = {"importer": importer.pk, "importer_office": office.pk}
-
-    count_before = DFLApplication.objects.all().count()
-
-    resp = importer_client.post(url, post_data)
-
-    assert DFLApplication.objects.all().count() == count_before + 1
-
-    application_pk = re.search(r"\d+", resp.url).group(0)
-
-    expected_url = _get_view_url("edit", {"application_pk": application_pk})
-    assertRedirects(resp, expected_url, HTTPStatus.FOUND)
-
-    return application_pk
-
-
 def test_edit_dfl_get(
-    dfl_app_pk, importer_client, exporter_client, importer_two_contact, importer_site
+    fa_dfl_app_in_progress, importer_client, exporter_client, importer_two_contact, importer_site
 ):
-    url = _get_view_url("edit", {"application_pk": dfl_app_pk})
+    dfl_app_pk = fa_dfl_app_in_progress.pk
+    url = CaseURLS.fa_dfl_edit(dfl_app_pk)
 
     response = importer_client.get(url)
 
@@ -162,16 +136,22 @@ def test_edit_dfl_get(
     # Check permissions
     # Exporter can't access it
     response = exporter_client.get(url)
-    assert response.status_code == 403
+    assert response.status_code == HTTPStatus.FORBIDDEN
 
     # A different importer can't access it
     importer_two_client = get_test_client(importer_site.domain, importer_two_contact)
     response = importer_two_client.get(url)
-    assert response.status_code == 403
+    assert response.status_code == HTTPStatus.FORBIDDEN
 
 
-def test_validate_query_param_shows_errors(dfl_app_pk, importer_client):
-    url = _get_view_url("edit", {"application_pk": dfl_app_pk})
+def test_validate_query_param_shows_errors(importer_client, importer, office):
+    dfl_app_pk = create_import_app(
+        client=importer_client,
+        view_name="import:create-fa-dfl",
+        importer_pk=importer.pk,
+        office_pk=office.pk,
+    )
+    url = CaseURLS.fa_dfl_edit(dfl_app_pk)
 
     response = importer_client.get(url)
     assert response.status_code == HTTPStatus.OK
@@ -188,8 +168,9 @@ def test_validate_query_param_shows_errors(dfl_app_pk, importer_client):
     assertFormError(response.context["form"], "constabulary", "You must enter this item")
 
 
-def test_edit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact):
-    url = _get_view_url("edit", {"application_pk": dfl_app_pk})
+def test_edit_dfl_post_valid(fa_dfl_app_in_progress, importer_client, importer_one_contact):
+    dfl_app_pk = fa_dfl_app_in_progress.pk
+    url = CaseURLS.fa_dfl_edit(dfl_app_pk)
 
     dfl_countries = Country.util.get_all_countries()
     origin_country = dfl_countries[0]
@@ -222,9 +203,9 @@ def test_edit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact):
     assert dfl_app.constabulary.pk == constabulary.pk
 
 
-def test_add_goods_document_get(dfl_app_pk, importer_client):
-    url = _get_view_url("add-goods", kwargs={"application_pk": dfl_app_pk})
-
+def test_add_goods_document_get(fa_dfl_app_in_progress, importer_client):
+    dfl_app_pk = fa_dfl_app_in_progress.pk
+    url = CaseURLS.fa_dfl_add_goods(dfl_app_pk)
     response = importer_client.get(url)
 
     assertContains(
@@ -234,9 +215,9 @@ def test_add_goods_document_get(dfl_app_pk, importer_client):
     )
 
 
-def test_add_goods_document_post_invalid(dfl_app_pk, importer_client):
-    url = _get_view_url("add-goods", kwargs={"application_pk": dfl_app_pk})
-
+def test_add_goods_document_post_invalid(fa_dfl_app_in_progress, importer_client):
+    dfl_app_pk = fa_dfl_app_in_progress.pk
+    url = CaseURLS.fa_dfl_add_goods(dfl_app_pk)
     form_data = {"foo": "bar"}
     response = importer_client.post(url, form_data)
 
@@ -248,9 +229,9 @@ def test_add_goods_document_post_invalid(dfl_app_pk, importer_client):
     assertFormError(response.context["form"], "document", "You must enter this item")
 
 
-def test_add_goods_document_post_valid(dfl_app_pk, importer_client):
-    url = _get_view_url("add-goods", kwargs={"application_pk": dfl_app_pk})
-
+def test_add_goods_document_post_valid(fa_dfl_app_in_progress, importer_client):
+    dfl_app_pk = fa_dfl_app_in_progress.pk
+    url = CaseURLS.fa_dfl_add_goods(dfl_app_pk)
     issuing_country = Country.app.get_fa_dfl_issuing_countries().first()
     goods_file = SimpleUploadedFile("myimage.png", b"file_content")
 
@@ -263,14 +244,12 @@ def test_add_goods_document_post_valid(dfl_app_pk, importer_client):
 
     response = importer_client.post(url, form_data)
 
-    assertRedirects(
-        response, _get_view_url("list-goods", {"application_pk": dfl_app_pk}), HTTPStatus.FOUND
-    )
+    assertRedirects(response, CaseURLS.fa_dfl_list_goods(dfl_app_pk), HTTPStatus.FOUND)
 
     # Check the record has a file
     dfl_app = DFLApplication.objects.get(pk=dfl_app_pk)
 
-    assert dfl_app.goods_certificates.count() == 1
+    assert dfl_app.goods_certificates.count() == 2
 
     goods_cert = dfl_app.goods_certificates.first()
     assert goods_cert.goods_description == "goods_description value"
@@ -283,12 +262,10 @@ def test_add_goods_document_post_valid(dfl_app_pk, importer_client):
     assert goods_cert.file_size == goods_file.size
 
 
-def test_edit_goods_certificate_get(dfl_app_pk, importer_client):
+def test_edit_goods_certificate_get(fa_dfl_app_in_progress, importer_client):
+    dfl_app_pk = fa_dfl_app_in_progress.pk
     document_pk = _create_goods_cert(dfl_app_pk)
-    url = _get_view_url(
-        "edit-goods", kwargs={"application_pk": dfl_app_pk, "document_pk": document_pk}
-    )
-
+    url = CaseURLS.fa_dfl_edit_goods(dfl_app_pk, document_pk)
     response = importer_client.get(url)
 
     assertContains(
@@ -298,12 +275,10 @@ def test_edit_goods_certificate_get(dfl_app_pk, importer_client):
     )
 
 
-def test_edit_goods_certificate_post_invalid(dfl_app_pk, importer_client):
+def test_edit_goods_certificate_post_invalid(fa_dfl_app_in_progress, importer_client):
+    dfl_app_pk = fa_dfl_app_in_progress.pk
     document_pk = _create_goods_cert(dfl_app_pk)
-    url = _get_view_url(
-        "edit-goods", kwargs={"application_pk": dfl_app_pk, "document_pk": document_pk}
-    )
-
+    url = CaseURLS.fa_dfl_edit_goods(dfl_app_pk, document_pk)
     form_data = {
         "goods_description": "",
         "deactivated_certificate_reference": "",
@@ -322,11 +297,10 @@ def test_edit_goods_certificate_post_invalid(dfl_app_pk, importer_client):
     assertFormError(response.context["form"], "goods_description", "You must enter this item")
 
 
-def test_edit_goods_certificate_post_valid(dfl_app_pk, importer_client):
+def test_edit_goods_certificate_post_valid(fa_dfl_app_in_progress, importer_client):
+    dfl_app_pk = fa_dfl_app_in_progress.pk
     document_pk = _create_goods_cert(dfl_app_pk)
-    url = _get_view_url(
-        "edit-goods", kwargs={"application_pk": dfl_app_pk, "document_pk": document_pk}
-    )
+    url = CaseURLS.fa_dfl_edit_goods(dfl_app_pk, document_pk)
 
     issuing_country = Country.app.get_fa_dfl_issuing_countries().first()
     form_data = {
@@ -336,14 +310,12 @@ def test_edit_goods_certificate_post_valid(dfl_app_pk, importer_client):
     }
     response = importer_client.post(url, form_data)
 
-    assertRedirects(
-        response, _get_view_url("list-goods", {"application_pk": dfl_app_pk}), HTTPStatus.FOUND
-    )
+    assertRedirects(response, CaseURLS.fa_dfl_list_goods(dfl_app_pk), HTTPStatus.FOUND)
 
     # Check the record has a file
     dfl_app = DFLApplication.objects.get(pk=dfl_app_pk)
 
-    assert dfl_app.goods_certificates.count() == 1
+    assert dfl_app.goods_certificates.count() == 2
 
     goods_cert = dfl_app.goods_certificates.first()
     assert goods_cert.goods_description == "New goods description"
@@ -367,54 +339,14 @@ def _create_goods_cert(dfl_app_pk):
     return document_pk
 
 
-class TestDFLGoodsCertificateDetailView(AuthTestCase):
-    @pytest.fixture(autouse=True)
-    def setup(self, _setup, fa_dfl_app_in_progress):
-        self.url = reverse(
-            "import:fa-dfl:list-goods", kwargs={"application_pk": fa_dfl_app_in_progress.pk}
-        )
-
-    def test_permission(self):
-        response = self.importer_client.get(self.url)
-        assert response.status_code == HTTPStatus.OK
-
-        response = self.exporter_client.get(self.url)
-        assert response.status_code == HTTPStatus.FORBIDDEN
-
-    def test_get_only(self):
-        response = self.importer_client.post(self.url)
-        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
-
-    def test_goods_shown(self):
-        response = self.importer_client.get(self.url)
-        assert response.status_code == HTTPStatus.OK
-
-        assertTemplateUsed(response, "web/domains/case/import/fa-dfl/goods-list.html")
-
-        context = response.context
-        assert len(context["goods_list"]) == 1
-
-        html = response.content.decode("utf-8")
-        assert "Goods Certificates" in html
-        assert "Add Goods" in html
-
-    def test_no_goods_shown(self, fa_dfl_app_in_progress):
-        fa_dfl_app_in_progress.goods_certificates.all().delete()
-        response = self.importer_client.get(self.url)
-        assert response.status_code == HTTPStatus.OK
-
-        assertTemplateUsed(response, "web/domains/case/import/fa-dfl/goods-list.html")
-
-        context = response.context
-        assert len(context["goods_list"]) == 0
-
-        html = response.content.decode("utf-8")
-        assert "There are no goods attached" in html
-        assert "Add Goods" in html
-
-
-def test_submit_dfl_get(dfl_app_pk, importer_client):
-    url = _get_view_url("submit", kwargs={"application_pk": dfl_app_pk})
+def test_submit_dfl_get(importer_client, importer, office):
+    dfl_app_pk = create_import_app(
+        client=importer_client,
+        view_name="import:create-fa-dfl",
+        importer_pk=importer.pk,
+        office_pk=office.pk,
+    )
+    url = CaseURLS.fa_dfl_submit(dfl_app_pk)
 
     response = importer_client.get(url)
 
@@ -450,8 +382,14 @@ def test_submit_dfl_get(dfl_app_pk, importer_client):
     )
 
 
-def test_submit_dfl_post_invalid(dfl_app_pk, importer_client, importer_one_contact):
-    submit_url = _get_view_url("submit", kwargs={"application_pk": dfl_app_pk})
+def test_submit_dfl_post_invalid(importer_client, importer_one_contact, importer, office):
+    dfl_app_pk = create_import_app(
+        client=importer_client,
+        view_name="import:create-fa-dfl",
+        importer_pk=importer.pk,
+        office_pk=office.pk,
+    )
+    submit_url = CaseURLS.fa_dfl_submit(dfl_app_pk)
 
     form_data = {"foo": "bar"}
 
@@ -510,13 +448,13 @@ def test_submit_dfl_post_invalid(dfl_app_pk, importer_client, importer_one_conta
         "commodity_code": FirearmCommodity.EX_CHAPTER_93.value,
         "constabulary": constabulary.pk,
     }
-    edit_url = _get_view_url("edit", {"application_pk": dfl_app_pk})
+    edit_url = CaseURLS.fa_dfl_edit(dfl_app_pk)
     importer_client.post(edit_url, form_data)
 
     # Save the know bought from to make the application valid.
     form_data = {"know_bought_from": True}
     importer_client.post(
-        reverse("import:fa:manage-import-contacts", kwargs={"application_pk": dfl_app_pk}),
+        CaseURLS.fa_manage_import_contacts(dfl_app_pk),
         form_data,
     )
 
@@ -526,7 +464,7 @@ def test_submit_dfl_post_invalid(dfl_app_pk, importer_client, importer_one_conta
     check_page_errors(errors, "Application Details - Details of Who Bought From", ["Person"])
 
 
-def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact):
+def test_submit_dfl_post_valid(fa_dfl_app_in_progress, importer_client, importer_one_contact):
     """Test the full happy path.
 
     Create the main application
@@ -534,13 +472,11 @@ def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact
     Save the know bought from value
     submit the application
     """
-
-    edit_url = _get_view_url("edit", {"application_pk": dfl_app_pk})
-    add_goods_url = _get_view_url("add-goods", kwargs={"application_pk": dfl_app_pk})
-    know_bought_from_url = reverse(
-        "import:fa:manage-import-contacts", kwargs={"application_pk": dfl_app_pk}
-    )
-    submit_url = _get_view_url("submit", kwargs={"application_pk": dfl_app_pk})
+    dfl_app_pk = fa_dfl_app_in_progress.pk
+    edit_url = CaseURLS.fa_dfl_edit(dfl_app_pk)
+    add_goods_url = CaseURLS.fa_dfl_add_goods(dfl_app_pk)
+    know_bought_from_url = CaseURLS.fa_manage_import_contacts(dfl_app_pk)
+    submit_url = CaseURLS.fa_dfl_submit(dfl_app_pk)
 
     dfl_countries = Country.util.get_all_countries()
     origin_country = dfl_countries[0]
@@ -594,6 +530,303 @@ def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact
     assert application.licences.filter(status=ImportApplicationLicence.Status.DRAFT).exists()
 
 
+def test_manage_checklist_errors(fa_dfl_app_submitted, ilb_admin_client):
+    app = fa_dfl_app_submitted
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+    manage_checklist = CaseURLS.fa_dfl_manage_checklist(app.pk)
+    resp = ilb_admin_client.post(manage_checklist, follow=True)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["form"].errors == {
+        "authorisation": ["You must enter this item"],
+        "case_update": ["You must enter this item"],
+        "endorsements_listed": ["You must enter this item"],
+        "fir_required": ["You must enter this item"],
+        "response_preparation": ["You must enter this item"],
+        "validity_period_correct": ["You must enter this item"],
+        "deactivation_certificate_attached": ["You must enter this item"],
+        "deactivation_certificate_issued": ["You must enter this item"],
+    }
+
+
+def test_manage_checklist(fa_dfl_app_submitted, ilb_admin_client):
+    app = fa_dfl_app_submitted
+
+    assert not hasattr(app, "checklist")
+
+    manage_checklist = CaseURLS.fa_dfl_manage_checklist(app.pk)
+    resp = ilb_admin_client.get(manage_checklist)
+    assert resp.status_code == HTTPStatus.OK
+    assert (
+        resp.context["page_title"]
+        == "Firearms and Ammunition (Deactivated Firearms Licence) - Checklist"
+    )
+    assert resp.context["readonly_view"] is True
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+    resp = ilb_admin_client.get(manage_checklist)
+    assert resp.context["readonly_view"] is False
+
+    app.refresh_from_db()
+    assert hasattr(app, "checklist")
+
+    post_data = {
+        "authorisation": "yes",
+        "case_update": "yes",
+        "endorsements_listed": "yes",
+        "fir_required": "no",
+        "response_preparation": "yes",
+        "validity_period_correct": "no",
+        "deactivation_certificate_attached": "yes",
+        "deactivation_certificate_issued": "no",
+    }
+    resp = ilb_admin_client.post(manage_checklist, data=post_data, follow=True)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["form"].errors == {}
+
+
+def test_edit_goods_certificate_description(fa_dfl_app_submitted, ilb_admin_client):
+    app = fa_dfl_app_submitted
+    document = app.goods_certificates.first()
+
+    assert document.goods_description == "goods_description value"
+    url = CaseURLS.fa_dfl_edit_goods_description(app.pk, document.pk)
+    resp = ilb_admin_client.get(url)
+    assert resp.status_code == HTTPStatus.OK
+
+    resp = ilb_admin_client.post(url)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["form"].errors == {"goods_description": ["You must enter this item"]}
+
+    resp = ilb_admin_client.post(url, data={"goods_description": "New Description"}, follow=True)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["form"].errors == {}
+    document.refresh_from_db()
+    assert document.goods_description == "New Description"
+
+
+@mock.patch("web.domains.case.utils.get_file_from_s3")
+def test_view_goods_certificate_get(mock_get_file_from_s3, fa_dfl_app_submitted, importer_client):
+    mock_get_file_from_s3.return_value = b"test_file"
+    app = fa_dfl_app_submitted
+    document = app.goods_certificates.first()
+
+    url = CaseURLS.fa_dfl_view_goods(app.pk, document.pk)
+    resp = importer_client.get(url)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.headers["Content-Disposition"] == 'attachment; filename="dummy-filename"'
+
+
+def test_delete_goods_certificate(fa_dfl_app_in_progress, importer_client):
+    app = fa_dfl_app_in_progress
+    assert app.goods_certificates.count() == 1
+    document = app.goods_certificates.get()
+    assert document.is_active is True
+
+    url = CaseURLS.fa_dfl_delete_goods(app.pk, document.pk)
+    resp = importer_client.post(url)
+    assert resp.status_code == HTTPStatus.FOUND
+    assert resp.headers["Location"] == CaseURLS.fa_dfl_list_goods(app.pk)
+
+    document.refresh_from_db()
+    assert document.is_active is False
+
+
+def test_edit_report_firearms_edit(completed_dfl_app_with_supplementary_report, importer_client):
+    app = completed_dfl_app_with_supplementary_report
+    report = app.supplementary_info.reports.first()
+    report_firearms = report.firearms.first()
+
+    url = CaseURLS.fa_dfl_report_manual_edit(
+        app.pk,
+        report.pk,
+        report_firearms.pk,
+    )
+    response = importer_client.get(url)
+    assert response.status_code == HTTPStatus.OK
+    assert response.context["page_title"] == "Edit Firearm Details"
+
+    resp = importer_client.post(url)
+    assert resp.context["form"].errors == {
+        "calibre": ["You must enter this item"],
+        "model": ["You must enter this item"],
+        "proofing": ["You must enter this item"],
+        "serial_number": ["You must enter this item"],
+    }
+
+    resp = importer_client.post(
+        url, data={"calibre": "7", "model": "GP", "proofing": "yes", "serial_number": "7"}
+    )
+    assert resp.status_code == HTTPStatus.FOUND
+    report_firearms.refresh_from_db()
+    assert report_firearms.calibre == "7"
+
+
+def test_report_firearms_delete(completed_dfl_app_with_supplementary_report, importer_client):
+    app = completed_dfl_app_with_supplementary_report
+    report = app.supplementary_info.reports.first()
+    assert report.firearms.count() == 1
+    report_firearms = report.firearms.first()
+
+    url = CaseURLS.fa_dfl_report_manual_delete(
+        app.pk,
+        report.pk,
+        report_firearms.pk,
+    )
+    response = importer_client.post(url)
+    assert response.status_code == HTTPStatus.FOUND
+    assert report.firearms.count() == 0
+
+
+def test_report_firearms_no_report(completed_dfl_app_with_supplementary_report, importer_client):
+    app = completed_dfl_app_with_supplementary_report
+    report = app.supplementary_info.reports.first()
+    assert report.firearms.count() == 1
+    good = app.goods_certificates.first()
+
+    url = CaseURLS.fa_dfl_report_add_no_firearms(app.pk, report.pk, good.pk)
+    response = importer_client.post(url)
+    assert response.status_code == HTTPStatus.FOUND
+
+    assert report.firearms.count() == 2
+    new_report = report.firearms.last()
+    assert new_report.is_no_firearm is True
+
+
+def test_report_firearms_manual_report(
+    completed_dfl_app_with_supplementary_report, importer_client
+):
+    app = completed_dfl_app_with_supplementary_report
+    report = app.supplementary_info.reports.first()
+    assert report.firearms.count() == 1
+    goods_certificate = report.get_goods_certificates().first()
+
+    url = CaseURLS.fa_dfl_report_manual_add(
+        app.pk,
+        report.pk,
+        goods_certificate.pk,
+    )
+    response = importer_client.get(url)
+    assert response.status_code == HTTPStatus.OK
+    assert response.context["page_title"] == "Add Firearm Details"
+
+    resp = importer_client.post(
+        url, data={"calibre": "7", "model": "GP", "proofing": "yes", "serial_number": "7"}
+    )
+    assert resp.status_code == HTTPStatus.FOUND
+    assert report.firearms.count() == 2
+    new_report = report.firearms.last()
+    assert new_report.is_no_firearm is False
+    assert new_report.is_manual is True
+
+    assert new_report.calibre == "7"
+    assert new_report.model == "GP"
+    assert new_report.serial_number == "7"
+    assert new_report.proofing == "yes"
+
+
+@mock.patch("web.domains.case.utils.get_file_from_s3")
+def test_add_report_firearm_upload(
+    mock_get_file_from_s3, completed_dfl_app_with_supplementary_report, importer_client
+):
+    mock_get_file_from_s3.return_value = b"test_file"
+    app = completed_dfl_app_with_supplementary_report
+    report = app.supplementary_info.reports.first()
+    assert report.firearms.count() == 1
+    goods_certificate = report.get_goods_certificates().first()
+
+    url = CaseURLS.fa_dfl_report_upload_add(
+        app.pk,
+        report.pk,
+        goods_certificate.pk,
+    )
+    resp = importer_client.get(url)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["page_title"] == "Add Firearm Details"
+
+    resp = importer_client.post(url)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["form"].errors == {"file": ["You must enter this item"]}
+    resp = importer_client.post(
+        url,
+        data={"file": SimpleUploadedFile("myimage.png", b"file_content")},
+    )
+    assert resp.status_code == HTTPStatus.FOUND
+    assert report.firearms.count() == 2
+    new_report = report.firearms.last()
+    assert new_report.is_no_firearm is False
+    assert new_report.is_manual is False
+    assert new_report.is_upload is True
+
+
+@mock.patch("web.domains.case.utils.get_file_from_s3")
+def test_view_uploaded_document(
+    mock_get_file_from_s3, completed_dfl_app_with_supplementary_report, importer_client
+):
+    app = completed_dfl_app_with_supplementary_report
+    mock_get_file_from_s3.return_value = b"test_file"
+    report = app.supplementary_info.reports.first()
+    goods_certificate = report.get_goods_certificates().first()
+
+    url = CaseURLS.fa_dfl_report_upload_add(app.pk, report.pk, goods_certificate.pk)
+    resp = importer_client.post(
+        url,
+        data={"file": SimpleUploadedFile("myimage.png", b"file_content")},
+    )
+    assert resp.status_code == HTTPStatus.FOUND
+
+    new_report = report.firearms.last()
+    url = CaseURLS.fa_dfl_report_view_document(app.pk, report.pk, new_report.pk)
+    resp = importer_client.get(url)
+    assert resp.status_code == HTTPStatus.OK
+    assert (
+        resp.headers["Content-Disposition"] == 'attachment; filename="original_name: myimage.png"'
+    )
+
+
+class TestDFLGoodsCertificateDetailView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, fa_dfl_app_in_progress):
+        self.url = CaseURLS.fa_dfl_list_goods(fa_dfl_app_in_progress.pk)
+
+    def test_permission(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_get_only(self):
+        response = self.importer_client.post(self.url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_goods_shown(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assertTemplateUsed(response, "web/domains/case/import/fa-dfl/goods-list.html")
+
+        context = response.context
+        assert len(context["goods_list"]) == 1
+
+        html = response.content.decode("utf-8")
+        assert "Goods Certificates" in html
+        assert "Add Goods" in html
+
+    def test_no_goods_shown(self, fa_dfl_app_in_progress):
+        fa_dfl_app_in_progress.goods_certificates.all().delete()
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assertTemplateUsed(response, "web/domains/case/import/fa-dfl/goods-list.html")
+
+        context = response.context
+        assert len(context["goods_list"]) == 0
+
+        html = response.content.decode("utf-8")
+        assert "There are no goods attached" in html
+        assert "Add Goods" in html
+
+
 class TestEditDFLGoodsDescription:
     @pytest.fixture(autouse=True)
     def setup(self, ilb_admin_client, fa_dfl_app_submitted):
@@ -621,10 +854,7 @@ class TestEditDFLGoodsDescription:
         )
 
         self.client.post(
-            reverse(
-                "import:fa-dfl:edit-goods-description",
-                kwargs={"application_pk": self.app.pk, "document_pk": goods.pk},
-            ),
+            CaseURLS.fa_dfl_edit_goods_description(self.app.pk, goods.pk),
             data={"goods_description": "New Description"},
         )
 
@@ -650,10 +880,7 @@ class TestEditDFLGoodsDescription:
         assert "<td>Override</td><td>Unlimited</td><td>units</td>" in resp.content.decode()
 
         self.client.post(
-            reverse(
-                "import:fa-dfl:reset-goods-description",
-                kwargs={"application_pk": self.app.pk, "document_pk": goods.pk},
-            ),
+            CaseURLS.fa_dfl_reset_goods_description(self.app.pk, goods.pk),
         )
 
         goods.refresh_from_db()
@@ -666,35 +893,3 @@ class TestEditDFLGoodsDescription:
             "<td>goods_description value</td><td>Unlimited</td><td>units</td>"
             in resp.content.decode()
         )
-
-
-# def test_edit_goods_certificate_description_get(admin_cl, complete_dfl_app_pk):
-#     ...
-#
-#
-# def test_edit_goods_certificate_description_post_invalid(admin_client):
-#     ...
-#
-#
-# def test_view_goods_certificate_get():
-#     ...
-#
-#
-# def test_view_goods_certificate_post_invalid():
-#     ...
-#
-#
-# def test_view_goods_certificate_post_valid():
-#     ...
-#
-#
-# def test_delete_goods_certificate_get():
-#     ...
-#
-#
-# def test_delete_goods_certificate_post_invalid():
-#     ...
-#
-#
-# def test_delete_goods_certificate_post_valid():
-#     ...

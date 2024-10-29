@@ -8,6 +8,7 @@
           manual_firearms = goods.supplementary_report_firearms.filter(report_id=report.pk, is_manual=True),
           upload_firearms = goods.supplementary_report_firearms.filter(report_id=report.pk, is_upload=True),
           no_firearms = goods.supplementary_report_firearms.filter(report_id=report.pk, is_no_firearm=True),
+          fa_subtype = 'dfl',
           read_only = False
         %}
           {% include "web/domains/case/import/fa/partials/report-firearm-list.html" %}

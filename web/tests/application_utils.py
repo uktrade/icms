@@ -593,7 +593,6 @@ def _submit_app(client: Client, view_name: str, app_pk: int) -> None:
     view_kwargs = {"application_pk": app_pk}
     submit_url = reverse(view_name, kwargs=view_kwargs)
     form_data = {"confirmation": "I AGREE"}
-
     response = client.post(submit_url, form_data)
 
     if response.status_code == 200:

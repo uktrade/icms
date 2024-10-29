@@ -119,6 +119,7 @@ class TestMailTasks(AuthTestCase):
     def setup(self, _setup):
         self.derbyshire = Constabulary.objects.get(name="Derbyshire")
         self.cheshire = Constabulary.objects.get(name="Cheshire")
+
         self.start_date = dt.date(2020, 2, 16) - dt.timedelta(days=10)
         self.end_date = dt.date(2020, 2, 16) + dt.timedelta(days=30)
 

@@ -1,4 +1,6 @@
 import datetime as dt
+from http import HTTPStatus
+from unittest import mock
 
 import pytest
 from django.urls import reverse
@@ -14,6 +16,8 @@ from web.models import (
     Country,
     ImportApplicationLicence,
     ImportApplicationType,
+    OILSupplementaryReport,
+    OILSupplementaryReportFirearm,
     OpenIndividualLicenceApplication,
     Task,
 )
@@ -28,7 +32,7 @@ from web.tests.application_utils import (
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.domains.case._import.factory import OILApplicationFactory
-from web.tests.helpers import check_gov_notify_email_was_sent
+from web.tests.helpers import CaseURLS, check_gov_notify_email_was_sent
 
 
 def test_create_in_progress_fa_oil_application(
@@ -73,9 +77,7 @@ def test_create_in_progress_fa_oil_application(
 
     # Set the know_bought_from value
     form_data = {"know_bought_from": False}
-    importer_client.post(
-        reverse("import:fa:manage-import-contacts", kwargs={"application_pk": app_pk}), form_data
-    )
+    importer_client.post(CaseURLS.fa_manage_import_contacts(app_pk), form_data)
 
     oil_app = OpenIndividualLicenceApplication.objects.get(pk=app_pk)
     case_progress.check_expected_status(oil_app, [ImpExpStatus.IN_PROGRESS])
@@ -121,28 +123,66 @@ def test_submit_fa_oil_application(importer_client, fa_oil_app_in_progress, fa_o
     assert fa_oil_app_submitted.supplementary_info
 
 
-class TestImportAppplicationCreateView(AuthTestCase):
-    url = "/import/create/firearms/oil/"
+def test_submit_fa_oil_application_without_certificates(fa_oil_app_in_progress, importer_client):
+    app = fa_oil_app_in_progress
+
+    app.user_imported_certificates.all().delete()
+    submit_url = CaseURLS.fa_oil_submit(app.pk)
+    response = importer_client.get(submit_url)
+    assert response.status_code == HTTPStatus.OK
+
+    form_data = {"confirmation": "I AGREE"}
+    response = importer_client.post(submit_url, form_data)
+    assert response.status_code == HTTPStatus.OK
+    certificate_errors = response.context["errors"].get_page_errors("Certificates").errors
+    assert len(response.context["errors"].page_errors) == 4  # Not sure why this is 4
+    assert len(certificate_errors) == 1
+    assert certificate_errors[0].messages[0] == "At least one certificate must be added"
+    assert certificate_errors[0].field_name == "Certificate"
+
+
+def test_submit_fa_oil_application_without_contacts(fa_oil_app_in_progress, importer_client):
+    app = fa_oil_app_in_progress
+
+    app.importcontact_set.all().delete()
+    app.know_bought_from = True
+    app.save()
+    submit_url = CaseURLS.fa_oil_submit(app.pk)
+    response = importer_client.get(submit_url)
+    assert response.status_code == HTTPStatus.OK
+
+    form_data = {"confirmation": "I AGREE"}
+    response = importer_client.post(submit_url, form_data)
+    assert response.status_code == HTTPStatus.OK
+    field_errors = response.context["errors"].get_page_errors("Details of who bought from").errors
+    assert len(response.context["errors"].page_errors) == 4  # Not sure why this is 4
+    assert len(field_errors) == 1
+    assert field_errors[0].messages[0] == "At least one person must be added"
+    assert field_errors[0].field_name == "Person"
+
+
+class TestImportApplicationCreateView(AuthTestCase):
+    url = reverse("import:create-fa-oil")
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
         response = self.anonymous_client.get(self.url)
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
         assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
         response = self.exporter_client.get(self.url)
-        assert response.status_code == 403
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_create_ok(self):
         response = self.importer_client.get(self.url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
         response = self.importer_client.post(
             reverse("import:create-fa-oil"),
             data={"importer": self.importer.pk, "importer_office": self.importer_office.pk},
         )
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
 
         application = OpenIndividualLicenceApplication.objects.get(importer_id=self.importer.pk)
         assert application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE
@@ -157,23 +197,23 @@ class TestImportAppplicationCreateView(AuthTestCase):
 
     def test_create_missing_office(self):
         response = self.importer_client.get(self.url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
         response = self.importer_client.post(
             reverse("import:create-fa-oil"), data={"importer": self.importer.pk}
         )
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assertInHTML(
             '<div class="error-message">You must enter this item', response.content.decode("utf-8")
         )
 
     def test_anonymous_post_access_redirects(self):
         response = self.anonymous_client.post(self.url)
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
 
     def test_forbidden_post_access(self):
         response = self.exporter_client.post(self.url)
-        assert response.status_code == 403
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
 
 @pytest.mark.django_db
@@ -196,7 +236,7 @@ def test_take_ownership(importer_one_contact, importer, ilb_admin_client):
         f"/case/import/{process.pk}/admin/take-ownership/", follow=True
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     view_application_response = response.content.decode()
     assert "Firearms and Ammunition (Open Individual Import Licence)" in view_application_response
 
@@ -264,3 +304,171 @@ def test_fa_oil_app_submitted_has_a_licence(fa_oil_app_submitted):
     assert fa_oil_app_submitted.licences.filter(
         status=ImportApplicationLicence.Status.DRAFT
     ).exists()
+
+
+def test_manage_checklist(fa_oil_app_submitted, ilb_admin_client):
+    app = fa_oil_app_submitted
+
+    assert not hasattr(app, "checklist")
+
+    manage_checklist = CaseURLS.fa_oil_manage_checklist(app.pk)
+    resp = ilb_admin_client.get(manage_checklist)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["page_title"] == "Open Individual Import Licence - Checklist"
+    assert resp.context["readonly_view"] is True
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+    resp = ilb_admin_client.get(manage_checklist)
+    assert resp.context["readonly_view"] is False
+
+    app.refresh_from_db()
+    assert hasattr(app, "checklist")
+
+    post_data = {
+        "case_update": "yes",
+        "fir_required": "yes",
+        "response_preparation": True,
+        "validity_period_correct": "yes",
+        "endorsements_listed": "yes",
+        "authorisation": True,
+        "authority_required": "yes",
+        "authority_received": "yes",
+        "authority_police": "yes",
+    }
+    resp = ilb_admin_client.post(manage_checklist, data=post_data, follow=True)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["form"].errors == {}
+
+
+def test_manage_checklist_errors(fa_oil_app_submitted, ilb_admin_client):
+    app = fa_oil_app_submitted
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+    manage_checklist = CaseURLS.fa_oil_manage_checklist(app.pk)
+    resp = ilb_admin_client.post(manage_checklist, data={}, follow=True)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["form"].errors == {
+        "authorisation": ["You must enter this item"],
+        "authority_police": ["You must enter this item"],
+        "authority_received": ["You must enter this item"],
+        "authority_required": ["You must enter this item"],
+        "case_update": ["You must enter this item"],
+        "endorsements_listed": ["You must enter this item"],
+        "fir_required": ["You must enter this item"],
+        "response_preparation": ["You must enter this item"],
+        "validity_period_correct": ["You must enter this item"],
+    }
+
+
+def test_fa_oil_delete_report(completed_oil_app_with_supplementary_report, importer_client):
+    app = completed_oil_app_with_supplementary_report
+    report: OILSupplementaryReport = app.supplementary_info.reports.first()
+    report_firearm: OILSupplementaryReportFirearm = report.firearms.first()
+
+    assert OILSupplementaryReport.objects.filter(pk=report.pk).exists() is True
+    assert OILSupplementaryReportFirearm.objects.filter(pk=report_firearm.pk).exists() is True
+
+    url = CaseURLS.fa_oil_report_manual_delete(app.pk, report.pk, report_firearm.pk)
+    resp = importer_client.post(url, data={})
+    assert resp.status_code == HTTPStatus.FOUND
+
+    assert OILSupplementaryReport.objects.filter(pk=report.pk).exists() is True
+    assert OILSupplementaryReportFirearm.objects.filter(pk=report_firearm.pk).exists() is False
+
+
+@mock.patch("web.domains.case.utils.get_file_from_s3")
+def test_fa_oil_view_upload_document(
+    mock_get_file_from_s3, completed_oil_app_with_supplementary_report, importer_client
+):
+    mock_get_file_from_s3.return_value = b"test_file"
+    app = completed_oil_app_with_supplementary_report
+    report: OILSupplementaryReport = app.supplementary_info.reports.first()
+    report_firearm: OILSupplementaryReportFirearm = report.firearms.first()
+
+    url = CaseURLS.fa_oil_report_upload_view(app.pk, report.pk, report_firearm.pk)
+    resp = importer_client.get(url)
+    assert resp.status_code == HTTPStatus.OK
+    assert mock_get_file_from_s3.called is True
+
+
+def test_fa_oil_report_firearm_manual_add(
+    completed_oil_app_with_supplementary_report, importer_client
+):
+    app = completed_oil_app_with_supplementary_report
+    report: OILSupplementaryReport = app.supplementary_info.reports.first()
+    report.firearms.all().delete()
+    report.refresh_from_db()
+    assert report.firearms.count() == 0
+
+    url = CaseURLS.fa_oil_report_manual_add(app.pk, report.pk)
+
+    resp = importer_client.get(url)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["page_title"] == "Add Firearm Details"
+
+    resp = importer_client.post(url, data={})
+    assert resp.status_code == HTTPStatus.OK
+
+    assert resp.context["form"].errors == {
+        "calibre": ["You must enter this item"],
+        "model": ["You must enter this item"],
+        "proofing": ["You must enter this item"],
+        "serial_number": ["You must enter this item"],
+    }
+
+    assert report.firearms.count() == 0
+
+    resp = importer_client.post(
+        url, data={"calibre": "7", "model": "GP", "proofing": "yes", "serial_number": "7"}
+    )
+    assert resp.status_code == HTTPStatus.FOUND
+    assert report.firearms.count() == 1
+
+
+def test_fa_oil_report_firearm_manual_edit(
+    completed_oil_app_with_supplementary_report, importer_client
+):
+    app = completed_oil_app_with_supplementary_report
+    report: OILSupplementaryReport = app.supplementary_info.reports.first()
+    report_firearm: OILSupplementaryReportFirearm = report.firearms.first()
+
+    url = CaseURLS.fa_oil_report_manual_edit(app.pk, report.pk, report_firearm.pk)
+    resp = importer_client.get(url)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["page_title"] == "Edit Firearm Details"
+
+    resp = importer_client.post(
+        url, data={"calibre": "7", "model": "GP", "proofing": "yes", "serial_number": "7"}
+    )
+    assert resp.status_code == HTTPStatus.FOUND
+
+    report_firearm.refresh_from_db()
+    assert report_firearm.calibre == "7"
+    assert report_firearm.model == "GP"
+    assert report_firearm.proofing == "yes"
+    assert report_firearm.serial_number == "7"
+
+
+def test_fa_oil_report_firearm_manual_edit_permission_denied(
+    completed_oil_app_with_supplementary_report, importer_two_client
+):
+    app = completed_oil_app_with_supplementary_report
+    report: OILSupplementaryReport = app.supplementary_info.reports.first()
+    report_firearm: OILSupplementaryReportFirearm = report.firearms.first()
+
+    url = CaseURLS.fa_oil_report_manual_edit(app.pk, report.pk, report_firearm.pk)
+    resp = importer_two_client.get(url)
+    assert resp.status_code == HTTPStatus.FORBIDDEN
+
+
+def test_fa_oil_report_firearm_upload(completed_oil_app_with_supplementary_report, importer_client):
+    app = completed_oil_app_with_supplementary_report
+    report: OILSupplementaryReport = app.supplementary_info.reports.first()
+
+    url = CaseURLS.fa_oil_report_upload_add(app.pk, report.pk)
+    resp = importer_client.get(url)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["page_title"] == "Add Firearm Details"
+
+    resp = importer_client.post(url, data={})
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["form"].errors == {"file": ["You must enter this item"]}

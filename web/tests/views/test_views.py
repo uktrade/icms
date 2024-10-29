@@ -9,7 +9,10 @@ from pytest_django.asserts import assertRedirects
 
 from web.domains.case.export.forms import CreateExportApplicationForm
 from web.domains.case.forms_search import ImportSearchForm
+from web.domains.commodity.forms import UsageForm
+from web.domains.commodity.widgets import UsageCountryWidget
 from web.domains.contacts.widgets import ContactWidget
+from web.models import CommodityGroup, ImportApplicationType
 from web.one_login.utils import get_one_login_logout_url
 from web.tests.auth import AuthTestCase
 from web.views import views
@@ -274,4 +277,51 @@ class TestLoginRequiredSelect2AutoResponseView(AuthTestCase):
                     "text": "Test Exporter 1",
                 },
             ],
+        }
+
+    def test_commodity_usage_country(self, ilb_admin_client):
+        commodity_group = CommodityGroup.objects.first()
+        application_type = ImportApplicationType.objects.get(
+            type=ImportApplicationType.Types.WOOD_QUOTA
+        )
+        url = reverse("commodity-group-usage", kwargs={"pk": commodity_group.pk})
+        response = ilb_admin_client.get(url)
+        usage_form: UsageForm = response.context["form"]
+        country_widget: UsageCountryWidget = usage_form.fields["country"].widget
+        qd = QueryDict(mutable=True)
+        qd.update({"application_type": application_type.pk, "field_id": country_widget.field_id})
+        url = reverse("login-required-select2-view") + f"?{qd.urlencode()}"
+
+        response = ilb_admin_client.get(url)
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {
+            "more": False,
+            "results": [
+                {
+                    "id": 122,
+                    "text": "Russian Federation",
+                },
+            ],
+        }
+
+    @pytest.mark.parametrize(
+        "application_type_str",
+        (None, "hello", "hello1"),
+    )
+    def test_commodity_usage_country_error(self, ilb_admin_client, application_type_str):
+        commodity_group = CommodityGroup.objects.first()
+        url = reverse("commodity-group-usage", kwargs={"pk": commodity_group.pk})
+
+        response = ilb_admin_client.get(url)
+        usage_form: UsageForm = response.context["form"]
+        country_widget: UsageCountryWidget = usage_form.fields["country"].widget
+        qd = QueryDict(mutable=True)
+        qd.update({"application_type": application_type_str, "field_id": country_widget.field_id})
+        url = reverse("login-required-select2-view") + f"?{qd.urlencode()}"
+
+        response = ilb_admin_client.get(url)
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {
+            "more": False,
+            "results": [],
         }

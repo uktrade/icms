@@ -69,6 +69,16 @@ def test_display_status_for_in_progress_app(fa_dfl_app_in_progress):
     assert fa_dfl_app_in_progress.get_status_display() == "In Progress"
 
 
+def test_app_str(completed_dfl_app_with_supplementary_report):
+    app = completed_dfl_app_with_supplementary_report
+    assert str(app) == f"DFLApplication(id={app.pk}, status='COMPLETED', is_active=True)"
+    goods_certificate = app.goods_certificates.first()
+    assert (
+        str(goods_certificate)
+        == f"DFLGoodsCertificate(id={goods_certificate.pk}, deactivated_certificate_reference='deactivated_certificate_reference value')"
+    )
+
+
 @pytest.mark.django_db
 def test_create_application_url_error():
     application = ImportApplicationType.objects.first()
@@ -113,7 +123,7 @@ def test_create_application_url(_type, exp_url):
 
 
 @pytest.mark.django_db
-def test_type_contstraint():
+def test_type_constraint():
     with pytest.raises(
         IntegrityError,
         match='duplicate key value violates unique constraint "unique_import_app_type"',

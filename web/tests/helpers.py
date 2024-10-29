@@ -560,9 +560,114 @@ class CaseURLS:
         return reverse("report:run-report-view", kwargs=kwargs)
 
     @staticmethod
-    def fa_sil_report_manual_add(
+    def fa_sil_submit(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa-sil:submit", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_edit(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa-sil:edit", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_choose_goods_section(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa-sil:choose-goods-section", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_add_section(application_pk: int, sil_section_type: str) -> str:
+        kwargs = {"application_pk": application_pk, "sil_section_type": sil_section_type}
+        return reverse("import:fa-sil:add-section", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_edit_section(application_pk: int, sil_section_type: str, section_pk: int) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "sil_section_type": sil_section_type,
+            "section_pk": section_pk,
+        }
+        return reverse("import:fa-sil:edit-section", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_delete_section(application_pk: int, sil_section_type: str, section_pk: int) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "sil_section_type": sil_section_type,
+            "section_pk": section_pk,
+        }
+        return reverse("import:fa-sil:delete-section", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_set_cover_letter(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa-sil:set-cover-letter", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_list_goods(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa-sil:list-goods", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_view_section_5_document(application_pk: int, section5_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "section5_pk": section5_pk}
+        return reverse("import:fa-sil:view-section5-document", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_archive_section_5_document(application_pk: int, section5_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "section5_pk": section5_pk}
+        return reverse("import:fa-sil:archive-section5-document", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_verified_section_5_document(application_pk: int, document_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "document_pk": document_pk}
+        return reverse("import:fa-sil:view-verified-section5-document", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_add_verified_section_5(application_pk: int, section5_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "section5_pk": section5_pk}
+        return reverse("import:fa-sil:add-verified-section5", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_view_verified_section_5(application_pk: int, section5_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "section5_pk": section5_pk}
+        return reverse("import:fa-sil:view-verified-section5", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_delete_verified_section_5(application_pk: int, section5_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "section5_pk": section5_pk}
+        return reverse("import:fa-sil:delete-verified-section5", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_manage_checklist(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa-sil:manage-checklist", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_response_prep_edit_goods(
+        application_pk: int, section_pk: int, sil_section_type: str
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "section_pk": section_pk,
+            "sil_section_type": sil_section_type,
+        }
+        return reverse("import:fa-sil:response-prep-edit-goods", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_response_prep_reset_goods(
+        application_pk: int, section_pk: int, sil_section_type: str
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "section_pk": section_pk,
+            "sil_section_type": sil_section_type,
+        }
+        return reverse("import:fa-sil:response-prep-reset-goods", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_report_firearm_manual_add(
         application_pk: int, report_pk: int, section_pk: int, sil_section_type: str
-    ):
+    ) -> str:
         kwargs = {
             "application_pk": application_pk,
             "report_pk": report_pk,
@@ -573,9 +678,9 @@ class CaseURLS:
         return reverse("import:fa-sil:report-firearm-manual-add", kwargs=kwargs)
 
     @staticmethod
-    def fa_sil_report_upload_add(
+    def fa_sil_report_firearm_upload_add(
         application_pk: int, report_pk: int, section_pk: int, sil_section_type: str
-    ):
+    ) -> str:
         kwargs = {
             "application_pk": application_pk,
             "report_pk": report_pk,
@@ -586,9 +691,9 @@ class CaseURLS:
         return reverse("import:fa-sil:report-firearm-upload-add", kwargs=kwargs)
 
     @staticmethod
-    def fa_sil_report_no_firearm_add(
+    def fa_sil_report_firearm_no_firearm_add(
         application_pk: int, report_pk: int, section_pk: int, sil_section_type: str
-    ):
+    ) -> str:
         kwargs = {
             "application_pk": application_pk,
             "report_pk": report_pk,
@@ -599,30 +704,239 @@ class CaseURLS:
         return reverse("import:fa-sil:report-firearm-no-firearm-add", kwargs=kwargs)
 
     @staticmethod
-    def fa_oil_report_manual_add(application_pk: int, report_pk: int):
+    def fa_sil_report_firearm_manual_edit(
+        application_pk: int,
+        report_pk: int,
+        section_pk: int,
+        sil_section_type: str,
+        report_firearm_pk: int,
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "report_pk": report_pk,
+            "section_pk": section_pk,
+            "sil_section_type": sil_section_type,
+            "report_firearm_pk": report_firearm_pk,
+        }
+
+        return reverse("import:fa-sil:report-firearm-manual-edit", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_report_firearm_upload_view(
+        application_pk: int,
+        report_pk: int,
+        section_pk: int,
+        sil_section_type: str,
+        report_firearm_pk: int,
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "report_pk": report_pk,
+            "section_pk": section_pk,
+            "sil_section_type": sil_section_type,
+            "report_firearm_pk": report_firearm_pk,
+        }
+
+        return reverse("import:fa-sil:report-firearm-upload-view", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_report_firearm_manual_delete(
+        application_pk: int,
+        report_pk: int,
+        section_pk: int,
+        sil_section_type: str,
+        report_firearm_pk: int,
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "report_pk": report_pk,
+            "section_pk": section_pk,
+            "sil_section_type": sil_section_type,
+            "report_firearm_pk": report_firearm_pk,
+        }
+
+        return reverse("import:fa-sil:report-firearm-manual-delete", kwargs=kwargs)
+
+    @staticmethod
+    def fa_oil_submit(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa-oil:submit-oil", kwargs=kwargs)
+
+    @staticmethod
+    def fa_oil_manage_checklist(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa-oil:manage-checklist", kwargs=kwargs)
+
+    @staticmethod
+    def fa_oil_report_manual_add(application_pk: int, report_pk: int) -> str:
         kwargs = {"application_pk": application_pk, "report_pk": report_pk}
 
         return reverse("import:fa-oil:report-firearm-manual-add", kwargs=kwargs)
 
     @staticmethod
-    def fa_oil_report_upload_add(application_pk: int, report_pk: int):
+    def fa_oil_report_manual_edit(
+        application_pk: int, report_pk: int, report_firearm_pk: int
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "report_pk": report_pk,
+            "report_firearm_pk": report_firearm_pk,
+        }
+
+        return reverse("import:fa-oil:report-firearm-manual-edit", kwargs=kwargs)
+
+    @staticmethod
+    def fa_oil_report_manual_delete(
+        application_pk: int, report_pk: int, report_firearm_pk: int
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "report_pk": report_pk,
+            "report_firearm_pk": report_firearm_pk,
+        }
+
+        return reverse("import:fa-oil:report-firearm-manual-delete", kwargs=kwargs)
+
+    @staticmethod
+    def fa_oil_report_upload_add(application_pk: int, report_pk: int) -> str:
         kwargs = {"application_pk": application_pk, "report_pk": report_pk}
 
         return reverse("import:fa-oil:report-firearm-upload-add", kwargs=kwargs)
 
     @staticmethod
-    def fa_dfl_report_manual_add(application_pk: int, report_pk: int, goods_pk: int):
+    def fa_oil_report_upload_view(
+        application_pk: int, report_pk: int, report_firearm_pk: int
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "report_pk": report_pk,
+            "report_firearm_pk": report_firearm_pk,
+        }
+
+        return reverse("import:fa-oil:report-firearm-upload-view", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_submit(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa-dfl:submit", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_edit(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa-dfl:edit", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_list_goods(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa-dfl:list-goods", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_add_goods(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa-dfl:add-goods", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_edit_goods(application_pk: int, document_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "document_pk": document_pk}
+        return reverse("import:fa-dfl:edit-goods", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_edit_goods_description(application_pk: int, document_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "document_pk": document_pk}
+        return reverse("import:fa-dfl:edit-goods-description", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_reset_goods_description(application_pk: int, document_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "document_pk": document_pk}
+        return reverse("import:fa-dfl:reset-goods-description", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_delete_goods(application_pk: int, document_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "document_pk": document_pk}
+        return reverse("import:fa-dfl:delete-goods", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_view_goods(application_pk: int, document_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "document_pk": document_pk}
+        return reverse("import:fa-dfl:view-goods", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_manage_checklist(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa-dfl:manage-checklist", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_report_manual_add(application_pk: int, report_pk: int, goods_pk: int) -> str:
         kwargs = {"application_pk": application_pk, "report_pk": report_pk, "goods_pk": goods_pk}
 
         return reverse("import:fa-dfl:report-firearm-manual-add", kwargs=kwargs)
 
     @staticmethod
-    def fa_create_import_contact(application_pk: int, entity: str):
+    def fa_dfl_report_add_no_firearms(application_pk: int, report_pk: int, goods_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "report_pk": report_pk, "goods_pk": goods_pk}
+
+        return reverse("import:fa-dfl:report-firearm-no-firearm-add", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_report_upload_add(application_pk: int, report_pk: int, goods_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "report_pk": report_pk, "goods_pk": goods_pk}
+
+        return reverse("import:fa-dfl:report-firearm-upload-add", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_report_view_document(
+        application_pk: int,
+        report_pk: int,
+        report_firearm_pk: int,
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "report_pk": report_pk,
+            "report_firearm_pk": report_firearm_pk,
+        }
+
+        return reverse("import:fa-dfl:report-firearm-upload-view", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_report_manual_edit(
+        application_pk: int,
+        report_pk: int,
+        report_firearm_pk: int,
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "report_pk": report_pk,
+            "report_firearm_pk": report_firearm_pk,
+        }
+
+        return reverse("import:fa-dfl:report-firearm-manual-edit", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_report_manual_delete(
+        application_pk: int,
+        report_pk: int,
+        report_firearm_pk: int,
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "report_pk": report_pk,
+            "report_firearm_pk": report_firearm_pk,
+        }
+
+        return reverse("import:fa-dfl:report-firearm-manual-delete", kwargs=kwargs)
+
+    @staticmethod
+    def fa_create_import_contact(application_pk: int, entity: str) -> str:
         kwargs = {"application_pk": application_pk, "entity": entity}
         return reverse("import:fa:create-import-contact", kwargs=kwargs)
 
     @staticmethod
-    def fa_create_report(application_pk: int):
+    def fa_manage_import_contacts(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa:manage-import-contacts", kwargs=kwargs)
+
+    @staticmethod
+    def fa_create_report(application_pk: int) -> str:
         kwargs = {"application_pk": application_pk}
         return reverse("import:fa:create-report", kwargs=kwargs)
 
@@ -652,22 +966,52 @@ class CaseURLS:
     def regenerate_case_email_documents_link(code: str) -> str:
         return reverse("case:regenerate-case-email-documents-link", kwargs={"code": code})
 
+    @staticmethod
+    def opt_view_document(application_pk: int, document_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "document_pk": document_pk}
+        return reverse("import:legacy:opt-view-document", kwargs=kwargs)
+
+    @staticmethod
+    def opt_checklist(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:legacy:opt-manage-checklist", kwargs=kwargs)
+
+    @staticmethod
+    def textiles_checklist(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:legacy:tex-manage-checklist", kwargs=kwargs)
+
+    @staticmethod
+    def textiles_view_document(application_pk: int, document_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "document_pk": document_pk}
+        return reverse("import:legacy:tex-view-document", kwargs=kwargs)
+
+    @staticmethod
+    def sps_view_document(application_pk: int, document_pk: int) -> str:
+        kwargs = {"application_pk": application_pk, "document_pk": document_pk}
+        return reverse("import:legacy:sps-view-supporting-document", kwargs=kwargs)
+
+    @staticmethod
+    def sps_view_contract_document(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:legacy:sps-view-contract-document", kwargs=kwargs)
+
 
 class SearchURLS:
     @staticmethod
-    def search_cases(case_type: str = "import", mode: str = "standard"):
+    def search_cases(case_type: str = "import", mode: str = "standard") -> str:
         kwargs = {"case_type": case_type, "mode": mode}
 
         return reverse("case:search", kwargs=kwargs)
 
     @staticmethod
-    def search_cases_get_results(case_type: str = "import", mode: str = "standard"):
+    def search_cases_get_results(case_type: str = "import", mode: str = "standard") -> str:
         kwargs = {"case_type": case_type, "mode": mode}
 
         return reverse("case:search-results", kwargs=kwargs)
 
     @staticmethod
-    def download_spreadsheet(case_type: str = "import"):
+    def download_spreadsheet(case_type: str = "import") -> str:
         kwargs = {"case_type": case_type}
 
         return reverse("case:search-download-spreadsheet", kwargs=kwargs)
