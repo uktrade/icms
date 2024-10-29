@@ -150,7 +150,7 @@ class SILGoodsSectionUnlimitedBase(SILGoodsSectionBase):
 
 class SILGoodsSection1(SILGoodsSectionUnlimitedBase):
     import_application = models.ForeignKey(
-        "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section1"
+        "web.SILApplication", on_delete=models.CASCADE, related_name="goods_section1"
     )
     is_active = models.BooleanField(default=True)
 
@@ -161,7 +161,7 @@ class SILGoodsSection1(SILGoodsSectionUnlimitedBase):
 
 class SILGoodsSection2(SILGoodsSectionUnlimitedBase):
     import_application = models.ForeignKey(
-        "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section2"
+        "web.SILApplication", on_delete=models.CASCADE, related_name="goods_section2"
     )
     is_active = models.BooleanField(default=True)
 
@@ -172,7 +172,7 @@ class SILGoodsSection2(SILGoodsSectionUnlimitedBase):
 
 class SILGoodsSection5(SILGoodsSectionUnlimitedBase):
     import_application = models.ForeignKey(
-        "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section5"
+        "web.SILApplication", on_delete=models.CASCADE, related_name="goods_section5"
     )
     is_active = models.BooleanField(default=True)
 
@@ -187,7 +187,7 @@ class SILGoodsSection5(SILGoodsSectionUnlimitedBase):
 
 class SILGoodsSection582Obsolete(SILGoodsSectionBase):  # /PS-IGNORE
     import_application = models.ForeignKey(
-        "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section582_obsoletes"
+        "web.SILApplication", on_delete=models.CASCADE, related_name="goods_section582_obsoletes"
     )
     is_active = models.BooleanField(default=True)
 
@@ -224,7 +224,7 @@ class SILGoodsSection582Other(SILGoodsSectionBase):  # /PS-IGNORE
         OTHER = ("Other", "Other")
 
     import_application = models.ForeignKey(
-        "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section582_others"
+        "web.SILApplication", on_delete=models.CASCADE, related_name="goods_section582_others"
     )
     is_active = models.BooleanField(default=True)
 
