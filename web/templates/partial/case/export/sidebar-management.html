@@ -11,10 +11,12 @@
     {{ icms_link(request, icms_url('case:variation-request-manage', kwargs={'application_pk': process.pk, 'case_type': 'export'}), vr_label) }}
   {% endif %}
 
-  {% with total = process.withdrawals.count(),
-          processed = process.withdrawals.exclude(status=process.withdrawals.model.Statuses.OPEN).count() %}
+  {% with
+    total = process.withdrawals.count(),
+    processing = process.withdrawals.filter(status=process.withdrawals.model.Statuses.OPEN).count()
+  %}
     {{ icms_link(request, icms_url('case:manage-withdrawals', kwargs={'application_pk': process.pk, 'case_type': 'export'}),
-                 'Application Withdrawals (' + processed|string + '/' + total|string + ')') }}
+                 'Application Withdrawals (' + processing|string + '/' + total|string + ')') }}
   {% endwith %}
   
   {% with total = process.case_emails.count(), open = process.case_emails.filter(status="OPEN").count() %}
@@ -26,17 +28,20 @@
     {% endif %}
   {% endwith %}
 
-
-  {% with total = process.update_requests.filter(is_active=True).count(),
-          processed = process.update_requests.filter(is_active=True).exclude(status="OPEN").count() %}
+  {% with
+    total = process.update_requests.filter(is_active=True).count(),
+    processing = process.update_requests.filter(is_active=True).filter(status__in=["DRAFT", "OPEN", "UPDATE_IN_PROGRESS", "RESPONDED"]).count()
+  %}
     {{ icms_link(request, icms_url('case:list-update-requests', kwargs={'application_pk': process.pk, 'case_type': 'export'}),
-                 'Application Updates (' + processed|string + '/' + total|string + ')') }}
+                 'Application Updates (' + processing|string + '/' + total|string + ')') }}
   {% endwith %}
 
-  {% with completed=process.further_information_requests.completed().count(),
-          total=process.further_information_requests.exclude(status="DELETED").count() %}
+  {% with
+    total=process.further_information_requests.exclude(status="DELETED").count(),
+    processing=process.further_information_requests.filter(status__in=["DRAFT", "OPEN", "RESPONDED"]).count()
+  %}
     {{ icms_link(request, icms_url('case:manage-firs', kwargs={'application_pk': process.pk, 'case_type': 'export'}),
-                 'Further Information Requests (' + completed|string + '/' + total|string + ')') }}
+                 'Further Information Requests (' + processing|string + '/' + total|string + ')') }}
   {% endwith %}
 
   {{ icms_link(request, icms_url('case:list-notes', kwargs={'application_pk': process.pk, 'case_type': 'export'}),
