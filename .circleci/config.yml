@@ -6,6 +6,7 @@
 
 orbs:
   codecov: codecov/codecov@4.1.0
+  aws-cli: circleci/aws-cli@5.1
 
 version: 2.1
 jobs:
@@ -23,7 +24,7 @@ jobs:
       - restore_cache:
           # we're using a key that includes a checksum of the requirements file and the python version
           # so that we can cache the dependencies for each version of python
-          key: deps-{{ checksum "requirements-dev.txt" }}-{{ checksum "python_version.txt" }}
+          key: deps-{{ checksum "requirements-playwright.txt" }}-{{ checksum "requirements-dev.txt" }}-{{ checksum "python_version.txt" }}
 
       - run:
           name: create and activate virtualenv
@@ -35,10 +36,11 @@ jobs:
           name: install python dependencies
           command: |
             python -m pip install --upgrade pip
+            pip install -r requirements-playwright.txt
             pip install -r requirements-dev.txt
 
       - save_cache:
-          key: deps-{{ checksum "requirements-dev.txt" }}
+          key: deps-{{ checksum "requirements-playwright.txt" }}-{{ checksum "requirements-dev.txt" }}-{{ checksum "python_version.txt" }}
           paths:
             - ".venv"
             - "~/.cache/pip"
@@ -99,7 +101,83 @@ jobs:
             python ./manage.py makemigrations --check --dry-run --settings=config.settings_local
 
 
-  test:
+
+  end_to_end_test:
+    docker:
+      - image: cimg/python:3.11.4
+        environment:
+          AWS_DEFAULT_REGION: eu-west-2
+          AWS_ENDPOINT_URL: http://localhost:4566
+          AWS_STORAGE_BUCKET_NAME: "icms.local"
+      - image: cimg/postgres:16.1
+        environment:
+          POSTGRES_DB: icms_test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+      - image: localstack/localstack
+      - image: cimg/redis:7.0.15
+        command: redis-server --port 6379
+
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: .
+
+      - aws-cli/setup
+
+      - run:
+          name: create S3 buckets
+          command: |
+            aws --endpoint-url=http://localhost:4566 s3 mb s3://icms.local
+            aws --endpoint-url=http://localhost:4566 s3api put-bucket-acl --bucket icms.local --acl public-read
+
+      - run:
+          name: activate virtualenv
+          command: echo "source .venv/bin/activate" >> $BASH_ENV;
+
+      - run:
+          name: install playwright
+          command: playwright install --with-deps chromium
+
+      - run:
+          name: adding correct URLs to /etc/hosts
+          command: |
+            sudo tee -a /etc/hosts \<<<'127.0.0.1 caseworker'
+            sudo tee -a /etc/hosts \<<<'127.0.0.1 import-a-licence'
+            sudo tee -a /etc/hosts \<<<'127.0.0.1 export-a-certificate'
+
+      - run:
+          name: setup test server
+          command: |
+            pip show pydantic 
+            pip show pydantic-settings
+            source .env && export $(cut -d= -f1 < .env)
+            python manage.py migrate --no-input
+            python manage.py collectstatic --no-input
+            python manage.py add_dummy_data --password admin
+
+      - run:
+          name: starting test server
+          command: |
+            source .env && export $(cut -d= -f1 < .env)
+            python manage.py runserver 8080
+          background: true
+
+      - run:
+          name: sleep whilst server starts
+          command: sleep 10
+
+      - run:
+          name: run end-to-end tests
+          command: |
+            source .env && export $(cut -d= -f1 < .env)
+            pytest web/end_to_end/ --junitxml=test-results/end-to-end-test-results.xml
+
+      - store_test_results:
+          path: test-results
+
+  unit_test:
     docker:
       - image: cimg/python:3.11.4
       - image: cimg/postgres:16.1
@@ -159,7 +237,10 @@ workflows:
   ci:
     jobs:
       - install_python_dependencies
-      - test:
+      - unit_test:
+          requires:
+            - install_python_dependencies
+      - end_to_end_test:
           requires:
             - install_python_dependencies
       - code_hygiene:
