@@ -7,6 +7,7 @@ import freezegun
 import pytest
 from django.contrib.messages import get_messages
 from django.core import mail
+from django.core.exceptions import ObjectDoesNotExist
 from django.test.client import Client
 from django.urls import reverse
 from django.utils import timezone
@@ -34,6 +35,7 @@ from web.models import (
 )
 from web.models.shared import YesNoNAChoices
 from web.sites import SiteName, get_caseworker_site_domain, get_importer_site_domain
+from web.tests.auth import AuthTestCase
 from web.tests.conftest import _add_valid_checklist as generic_add_valid_checklist
 from web.tests.conftest import _set_valid_licence as generic_set_valid_licence
 from web.tests.helpers import (
@@ -1207,3 +1209,77 @@ def test_quick_issue_refused_variation_requested_application(
 
     case_progress.check_expected_status(fa_sil_app_submitted, [ImpExpStatus.VARIATION_REQUESTED])
     assert get_active_task_list(fa_sil_app_submitted) == [Task.TaskType.PROCESS]
+
+
+class TestCancelCaseView(AuthTestCase):
+    def test_withdraw_fa_dfl(self, fa_dfl_app_in_progress):
+        url = CaseURLS.cancel_case(fa_dfl_app_in_progress.pk)
+
+        response = self.importer_client.post(url)
+        assertRedirects(response, reverse("workbasket"))
+
+        with pytest.raises(ObjectDoesNotExist):
+            fa_dfl_app_in_progress.refresh_from_db()
+
+    def test_withdraw_fa_oil(self, fa_oil_app_in_progress):
+        url = CaseURLS.cancel_case(fa_oil_app_in_progress.pk)
+
+        response = self.importer_client.post(url)
+        assertRedirects(response, reverse("workbasket"))
+
+        with pytest.raises(ObjectDoesNotExist):
+            fa_oil_app_in_progress.refresh_from_db()
+
+    def test_withdraw_fa_sil(self, fa_sil_app_in_progress):
+        url = CaseURLS.cancel_case(fa_sil_app_in_progress.pk)
+
+        response = self.importer_client.post(url)
+        assertRedirects(response, reverse("workbasket"))
+
+        with pytest.raises(ObjectDoesNotExist):
+            fa_sil_app_in_progress.refresh_from_db()
+
+    def test_withdraw_sanctions(self, sanctions_app_in_progress):
+        url = CaseURLS.cancel_case(sanctions_app_in_progress.pk)
+
+        response = self.importer_client.post(url)
+        assertRedirects(response, reverse("workbasket"))
+
+        with pytest.raises(ObjectDoesNotExist):
+            sanctions_app_in_progress.refresh_from_db()
+
+    def test_withdraw_wood(self, wood_app_in_progress):
+        url = CaseURLS.cancel_case(wood_app_in_progress.pk)
+
+        response = self.importer_client.post(url)
+        assertRedirects(response, reverse("workbasket"))
+
+        with pytest.raises(ObjectDoesNotExist):
+            wood_app_in_progress.refresh_from_db()
+
+    def test_withdraw_cfs(self, cfs_app_in_progress):
+        url = CaseURLS.cancel_case(cfs_app_in_progress.pk, "export")
+
+        response = self.exporter_client.post(url)
+        assertRedirects(response, reverse("workbasket"))
+
+        with pytest.raises(ObjectDoesNotExist):
+            cfs_app_in_progress.refresh_from_db()
+
+    def test_withdraw_com(self, com_app_in_progress):
+        url = CaseURLS.cancel_case(com_app_in_progress.pk, "export")
+
+        response = self.exporter_client.post(url)
+        assertRedirects(response, reverse("workbasket"))
+
+        with pytest.raises(ObjectDoesNotExist):
+            com_app_in_progress.refresh_from_db()
+
+    def test_withdraw_gmp(self, gmp_app_in_progress):
+        url = CaseURLS.cancel_case(gmp_app_in_progress.pk, "export")
+
+        response = self.exporter_client.post(url)
+        assertRedirects(response, reverse("workbasket"))
+
+        with pytest.raises(ObjectDoesNotExist):
+            gmp_app_in_progress.refresh_from_db()
