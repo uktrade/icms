@@ -7,7 +7,6 @@ START_DATE = dt.date(2023, 1, 1)
 
 def add_usage_data():
     adhoc_id = ImportApplicationType.objects.get(type=ImportApplicationType.Types.SANCTION_ADHOC).id
-    der_id = ImportApplicationType.objects.get(type=ImportApplicationType.Types.DEROGATION).id
     opt_id = ImportApplicationType.objects.get(type=ImportApplicationType.Types.OPT).id
     tex_id = ImportApplicationType.objects.get(type=ImportApplicationType.Types.TEXTILES).id
 
@@ -968,22 +967,6 @@ def add_usage_data():
                     "maximum_allocation": None,
                 },
                 {
-                    "application_type_id": der_id,
-                    "country_id": 129,
-                    "commodity_group_id": 201,
-                    "start_date": dt.date(2013, 1, 1),
-                    "end_date": None,
-                    "maximum_allocation": None,
-                },
-                {
-                    "application_type_id": der_id,
-                    "country_id": 129,
-                    "commodity_group_id": 201,
-                    "start_date": dt.date(2013, 1, 1),
-                    "end_date": None,
-                    "maximum_allocation": None,
-                },
-                {
                     "application_type_id": adhoc_id,
                     "country_id": 122,
                     "commodity_group_id": 217,
@@ -1312,22 +1295,6 @@ def add_usage_data():
                     "maximum_allocation": None,
                 },
                 {
-                    "application_type_id": der_id,
-                    "country_id": 136,
-                    "commodity_group_id": 204,
-                    "start_date": dt.date(2013, 1, 1),
-                    "end_date": None,
-                    "maximum_allocation": None,
-                },
-                {
-                    "application_type_id": der_id,
-                    "country_id": 68,
-                    "commodity_group_id": 203,
-                    "start_date": dt.date(2013, 1, 1),
-                    "end_date": None,
-                    "maximum_allocation": None,
-                },
-                {
                     "application_type_id": adhoc_id,
                     "country_id": 122,
                     "commodity_group_id": 218,
@@ -1364,54 +1331,6 @@ def add_usage_data():
                     "country_id": 122,
                     "commodity_group_id": 237,
                     "start_date": dt.date(2023, 1, 1),
-                    "end_date": None,
-                    "maximum_allocation": None,
-                },
-                {
-                    "application_type_id": der_id,
-                    "country_id": 136,
-                    "commodity_group_id": 204,
-                    "start_date": dt.date(2013, 1, 1),
-                    "end_date": None,
-                    "maximum_allocation": None,
-                },
-                {
-                    "application_type_id": der_id,
-                    "country_id": 68,
-                    "commodity_group_id": 203,
-                    "start_date": dt.date(2013, 1, 1),
-                    "end_date": None,
-                    "maximum_allocation": None,
-                },
-                {
-                    "application_type_id": der_id,
-                    "country_id": 68,
-                    "commodity_group_id": 202,
-                    "start_date": dt.date(2013, 1, 1),
-                    "end_date": None,
-                    "maximum_allocation": None,
-                },
-                {
-                    "application_type_id": der_id,
-                    "country_id": 136,
-                    "commodity_group_id": 202,
-                    "start_date": dt.date(2013, 1, 1),
-                    "end_date": None,
-                    "maximum_allocation": None,
-                },
-                {
-                    "application_type_id": der_id,
-                    "country_id": 136,
-                    "commodity_group_id": 202,
-                    "start_date": dt.date(2013, 1, 1),
-                    "end_date": None,
-                    "maximum_allocation": None,
-                },
-                {
-                    "application_type_id": der_id,
-                    "country_id": 68,
-                    "commodity_group_id": 202,
-                    "start_date": dt.date(2013, 1, 1),
                     "end_date": None,
                     "maximum_allocation": None,
                 },

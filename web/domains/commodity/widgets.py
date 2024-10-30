@@ -85,8 +85,6 @@ class UsageCountryWidget(ICMSModelSelect2Widget):
             #
             # Inactive Application types
             #
-            case (types.DEROGATION, _):
-                group_name = CountryGroupName.DEROGATION_FROM_SANCTION_COO
             case (types.OPT, _):
                 group_name = CountryGroupName.OPT_COO
             case (types.SPS, _):

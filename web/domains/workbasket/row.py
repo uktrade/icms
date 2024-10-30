@@ -36,8 +36,7 @@ def get_workbasket_row_func(process_type: str) -> GetWorkbasketRow:
         # Import Applications
         #
         case (
-            ProcessTypes.DEROGATIONS
-            | ProcessTypes.FA_DFL
+            ProcessTypes.FA_DFL
             | ProcessTypes.FA_OIL
             | ProcessTypes.FA_SIL
             | ProcessTypes.OPT

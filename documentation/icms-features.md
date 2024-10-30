@@ -76,7 +76,6 @@ New Import Application
 Main applicant page from which they can create import applications.
 
 Types of application:
-- Derogation from Sanctions Import Ban
 - Firearms and Ammunition
     - Deactivated Firearms Licence
     - Open Individual Import Licence

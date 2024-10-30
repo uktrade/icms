@@ -2,7 +2,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms import model_to_dict
 from django.urls import reverse
 
-from web.domains.case._import.derogations.forms import DerogationsChecklistForm
 from web.domains.case._import.fa_dfl.forms import DFLChecklistForm
 from web.domains.case._import.fa_oil.forms import ChecklistFirearmsOILApplicationForm
 from web.domains.case._import.fa_sil.forms import SILChecklistForm
@@ -12,7 +11,6 @@ from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
 from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
-    DerogationsApplication,
     DFLApplication,
     ExportApplication,
     FurtherInformationRequest,
@@ -147,10 +145,6 @@ def get_checklist_errors(application: ImpOrExp) -> PageErrors | None:
         DFLApplication.PROCESS_TYPE: ("import:fa-dfl:manage-checklist", DFLChecklistForm),
         SILApplication.PROCESS_TYPE: ("import:fa-sil:manage-checklist", SILChecklistForm),
         WoodQuotaApplication.PROCESS_TYPE: ("import:wood:manage-checklist", WoodQuotaChecklistForm),
-        DerogationsApplication.PROCESS_TYPE: (
-            "import:derogations:manage-checklist",
-            DerogationsChecklistForm,
-        ),
         OutwardProcessingTradeApplication.PROCESS_TYPE: (
             "import:opt:manage-checklist",
             OPTChecklistForm,

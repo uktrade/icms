@@ -9,7 +9,6 @@ class ProcessTypes(TypedTextChoices):
     """Values for Process.process_type."""
 
     # import
-    DEROGATIONS = ("DerogationsApplication", "Derogation from Sanctions Import Ban")
     FA_DFL = ("DFLApplication", "Firearms and Ammunition (Deactivated Firearms Licence)")
     FA_OIL = (
         "OpenIndividualLicenceApplication",
@@ -76,8 +75,6 @@ class Process(models.Model):
                 return "Textiles"
             case pt.WOOD:
                 return "Wood"
-            case pt.DEROGATIONS:
-                return "Sanctions Derogation"
             case pt.SPS:
                 return "Prior Surveillance"
             case pt.SANCTIONS:
@@ -123,9 +120,6 @@ class Process(models.Model):
 
         elif pt == ProcessTypes.WOOD:
             return self.importapplication.woodquotaapplication
-
-        elif pt == ProcessTypes.DEROGATIONS:
-            return self.importapplication.derogationsapplication
 
         elif pt == ProcessTypes.FA_DFL:
             return self.importapplication.dflapplication

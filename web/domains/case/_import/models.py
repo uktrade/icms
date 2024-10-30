@@ -100,8 +100,6 @@ class ImportApplicationType(models.Model):
                 return self._get_firearm_application_url()
             case self.Types.WOOD_QUOTA:
                 return reverse("import:create-wood-quota")
-            case self.Types.DEROGATION:
-                return reverse("import:create-derogations")
             case self.Types.OPT:
                 return reverse("import:create-opt")
             case self.Types.SANCTION_ADHOC:
@@ -279,8 +277,6 @@ class ImportApplication(ApplicationBase):
             return "import:fa-sil:edit"
         elif self.process_type == ProcessTypes.OPT:
             return "import:opt:edit"
-        elif self.process_type == ProcessTypes.DEROGATIONS:
-            return "import:derogations:edit"
         elif self.process_type == ProcessTypes.SANCTIONS:
             return "import:sanctions:edit"
         elif self.process_type == ProcessTypes.WOOD:
@@ -301,8 +297,6 @@ class ImportApplication(ApplicationBase):
             return "import:fa-sil:submit"
         elif self.process_type == ProcessTypes.OPT:
             return "import:opt:submit"
-        elif self.process_type == ProcessTypes.DEROGATIONS:
-            return "import:derogations:submit-derogations"
         elif self.process_type == ProcessTypes.SANCTIONS:
             return "import:sanctions:submit-sanctions"
         elif self.process_type == ProcessTypes.WOOD:

@@ -17,7 +17,6 @@ from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
-    DerogationsApplication,
     DFLApplication,
     ExportApplication,
     ImportApplication,
@@ -72,15 +71,6 @@ class TestPrepareResponseView(AuthTestCase):
 
         assertContains(resp, "Firearms and Ammunition (Specific Individual Import Licence)")
         assertTemplateUsed(resp, "web/domains/case/import/manage/prepare-fa-sil-response.html")
-
-    def test_derogations_prepare_response_get(
-        self, derogation_app_submitted: DerogationsApplication
-    ) -> None:
-        resp = self.ilb_admin_client.get(CaseURLS.prepare_response(derogation_app_submitted.pk))
-        assert resp.status_code == HTTPStatus.OK
-
-        assertContains(resp, "Derogation from Sanctions Import Ban")
-        assertTemplateUsed(resp, "web/domains/case/import/manage/prepare-derogations-response.html")
 
     def test_opt_prepare_response_get(
         self, opt_app_submitted: OutwardProcessingTradeApplication

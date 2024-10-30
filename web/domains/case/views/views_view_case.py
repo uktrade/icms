@@ -18,7 +18,6 @@ from web.models import (
     CertificateOfManufactureApplication,
     CFSSchedule,
     CommodityGroup,
-    DerogationsApplication,
     DFLApplication,
     ExporterAccessRequest,
     GMPFile,
@@ -94,9 +93,6 @@ def view_case(
 
         case WoodQuotaApplication():
             return _view_wood_quota(request, app)
-
-        case DerogationsApplication():
-            return _view_derogations(request, app)
 
         case DFLApplication():
             return _view_dfl(request, app)
@@ -182,18 +178,6 @@ def _view_wood_quota(
     }
 
     return render(request, "web/domains/case/import/wood/view.html", context)
-
-
-def _view_derogations(
-    request: AuthenticatedHttpRequest, application: DerogationsApplication
-) -> HttpResponse:
-    context = {
-        "process": application,
-        "page_title": get_case_page_title("import", application, "View"),
-        "supporting_documents": application.supporting_documents.filter(is_active=True),
-    }
-
-    return render(request, "web/domains/case/import/derogations/view.html", context)
 
 
 def _view_dfl(request: AuthenticatedHttpRequest, application: DFLApplication) -> HttpResponse:

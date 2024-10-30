@@ -10,9 +10,6 @@
   {% elif process.process_type == "WoodQuotaApplication" %}
     {{ icms_link(request, icms_url('import:wood:manage-checklist', kwargs={'application_pk': process.pk}), 'Checklist') }}
 
-  {% elif process.process_type == "DerogationsApplication" %}
-    {{ icms_link(request, icms_url('import:derogations:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
-
   {% elif process.process_type == "DFLApplication" %}
     {{ icms_link(request, icms_url('import:fa-dfl:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
 

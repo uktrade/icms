@@ -20,7 +20,6 @@ def test_downcast_unknown():
         (ProcessTypes.FA_SIL, "Firearms and Ammunition"),
         (ProcessTypes.TEXTILES, "Textiles"),
         (ProcessTypes.WOOD, "Wood"),
-        (ProcessTypes.DEROGATIONS, "Sanctions Derogation"),
         (ProcessTypes.SPS, "Prior Surveillance"),
         (ProcessTypes.SANCTIONS, "Sanctions and Adhoc"),
         (ProcessTypes.OPT, "Outward Processing Trade"),

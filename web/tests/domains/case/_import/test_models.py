@@ -3,7 +3,6 @@ from django.db.utils import IntegrityError
 from django.urls import reverse
 
 from web.models import (
-    DerogationsApplication,
     DFLApplication,
     ImportApplicationType,
     OpenIndividualLicenceApplication,
@@ -20,7 +19,6 @@ from web.models import (
 @pytest.mark.parametrize(
     "application_model",
     [
-        DerogationsApplication,
         DFLApplication,
         OpenIndividualLicenceApplication,
         OutwardProcessingTradeApplication,
@@ -104,7 +102,6 @@ def test_create_fa_application_url(sub_type, exp_url):
 @pytest.mark.parametrize(
     "_type,exp_url",
     (
-        (ImportApplicationType.Types.DEROGATION, reverse("import:create-derogations")),
         (ImportApplicationType.Types.SANCTION_ADHOC, reverse("import:create-sanctions")),
         (ImportApplicationType.Types.WOOD_QUOTA, reverse("import:create-wood-quota")),
         (ImportApplicationType.Types.OPT, reverse("import:create-opt")),

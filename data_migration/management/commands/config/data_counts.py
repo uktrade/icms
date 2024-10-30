@@ -451,13 +451,13 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         filter_params={"importapplication__process_type": ProcessTypes.FA_SIL},
         bind_vars={"IMA_TYPE": "FA", "IMA_SUB_TYPE": "SIL"},
     ),
-    CheckQuery(
-        name="Variation Requests - Derogations",
-        query=queries.import_application_variation_count,
-        model=web.VariationRequest,
-        filter_params={"importapplication__process_type": ProcessTypes.DEROGATIONS},
-        bind_vars={"IMA_TYPE": "SAN", "IMA_SUB_TYPE": "SAN1"},
-    ),
+    # CheckQuery(
+    #     name="Variation Requests - Derogations",
+    #     query=queries.import_application_variation_count,
+    #     model=web.VariationRequest,
+    #     filter_params={"importapplication__process_type": ProcessTypes.DEROGATIONS},
+    #     bind_vars={"IMA_TYPE": "SAN", "IMA_SUB_TYPE": "SAN1"},
+    # ),
     CheckQuery(
         name="Variation Requests - OPT",
         query=queries.import_application_variation_count,

@@ -16,7 +16,6 @@ from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
-    DerogationsApplication,
     DFLApplication,
     ImportApplication,
     OpenIndividualLicenceApplication,
@@ -139,9 +138,6 @@ def prepare_response(
             request, application.sanctionsandadhocapplication, context
         )
 
-    elif application.process_type == DerogationsApplication.PROCESS_TYPE:
-        return _prepare_derogations_response(request, application.derogationsapplication, context)
-
     elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
         return _prepare_wood_quota_response(request, application.woodquotaapplication, context)
 
@@ -254,18 +250,6 @@ def _prepare_sanctions_and_adhoc_response(
     return render(
         request=request,
         template_name="web/domains/case/import/manage/prepare-sanctions-response.html",
-        context=context,
-    )
-
-
-def _prepare_derogations_response(
-    request: AuthenticatedHttpRequest, application: DerogationsApplication, context: dict[str, Any]
-) -> HttpResponse:
-    context.update({"process": application})
-
-    return render(
-        request=request,
-        template_name="web/domains/case/import/manage/prepare-derogations-response.html",
         context=context,
     )
 

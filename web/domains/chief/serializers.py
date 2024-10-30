@@ -55,7 +55,6 @@ def fix_licence_reference(process_type: str, licence_reference: str) -> str:
         return licence_reference
 
     prefix = {
-        ProcessTypes.DEROGATIONS: "SAN",
         ProcessTypes.FA_DFL: "SIL",
         ProcessTypes.FA_OIL: "OIL",
         ProcessTypes.FA_SIL: "SIL",

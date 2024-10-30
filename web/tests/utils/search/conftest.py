@@ -19,7 +19,6 @@ from web.models import (
     CommodityGroup,
     CommodityType,
     Country,
-    DerogationsApplication,
     DFLApplication,
     ExportApplicationType,
     Exporter,
@@ -147,36 +146,6 @@ def exporter_two_fixture_data(
 
 
 class Build:
-    @staticmethod
-    def derogation_application(
-        reference,
-        importer_conf: FixtureData,
-        submit=True,
-        origin_country="Tanzania",
-        consignment_country="Algeria",
-        commodity_code="code112233",
-    ):
-        application_type = ImportApplicationType.objects.get(
-            type=ImportApplicationType.Types.DEROGATION
-        )
-        process_type = ProcessTypes.DEROGATIONS
-        commodity = create_test_commodity(commodity_code)
-
-        derogation_kwargs = {
-            "origin_country": Country.objects.get(name=origin_country),
-            "consignment_country": Country.objects.get(name=consignment_country),
-            "commodity": commodity,
-        }
-
-        return _create_application(
-            application_type,
-            process_type,
-            reference,
-            importer_conf,
-            submit,
-            extra_kwargs=derogation_kwargs,
-        )
-
     @staticmethod
     def fa_dfl_application(
         reference,
@@ -520,7 +489,6 @@ def _create_application(
         kwargs.update(**extra_kwargs)
 
     models = {
-        ProcessTypes.DEROGATIONS: DerogationsApplication,
         ProcessTypes.FA_DFL: DFLApplication,
         ProcessTypes.FA_OIL: OpenIndividualLicenceApplication,
         ProcessTypes.FA_SIL: SILApplication,

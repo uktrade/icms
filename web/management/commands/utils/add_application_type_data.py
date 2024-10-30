@@ -170,31 +170,6 @@ def add_import_application_type_data():
     #
     # Inactive applications
     #
-    ImportApplicationType.objects.create(
-        is_active=False,
-        type="SAN",
-        sub_type="SAN1",
-        name="Derogation from Sanctions Import Ban",
-        licence_type_code="SANCTIONS",
-        sigl_flag=False,
-        chief_flag=True,
-        chief_licence_prefix="GBSAN",
-        paper_licence_flag=False,
-        electronic_licence_flag=True,
-        cover_letter_flag=False,
-        cover_letter_schedule_flag=False,
-        category_flag=True,
-        quantity_unlimited_flag=False,
-        unit_list_csv="KGS,BARRELS",
-        exp_cert_upload_flag=False,
-        supporting_docs_upload_flag=True,
-        multiple_commodities_flag=False,
-        guidance_file_url="/docs/ApplyingForSanctionsLicence.pdf",
-        usage_auto_category_desc_flag=False,
-        case_checklist_flag=True,
-        importer_printable=False,
-        declaration_template=gen_dec,
-    )
 
     ImportApplicationType.objects.create(
         is_active=False,

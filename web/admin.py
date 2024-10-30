@@ -20,7 +20,6 @@ from web.models import (
     CommodityType,
     Country,
     CountryGroup,
-    DerogationsApplication,
     Email,
     EmailTemplate,
     ExportApplication,
@@ -188,7 +187,6 @@ admin.site.register(ExportApplication)
 admin.site.register(Exporter, ExporterAdmin)
 admin.site.register(SanctionsAndAdhocApplication)
 admin.site.register(SanctionsAndAdhocApplicationGoods)
-admin.site.register(DerogationsApplication)
 admin.site.register(EmailTemplate, EmailTemplateAdmin)
 
 
