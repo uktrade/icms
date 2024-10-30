@@ -54,5 +54,5 @@ requests==2.32.3
 sentry-sdk[django]==2.14.0
 tqdm==4.66.5
 urllib3==2.2.3
-whitenoise==6.7.0
+whitenoise~=6.8.2
 xlsxwriter==3.2.0

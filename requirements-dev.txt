@@ -591,7 +591,7 @@ webencodings==0.5.1
     # via html5lib
 wheel==0.44.0
     # via pip-tools
-whitenoise==6.7.0
+whitenoise==6.8.2
     # via -r requirements/requirements-base.in
 wrapt==1.16.0
     # via
