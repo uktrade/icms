@@ -32,3 +32,4 @@ class FurtherInformationRequestResponseForm(forms.ModelForm):
         model = FurtherInformationRequest
         fields = ("response_detail",)
         widgets = {"response_detail": forms.Textarea({"rows": 5})}
+        labels = {"response_detail": "Response Details"}
