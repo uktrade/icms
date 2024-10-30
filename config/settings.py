@@ -293,10 +293,18 @@ CELERY_RESULT_EXTENDED = True
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": REDIS_URL,
+        "LOCATION": REDIS_URL + "/0",
         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
     },
     "django_compressor_cache": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
+    # Using a separate cache for select2 to avoid conflicts with other caches, this is the recommended approach
+    "select2": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL + "/2",
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        # 1 hour timeout to avoid accidental expiry leading to failed AJAX requests
+        "TIMEOUT": 60 * 60 * 1,
+    },
 }
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
@@ -309,7 +317,7 @@ SESSION_COOKIE_AGE = env.django_session_cookie_age
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-SELECT2_CACHE_BACKEND = "default"
+SELECT2_CACHE_BACKEND = "select2"
 SELECT2_CSS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.css")
 SELECT2_JS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.js")
 
