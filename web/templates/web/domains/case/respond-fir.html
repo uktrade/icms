@@ -55,13 +55,13 @@
   <div class="row">
     <div class="three columns"></div>
     <div class="six columns">
-      <p><label>Attach documents then add an explanation in the response detail box before submitting.</label></p>
+      <p><label>Attach documents then add an explanation in the response details box before submitting.</label></p>
       {% if fir.files.active().exists() %}
       <table class="setoutList">
         <thead>
           <tr>
-            <th scope="col">File</th>
-            <th scope="col">Created By</th>
+            <th scope="col">File (Size)</th>
+            <th scope="col">Uploaded By</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
@@ -106,19 +106,13 @@
           </a>
         </div>
       </div>
-      <form method="post"
-            action="."
-            enctype="multipart/form-data"
-            novalidate
-      >
-        {{ csrf_input }}
+      <div class="section-break"></div>
+      {% call forms.form(method='post', csrf_input=csrf_input) %}
         {% for field in form %}
             {{fields.field(field)}}
         {% endfor %}
-        <button type="submit" name="action" value="save" class="primary-button button">
-          Submit Response
-        </button>
-      </form>
+        {{ forms.submit_button(btn_label="Submit Response") }}
+      {% endcall %}
     </div>
     <div class="three columns"></div>
   </div>

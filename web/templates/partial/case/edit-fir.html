@@ -7,14 +7,13 @@
   </legend>
 
   {% if fir.status == "DRAFT" %}
-  <form
-    method="post"
-    action="{{ icms_url(
-                 'case:delete-fir',
-                 kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type }) }}"
-    class="form-inline">
+    <form
+      id="delete-fir-form" method="post"
+      action="{{ icms_url('case:delete-fir', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type }) }}"
+      class="form-inline"
+    >
       {{ csrf_input }}
-      <button type="submit" class="small-button icon-bin">Delete</button>
+      {# The button to submit this form is defined below. look for `form="delete-fir-form"` #}
     </form>
   {% endif %}
 
@@ -33,8 +32,17 @@
         {% for field in form %}
             {{fields.field(field, mark_safe=True)}}
         {% endfor %}
-        <button type="button" id="send-fir-request-button" class="button primary-button">Send Request</button>
-        <button type="button" id="save-fir-request-button" class="button primary-button">Save</button>
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="six columns">
+            <button type="button" form="edit-fir-form" id="send-fir-request-button" class="button primary-button">Send Request</button>
+            <button type="button" form="edit-fir-form" id="save-fir-request-button" class="button primary-button">Save</button>
+            {% if fir.status == "DRAFT" %}
+              <button type="submit" form="delete-fir-form" class="button icon-bin">Delete</button>
+            {% endif %}
+          </div>
+        <div class="three columns"></div>
+        </div>
       </form>
       <br>
       <p><label>Documents</label></p>
