@@ -41,9 +41,15 @@
       {% if schedule.is_biocidal_claim() and schedule.biocidal_claim %}
         {{ application_field(schedule.get_biocidal_claim_display(), labels["biocidal_claim"]) }}
       {% endif %}
-      {{ application_field(schedule.get_product_eligibility_display(), labels["product_eligibility"]) }}
-      {{ application_field(schedule.get_goods_placed_on_uk_market_display(), labels["goods_placed_on_uk_market"]) }}
-      {{ application_field(schedule.get_goods_export_only_display(), labels["goods_export_only"]) }}
+      {% if show_eu_fields %}
+        {{ application_field(schedule.get_product_eligibility_display().replace(" UK ", " EU ") , labels["product_eligibility"]) }}
+        {{ application_field(schedule.get_goods_placed_on_uk_market_display(), "Have you placed the goods on the EU market or intend to place on EU market in future?") }}
+        {{ application_field(schedule.get_goods_export_only_display(), "Are these goods for export only and will never be placed by you on the EU market?") }}
+      {% else %}
+        {{ application_field(schedule.get_product_eligibility_display(), labels["product_eligibility"]) }}
+        {{ application_field(schedule.get_goods_placed_on_uk_market_display(), labels["goods_placed_on_uk_market"]) }}
+        {{ application_field(schedule.get_goods_export_only_display(), labels["goods_export_only"]) }}
+      {% endif %}
       {{ application_field(schedule.get_any_raw_materials_display(), labels["any_raw_materials"]) }}
 
       {% if schedule.final_product_end_use %}

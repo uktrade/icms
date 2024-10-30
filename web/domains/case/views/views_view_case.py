@@ -1,3 +1,4 @@
+import datetime as dt
 from typing import NamedTuple
 
 from django.contrib.auth.decorators import login_required
@@ -332,6 +333,7 @@ def _view_cfs(
         "application_countries": app_countries,
         "schedules": application.schedules.all().order_by("created_at"),
         "page_title": get_case_page_title("export", application, "View"),
+        "show_eu_fields": application.submit_datetime < dt.datetime(2021, 1, 1, tzinfo=dt.UTC),
     }
 
     return render(request, "web/domains/case/export/cfs-view.html", context)

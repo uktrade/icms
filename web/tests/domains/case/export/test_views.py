@@ -1,9 +1,10 @@
+import datetime as dt
 import re
 from http import HTTPStatus
 
 import pytest
 from django.urls import reverse, reverse_lazy
-from pytest_django.asserts import assertRedirects, assertTemplateUsed
+from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
 
 from web.models import (
     CertificateApplicationTemplate,
@@ -327,6 +328,44 @@ def test_edit_cfs_schedule_biocidal_claim_legislation_config(exporter_client, cf
     assert "legislation_config" in response.context
     legislation_config = response.context["legislation_config"]
     assert legislation_config[chosen_legislation.pk]["isBiocidalClaim"] is True
+
+
+def test_view_cfs_app_pre_brexit(db, exporter_client, cfs_app_processing):
+    app = cfs_app_processing
+    app.submit_datetime = dt.datetime(2020, 12, 31, 7, tzinfo=dt.UTC)
+    app.save()
+    url_view = reverse("case:view", kwargs={"case_type": "export", "application_pk": app.pk})
+    response = exporter_client.post(url_view)
+
+    assertContains(
+        response, "The products meet the product safety requirements to be sold on the EU market"
+    )
+    assertContains(
+        response,
+        "Have you placed the goods on the EU market or intend to place on EU market in future?",
+    )
+    assertContains(
+        response,
+        "Are these goods for export only and will never be placed by you on the EU market?",
+    )
+
+
+def test_view_cfs_app_post_brexit(exporter_client, cfs_app_processing):
+    app = cfs_app_processing
+    url_view = reverse("case:view", kwargs={"case_type": "export", "application_pk": app.pk})
+    response = exporter_client.post(url_view)
+
+    assertContains(
+        response, "The products meet the product safety requirements to be sold on the UK market"
+    )
+    assertContains(
+        response,
+        "Have you placed the goods on the UK market or intend to place on UK market in future?",
+    )
+    assertContains(
+        response,
+        "Are these goods for export only and will never be placed by you on the UK market?",
+    )
 
 
 class TestCFSScheduleMangeProductsView(AuthTestCase):
