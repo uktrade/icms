@@ -40,7 +40,6 @@ def get_workbasket_row_func(process_type: str) -> GetWorkbasketRow:
             | ProcessTypes.FA_DFL
             | ProcessTypes.FA_OIL
             | ProcessTypes.FA_SIL
-            | ProcessTypes.IRON_STEEL
             | ProcessTypes.OPT
             | ProcessTypes.SANCTIONS
             | ProcessTypes.SPS

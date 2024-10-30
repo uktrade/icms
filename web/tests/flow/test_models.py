@@ -18,7 +18,6 @@ def test_downcast_unknown():
         (ProcessTypes.FA_DFL, "Firearms and Ammunition"),
         (ProcessTypes.FA_OIL, "Firearms and Ammunition"),
         (ProcessTypes.FA_SIL, "Firearms and Ammunition"),
-        (ProcessTypes.IRON_STEEL, "Iron & Steel"),
         (ProcessTypes.TEXTILES, "Textiles"),
         (ProcessTypes.WOOD, "Wood"),
         (ProcessTypes.DEROGATIONS, "Sanctions Derogation"),

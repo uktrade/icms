@@ -1,5 +1,4 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Sum
 from django.forms import model_to_dict
 from django.urls import reverse
 
@@ -7,7 +6,6 @@ from web.domains.case._import.derogations.forms import DerogationsChecklistForm
 from web.domains.case._import.fa_dfl.forms import DFLChecklistForm
 from web.domains.case._import.fa_oil.forms import ChecklistFirearmsOILApplicationForm
 from web.domains.case._import.fa_sil.forms import SILChecklistForm
-from web.domains.case._import.ironsteel.forms import IronSteelChecklistForm
 from web.domains.case._import.opt.forms import OPTChecklistForm
 from web.domains.case._import.textiles.forms import TextilesChecklistForm
 from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
@@ -20,7 +18,6 @@ from web.models import (
     FurtherInformationRequest,
     ImportApplication,
     ImportApplicationType,
-    IronSteelApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     SanctionsAndAdhocApplication,
@@ -99,9 +96,6 @@ def _get_import_errors(
             _get_email_errors(application.sanctionsandadhocapplication, "import")
         )
 
-    elif application.process_type == IronSteelApplication.PROCESS_TYPE:
-        application_errors.add_many(_get_ironsteel_errors(application.ironsteelapplication))
-
 
 def _get_export_errors(
     application: ExportApplication, application_errors: ApplicationErrors
@@ -142,40 +136,6 @@ def _get_fa_sil_errors(application: ImportApplication) -> list[PageErrors]:
     return errors
 
 
-def _get_ironsteel_errors(application: IronSteelApplication) -> list[PageErrors]:
-    errors = []
-
-    certificates = application.certificates.filter(is_active=True)
-    total_certificates = certificates.aggregate(sum_requested=Sum("requested_qty")).get(
-        "sum_requested"
-    )
-    if total_certificates != application.quantity:
-        for cert in certificates:
-            certificate_errors = PageErrors(
-                page_name=f"Edit Certificate: {cert.reference}",
-                url=reverse(
-                    "import:ironsteel:edit-certificate",
-                    kwargs={"application_pk": application.pk, "document_pk": cert.pk},
-                ),
-            )
-
-            certificate_errors.add(
-                FieldError(
-                    f"Requested Quantity: {cert.requested_qty} kg (imported goods {application.quantity} kg)",
-                    messages=[
-                        (
-                            "Please ensure that the sum of export certificate requested"
-                            " quantities equals the total quantity of imported goods."
-                        )
-                    ],
-                )
-            )
-
-            errors.append(certificate_errors)
-
-    return errors
-
-
 def get_checklist_errors(application: ImpOrExp) -> PageErrors | None:
     """Returns any checklist errors for the applications that have a checklist."""
 
@@ -198,10 +158,6 @@ def get_checklist_errors(application: ImpOrExp) -> PageErrors | None:
         TextilesApplication.PROCESS_TYPE: (
             "import:textiles:manage-checklist",
             TextilesChecklistForm,
-        ),
-        IronSteelApplication.PROCESS_TYPE: (
-            "import:ironsteel:manage-checklist",
-            IronSteelChecklistForm,
         ),
     }
 

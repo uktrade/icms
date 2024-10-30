@@ -293,7 +293,7 @@ def take_ownership(
                             delta = relativedelta(months=6)
                         case pt.FA_OIL:
                             delta = relativedelta(years=3)
-                        case pt.IRON_STEEL | pt.SPS:
+                        case pt.SPS:
                             delta = relativedelta(months=4)
                         case pt.TEXTILES:
                             delta = relativedelta(months=9)

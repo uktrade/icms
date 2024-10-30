@@ -19,7 +19,6 @@ from web.models import (
     DerogationsApplication,
     DFLApplication,
     ImportApplication,
-    IronSteelApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     PriorSurveillanceApplication,
@@ -156,9 +155,6 @@ def prepare_response(
 
     elif application.process_type == PriorSurveillanceApplication.PROCESS_TYPE:
         return _prepare_sps_response(request, application.priorsurveillanceapplication, context)
-
-    elif application.process_type == IronSteelApplication.PROCESS_TYPE:
-        return _prepare_ironsteel_response(request, application.ironsteelapplication, context)
 
     # Certificate applications
     elif application.process_type == CertificateOfManufactureApplication.PROCESS_TYPE:
@@ -331,22 +327,6 @@ def _prepare_sps_response(
     return render(
         request=request,
         template_name="web/domains/case/import/manage/prepare-sps-response.html",
-        context=context,
-    )
-
-
-def _prepare_ironsteel_response(
-    request: AuthenticatedHttpRequest,
-    application: PriorSurveillanceApplication,
-    context: dict[str, Any],
-) -> HttpResponse:
-    context.update(
-        {"process": application, "certificates": application.certificates.filter(is_active=True)}
-    )
-
-    return render(
-        request=request,
-        template_name="web/domains/case/import/manage/prepare-ironsteel-response.html",
         context=context,
     )
 

@@ -205,24 +205,6 @@ def test_fa_sil_commodity_details_correct(importer_one_fixture_data):
     )
 
 
-def test_ironsteel_commodity_details_correct(importer_one_fixture_data):
-    Build.ironsteel_application("ironsteel app 1", importer_one_fixture_data)
-
-    search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.IRON_STEEL)
-    results = search_applications(search_terms, importer_one_fixture_data.ilb_admin_user)
-
-    assert results.total_rows == 1
-    check_application_references(results.records, "ironsteel app 1")
-    check_commodity_details(
-        results.records[0].commodity_details,
-        expected_origin_country="Kazakhstan",
-        expected_consignment_country="Bahamas",
-        expected_shipping_year=2021,
-        expected_goods_category="SA1",
-        expected_commodity_codes=["7208370010"],
-    )
-
-
 def test_opt_commodity_details_correct(importer_one_fixture_data):
     app = Build.opt_application("opt app 1", importer_one_fixture_data)
 
@@ -1219,7 +1201,6 @@ def test_import_search_by_shipping_year(importer_one_fixture_data: FixtureData):
     Build.fa_dfl_application("fa_dfl-app-ref", importer_one_fixture_data)
 
     # Does have a shipping year
-    Build.ironsteel_application("iron-app-ref", importer_one_fixture_data, shipping_year=2022)
     Build.textiles_application("textiles-app-ref", importer_one_fixture_data, shipping_year=2022)
     Build.wood_application("wood-app-ref", importer_one_fixture_data, shipping_year=2022)
     Build.textiles_application(
@@ -1229,10 +1210,8 @@ def test_import_search_by_shipping_year(importer_one_fixture_data: FixtureData):
 
     search_terms = SearchTerms(case_type="import", shipping_year="2022")
     results = search_applications(search_terms, importer_one_fixture_data.ilb_admin_user)
-    assert results.total_rows == 3
-    check_application_references(
-        results.records, "wood-app-ref", "textiles-app-ref", "iron-app-ref"
-    )
+    assert results.total_rows == 2
+    check_application_references(results.records, "wood-app-ref", "textiles-app-ref")
 
     search_terms.shipping_year = "2023"
     results = search_applications(search_terms, importer_one_fixture_data.ilb_admin_user)
@@ -1246,9 +1225,6 @@ def test_import_search_by_shipping_year(importer_one_fixture_data: FixtureData):
 
 
 def test_import_search_by_goods_category(importer_one_fixture_data: FixtureData):
-    Build.ironsteel_application(
-        "iron-app-ref", importer_one_fixture_data, category_commodity_group="test-1"
-    )
     Build.textiles_application(
         "textiles-app-ref", importer_one_fixture_data, category_commodity_group="test-2"
     )
@@ -1258,7 +1234,6 @@ def test_import_search_by_goods_category(importer_one_fixture_data: FixtureData)
     Build.opt_application("opt-app-ref", importer_one_fixture_data, cp_category=cp_category)
 
     test_pairs = [
-        ("test-1", "iron-app-ref"),
         ("test-2", "textiles-app-ref"),
         (cp_category, "opt-app-ref"),
     ]
@@ -1298,15 +1273,12 @@ def test_import_search_by_goods_category(importer_one_fixture_data: FixtureData)
 
     search_terms.goods_category = None
     results = search_applications(search_terms, importer_one_fixture_data.ilb_admin_user)
-    assert results.total_rows == 6
+    assert results.total_rows == 5
 
 
 def test_import_search_by_commodity_code(importer_one_fixture_data: FixtureData):
     Build.derogation_application(
         "derogation-app", importer_one_fixture_data, commodity_code="xx111111xx"
-    )
-    Build.ironsteel_application(
-        "ironsteel-app", importer_one_fixture_data, commodity_code="xx222222xx"
     )
     Build.opt_application(
         "opt-app",
@@ -1326,7 +1298,7 @@ def test_import_search_by_commodity_code(importer_one_fixture_data: FixtureData)
     # Check single wildcard returns all apps
     search_terms = SearchTerms(case_type="import", commodity_code="%")
     results = search_applications(search_terms, importer_one_fixture_data.ilb_admin_user)
-    assert results.total_rows == 7
+    assert results.total_rows == 6
 
     # Search for one record by app type
     search_terms = SearchTerms(
@@ -1342,8 +1314,6 @@ def test_import_search_by_commodity_code(importer_one_fixture_data: FixtureData)
     search_pairs = [
         ("xx111111xx", "derogation-app"),
         ("xx1%1xx", "derogation-app"),
-        ("xx222222xx", "ironsteel-app"),
-        ("xx2%2xx", "ironsteel-app"),
         ("xx333333xx", "opt-app"),
         ("xx3%3xx", "opt-app"),
         ("xx444444xx", "opt-app"),

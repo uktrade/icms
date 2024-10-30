@@ -33,7 +33,6 @@ from web.models import (
     ImportApplicationLicence,
     ImportApplicationType,
     Importer,
-    IronSteelApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     PriorSurveillanceApplication,
@@ -178,17 +177,6 @@ def create_sps(request: AuthenticatedHttpRequest) -> HttpResponse:
         request,
         application_type=ImportApplicationType.Types.SPS,
         model_class=PriorSurveillanceApplication,
-    )
-
-
-@login_required
-@permission_required(Perms.sys.importer_access, raise_exception=True)
-@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
-def create_ironsteel(request: AuthenticatedHttpRequest) -> HttpResponse:
-    return _create_application(
-        request,
-        application_type=ImportApplicationType.Types.IRON_STEEL,
-        model_class=IronSteelApplication,
     )
 
 

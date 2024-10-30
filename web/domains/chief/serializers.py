@@ -59,7 +59,6 @@ def fix_licence_reference(process_type: str, licence_reference: str) -> str:
         ProcessTypes.FA_DFL: "SIL",
         ProcessTypes.FA_OIL: "OIL",
         ProcessTypes.FA_SIL: "SIL",
-        ProcessTypes.IRON_STEEL: "AOG",
         ProcessTypes.SPS: "AOG",
         ProcessTypes.SANCTIONS: "SAN",
         ProcessTypes.TEXTILES: "TEX",

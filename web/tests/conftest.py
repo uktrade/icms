@@ -53,7 +53,6 @@ from web.models import (
     ImportContact,
     Importer,
     ImporterAccessRequest,
-    IronSteelApplication,
     Mailshot,
     Office,
     OpenIndividualLicenceApplication,
@@ -560,26 +559,6 @@ def sps_app_submitted(
     )
     sps_app.licences.create(issue_paper_licence_only=False)
     return sps_app
-
-
-@pytest.fixture()
-def iron_app_submitted(
-    importer_client, importer, office, importer_one_contact
-) -> IronSteelApplication:
-    """Disabled application type - Submitted Iron & Steel Application"""
-
-    iat = ImportApplicationType.Types
-    iron_app = IronSteelApplication.objects.create(
-        status=IronSteelApplication.Statuses.SUBMITTED,
-        process_type=IronSteelApplication.PROCESS_TYPE,
-        application_type=ImportApplicationType.objects.get(type=iat.IRON_STEEL),
-        created_by=importer_one_contact,
-        last_updated_by=importer_one_contact,
-        importer=importer,
-        importer_office=office,
-    )
-    iron_app.licences.create(issue_paper_licence_only=False)
-    return iron_app
 
 
 @pytest.fixture()

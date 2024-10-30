@@ -37,11 +37,6 @@ from web.domains.case._import.fa_sil.models import (
     SILSupplementaryReportFirearmSectionLegacy,
     SILUserSection5,
 )
-from web.domains.case._import.ironsteel.models import (
-    IronSteelApplication,
-    IronSteelCertificateFile,
-    IronSteelChecklist,
-)
 from web.domains.case._import.models import (
     ChiefRequestResponseErrors,
     ConstabularyLicenceDownloadLink,
@@ -245,9 +240,6 @@ __all__ = [
     "ImporterContactInvite",
     "ImporterGroupObjectPermission",
     "ImporterUserObjectPermission",
-    "IronSteelApplication",
-    "IronSteelCertificateFile",
-    "IronSteelChecklist",
     "Mailshot",
     "OILSupplementaryInfo",
     "OILSupplementaryReport",

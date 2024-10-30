@@ -6,7 +6,6 @@ from web.models import (
     DerogationsApplication,
     DFLApplication,
     ImportApplicationType,
-    IronSteelApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     PriorSurveillanceApplication,
@@ -23,7 +22,6 @@ from web.models import (
     [
         DerogationsApplication,
         DFLApplication,
-        IronSteelApplication,
         OpenIndividualLicenceApplication,
         OutwardProcessingTradeApplication,
         PriorSurveillanceApplication,
@@ -106,7 +104,6 @@ def test_create_fa_application_url(sub_type, exp_url):
 @pytest.mark.parametrize(
     "_type,exp_url",
     (
-        (ImportApplicationType.Types.IRON_STEEL, reverse("import:create-ironsteel")),
         (ImportApplicationType.Types.DEROGATION, reverse("import:create-derogations")),
         (ImportApplicationType.Types.SANCTION_ADHOC, reverse("import:create-sanctions")),
         (ImportApplicationType.Types.WOOD_QUOTA, reverse("import:create-wood-quota")),

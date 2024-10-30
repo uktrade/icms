@@ -25,7 +25,6 @@ from web.models import (
     Exporter,
     ImportApplicationType,
     Importer,
-    IronSteelApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     PriorSurveillanceApplication,
@@ -263,41 +262,6 @@ class Build:
             importer_conf,
             submit,
             extra_kwargs=fa_sil_kwargs,
-        )
-
-    @staticmethod
-    def ironsteel_application(
-        reference,
-        importer_conf: FixtureData,
-        submit=True,
-        origin_country="Kazakhstan",
-        consignment_country="Bahamas",
-        shipping_year=2021,
-        category_commodity_group="SA1",
-        commodity_code="7208370010",
-    ):
-        application_type = ImportApplicationType.objects.get(
-            type=ImportApplicationType.Types.IRON_STEEL
-        )
-        process_type = ProcessTypes.IRON_STEEL
-        commodity = create_test_commodity(commodity_code)
-        commodity_group = create_test_commodity_group(category_commodity_group, commodity)
-
-        ironsteel_kwargs = {
-            "origin_country": Country.objects.get(name=origin_country),
-            "consignment_country": Country.objects.get(name=consignment_country),
-            "shipping_year": shipping_year,
-            "commodity": commodity,
-            "category_commodity_group": commodity_group,
-        }
-
-        return _create_application(
-            application_type,
-            process_type,
-            reference,
-            importer_conf,
-            submit,
-            extra_kwargs=ironsteel_kwargs,
         )
 
     @staticmethod
@@ -560,7 +524,6 @@ def _create_application(
         ProcessTypes.FA_DFL: DFLApplication,
         ProcessTypes.FA_OIL: OpenIndividualLicenceApplication,
         ProcessTypes.FA_SIL: SILApplication,
-        ProcessTypes.IRON_STEEL: IronSteelApplication,
         ProcessTypes.OPT: OutwardProcessingTradeApplication,
         ProcessTypes.SANCTIONS: SanctionsAndAdhocApplication,
         ProcessTypes.SPS: PriorSurveillanceApplication,
