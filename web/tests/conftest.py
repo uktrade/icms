@@ -40,7 +40,6 @@ from web.models import (
     ClauseQuantity,
     Constabulary,
     Country,
-    DerogationsApplication,
     DFLApplication,
     DFLChecklist,
     ExportApplicationType,
@@ -519,26 +518,6 @@ def opt_app_submitted(
     )
     opt_app.licences.create(issue_paper_licence_only=True)
     return opt_app
-
-
-@pytest.fixture()
-def derogation_app_submitted(
-    importer_client, importer, office, importer_one_contact
-) -> DerogationsApplication:
-    """Disabled application type - Submitted Derogation Application"""
-
-    iat = ImportApplicationType.Types
-    derogation_app = DerogationsApplication.objects.create(
-        status=DerogationsApplication.Statuses.SUBMITTED,
-        process_type=DerogationsApplication.PROCESS_TYPE,
-        application_type=ImportApplicationType.objects.get(type=iat.DEROGATION),
-        created_by=importer_one_contact,
-        last_updated_by=importer_one_contact,
-        importer=importer,
-        importer_office=office,
-    )
-    derogation_app.licences.create(issue_paper_licence_only=False)
-    return derogation_app
 
 
 @pytest.fixture()

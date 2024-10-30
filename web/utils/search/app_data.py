@@ -13,7 +13,6 @@ from web.models import (
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     CFSSchedule,
-    DerogationsApplication,
     DFLApplication,
     ExportApplication,
     ExportApplicationCertificate,
@@ -33,17 +32,6 @@ if TYPE_CHECKING:
     from django.db.models import Model, QuerySet
 
 from . import types, utils
-
-
-def get_derogations_applications(search_ids: list[int]) -> "QuerySet[DerogationsApplication]":
-    applications = DerogationsApplication.objects.filter(pk__in=search_ids)
-    applications = _apply_import_optimisation(applications)
-
-    applications = applications.select_related("commodity", "origin_country", "consignment_country")
-
-    applications = _add_import_licence_data(applications)
-
-    return applications
 
 
 def get_fa_dfl_applications(search_ids: list[int]) -> "QuerySet[DFLApplication]":
@@ -238,16 +226,6 @@ def get_commodity_details(rec: ImportApplication) -> types.CommodityDetails:
             origin_country="None",  # This is to match legacy for this application type
             shipping_year=wood_app.shipping_year,
             commodity_codes=[wood_app.commodity.commodity_code],
-        )
-
-    elif app_pt == ProcessTypes.DEROGATIONS:
-        derogation_app: DerogationsApplication = rec
-
-        details = types.CommodityDetails(
-            origin_country=derogation_app.origin_country.name,
-            consignment_country=derogation_app.consignment_country.name,
-            shipping_year=derogation_app.submit_datetime.year,
-            commodity_codes=[derogation_app.commodity.commodity_code],
         )
 
     elif app_pt == ProcessTypes.FA_DFL:

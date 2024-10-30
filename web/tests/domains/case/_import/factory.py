@@ -1,7 +1,6 @@
 import factory.fuzzy
 
 from web.models import (
-    DerogationsApplication,
     ImportApplicationType,
     OpenIndividualLicenceApplication,
     SanctionsAndAdhocApplication,
@@ -34,13 +33,3 @@ class SanctionsAndAdhocLicenseApplicationFactory(factory.django.DjangoModelFacto
 class SanctionsAndAdhocApplicationGoodsFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = SanctionsAndAdhocApplicationGoods
-
-
-class DerogationsApplicationFactory(factory.django.DjangoModelFactory):
-    process_type = DerogationsApplication.PROCESS_TYPE
-    application_type = factory.Iterator(
-        ImportApplicationType.objects.filter(type=ImportApplicationType.Types.DEROGATION)
-    )
-
-    class Meta:
-        model = DerogationsApplication

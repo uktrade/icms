@@ -11,7 +11,6 @@ from web.models import (
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     Country,
-    DerogationsApplication,
     DFLApplication,
     ExportApplicationType,
     ImportApplicationType,
@@ -82,13 +81,6 @@ def test_get_application_case_and_licence_references(
     shared = {"created_by": importer_one_contact, "last_updated_by": importer_one_contact}
     import_common = shared | {"importer": importer, "importer_office": office}
     export_common = shared | {"exporter": exporter, "exporter_office": exporter_office}
-
-    derogation_app = DerogationsApplication.objects.create(
-        process_type=DerogationsApplication.PROCESS_TYPE,
-        application_type=ImportApplicationType.objects.get(type=iat.DEROGATION),
-        **import_common,
-    )
-    derogation_app.licences.create(issue_paper_licence_only=False)
 
     dfl_app = DFLApplication.objects.create(
         process_type=DFLApplication.PROCESS_TYPE,
@@ -169,43 +161,37 @@ def test_get_application_case_and_licence_references(
 
     year = dt.date.today().year
 
-    derogation_app.reference = reference.get_application_case_reference(
-        lock_manager, derogation_app
-    )
-    derogation_app.save()
-    assert derogation_app.reference == f"IMA/{year}/00001"
-
     dfl_app.reference = reference.get_application_case_reference(lock_manager, dfl_app)
     dfl_app.save()
-    assert dfl_app.reference == f"IMA/{year}/00002"
+    assert dfl_app.reference == f"IMA/{year}/00001"
 
     oil_app.reference = reference.get_application_case_reference(lock_manager, oil_app)
     oil_app.save()
-    assert oil_app.reference == f"IMA/{year}/00003"
+    assert oil_app.reference == f"IMA/{year}/00002"
 
     sil_app.reference = reference.get_application_case_reference(lock_manager, sil_app)
     sil_app.save()
-    assert sil_app.reference == f"IMA/{year}/00004"
+    assert sil_app.reference == f"IMA/{year}/00003"
 
     opt_app.reference = reference.get_application_case_reference(lock_manager, opt_app)
     opt_app.save()
-    assert opt_app.reference == f"IMA/{year}/00005"
+    assert opt_app.reference == f"IMA/{year}/00004"
 
     sanction_app.reference = reference.get_application_case_reference(lock_manager, sanction_app)
     sanction_app.save()
-    assert sanction_app.reference == f"IMA/{year}/00006"
+    assert sanction_app.reference == f"IMA/{year}/00005"
 
     sps_app.reference = reference.get_application_case_reference(lock_manager, sps_app)
     sps_app.save()
-    assert sps_app.reference == f"IMA/{year}/00007"
+    assert sps_app.reference == f"IMA/{year}/00006"
 
     textile_app.reference = reference.get_application_case_reference(lock_manager, textile_app)
     textile_app.save()
-    assert textile_app.reference == f"IMA/{year}/00008"
+    assert textile_app.reference == f"IMA/{year}/00007"
 
     wood_app.reference = reference.get_application_case_reference(lock_manager, wood_app)
     wood_app.save()
-    assert wood_app.reference == f"IMA/{year}/00009"
+    assert wood_app.reference == f"IMA/{year}/00008"
 
     com_app.reference = reference.get_application_case_reference(lock_manager, com_app)
     com_app.save()
@@ -220,7 +206,6 @@ def test_get_application_case_and_licence_references(
     assert gmp_app.reference == f"GA/{year}/00001"
 
     import_apps = [
-        derogation_app,
         dfl_app,
         oil_app,
         sil_app,
@@ -236,32 +221,29 @@ def test_get_application_case_and_licence_references(
         ref = reference.get_import_licence_reference(lock_manager, app, licence)
         document_pack.doc_ref_licence_create(licence, ref)
 
-    doc = _get_licence_document(derogation_app)
-    assert doc.reference == "GBSAN0000001B"
-
     doc = _get_licence_document(dfl_app)
-    assert doc.reference == "GBSIL0000002C"
+    assert doc.reference == "GBSIL0000001B"
 
     doc = _get_licence_document(oil_app)
-    assert doc.reference == "GBOIL0000003D"
+    assert doc.reference == "GBOIL0000002C"
 
     doc = _get_licence_document(sil_app)
-    assert doc.reference == "GBSIL0000004E"
+    assert doc.reference == "GBSIL0000003D"
 
     doc = _get_licence_document(opt_app)
-    assert doc.reference == "0000005F"
+    assert doc.reference == "0000004E"
 
     doc = _get_licence_document(sanction_app)
-    assert doc.reference == "GBSAN0000006G"
+    assert doc.reference == "GBSAN0000005F"
 
     doc = _get_licence_document(sps_app)
-    assert doc.reference == "GBAOG0000007H"
+    assert doc.reference == "GBAOG0000006G"
 
     doc = _get_licence_document(textile_app)
-    assert doc.reference == "GBTEX0000008X"
+    assert doc.reference == "GBTEX0000007H"
 
     doc = _get_licence_document(wood_app)
-    assert doc.reference == "0000009J"
+    assert doc.reference == "0000008X"
 
     cert_country_1 = Country.objects.first()
     cert_country_2 = Country.objects.last()
@@ -502,20 +484,18 @@ def test_get_exporter_access_request_reference(db, lock_manager):
 @pytest.mark.parametrize(
     "licence_type, process_type, next_sequence_value, expected_reference",
     [
-        ("electronic", ProcessTypes.DEROGATIONS, 1, "GBSAN0000001B"),
-        ("electronic", ProcessTypes.FA_DFL, 2, "GBSIL0000002C"),
-        ("electronic", ProcessTypes.FA_OIL, 3, "GBOIL0000003D"),
-        ("electronic", ProcessTypes.FA_SIL, 4, "GBSIL0000004E"),
-        ("electronic", ProcessTypes.SPS, 5, "GBAOG0000005F"),
-        ("electronic", ProcessTypes.SANCTIONS, 6, "GBSAN0000006G"),
-        ("electronic", ProcessTypes.TEXTILES, 7, "GBTEX0000007H"),
-        ("paper", ProcessTypes.DEROGATIONS, 8, "0000008X"),
-        ("paper", ProcessTypes.FA_DFL, 9, "0000009J"),
-        ("paper", ProcessTypes.FA_OIL, 10, "0000010K"),
-        ("paper", ProcessTypes.FA_SIL, 11, "0000011L"),
-        ("paper", ProcessTypes.SPS, 12, "0000012M"),
-        ("paper", ProcessTypes.SANCTIONS, 13, "0000013A"),
-        ("paper", ProcessTypes.TEXTILES, 14, "0000014B"),
+        ("electronic", ProcessTypes.FA_DFL, 1, "GBSIL0000001B"),
+        ("electronic", ProcessTypes.FA_OIL, 2, "GBOIL0000002C"),
+        ("electronic", ProcessTypes.FA_SIL, 3, "GBSIL0000003D"),
+        ("electronic", ProcessTypes.SPS, 4, "GBAOG0000004E"),
+        ("electronic", ProcessTypes.SANCTIONS, 5, "GBSAN0000005F"),
+        ("electronic", ProcessTypes.TEXTILES, 6, "GBTEX0000006G"),
+        ("paper", ProcessTypes.FA_DFL, 7, "0000007H"),
+        ("paper", ProcessTypes.FA_OIL, 8, "0000008X"),
+        ("paper", ProcessTypes.FA_SIL, 9, "0000009J"),
+        ("paper", ProcessTypes.SPS, 10, "0000010K"),
+        ("paper", ProcessTypes.SANCTIONS, 11, "0000011L"),
+        ("paper", ProcessTypes.TEXTILES, 12, "0000012M"),
     ],
 )
 def test_get_import_application_licence_reference(

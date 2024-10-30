@@ -202,7 +202,6 @@ def _get_search_records(
 
     # Map all available process types to the function used to search those records
     process_type_map = {
-        ProcessTypes.DEROGATIONS: app_data.get_derogations_applications,
         ProcessTypes.FA_DFL: app_data.get_fa_dfl_applications,
         ProcessTypes.FA_OIL: app_data.get_fa_oil_applications,
         ProcessTypes.FA_SIL: app_data.get_fa_sil_applications,
@@ -655,7 +654,6 @@ def _get_commodity_code_filter(terms: types.SearchTerms) -> models.Q:
     )
 
     applications: dict[Any, list[str]] = {
-        ImportApplicationType.Types.DEROGATION: ["derogationsapplication__commodity"],
         ImportApplicationType.Types.FIREARMS: [],  # Firearm apps don't have commodities to filter
         ImportApplicationType.Types.OPT: [
             "outwardprocessingtradeapplication__cp_commodities",

@@ -199,7 +199,6 @@ def _get_licence_reference(
 
     if licence_type == "electronic":
         prefix = {
-            ProcessTypes.DEROGATIONS: "SAN",
             ProcessTypes.FA_DFL: "SIL",
             ProcessTypes.FA_OIL: "OIL",
             ProcessTypes.FA_SIL: "SIL",

@@ -26,7 +26,6 @@ from web.domains.chief import utils as chief_utils
 from web.flow.models import ProcessTypes
 from web.models import (
     Country,
-    DerogationsApplication,
     DFLApplication,
     ICMSHMRCChiefRequest,
     ImportApplication,
@@ -75,17 +74,6 @@ class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context.update(**_get_active_application_types())
         return context
-
-
-@login_required
-@permission_required(Perms.sys.importer_access, raise_exception=True)
-@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
-def create_derogations(request: AuthenticatedHttpRequest) -> HttpResponse:
-    return _create_application(
-        request,
-        application_type=ImportApplicationType.Types.DEROGATION,
-        model_class=DerogationsApplication,
-    )
 
 
 @login_required

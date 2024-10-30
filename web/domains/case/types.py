@@ -7,7 +7,6 @@ from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     ConstabularyLicenceDownloadLink,
-    DerogationsApplication,
     DFLApplication,
     ExportApplication,
     ExportApplicationCertificate,
@@ -65,7 +64,6 @@ ApplicationsWithChecklist = Union[
     DFLApplication,
     SILApplication,
     WoodQuotaApplication,
-    DerogationsApplication,
     OutwardProcessingTradeApplication,
     TextilesApplication,
 ]

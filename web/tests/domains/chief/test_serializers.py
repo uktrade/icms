@@ -7,14 +7,12 @@ from web.flow.models import ProcessTypes
 @pytest.mark.parametrize(
     ["process_type", "licence_reference", "expected_licence_ref"],
     [
-        (ProcessTypes.DEROGATIONS, "GBSAN0000001B", "GBSAN0000001B"),
         (ProcessTypes.FA_DFL, "GBSIL0000002C", "GBSIL0000002C"),
         (ProcessTypes.FA_OIL, "GBOIL0000003D", "GBOIL0000003D"),
         (ProcessTypes.FA_SIL, "GBSIL0000004E", "GBSIL0000004E"),
         (ProcessTypes.SPS, "GBAOG0000006G", "GBAOG0000006G"),
         (ProcessTypes.SANCTIONS, "GBSAN0000007H", "GBSAN0000007H"),
         (ProcessTypes.TEXTILES, "GBTEX0000008X", "GBTEX0000008X"),
-        (ProcessTypes.DEROGATIONS, "0000009J", "GBSAN0000009J"),
         (ProcessTypes.FA_DFL, "0000010K", "GBSIL0000010K"),
         (ProcessTypes.FA_OIL, "0000011L", "GBOIL0000011L"),
         (ProcessTypes.FA_SIL, "0000012M", "GBSIL0000012M"),

@@ -45,8 +45,6 @@ from .conftest import (
 def test_filter_by_application_type(importer_one_fixture_data):
     Build.wood_application("Wood ref 1", importer_one_fixture_data)
     Build.wood_application("Wood ref 2", importer_one_fixture_data)
-    Build.derogation_application("Derogation ref 1", importer_one_fixture_data)
-    Build.derogation_application("Derogation ref 2", importer_one_fixture_data)
 
     terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.WOOD_QUOTA)
     results = search_applications(terms, importer_one_fixture_data.ilb_admin_user)
@@ -91,25 +89,18 @@ def test_order_and_limit_works(importer_one_fixture_data):
     applications = (
         "wood app 1",
         "wood app 2",
-        "derogation app 1",
-        "derogation app 2",
         "wood app 3",
         "wood app 4",
         "wood app 5",
-        "derogation app 3",
-        "derogation app 4",
-        "derogation app 5",
+        "wood app 6",
+        "wood app 7",
+        "wood app 8",
+        "wood app 9",
+        "wood app 10",
     )
 
     for app_ref in applications:
-        if app_ref.startswith("wood"):
-            Build.wood_application(app_ref, importer_one_fixture_data)
-
-        elif app_ref.startswith("derogation"):
-            Build.derogation_application(app_ref, importer_one_fixture_data)
-
-        else:
-            raise Exception(f"failed to create: {app_ref}")
+        Build.wood_application(app_ref, importer_one_fixture_data)
 
     terms = SearchTerms(case_type="import")
     search_data = search_applications(terms, importer_one_fixture_data.ilb_admin_user, limit=5)
@@ -120,28 +111,11 @@ def test_order_and_limit_works(importer_one_fixture_data):
 
     check_application_references(
         search_data.records,
-        "derogation app 5",
-        "derogation app 4",
-        "derogation app 3",
-        "wood app 5",
-        "wood app 4",
-    )
-
-
-def test_derogation_commodity_details_correct(importer_one_fixture_data):
-    app = Build.derogation_application("derogation app 1", importer_one_fixture_data)
-
-    search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.DEROGATION)
-    results = search_applications(search_terms, importer_one_fixture_data.ilb_admin_user)
-
-    assert results.total_rows == 1
-    check_application_references(results.records, "derogation app 1")
-    check_commodity_details(
-        results.records[0].commodity_details,
-        expected_origin_country="Tanzania",
-        expected_consignment_country="Algeria",
-        expected_shipping_year=app.submit_datetime.year,
-        expected_commodity_codes=["code112233"],
+        "wood app 10",
+        "wood app 9",
+        "wood app 8",
+        "wood app 7",
+        "wood app 6",
     )
 
 
@@ -1277,9 +1251,7 @@ def test_import_search_by_goods_category(importer_one_fixture_data: FixtureData)
 
 
 def test_import_search_by_commodity_code(importer_one_fixture_data: FixtureData):
-    Build.derogation_application(
-        "derogation-app", importer_one_fixture_data, commodity_code="xx111111xx"
-    )
+
     Build.opt_application(
         "opt-app",
         importer_one_fixture_data,
@@ -1298,22 +1270,20 @@ def test_import_search_by_commodity_code(importer_one_fixture_data: FixtureData)
     # Check single wildcard returns all apps
     search_terms = SearchTerms(case_type="import", commodity_code="%")
     results = search_applications(search_terms, importer_one_fixture_data.ilb_admin_user)
-    assert results.total_rows == 6
+    assert results.total_rows == 5
 
     # Search for one record by app type
     search_terms = SearchTerms(
         case_type="import",
-        commodity_code="xx111111xx",
-        app_type=ImportApplicationType.Types.DEROGATION,
+        commodity_code="xx555555xx",
+        app_type=ImportApplicationType.Types.SANCTION_ADHOC,
     )
     results = search_applications(search_terms, importer_one_fixture_data.ilb_admin_user)
     assert results.total_rows == 1
-    check_application_references(results.records, "derogation-app")
+    check_application_references(results.records, "sanctionadhoc-app")
 
     # Search for matching record using commodity code:
     search_pairs = [
-        ("xx111111xx", "derogation-app"),
-        ("xx1%1xx", "derogation-app"),
         ("xx333333xx", "opt-app"),
         ("xx3%3xx", "opt-app"),
         ("xx444444xx", "opt-app"),

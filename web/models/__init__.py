@@ -1,7 +1,3 @@
-from web.domains.case._import.derogations.models import (
-    DerogationsApplication,
-    DerogationsChecklist,
-)
 from web.domains.case._import.fa.models import ImportContact, UserImportCertificate
 from web.domains.case._import.fa_dfl.models import (
     DFLApplication,
@@ -206,8 +202,6 @@ __all__ = [
     "DFLSupplementaryInfo",
     "DFLSupplementaryReport",
     "DFLSupplementaryReportFirearm",
-    "DerogationsApplication",
-    "DerogationsChecklist",
     "Email",
     "EmailTemplate",
     "EndorsementImportApplication",
