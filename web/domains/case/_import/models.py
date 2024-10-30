@@ -17,7 +17,6 @@ class ImportApplicationType(models.Model):
     class Types(TypedTextChoices):
         DEROGATION = ("SAN", "Derogation from Sanctions Import Ban")
         FIREARMS = ("FA", "Firearms and Ammunition")  # has subtypes
-        IRON_STEEL = ("IS", "Iron and Steel (Quota)")
         OPT = ("OPT", "Outward Processing Trade")
         SANCTION_ADHOC = ("ADHOC", "Sanctions and Adhoc Licence Application")
         SPS = ("SPS", "Prior Surveillance")
@@ -103,8 +102,6 @@ class ImportApplicationType(models.Model):
                 return reverse("import:create-wood-quota")
             case self.Types.DEROGATION:
                 return reverse("import:create-derogations")
-            case self.Types.IRON_STEEL:
-                return reverse("import:create-ironsteel")
             case self.Types.OPT:
                 return reverse("import:create-opt")
             case self.Types.SANCTION_ADHOC:
@@ -292,8 +289,6 @@ class ImportApplication(ApplicationBase):
             return "import:textiles:edit"
         elif self.process_type == ProcessTypes.SPS:
             return "import:sps:edit"
-        elif self.process_type == ProcessTypes.IRON_STEEL:
-            return "import:ironsteel:edit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 
@@ -316,8 +311,6 @@ class ImportApplication(ApplicationBase):
             return "import:textiles:submit"
         elif self.process_type == ProcessTypes.SPS:
             return "import:sps:submit"
-        elif self.process_type == ProcessTypes.IRON_STEEL:
-            return "import:ironsteel:submit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 

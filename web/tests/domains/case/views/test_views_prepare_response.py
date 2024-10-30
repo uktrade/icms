@@ -21,7 +21,6 @@ from web.models import (
     DFLApplication,
     ExportApplication,
     ImportApplication,
-    IronSteelApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     PriorSurveillanceApplication,
@@ -144,13 +143,6 @@ class TestPrepareResponseView(AuthTestCase):
 
         assertContains(resp, "Prior Surveillance")
         assertTemplateUsed(resp, "web/domains/case/import/manage/prepare-sps-response.html")
-
-    def test_iron_prepare_response_get(self, iron_app_submitted: IronSteelApplication) -> None:
-        resp = self.ilb_admin_client.get(CaseURLS.prepare_response(iron_app_submitted.pk))
-        assert resp.status_code == HTTPStatus.OK
-
-        assertContains(resp, "Iron and Steel (Quota)")
-        assertTemplateUsed(resp, "web/domains/case/import/manage/prepare-ironsteel-response.html")
 
     def test_prepare_response_invalid_case_type_get(
         self, fa_sil_app_submitted: SILApplication

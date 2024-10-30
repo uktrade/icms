@@ -206,7 +206,6 @@ def _get_search_records(
         ProcessTypes.FA_DFL: app_data.get_fa_dfl_applications,
         ProcessTypes.FA_OIL: app_data.get_fa_oil_applications,
         ProcessTypes.FA_SIL: app_data.get_fa_sil_applications,
-        ProcessTypes.IRON_STEEL: app_data.get_ironsteel_applications,
         ProcessTypes.OPT: app_data.get_opt_applications,
         ProcessTypes.SANCTIONS: app_data.get_sanctionadhoc_applications,
         ProcessTypes.SPS: app_data.get_sps_applications,
@@ -560,11 +559,10 @@ def _apply_import_application_filter(
 
     if terms.shipping_year:
         # Shipping year only applies to one of the following applications
-        ironsteel_query = models.Q(ironsteelapplication__shipping_year=terms.shipping_year)
         textiles_query = models.Q(textilesapplication__shipping_year=terms.shipping_year)
         wood_query = models.Q(woodquotaapplication__shipping_year=terms.shipping_year)
 
-        model = model.filter(ironsteel_query | textiles_query | wood_query)
+        model = model.filter(textiles_query | wood_query)
 
     if terms.goods_category:
         model = model.filter(_get_goods_category_filter(terms))
@@ -632,13 +630,12 @@ def _get_goods_category_filter(terms: types.SearchTerms) -> models.Q:
         filter_query = fa_dfl_query | fa_oil_query | fa_sil_query
 
     else:
-        ironsteel_query = models.Q(ironsteelapplication__category_commodity_group=good_category)
         textiles_query = models.Q(textilesapplication__category_commodity_group=good_category)
         opt_query = models.Q(
             outwardprocessingtradeapplication__cp_category=good_category.group_code
         )
 
-        filter_query = ironsteel_query | textiles_query | opt_query
+        filter_query = textiles_query | opt_query
 
     return filter_query
 
@@ -660,7 +657,6 @@ def _get_commodity_code_filter(terms: types.SearchTerms) -> models.Q:
     applications: dict[Any, list[str]] = {
         ImportApplicationType.Types.DEROGATION: ["derogationsapplication__commodity"],
         ImportApplicationType.Types.FIREARMS: [],  # Firearm apps don't have commodities to filter
-        ImportApplicationType.Types.IRON_STEEL: ["ironsteelapplication__commodity"],
         ImportApplicationType.Types.OPT: [
             "outwardprocessingtradeapplication__cp_commodities",
             "outwardprocessingtradeapplication__teg_commodities",

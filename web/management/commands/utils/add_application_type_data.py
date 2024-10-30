@@ -253,33 +253,6 @@ def add_import_application_type_data():
 
     ImportApplicationType.objects.create(
         is_active=False,
-        type="IS",
-        sub_type="QUOTA",
-        name="Iron and Steel (Quota)",
-        licence_type_code="QUOTA",
-        sigl_flag=True,
-        chief_flag=True,
-        chief_licence_prefix="GBAOG",
-        paper_licence_flag=True,
-        electronic_licence_flag=True,
-        cover_letter_flag=False,
-        cover_letter_schedule_flag=False,
-        category_flag=True,
-        default_licence_length_months=4,
-        quantity_unlimited_flag=False,
-        exp_cert_upload_flag=True,
-        supporting_docs_upload_flag=True,
-        multiple_commodities_flag=False,
-        guidance_file_url="/docs/ApplyingForIronSteelLicence.pdf",
-        licence_category_description="Goods of the commodity code in Box 10 or any other commodity code under the category valid at the time of issue.",
-        usage_auto_category_desc_flag=False,
-        case_checklist_flag=True,
-        importer_printable=False,
-        declaration_template=gen_dec,
-    )
-
-    ImportApplicationType.objects.create(
-        is_active=False,
         type="SPS",
         sub_type="SPS1",
         name="Prior Surveillance",

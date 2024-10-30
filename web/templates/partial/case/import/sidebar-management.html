@@ -24,9 +24,6 @@
 
   {% elif process.process_type == "TextilesApplication" %}
     {{ icms_link(request, icms_url('import:textiles:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
-
-  {% elif process.process_type == "ISQuotaApplication" %}
-    {{ icms_link(request, icms_url('import:ironsteel:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
   {% endif %}
 
   {% set all_vr = process.variation_requests.all() %}

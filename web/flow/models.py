@@ -16,7 +16,6 @@ class ProcessTypes(TypedTextChoices):
         "Firearms and Ammunition (Open Individual Import Licence)",
     )
     FA_SIL = ("SILApplication", "Firearms and Ammunition (Specific Individual Import Licence)")
-    IRON_STEEL = ("ISQuotaApplication", "Iron and Steel (Quota)")
     OPT = ("OutwardProcessingTradeApplication", "Outward Processing Trade")
     SANCTIONS = ("SanctionsAndAdhocApplication", "Sanctions and Adhoc Licence Application")
     SPS = ("PriorSurveillanceApplication", "Prior Surveillance")
@@ -73,8 +72,6 @@ class Process(models.Model):
         match self.process_type:
             case pt.FA_DFL | pt.FA_OIL | pt.FA_SIL:
                 return "Firearms and Ammunition"
-            case pt.IRON_STEEL:
-                return "Iron & Steel"
             case pt.TEXTILES:
                 return "Textiles"
             case pt.WOOD:
@@ -141,9 +138,6 @@ class Process(models.Model):
 
         elif pt == ProcessTypes.SPS:
             return self.importapplication.priorsurveillanceapplication
-
-        elif pt == ProcessTypes.IRON_STEEL:
-            return self.importapplication.ironsteelapplication
 
         # Export applications
         elif pt == ProcessTypes.COM:

@@ -87,8 +87,6 @@ class UsageCountryWidget(ICMSModelSelect2Widget):
             #
             case (types.DEROGATION, _):
                 group_name = CountryGroupName.DEROGATION_FROM_SANCTION_COO
-            case (types.IRON_STEEL, _):
-                group_name = CountryGroupName.IRON
             case (types.OPT, _):
                 group_name = CountryGroupName.OPT_COO
             case (types.SPS, _):

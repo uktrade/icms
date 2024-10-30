@@ -23,7 +23,6 @@ from web.models import (
     ExporterAccessRequest,
     GMPFile,
     ImporterAccessRequest,
-    IronSteelApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     OutwardProcessingTradeFile,
@@ -111,8 +110,6 @@ def view_case(
         case PriorSurveillanceApplication():
             return _view_sps(request, app)
 
-        case IronSteelApplication():
-            return _view_ironsteel(request, app)
         #
         # Export applications
         #
@@ -282,19 +279,6 @@ def _view_sps(
     }
 
     return render(request, "web/domains/case/import/sps/view.html", context)
-
-
-def _view_ironsteel(
-    request: AuthenticatedHttpRequest, application: IronSteelApplication
-) -> HttpResponse:
-    context = {
-        "process": application,
-        "page_title": get_case_page_title("import", application, "View"),
-        "supporting_documents": application.supporting_documents.filter(is_active=True),
-        "certificates": application.certificates.filter(is_active=True),
-    }
-
-    return render(request, "web/domains/case/import/ironsteel/view.html", context)
 
 
 def _view_accessrequest(

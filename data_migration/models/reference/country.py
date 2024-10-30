@@ -72,8 +72,6 @@ class CountryGroup(MigrationBase):
                 return CountryGroupName.NON_EU
             case "Derogation from Sanctions COOs":
                 return CountryGroupName.DEROGATION_FROM_SANCTION_COO
-            case "Iron and Steel (Quota) COOs":
-                return CountryGroupName.IRON
             case "OPT COOs":
                 return CountryGroupName.OPT_COO
             case "OPT Temp Export COOs":

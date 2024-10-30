@@ -82,7 +82,6 @@ Types of application:
     - Open Individual Import Licence
     - Specific Individual Import Licence
 - General Surveillance
-- Iron and Steel (Quota)
 - Outward Processing Trade
 - Prior Surveillance
 - Sanctions and Adhoc Licence Application

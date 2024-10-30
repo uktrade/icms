@@ -19,7 +19,6 @@ from web.models import (
     ExportApplicationCertificate,
     ImportApplication,
     ImportApplicationLicence,
-    IronSteelApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     PriorSurveillanceApplication,
@@ -79,19 +78,6 @@ def get_fa_sil_applications(search_ids: list[int]) -> "QuerySet[SILApplication]"
 
     applications = applications.select_related(
         "origin_country", "consignment_country", "supplementary_info"
-    )
-
-    applications = _add_import_licence_data(applications)
-
-    return applications
-
-
-def get_ironsteel_applications(search_ids: list[int]) -> "QuerySet[IronSteelApplication]":
-    applications = IronSteelApplication.objects.filter(pk__in=search_ids)
-    applications = _apply_import_optimisation(applications)
-
-    applications = applications.select_related(
-        "origin_country", "consignment_country", "category_commodity_group", "commodity"
     )
 
     applications = _add_import_licence_data(applications)
@@ -289,17 +275,6 @@ def get_commodity_details(rec: ImportApplication) -> types.CommodityDetails:
             origin_country=fa_sil_app.origin_country.name,
             consignment_country=fa_sil_app.consignment_country.name,
             goods_category=fa_sil_app.get_commodity_code_display(),
-        )
-
-    elif app_pt == ProcessTypes.IRON_STEEL:
-        ironsteel_app: IronSteelApplication = rec
-
-        details = types.CommodityDetails(
-            origin_country=ironsteel_app.origin_country.name,
-            consignment_country=ironsteel_app.consignment_country.name,
-            shipping_year=ironsteel_app.shipping_year,
-            goods_category=ironsteel_app.category_commodity_group.group_code,
-            commodity_codes=[ironsteel_app.commodity.commodity_code],
         )
 
     elif app_pt == ProcessTypes.OPT:

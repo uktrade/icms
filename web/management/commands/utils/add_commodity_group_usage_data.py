@@ -8,7 +8,6 @@ START_DATE = dt.date(2023, 1, 1)
 def add_usage_data():
     adhoc_id = ImportApplicationType.objects.get(type=ImportApplicationType.Types.SANCTION_ADHOC).id
     der_id = ImportApplicationType.objects.get(type=ImportApplicationType.Types.DEROGATION).id
-    is_id = ImportApplicationType.objects.get(type=ImportApplicationType.Types.IRON_STEEL).id
     opt_id = ImportApplicationType.objects.get(type=ImportApplicationType.Types.OPT).id
     tex_id = ImportApplicationType.objects.get(type=ImportApplicationType.Types.TEXTILES).id
 
@@ -508,22 +507,6 @@ def add_usage_data():
                     "application_type_id": tex_id,
                     "country_id": 79,
                     "commodity_group_id": 95,
-                    "start_date": dt.date(2013, 1, 1),
-                    "end_date": None,
-                    "maximum_allocation": None,
-                },
-                {
-                    "application_type_id": is_id,
-                    "country_id": 77,
-                    "commodity_group_id": 134,
-                    "start_date": dt.date(2013, 1, 1),
-                    "end_date": None,
-                    "maximum_allocation": None,
-                },
-                {
-                    "application_type_id": is_id,
-                    "country_id": 77,
-                    "commodity_group_id": 135,
                     "start_date": dt.date(2013, 1, 1),
                     "end_date": None,
                     "maximum_allocation": None,

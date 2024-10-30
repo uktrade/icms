@@ -203,7 +203,6 @@ def _get_licence_reference(
             ProcessTypes.FA_DFL: "SIL",
             ProcessTypes.FA_OIL: "OIL",
             ProcessTypes.FA_SIL: "SIL",
-            ProcessTypes.IRON_STEEL: "AOG",
             ProcessTypes.SPS: "AOG",
             ProcessTypes.SANCTIONS: "SAN",
             ProcessTypes.TEXTILES: "TEX",

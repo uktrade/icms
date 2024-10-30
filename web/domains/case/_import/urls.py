@@ -56,7 +56,6 @@ urlpatterns = [
     path("create/opt/", views.create_opt, name="create-opt"),
     path("create/textiles/", views.create_textiles, name="create-textiles"),
     path("create/sps/", views.create_sps, name="create-sps"),
-    path("create/ironsteel/", views.create_ironsteel, name="create-ironsteel"),
     # Application urls
     path("derogations/", include("web.domains.case._import.derogations.urls")),
     path("sanctions/", include("web.domains.case._import.sanctions.urls")),
@@ -65,7 +64,6 @@ urlpatterns = [
     path("opt/", include("web.domains.case._import.opt.urls")),
     path("textiles/", include("web.domains.case._import.textiles.urls")),
     path("sps/", include("web.domains.case._import.sps.urls")),
-    path("ironsteel/", include("web.domains.case._import.ironsteel.urls")),
     # ILB Admin Case management
     path(
         "case/<int:application_pk>/",

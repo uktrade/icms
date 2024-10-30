@@ -23,7 +23,6 @@ from web.models import (
     Importer,
     ImporterAccessRequest,
     ImporterApprovalRequest,
-    IronSteelApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     SanctionsAndAdhocApplication,
@@ -69,7 +68,6 @@ ApplicationsWithChecklist = Union[
     DerogationsApplication,
     OutwardProcessingTradeApplication,
     TextilesApplication,
-    IronSteelApplication,
 ]
 
 ApplicationsWithCaseEmail = Union[
