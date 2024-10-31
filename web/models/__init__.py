@@ -33,6 +33,11 @@ from web.domains.case._import.fa_sil.models import (
     SILSupplementaryReportFirearmSectionLegacy,
     SILUserSection5,
 )
+from web.domains.case._import.legacy.models.opt_models import (
+    OPTChecklist,
+    OutwardProcessingTradeApplication,
+    OutwardProcessingTradeFile,
+)
 from web.domains.case._import.models import (
     ChiefRequestResponseErrors,
     ConstabularyLicenceDownloadLink,
@@ -41,11 +46,6 @@ from web.domains.case._import.models import (
     ImportApplication,
     ImportApplicationLicence,
     ImportApplicationType,
-)
-from web.domains.case._import.opt.models import (
-    OPTChecklist,
-    OutwardProcessingTradeApplication,
-    OutwardProcessingTradeFile,
 )
 from web.domains.case._import.sanctions.models import (
     SanctionsAndAdhocApplication,

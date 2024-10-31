@@ -2,13 +2,11 @@ from typing import final
 
 from django.db import models
 
-from web.domains.case._import.models import ChecklistBase
+from web.domains.case._import.models import ChecklistBase, ImportApplication
 from web.domains.file.models import File
 from web.flow.models import ProcessTypes
 from web.models.shared import YesNoChoices, YesNoNAChoices, at_least_0
 from web.types import TypedTextChoices
-
-from ..models import ImportApplication
 
 _ONCE_PER_YEAR = """This question only needs to be completed once per year. If
 you have already completed this question on a previous application this year,

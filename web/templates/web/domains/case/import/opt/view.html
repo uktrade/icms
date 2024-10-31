@@ -96,10 +96,9 @@
 
   {% for section, data in fq_sections.items() %}
     {% call application_section(data.section_title, "view-" + section) %}
-      {% for field in data.form %}
-        {{ application_field(field.value(), field.label) }}
+      {% for field in data.fq_fields %}
+        {{ application_field(process|attr(field), process|verbose_name(field)) }}
       {% endfor %}
-
       {% with read_only = True, supporting_documents = data.supporting_documents %}
         {% include "web/domains/case/import/partials/opt/documents_list.html" %}
       {% endwith %}

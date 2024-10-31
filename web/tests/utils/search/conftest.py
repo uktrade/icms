@@ -3,7 +3,7 @@ from typing import Any, NamedTuple
 
 import pytest
 
-from web.domains.case._import.opt.models import CP_CATEGORIES
+from web.domains.case._import.legacy.models.opt_models import CP_CATEGORIES
 from web.domains.case.models import DocumentPackBase
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus

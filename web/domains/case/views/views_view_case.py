@@ -7,8 +7,6 @@ from django.db.models import QuerySet
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
-from web.domains.case._import.opt.forms import FurtherQuestionsBaseOPTForm
-from web.domains.case._import.opt.utils import get_fq_form, get_fq_page_name
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import get_case_page_title
 from web.models import (
@@ -40,9 +38,9 @@ from .utils import get_class_imp_or_exp
 
 
 class OPTFurtherQuestionsSharedSection(NamedTuple):
-    form: FurtherQuestionsBaseOPTForm
     section_title: str
     supporting_documents: "QuerySet[OutwardProcessingTradeFile]"
+    fq_fields: list[str]
 
 
 def check_can_view_application(user: User, application: ImpOrExp) -> None:
@@ -214,14 +212,15 @@ def _view_opt(
 
     for file_type in OutwardProcessingTradeFile.Type:
         if file_type != OutwardProcessingTradeFile.Type.SUPPORTING_DOCUMENT:
-            form_class = get_fq_form(file_type)
+            fq_fields = get_fq_fields(file_type)
             section_title = get_fq_page_name(file_type)
 
-            form = form_class(instance=application, has_files=False)
             supporting_documents = application.documents.filter(is_active=True, file_type=file_type)
 
             fq_sections[file_type] = OPTFurtherQuestionsSharedSection(
-                form=form, section_title=section_title, supporting_documents=supporting_documents
+                section_title=section_title,
+                supporting_documents=supporting_documents,
+                fq_fields=fq_fields,
             )
 
     # Supporting docs for the main form:
@@ -239,6 +238,39 @@ def _view_opt(
     }
 
     return render(request, "web/domains/case/import/opt/view.html", context)
+
+
+def get_fq_fields(file_type: str) -> list[str]:
+    match file_type:
+        case OutwardProcessingTradeFile.Type.FQ_EMPLOYMENT_DECREASED:
+            return ["fq_employment_decreased", "fq_employment_decreased_reasons"]
+        case OutwardProcessingTradeFile.Type.FQ_PRIOR_AUTHORISATION:
+            return ["fq_prior_authorisation", "fq_prior_authorisation_reasons"]
+        case OutwardProcessingTradeFile.Type.FQ_PAST_BENEFICIARY:
+            return ["fq_past_beneficiary", "fq_past_beneficiary_reasons"]
+        case OutwardProcessingTradeFile.Type.FQ_NEW_APPLICATION:
+            return ["fq_new_application", "fq_new_application_reasons"]
+        case OutwardProcessingTradeFile.Type.FQ_FURTHER_AUTHORISATION:
+            return ["fq_further_authorisation", "fq_further_authorisation_reasons"]
+        case OutwardProcessingTradeFile.Type.FQ_SUBCONTRACT_PRODUCTION:
+            return ["fq_subcontract_production"]
+        case _:
+            raise ValueError(f"Invalid file type: {file_type}")
+
+
+def get_fq_page_name(file_type: str) -> str:
+    """Get a human-readable page name for a specific Further Questions type."""
+
+    form_class_map = {
+        OutwardProcessingTradeFile.Type.FQ_EMPLOYMENT_DECREASED: "Level of employment",
+        OutwardProcessingTradeFile.Type.FQ_PRIOR_AUTHORISATION: "Prior Authorisation",
+        OutwardProcessingTradeFile.Type.FQ_PAST_BENEFICIARY: "Past Beneficiary",
+        OutwardProcessingTradeFile.Type.FQ_NEW_APPLICATION: "New Application",
+        OutwardProcessingTradeFile.Type.FQ_FURTHER_AUTHORISATION: "Further Authorisation",
+        OutwardProcessingTradeFile.Type.FQ_SUBCONTRACT_PRODUCTION: "Subcontract production",
+    }
+
+    return form_class_map[file_type]  # type: ignore[index]
 
 
 def _view_textiles_quota(

@@ -104,7 +104,6 @@ def test_create_fa_application_url(sub_type, exp_url):
     (
         (ImportApplicationType.Types.SANCTION_ADHOC, reverse("import:create-sanctions")),
         (ImportApplicationType.Types.WOOD_QUOTA, reverse("import:create-wood-quota")),
-        (ImportApplicationType.Types.OPT, reverse("import:create-opt")),
         (ImportApplicationType.Types.TEXTILES, reverse("import:create-textiles")),
         (ImportApplicationType.Types.SPS, reverse("import:create-sps")),
     ),
