@@ -308,7 +308,7 @@ class TestApplicationChoice(AuthTestCase):
         new_application_type_name = "NEW APPLICATION TYPE"
 
         application_type = ImportApplicationType.objects.create(
-            type=ImportApplicationType.Types.OPT,
+            type=ImportApplicationType.Types.WOOD_QUOTA,
             sub_type=ImportApplicationType.SubTypes.DFL,
             name=new_application_type_name,
             is_active=True,

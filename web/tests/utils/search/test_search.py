@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils.timezone import make_aware
 from openpyxl import load_workbook
 
-from web.domains.case._import.opt.models import CP_CATEGORIES
+from web.domains.case._import.legacy.models.opt_models import CP_CATEGORIES
 from web.domains.case.models import ApplicationBase, DocumentPackBase
 from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus

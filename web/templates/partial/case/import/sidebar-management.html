@@ -17,7 +17,7 @@
     {{ icms_link(request, icms_url('import:fa-sil:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
 
   {% elif process.process_type == "OutwardProcessingTradeApplication" %}
-    {{ icms_link(request, icms_url('import:opt:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
+    {{ icms_link(request, icms_url('import:legacy:opt-manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
 
   {% elif process.process_type == "TextilesApplication" %}
     {{ icms_link(request, icms_url('import:textiles:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}

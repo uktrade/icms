@@ -92,7 +92,9 @@ class Command(BaseCommand):
         )
 
         # enable disabled application types
-        ImportApplicationType.objects.update(is_active=True)
+        ImportApplicationType.objects.exclude(type=ImportApplicationType.Types.OPT).update(
+            is_active=True
+        )
         ExportApplicationType.objects.update(is_active=True)
 
         # Add a dummy biocidal_claim legislation (defaults to GB and NI legislation)

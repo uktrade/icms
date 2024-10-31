@@ -100,8 +100,6 @@ class ImportApplicationType(models.Model):
                 return self._get_firearm_application_url()
             case self.Types.WOOD_QUOTA:
                 return reverse("import:create-wood-quota")
-            case self.Types.OPT:
-                return reverse("import:create-opt")
             case self.Types.SANCTION_ADHOC:
                 return reverse("import:create-sanctions")
             case self.Types.TEXTILES:
@@ -275,8 +273,6 @@ class ImportApplication(ApplicationBase):
             return "import:fa-dfl:edit"
         elif self.process_type == ProcessTypes.FA_SIL:
             return "import:fa-sil:edit"
-        elif self.process_type == ProcessTypes.OPT:
-            return "import:opt:edit"
         elif self.process_type == ProcessTypes.SANCTIONS:
             return "import:sanctions:edit"
         elif self.process_type == ProcessTypes.WOOD:
@@ -295,8 +291,6 @@ class ImportApplication(ApplicationBase):
             return "import:fa-dfl:submit"
         elif self.process_type == ProcessTypes.FA_SIL:
             return "import:fa-sil:submit"
-        elif self.process_type == ProcessTypes.OPT:
-            return "import:opt:submit"
         elif self.process_type == ProcessTypes.SANCTIONS:
             return "import:sanctions:submit-sanctions"
         elif self.process_type == ProcessTypes.WOOD:

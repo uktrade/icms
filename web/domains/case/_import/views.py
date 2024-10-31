@@ -138,17 +138,6 @@ def create_wood_quota(request: AuthenticatedHttpRequest) -> HttpResponse:
 @login_required
 @permission_required(Perms.sys.importer_access, raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
-def create_opt(request: AuthenticatedHttpRequest) -> HttpResponse:
-    return _create_application(
-        request,
-        application_type=ImportApplicationType.Types.OPT,
-        model_class=OutwardProcessingTradeApplication,
-    )
-
-
-@login_required
-@permission_required(Perms.sys.importer_access, raise_exception=True)
-@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_textiles(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
