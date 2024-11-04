@@ -23,42 +23,6 @@
   {% elif process.process_type == "SanctionsAndAdhocApplication" %}
     {{ icms_link(request, icms_url('import:sanctions:list-goods', kwargs={'application_pk': process.pk}), 'Goods') }}
     {{ icms_link(request, icms_url('import:sanctions:list-documents', kwargs={'application_pk': process.pk}), 'Supporting Documents') }}
-
-  {% elif process.process_type == "OutwardProcessingTradeApplication" %}
-    {{ icms_link(request, icms_url('import:opt:edit-compensating-products', kwargs={'application_pk': process.pk}),
-                 'Compensating Products') }}
-
-    {{ icms_link(request, icms_url('import:opt:edit-temporary-exported-goods', kwargs={'application_pk': process.pk}),
-                 'Temporary Exported Goods') }}
-
-    {{ icms_link(request, icms_url('import:opt:edit-further-questions', kwargs={'application_pk': process.pk}),
-                 'Further Questions') }}
-
-    <ul>
-      {{ icms_link(request, icms_url('import:opt:edit-further-questions-shared',
-                                     kwargs={'application_pk': process.pk, 'fq_type': 'fq_employment_decreased'}),
-                   'Level of employment') }}
-
-      {{ icms_link(request, icms_url('import:opt:edit-further-questions-shared',
-                                     kwargs={'application_pk': process.pk, 'fq_type': 'fq_prior_authorisation'}),
-                   'Prior Authorisation') }}
-
-      {{ icms_link(request, icms_url('import:opt:edit-further-questions-shared',
-                                     kwargs={'application_pk': process.pk, 'fq_type': 'fq_past_beneficiary'}),
-                   'Past Beneficiary') }}
-
-      {{ icms_link(request, icms_url('import:opt:edit-further-questions-shared',
-                                     kwargs={'application_pk': process.pk, 'fq_type': 'fq_new_application'}),
-                   'New Application') }}
-
-      {{ icms_link(request, icms_url('import:opt:edit-further-questions-shared',
-                                     kwargs={'application_pk': process.pk, 'fq_type': 'fq_further_authorisation'}),
-                   'Further Authorisation') }}
-
-      {{ icms_link(request, icms_url('import:opt:edit-further-questions-shared',
-                                     kwargs={'application_pk': process.pk, 'fq_type': 'fq_subcontract_production'}),
-                   'Subcontract production') }}
-    </ul>
   {% endif %}
   {{ icms_link(request, icms_url(process.get_submit_view_name(), kwargs={'application_pk': process.pk}), 'Submit') }}
 </ul>

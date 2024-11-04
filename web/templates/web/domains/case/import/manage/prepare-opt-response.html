@@ -32,13 +32,6 @@
       <td>{{ process.cp_total_value|default("", True) }}</td>
       <td>{{ process.cp_category }}</td>
       <td>{{ process.cp_category_licence_description }}</td>
-      {% if not readonly_view and not variation_refused %}
-        <td>
-          <a class="link-button button icon-pencil" data-input_action="edit"
-             href="{{ icms_url('import:opt:response-prep-edit-compensating-products', kwargs={'application_pk': process.pk}) }}"
-          >Edit</a>
-        </td>
-      {% endif %}
     </tr>
   </table>
 
@@ -68,13 +61,6 @@
       <td>kilos</td>
       <td>{{ process.teg_total_value|default("", True) }}</td>
       <td>{{ process.teg_goods_description|default("", True) }}</td>
-      {% if not readonly_view and not variation_refused %}
-        <td>
-          <a class="link-button button icon-pencil" data-input_action="edit"
-             href="{{ icms_url('import:opt:response-prep-edit-temporary-exported-goods', kwargs={'application_pk': process.pk}) }}"
-          >Edit</a>
-        </td>
-      {% endif %}
     </tr>
   </table>
 
