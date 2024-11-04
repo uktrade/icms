@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.forms.models import model_to_dict
@@ -11,6 +12,8 @@ from web.domains.case.views.utils import get_caseworker_view_readonly_status
 from web.models import (
     OPTChecklist,
     OutwardProcessingTradeApplication,
+    PriorSurveillanceApplication,
+    PriorSurveillanceContractFile,
     TextilesApplication,
     TextilesChecklist,
 )
@@ -137,3 +140,41 @@ def tex_manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: i
             template_name="web/domains/case/import/management/checklist.html",
             context=context,
         )
+
+
+@require_GET
+@login_required
+def sps_view_contract_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
+    application: PriorSurveillanceApplication = get_object_or_404(
+        PriorSurveillanceApplication, pk=application_pk
+    )
+
+    if not application.contract_file:
+        messages.error(request, "The application does not have contract/invoice attached.")
+
+        return redirect(
+            reverse("case:view", kwargs={"application_pk": application_pk, "case_type": "import"})
+        )
+
+    return view_application_file(
+        request.user,
+        application,
+        PriorSurveillanceContractFile.objects,
+        application.contract_file_id,
+    )
+
+
+@require_GET
+@login_required
+def sps_view_supporting_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
+    application: PriorSurveillanceApplication = get_object_or_404(
+        PriorSurveillanceApplication, pk=application_pk
+    )
+
+    return view_application_file(
+        request.user, application, application.supporting_documents, document_pk
+    )

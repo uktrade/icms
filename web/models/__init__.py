@@ -38,6 +38,10 @@ from web.domains.case._import.legacy.models.opt_models import (
     OutwardProcessingTradeApplication,
     OutwardProcessingTradeFile,
 )
+from web.domains.case._import.legacy.models.sps_models import (
+    PriorSurveillanceApplication,
+    PriorSurveillanceContractFile,
+)
 from web.domains.case._import.legacy.models.tex_models import (
     TextilesApplication,
     TextilesChecklist,
@@ -54,10 +58,6 @@ from web.domains.case._import.models import (
 from web.domains.case._import.sanctions.models import (
     SanctionsAndAdhocApplication,
     SanctionsAndAdhocApplicationGoods,
-)
-from web.domains.case._import.sps.models import (
-    PriorSurveillanceApplication,
-    PriorSurveillanceContractFile,
 )
 from web.domains.case._import.wood.models import (
     WoodContractFile,

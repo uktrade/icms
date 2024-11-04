@@ -203,7 +203,7 @@ def _get_licence_reference(
             ProcessTypes.FA_OIL: "OIL",
             ProcessTypes.FA_SIL: "SIL",
             ProcessTypes.SANCTIONS: "SAN",
-            # Inactive app types
+            # Inactive application types
             ProcessTypes.SPS: "AOG",
             ProcessTypes.TEXTILES: "TEX",
         }

@@ -168,7 +168,7 @@ def add_import_application_type_data():
     )
 
     #
-    # Inactive applications
+    # Inactive application types
     #
 
     ImportApplicationType.objects.create(

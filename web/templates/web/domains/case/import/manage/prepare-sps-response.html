@@ -23,14 +23,6 @@
         <td>
           Kilos
         </td>
-        {% if not readonly_view and not variation_refused %}
-          <td>
-            <a
-              href={{ icms_url('import:sps:response-prep-edit-goods', kwargs={'application_pk': process.pk}) }}>
-              Edit
-            </a>
-          </td>
-        {% endif %}
       </tr>
     </tbody>
   </table>
