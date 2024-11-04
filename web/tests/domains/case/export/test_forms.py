@@ -1,6 +1,7 @@
 import pytest
 from django.forms import model_to_dict
 from django.template.loader import render_to_string
+from django.test import TestCase
 
 from web.domains.case.export.forms import (
     CFSActiveIngredientForm,
@@ -16,47 +17,103 @@ from web.models import ProductLegislation
 from web.models.shared import AddressEntryType, YesNoChoices
 
 
-@pytest.mark.django_db
-def test_gmp_form_clean_ni_postcode_gb_country(mocker, gmp_app_submitted):
-    form_mock = mocker.patch("web.domains.case.export.forms.SubmitGMPForm.is_valid")
-    form_mock.return_value = True
-    form = SubmitGMPForm(
-        instance=gmp_app_submitted,
-        data={
-            "manufacturer_postcode": "BT43XX",  # /PS-IGNORE
-            "manufacturer_country": "GB",
-            "responsible_person_postcode": "BT43XX",  # /PS-IGNORE
-            "responsible_person_country": "GB",
-            "is_responsible_person": "yes",
-            "gmp_certificate_issued": "BRC_GSOCP",
-        },
-    )
-    form.cleaned_data = form.data
-    form.clean()
-    assert form.errors["responsible_person_postcode"][0] == "Postcode should not start with BT"
-    assert form.errors["manufacturer_postcode"][0] == "Postcode should not start with BT"
-
-
-@pytest.mark.django_db
-def test_gmp_form_clean_gb_postcode_ni_country(mocker, gmp_app_submitted):
-    form_mock = mocker.patch("web.domains.case.export.forms.SubmitGMPForm.is_valid")
-    form_mock.return_value = True
-
-    form = SubmitGMPForm(
-        instance=gmp_app_submitted,
-        data={
+class TestGMPForms(TestCase):
+    @pytest.fixture(autouse=True)
+    def _setup(self, mocker, gmp_app_submitted):
+        form_mock = mocker.patch("web.domains.case.export.forms.SubmitGMPForm.is_valid")
+        form_mock.return_value = True
+        self.app = gmp_app_submitted
+        self.form_data = {
             "manufacturer_postcode": "SW1A1AA",  # /PS-IGNORE
-            "manufacturer_country": "NIR",
+            "manufacturer_country": "GB",
+            "manufacturer_address_entry_type": "MANUAL",
+            "manufacturer_address": "Buckingham Palace, London",
             "responsible_person_postcode": "SW1A1AA",  # /PS-IGNORE
-            "responsible_person_country": "NIR",
+            "responsible_person_address_entry_type": "MANUAL",  # /PS-IGNORE
+            "responsible_person_country": "GB",
+            "responsible_person_address": "Buckingham Palace, London",
             "is_responsible_person": "yes",
             "gmp_certificate_issued": "BRC_GSOCP",
+        }
+
+    def test_gmp_submit_form_clean_ni_postcode_gb_country(self):
+        form = SubmitGMPForm(
+            instance=self.app,
+            data=self.form_data
+            | {
+                "manufacturer_postcode": "BT43XX",  # /PS-IGNORE
+                "responsible_person_postcode": "BT43XX",  # /PS-IGNORE
+            },
+        )
+        form.cleaned_data = form.data
+        form.clean()
+        assert form.errors["responsible_person_postcode"][0] == "Postcode should not start with BT"
+        assert form.errors["manufacturer_postcode"][0] == "Postcode should not start with BT"
+
+    def test_gmp_submit_form_clean_gb_postcode_ni_country(self):
+        form = SubmitGMPForm(
+            instance=self.app,
+            data=self.form_data
+            | {
+                "manufacturer_country": "NIR",
+                "responsible_person_country": "NIR",
+            },
+        )
+        form.cleaned_data = form.data
+        form.clean()
+        assert form.errors["responsible_person_postcode"][0] == "Postcode must start with BT"
+        assert form.errors["manufacturer_postcode"][0] == "Postcode must start with BT"
+
+    def test_gmp_edit_form_clean_manual_address(self):
+        data = self.form_data | {
+            "manufacturer_address_entry_type": "SEARCH",
+            "responsible_person_address_entry_type": "SEARCH",
+        }
+        form = EditGMPForm(instance=self.app, data=data)
+        form.cleaned_data = form.data
+        form.clean()
+        assert form.cleaned_data["manufacturer_address"] == data["manufacturer_address"]
+        assert form.cleaned_data["responsible_person_address"] == data["responsible_person_address"]
+
+    def test_gmp_edit_form_clean_search_address(self):
+        data = self.form_data | {
+            "manufacturer_address_entry_type": "SEARCH",
+            "responsible_person_address_entry_type": "SEARCH",
+        }
+        form = EditGMPForm(instance=self.app, data=data)
+        form.cleaned_data = form.data
+        form.clean()
+        assert form.cleaned_data["manufacturer_address"] == data["manufacturer_address"]
+        assert form.cleaned_data["responsible_person_address"] == data["responsible_person_address"]
+
+    def test_gmp_edit_form_normalize_manual_address(self):
+        # Test we can normalise the following unicode character: https://www.codetable.net/decimal/65292
+        data = self.form_data | {
+            "manufacturer_address": "Buckingham Palace，London，",
+            "responsible_person_address": "Buckingham Palace，London，",
+        }
+        form = EditGMPForm(instance=self.app, data=data)
+        form.cleaned_data = form.data
+        form.clean()
+        assert form.cleaned_data["manufacturer_address"] == "Buckingham Palace, London"
+        assert form.cleaned_data["responsible_person_address"] == "Buckingham Palace, London"
+
+
+def test_edit_gmp_form_readonly_address_input(gmp_app_in_progress):
+    gmp_app_in_progress.manufacturer_address_entry_type = AddressEntryType.SEARCH
+    gmp_app_in_progress.save()
+
+    form = EditGMPForm(instance=gmp_app_in_progress)
+    assert form.fields["manufacturer_address"].widget.attrs["readonly"]
+
+    form = EditGMPForm(
+        instance=gmp_app_in_progress,
+        data={
+            "manufacturer_address_entry_type": AddressEntryType.SEARCH,
+            "manufacturer_address": "Test Address",
         },
     )
-    form.cleaned_data = form.data
-    form.clean()
-    assert form.errors["responsible_person_postcode"][0] == "Postcode must start with BT"
-    assert form.errors["manufacturer_postcode"][0] == "Postcode must start with BT"
+    assert "readonly" not in form.fields["manufacturer_address"].widget.attrs
 
 
 @pytest.mark.django_db
@@ -173,23 +230,6 @@ def test_cas_number_validation(cas_numer: str, is_valid: bool, cfs_app_in_progre
     form = CFSActiveIngredientForm(data=data, product=product)
 
     assert form.is_valid() == is_valid
-
-
-def test_edit_gmp_form_readonly_address_input(gmp_app_in_progress):
-    gmp_app_in_progress.manufacturer_address_entry_type = AddressEntryType.SEARCH
-    gmp_app_in_progress.save()
-
-    form = EditGMPForm(instance=gmp_app_in_progress)
-    assert form.fields["manufacturer_address"].widget.attrs["readonly"]
-
-    form = EditGMPForm(
-        instance=gmp_app_in_progress,
-        data={
-            "manufacturer_address_entry_type": AddressEntryType.SEARCH,
-            "manufacturer_address": "Test Address",
-        },
-    )
-    assert "readonly" not in form.fields["manufacturer_address"].widget.attrs
 
 
 def test_edit_cfs_schedule_manufacturer_form_readonly_address_input(cfs_app_in_progress):

@@ -3,7 +3,39 @@ import datetime as dt
 import pytest
 from django.utils import timezone
 
-from web.utils import datetime_format, day_ordinal_date, strip_spaces
+from web.utils import (
+    clean_whitespace,
+    datetime_format,
+    day_ordinal_date,
+    newlines_to_commas,
+    strip_spaces,
+)
+
+
+@pytest.mark.parametrize(
+    "field,expected",
+    [
+        ("123 Test", "123 Test"),
+        ("123     Test", "123 Test"),
+        ("123\n\nTest", "123 Test"),
+        (" 123 \r\n Test \n", "123 Test"),
+    ],
+)
+def test_clean_whitespace(field, expected):
+    assert clean_whitespace(field) == expected
+
+
+@pytest.mark.parametrize(
+    "field,expected",
+    [
+        ("123, Test, Testing", "123, Test, Testing"),
+        ("123\nTest\r\nTesting\n", "123, Test, Testing"),
+        ("123,\nTest,\r\nTesting,\n", "123, Test, Testing"),
+        (" 123, \r\n Test, \n Testing, \n\n", "123, Test, Testing"),
+    ],
+)
+def test_newlines_to_commas(field, expected):
+    assert newlines_to_commas(field) == expected
 
 
 @pytest.mark.parametrize(

@@ -22,13 +22,34 @@ def time_snippet(msg: str) -> Generator[None, None, None]:
     print(f"Time taken: {duration} seconds")
 
 
+def clean_whitespace(field: str) -> str:
+    """Replaces all whitespace characters in a field with a single space
+
+    e.g.
+    "123\n\nSesame   St\r\n" -> 123 Sesame St
+    """
+    return re.sub(r"\s+", " ", f"{field.strip()}")
+
+
+def newlines_to_commas(field: str) -> str:
+    """Normilizes address text fields to separate data with commas rather than newlines
+
+    e.g.
+    "123 Sesame St\nSesame Land\n\nSesame" -> "123 Sesame St, Sesame Land, Sesame"
+    "123 Sesame St,\nSesame Land,\n\n Sesame" -> "123 Sesame St, Sesame Land, Sesame"
+    """
+    field = re.sub(r"(\s+)?(,)?(\s+)?(\n+)", ", ", field.strip())
+    field = clean_whitespace(field.strip(","))
+    return re.sub(r"(,)(( ,)+|(,)+)", ",", field)
+
+
 def strip_spaces(*fields: str | None) -> str:
     """Replaces all whitespace characters in fields with a single space
 
     e.g.
     strip_spaces("123\n\nSesame   St", "ABC   123") -> "123 Sesame St ABC 123"
     """
-    return " ".join(re.sub(r"\s+", " ", f"{f.strip()}") for f in fields if f)
+    return " ".join(clean_whitespace(f) for f in fields if f)
 
 
 def datetime_format(
