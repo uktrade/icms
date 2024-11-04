@@ -1400,6 +1400,17 @@ class TestActiveUserInterface:
                 "Last Login": "",
             },
             {
+                "First Name": "individual_importer_user_first_name",  # /PS-IGNORE
+                "Last Name": "individual_importer_user_last_name",  # /PS-IGNORE
+                "Email Address": "individual_importer_user@example.com",  # /PS-IGNORE
+                "Primary Email Address": "individual_importer_user@example.com",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
+                "Is Importer": "Yes",
+                "Is Exporter": "No",
+                "Businesses": "",
+            },
+            {
                 "Businesses": "Test Exporter 1",
                 "Email Address": "E1_main_contact@example.com",  # /PS-IGNORE
                 "Primary Email Address": "E1_main_contact@example.com",  # /PS-IGNORE

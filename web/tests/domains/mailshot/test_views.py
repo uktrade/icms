@@ -222,11 +222,12 @@ class TestMailshotPublishDraftView(AuthTestCase):
         self.mailshot.refresh_from_db()
         assert self.mailshot.status == Mailshot.Statuses.PUBLISHED
         check_gov_notify_email_was_sent(
-            3,
+            4,
             [
                 "I1_A1_main_contact@example.com",  # /PS-IGNORE
                 "I1_main_contact@example.com",  # /PS-IGNORE
                 "I2_main_contact@example.com",  # /PS-IGNORE
+                "individual_importer_user@example.com",  # /PS-IGNORE
             ],
             EmailTypes.MAILSHOT,
             {

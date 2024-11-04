@@ -91,7 +91,7 @@ def cancel_licence_serializer(
 def sanction_serializer(
     application: "SanctionsAndAdhocApplication", action: CHIEF_ACTION, chief_id: str
 ) -> types.LicenceDataPayload:
-    organisation = _get_organisation(application)
+    organisation = get_organisation(application)
     doc_pack = document_pack.pack_draft_get(application)
     licence_reference = fix_licence_reference(
         application.process_type, document_pack.doc_ref_licence_get(doc_pack).reference
@@ -135,7 +135,7 @@ def fa_dfl_serializer(
 ) -> types.LicenceDataPayload:
     """Return FA DFL licence data to send to chief."""
 
-    organisation = _get_organisation(application)
+    organisation = get_organisation(application)
     doc_pack = document_pack.pack_draft_get(application)
     licence_reference = fix_licence_reference(
         application.process_type, document_pack.doc_ref_licence_get(doc_pack).reference
@@ -170,7 +170,7 @@ def fa_oil_serializer(
 ) -> types.LicenceDataPayload:
     """Return FA OIL licence data to send to chief."""
 
-    organisation = _get_organisation(application)
+    organisation = get_organisation(application)
     doc_pack = document_pack.pack_draft_get(application)
     licence_reference = fix_licence_reference(
         application.process_type, document_pack.doc_ref_licence_get(doc_pack).reference
@@ -200,7 +200,7 @@ def fa_oil_serializer(
 def fa_sil_serializer(
     application: "SILApplication", action: CHIEF_ACTION, chief_id: str
 ) -> types.LicenceDataPayload:
-    organisation = _get_organisation(application)
+    organisation = get_organisation(application)
     doc_pack = document_pack.pack_draft_get(application)
     licence_reference = fix_licence_reference(
         application.process_type, document_pack.doc_ref_licence_get(doc_pack).reference
@@ -342,7 +342,7 @@ def _get_type(application: "CHIEF_APPLICATIONS") -> CHIEF_TYPES:
             raise ValueError(f"Unknown process type: {application.process_type}")
 
 
-def _get_organisation(application: "ImportApplication") -> types.OrganisationData:
+def get_organisation(application: "ImportApplication") -> types.OrganisationData:
     importer = _get_importer(application)
     office = _get_office(application)
     eori_number = _get_eori_number(importer, office)

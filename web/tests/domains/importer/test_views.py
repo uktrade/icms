@@ -91,7 +91,7 @@ class TestImporterListAdminView(AuthTestCase):
         page = response.context_data["page"]
 
         # We have added three to use as a pytest fixture
-        assert len(page.object_list) == 3
+        assert len(page.object_list) == 4
 
 
 class TestImporterListUserView(AuthTestCase):
@@ -151,7 +151,7 @@ class TestImporterListRegulatorView(AuthTestCase):
         assert response.status_code == HTTPStatus.OK
         assert response.context["page_title"] == "Maintain Importers"
         importers = response.context["object_list"]
-        assert importers.count() == 4
+        assert importers.count() == 5
 
 
 class TestImporterDetailRegulatorView(AuthTestCase):
@@ -220,10 +220,9 @@ class TestIndividualImporterCreateView(AuthTestCase):
             "user": self.importer_user.pk,
         }
         response = self.ilb_admin_client.post(self.url, data)
-        importer = Importer.objects.first()
+        importer = Importer.objects.get(user=self.importer_user)
         assertRedirects(response, reverse("importer-list") + f"?name={importer.name}")
         assert "Importer created successfully." in get_messages_from_response(response)
-        assert importer.user == self.importer_user
 
 
 class TestOrganisationImporterCreateView(AuthTestCase):
@@ -250,9 +249,8 @@ class TestOrganisationImporterCreateView(AuthTestCase):
             "registered_number": "42",
         }
         response = self.ilb_admin_client.post(self.url, data)
-        importer = Importer.objects.first()
+        importer = Importer.objects.get(name="test importer")
         assertRedirects(response, reverse("importer-list") + f"?name={importer.name}")
-        assert importer.name == "test importer", importer
 
 
 class TestAdminIndividualImporterEditView(AuthTestCase):

@@ -288,6 +288,11 @@ def importer_two_contact(django_user_model):
 
 
 @pytest.fixture()
+def importer_individual_contact(django_user_model):
+    return django_user_model.objects.get(username="individual_importer_user")
+
+
+@pytest.fixture()
 def exporter_one_contact(django_user_model):
     return django_user_model.objects.get(username="E1_main_contact")
 
@@ -430,6 +435,12 @@ def importer(db):
 @pytest.fixture()
 def importer_two(db):
     return Importer.objects.get(name="Test Importer 2")
+
+
+@pytest.fixture
+def importer_individual(db):
+    """Fixture to get an individual importer model instance."""
+    return Importer.objects.get(user__username="individual_importer_user")
 
 
 @pytest.fixture
@@ -778,6 +789,32 @@ def sanctions_app_submitted(
 
     case_progress.check_expected_status(app, [ImpExpStatus.SUBMITTED])
     case_progress.check_expected_task(app, Task.TaskType.PROCESS)
+
+    return app
+
+
+@pytest.fixture()
+def sanctions_app_processing(
+    importer_client, importer, office, importer_one_contact, ilb_admin_user, ilb_admin_client
+) -> SanctionsAndAdhocApplication:
+    app = create_in_progress_sanctions_app(importer_client, importer, office, importer_one_contact)
+
+    submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
+
+    # Taking ownership and begin processing
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    # Set the cover letter, decision, and fill checklist so authorisation can begin
+    app.refresh_from_db()
+    app.decision = app.APPROVE
+    app.save()
+    _set_valid_licence(app)
+
+    # Start authorisation
+    ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+
+    case_progress.check_expected_status(app, [ImpExpStatus.PROCESSING])
+    case_progress.check_expected_task(app, Task.TaskType.AUTHORISE)
 
     return app
 
