@@ -46,7 +46,7 @@ class AccessRequest(Process):
     agent_name = models.CharField(max_length=100, blank=True, null=True)
     agent_address = models.TextField(blank=True, default="")
 
-    submit_datetime = models.DateTimeField(auto_now=True)
+    submit_datetime = models.DateTimeField(auto_now_add=True)
     submitted_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
