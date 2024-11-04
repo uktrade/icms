@@ -321,7 +321,12 @@ class TestPermissionsService:
         importer_users = get_users_with_permission(Perms.sys.importer_access).values_list(
             "username", flat=True
         )
-        assert list(importer_users) == ["I1_A1_main_contact", "I1_main_contact", "I2_main_contact"]
+        assert list(importer_users) == [
+            "I1_A1_main_contact",
+            "I1_main_contact",
+            "I2_main_contact",
+            "individual_importer_user",
+        ]
 
         exporter_users = get_users_with_permission(Perms.sys.exporter_access).values_list(
             "username", flat=True

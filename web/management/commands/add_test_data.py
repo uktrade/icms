@@ -112,7 +112,12 @@ class Command(BaseCommand):
             importer_obj = self.create_importer_record(imp)
 
             for contact in imp.contacts:
-                self.create_organisation_contact(contact, importer_obj, ImporterObjectPermissions)
+                user = self.create_organisation_contact(
+                    contact, importer_obj, ImporterObjectPermissions
+                )
+                if importer_obj.type == Importer.INDIVIDUAL:
+                    importer_obj.user = user
+                    importer_obj.save()
 
             for agent in imp.agents:
                 agent_obj = self.create_importer_record(agent, importer_obj)
@@ -193,7 +198,7 @@ class Command(BaseCommand):
         org: Importer | Exporter,
         obj_perms: type[ImporterObjectPermissions | ExporterObjectPermissions],
         main_org: Importer | Exporter | None = None,
-    ) -> None:
+    ) -> User:
         user = self.create_user(contact.username, contact.is_active)
         add_email(user)
         add_group(user, obj_perms.get_group_name())
@@ -204,6 +209,8 @@ class Command(BaseCommand):
         # We are creating an agent contact if main_org is set
         if main_org:
             assign_perm(obj_perms.is_agent, user, main_org)
+
+        return user
 
     @staticmethod
     def create_user(username, is_active=True):

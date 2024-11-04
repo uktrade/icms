@@ -44,7 +44,7 @@ IMPORTER_ONE = TestImporter(
                     address_1="I1_A1 address line 1",
                     address_2="I1_A1 address line 2",
                     postcode="EH519HF",  # /PS-IGNORE
-                )  # /PS-IGNORE
+                )
             ],
             contacts=[
                 ImporterContact("I1_A1_main_contact", [ImpOP.edit, ImpOP.view]),
@@ -90,8 +90,28 @@ IMPORTER_THREE = TestImporter(
             is_active=False,
         )
     ],
-    type="INDIVIDUAL",
     agents=[],
+    type="INDIVIDUAL",
+)
+
+IMPORTER_INDIVIDUAL = TestImporter(
+    importer_name="",
+    eori_number="GBPR",
+    offices=[
+        Office(
+            address_1="1 Individual Road",
+            address_2="Individual City",
+            postcode="XX12 3XX",  # /PS-IGNORE
+        ),
+    ],
+    contacts=[
+        ImporterContact(
+            "individual_importer_user",
+            [ImpOP.manage_contacts_and_agents, ImpOP.edit, ImpOP.view],
+        )
+    ],
+    agents=[],
+    type="INDIVIDUAL",
 )
 
 EXPORTER_ONE = TestExporter(
@@ -180,5 +200,10 @@ EXPORTER_THREE = TestExporter(
 )
 
 
-TEST_IMPORTERS: list[TestImporter] = [IMPORTER_ONE, IMPORTER_TWO, IMPORTER_THREE]
+TEST_IMPORTERS: list[TestImporter] = [
+    IMPORTER_ONE,
+    IMPORTER_TWO,
+    IMPORTER_THREE,
+    IMPORTER_INDIVIDUAL,
+]
 TEST_EXPORTERS: list[TestExporter] = [EXPORTER_ONE, EXPORTER_TWO, EXPORTER_THREE]

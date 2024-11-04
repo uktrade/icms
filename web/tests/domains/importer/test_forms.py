@@ -20,14 +20,14 @@ def test_name_filter():
 @pytest.mark.django_db()
 def test_entity_type_filter():
     results = ImporterFilter(data={"importer_entity_type": Importer.INDIVIDUAL}).qs
-    assert results.count() == 1
+    assert results.count() == 2
 
 
 @pytest.mark.django_db()
 def test_filter_order():
     results = ImporterFilter(data={"name": "import"}).qs
-    assert results.count() == 3
-    assert results.first().name == "Test Importer 1"
+    assert results.count() == 4
+    assert results.first().user.username == "individual_importer_user"
     assert results.last().name == "Test Importer 3 Inactive"
 
 

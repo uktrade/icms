@@ -11,7 +11,7 @@ from web.domains.user.forms import (
 from web.models import PhoneNumber
 from web.one_login.constants import ONE_LOGIN_UNSET_NAME
 
-TOTAL_TEST_USERS = 19
+TOTAL_TEST_USERS = 20
 
 
 class TestUserListFilter(TestCase):
