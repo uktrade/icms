@@ -2,7 +2,7 @@ import datetime as dt
 
 import pydantic
 import pytest
-from django.utils.timezone import make_aware
+from django.utils import timezone
 from freezegun import freeze_time
 
 from web.domains.case.services import document_pack
@@ -44,6 +44,7 @@ from web.reports.serializers import (
     UserSerializer,
 )
 from web.tests.helpers import add_variation_request_to_app
+from web.utils import datetime_format
 
 EXPECTED_IMPORT_ACCESS_REQUEST_HEADER = [
     "Request Date",
@@ -204,6 +205,8 @@ def approved_importer_access_request(importer_access_request):
     importer_access_request.response = ImporterAccessRequest.APPROVED
     importer_access_request.save()
 
+    return importer_access_request
+
 
 @pytest.fixture
 @freeze_time("2021-02-11 12:00:00")
@@ -230,6 +233,8 @@ def refused_importer_access_request(ilb_admin_user):
 def approved_exporter_access_request(exporter_access_request):
     exporter_access_request.response = ExporterAccessRequest.APPROVED
     exporter_access_request.save()
+
+    return exporter_access_request
 
 
 @pytest.fixture
@@ -315,10 +320,10 @@ class TestIssuedCertificateReportInterface:
         )
 
     def _setup_app_update_submitted_and_completed_dates(self, app):
-        app.submit_datetime = make_aware(dt.datetime(2024, 1, 1, 12, 0, 0))
+        app.submit_datetime = timezone.make_aware(dt.datetime(2024, 1, 1, 12, 0, 0))
         app.save()
         for cert in app.certificates.all():
-            cert.case_completion_datetime = make_aware(dt.datetime(2024, 1, 9, 13, 7, 0))
+            cert.case_completion_datetime = timezone.make_aware(dt.datetime(2024, 1, 9, 13, 7, 0))
             cert.save()
 
     def test_issued_certificate_report_interface_get_data_header(self):
@@ -510,7 +515,21 @@ class TestImporterAccessRequestInterface:
     ):
         interface = ImporterAccessRequestInterface(self.report_schedule)
         data = interface.get_data()
+
+        # approved_importer_access_request is created before freeze_time is called
+        request_date = timezone.localtime(approved_importer_access_request.submit_datetime).date()
+
         assert data["results"] == [
+            {
+                "Agent Address": "",
+                "Agent Name": "",
+                "Importer Address": "1 Main Street",
+                "Importer Name": "Import Ltd",
+                "Request Date": datetime_format(request_date, "%d/%m/%Y", False),
+                "Request Type": "Importer Access Request",
+                "Response": "Approved",
+                "Response Reason": "",
+            },
             {
                 "Agent Address": "1 Agent House",
                 "Agent Name": "Test Agent",
@@ -520,16 +539,6 @@ class TestImporterAccessRequestInterface:
                 "Request Type": "Agent Importer Access Request",
                 "Response": "Refused",
                 "Response Reason": "Test refusing request",
-            },
-            {
-                "Agent Address": "",
-                "Agent Name": "",
-                "Importer Address": "1 Main Street",
-                "Importer Name": "Import Ltd",
-                "Request Date": "01/02/2021",
-                "Request Type": "Importer Access Request",
-                "Response": "Approved",
-                "Response Reason": "",
             },
         ]
 
@@ -554,7 +563,21 @@ class TestExporterAccessRequestInterface:
     ):
         interface = ExporterAccessRequestInterface(self.report_schedule)
         data = interface.get_data()
+
+        # approved_exporter_access_request is created before freeze_time is called
+        request_date = timezone.localtime(approved_exporter_access_request.submit_datetime).date()
+
         assert data["results"] == [
+            {
+                "Agent Address": "",
+                "Agent Name": "",
+                "Exporter Address": "2 Main Street",
+                "Exporter Name": "Export Ltd",
+                "Request Date": datetime_format(request_date, "%d/%m/%Y", False),
+                "Request Type": "Exporter Access Request",
+                "Response": "Approved",
+                "Response Reason": "",
+            },
             {
                 "Agent Address": "2 Agent House",
                 "Agent Name": "Test Agent",
@@ -564,16 +587,6 @@ class TestExporterAccessRequestInterface:
                 "Request Type": "Agent Exporter Access Request",
                 "Response": "Refused",
                 "Response Reason": "Test refusing request",
-            },
-            {
-                "Agent Address": "",
-                "Agent Name": "",
-                "Exporter Address": "2 Main Street",
-                "Exporter Name": "Export Ltd",
-                "Request Date": "01/02/2021",
-                "Request Type": "Exporter Access Request",
-                "Response": "Approved",
-                "Response Reason": "",
             },
         ]
 
