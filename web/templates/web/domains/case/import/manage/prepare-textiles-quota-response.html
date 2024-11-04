@@ -30,14 +30,6 @@
         <td>
           {{ process.category_commodity_group.unit.description }}
         </td>
-        {% if not readonly_view and not variation_refused %}
-          <td>
-            <a
-              href={{ icms_url('import:textiles:edit-goods-licence', kwargs={'application_pk': process.pk}) }}>
-              Edit
-            </a>
-          </td>
-        {% endif %}
       </tr>
     </tbody>
   </table>

@@ -102,8 +102,6 @@ class ImportApplicationType(models.Model):
                 return reverse("import:create-wood-quota")
             case self.Types.SANCTION_ADHOC:
                 return reverse("import:create-sanctions")
-            case self.Types.TEXTILES:
-                return reverse("import:create-textiles")
             case self.Types.SPS:
                 return reverse("import:create-sps")
             case _:
@@ -277,8 +275,6 @@ class ImportApplication(ApplicationBase):
             return "import:sanctions:edit"
         elif self.process_type == ProcessTypes.WOOD:
             return "import:wood:edit"
-        elif self.process_type == ProcessTypes.TEXTILES:
-            return "import:textiles:edit"
         elif self.process_type == ProcessTypes.SPS:
             return "import:sps:edit"
         else:
@@ -295,8 +291,6 @@ class ImportApplication(ApplicationBase):
             return "import:sanctions:submit-sanctions"
         elif self.process_type == ProcessTypes.WOOD:
             return "import:wood:submit-quota"
-        elif self.process_type == ProcessTypes.TEXTILES:
-            return "import:textiles:submit"
         elif self.process_type == ProcessTypes.SPS:
             return "import:sps:submit"
         else:

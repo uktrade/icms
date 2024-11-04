@@ -16,4 +16,15 @@ urlpatterns = [
         views.opt_manage_checklist,
         name="opt-manage-checklist",
     ),
+    # Textiles (TEX) legacy urls
+    path(
+        "tex/<int:application_pk>/document/<int:document_pk>/view/",
+        views.tex_view_document,
+        name="tex-view-document",
+    ),
+    path(
+        "tex/<int:application_pk>/checklist/",
+        views.tex_manage_checklist,
+        name="tex-manage-checklist",
+    ),
 ]

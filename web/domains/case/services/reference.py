@@ -202,8 +202,9 @@ def _get_licence_reference(
             ProcessTypes.FA_DFL: "SIL",
             ProcessTypes.FA_OIL: "OIL",
             ProcessTypes.FA_SIL: "SIL",
-            ProcessTypes.SPS: "AOG",
             ProcessTypes.SANCTIONS: "SAN",
+            # Inactive app types
+            ProcessTypes.SPS: "AOG",
             ProcessTypes.TEXTILES: "TEX",
         }
         xxx = prefix[process_type]  # type: ignore[index]
