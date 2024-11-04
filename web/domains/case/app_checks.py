@@ -5,8 +5,10 @@ from django.urls import reverse
 from web.domains.case._import.fa_dfl.forms import DFLChecklistForm
 from web.domains.case._import.fa_oil.forms import ChecklistFirearmsOILApplicationForm
 from web.domains.case._import.fa_sil.forms import SILChecklistForm
-from web.domains.case._import.legacy.forms import OPTChecklistForm
-from web.domains.case._import.textiles.forms import TextilesChecklistForm
+from web.domains.case._import.legacy.forms import (
+    OPTChecklistForm,
+    TextilesChecklistForm,
+)
 from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
 from web.models import (
     CertificateOfFreeSaleApplication,
@@ -150,7 +152,7 @@ def get_checklist_errors(application: ImpOrExp) -> PageErrors | None:
             OPTChecklistForm,
         ),
         TextilesApplication.PROCESS_TYPE: (
-            "import:textiles:manage-checklist",
+            "import:legacy:tex-manage-checklist",
             TextilesChecklistForm,
         ),
     }

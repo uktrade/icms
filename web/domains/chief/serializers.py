@@ -58,8 +58,9 @@ def fix_licence_reference(process_type: str, licence_reference: str) -> str:
         ProcessTypes.FA_DFL: "SIL",
         ProcessTypes.FA_OIL: "OIL",
         ProcessTypes.FA_SIL: "SIL",
-        ProcessTypes.SPS: "AOG",
         ProcessTypes.SANCTIONS: "SAN",
+        # Inactive app types
+        ProcessTypes.SPS: "AOG",
         ProcessTypes.TEXTILES: "TEX",
     }
     xxx = prefix[process_type]  # type: ignore[index]
