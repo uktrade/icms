@@ -52,12 +52,10 @@ urlpatterns = [
     path("create/firearms/oil/", views.create_firearms_oil, name="create-fa-oil"),
     path("create/firearms/sil/", views.create_firearms_sil, name="create-fa-sil"),
     path("create/wood/quota/", views.create_wood_quota, name="create-wood-quota"),
-    path("create/sps/", views.create_sps, name="create-sps"),
     # Application urls
     path("sanctions/", include("web.domains.case._import.sanctions.urls")),
     path("firearms/", include(firearms_urls)),
     path("wood/", include("web.domains.case._import.wood.urls")),
-    path("sps/", include("web.domains.case._import.sps.urls")),
     path("legacy/", include("web.domains.case._import.legacy.urls")),
     # ILB Admin Case management
     path(

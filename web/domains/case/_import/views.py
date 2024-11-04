@@ -34,7 +34,6 @@ from web.models import (
     Importer,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
-    PriorSurveillanceApplication,
     SanctionsAndAdhocApplication,
     SILApplication,
     Task,
@@ -131,17 +130,6 @@ def create_wood_quota(request: AuthenticatedHttpRequest) -> HttpResponse:
         application_type=ImportApplicationType.Types.WOOD_QUOTA,
         model_class=WoodQuotaApplication,
         form_class=CreateWoodQuotaApplicationForm,
-    )
-
-
-@login_required
-@permission_required(Perms.sys.importer_access, raise_exception=True)
-@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
-def create_sps(request: AuthenticatedHttpRequest) -> HttpResponse:
-    return _create_application(
-        request,
-        application_type=ImportApplicationType.Types.SPS,
-        model_class=PriorSurveillanceApplication,
     )
 
 

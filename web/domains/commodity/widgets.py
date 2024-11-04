@@ -83,7 +83,7 @@ class UsageCountryWidget(ICMSModelSelect2Widget):
             case (types.WOOD_QUOTA, _):
                 group_name = CountryGroupName.WOOD_COO
             #
-            # Inactive Application types
+            # Inactive application types
             #
             case (types.OPT, _):
                 group_name = CountryGroupName.OPT_COO

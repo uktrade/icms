@@ -93,7 +93,11 @@ class Command(BaseCommand):
 
         # enable disabled application types
         ImportApplicationType.objects.exclude(
-            type__in=[ImportApplicationType.Types.OPT, ImportApplicationType.Types.TEXTILES]
+            type__in=[
+                ImportApplicationType.Types.OPT,
+                ImportApplicationType.Types.SPS,
+                ImportApplicationType.Types.TEXTILES,
+            ]
         ).update(is_active=True)
         ExportApplicationType.objects.update(is_active=True)
 

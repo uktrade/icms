@@ -27,4 +27,15 @@ urlpatterns = [
         views.tex_manage_checklist,
         name="tex-manage-checklist",
     ),
+    # Prior Surveillance (SPS) legacy urls
+    path(
+        "sps/<int:application_pk>/contract-document/view/",
+        views.sps_view_contract_document,
+        name="sps-view-contract-document",
+    ),
+    path(
+        "sps/<int:application_pk>/support-document/<int:document_pk>/view/",
+        views.sps_view_supporting_document,
+        name="sps-view-supporting-document",
+    ),
 ]

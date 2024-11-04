@@ -102,8 +102,6 @@ class ImportApplicationType(models.Model):
                 return reverse("import:create-wood-quota")
             case self.Types.SANCTION_ADHOC:
                 return reverse("import:create-sanctions")
-            case self.Types.SPS:
-                return reverse("import:create-sps")
             case _:
                 raise ValueError(f"Unknown Application Type: {self.type}")  # /PS-IGNORE
 
@@ -275,8 +273,6 @@ class ImportApplication(ApplicationBase):
             return "import:sanctions:edit"
         elif self.process_type == ProcessTypes.WOOD:
             return "import:wood:edit"
-        elif self.process_type == ProcessTypes.SPS:
-            return "import:sps:edit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 
@@ -291,8 +287,6 @@ class ImportApplication(ApplicationBase):
             return "import:sanctions:submit-sanctions"
         elif self.process_type == ProcessTypes.WOOD:
             return "import:wood:submit-quota"
-        elif self.process_type == ProcessTypes.SPS:
-            return "import:sps:submit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 
