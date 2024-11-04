@@ -2,6 +2,7 @@ import datetime as dt
 from unittest.mock import MagicMock, create_autospec, patch
 
 import pytest
+from freezegun import freeze_time
 
 from web.models import (
     Country,
@@ -463,3 +464,39 @@ def test__get_fa_sil_goods(fa_sil_app_submitted, ilb_admin_user):
     actual = _get_fa_sil_goods(fa_sil_app_submitted)
 
     assert expected == sorted(actual)
+
+
+@freeze_time("2024-10-26 12:00:00")
+def test_gmp_get_context_preview(gmp_app_submitted):
+    app = gmp_app_submitted
+    certificate = app.certificates.first()
+    country = app.countries.first()
+    context = utils.get_gmp_certificate_context(
+        app, certificate, DocumentTypes.CERTIFICATE_PREVIEW, country
+    )
+
+    assert context["preview"] is True
+    assert context["page_title"] == "Certificate of Good Manufacturing Practice (China) Preview"
+    assert context["brand_name"] == "A Brand"
+    assert context["manufacturer_address"] == "MAN Address, MAN Postcode"
+    assert context["manufacturer_country"] == "GB"
+    assert context["expiry_date"] == "26th October 2027"
+
+
+@freeze_time("2024-10-26 12:00:00")
+def test_gmp_get_context_signed(gmp_app_processing):
+    app = gmp_app_processing
+    app.manufacturer_address = "123 Some Street\nSome Town,\nSomewhere,"
+
+    certificate = app.certificates.first()
+    country = app.countries.first()
+    context = utils.get_gmp_certificate_context(
+        app, certificate, DocumentTypes.CERTIFICATE_SIGNED, country
+    )
+
+    assert context["preview"] is False
+    assert context["page_title"] == "Certificate of Good Manufacturing Practice (China) Preview"
+    assert context["brand_name"] == "A Brand"
+    assert context["manufacturer_address"] == "123 Some Street, Some Town, Somewhere, MAN Postcode"
+    assert context["manufacturer_country"] == "GB"
+    assert context["expiry_date"] == "26th October 2027"

@@ -44,7 +44,12 @@ from web.models import (
 )
 from web.sites import get_exporter_site_domain
 from web.types import DocumentTypes
-from web.utils import day_ordinal_date, is_northern_ireland_postcode, strip_spaces
+from web.utils import (
+    clean_whitespace,
+    day_ordinal_date,
+    is_northern_ireland_postcode,
+    newlines_to_commas,
+)
 
 if TYPE_CHECKING:
     from web.reports.serializers import GoodsSectionSerializer
@@ -486,13 +491,14 @@ def get_gmp_certificate_context(
 
     ni_country_type = CertificateOfGoodManufacturingPracticeApplication.CountryType.NIR
 
+    address = newlines_to_commas(application.manufacturer_address)
+    postcode = clean_whitespace(application.manufacturer_postcode)
+
     return context | {
         "page_title": f"Certificate of Good Manufacturing Practice ({country.name}) Preview",
         "brand_name": application.brand_name,
         "manufacturer_name": application.manufacturer_name,
-        "manufacturer_address": strip_spaces(
-            application.manufacturer_address, application.manufacturer_postcode
-        ),
+        "manufacturer_address": ", ".join((address, postcode)),
         "manufacturer_country": application.manufacturer_country,
         "expiry_date": day_ordinal_date(expiry_date),
         "is_ni": application.manufacturer_country == ni_country_type,

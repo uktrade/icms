@@ -935,6 +935,30 @@ def gmp_app_submitted(
 
 
 @pytest.fixture()
+def gmp_app_processing(
+    ilb_admin_client, gmp_app_submitted
+) -> CertificateOfGoodManufacturingPracticeApplication:
+    app = gmp_app_submitted
+
+    # Taking ownership and begin processing
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
+    app.refresh_from_db()
+
+    app.decision = app.APPROVE
+    app.save()
+
+    case_progress.check_expected_status(app, [ImpExpStatus.PROCESSING])
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
+
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk, "export"))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    case_progress.check_expected_task(app, Task.TaskType.AUTHORISE)
+
+    return app
+
+
+@pytest.fixture()
 def cfs_app_in_progress(
     exporter_client, exporter, exporter_office, exporter_one_contact
 ) -> CertificateOfFreeSaleApplication:
@@ -1403,21 +1427,9 @@ def completed_com_app(com_app_submitted, ilb_admin_client):
 
 
 @pytest.fixture
-def completed_gmp_app(gmp_app_submitted, ilb_admin_client):
+def completed_gmp_app(gmp_app_processing):
     """A Certificate of Free Sale (export) application that has been approved."""
-    app = gmp_app_submitted
-
-    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
-
-    app.refresh_from_db()
-    app.decision = app.APPROVE
-    app.save()
-
-    # Now start authorisation
-    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk, "export"))
-    assertRedirects(response, reverse("workbasket"), 302)
-
-    app.refresh_from_db()
+    app = gmp_app_processing
     app.status = ImpExpStatus.COMPLETED
     app.save()
     task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)

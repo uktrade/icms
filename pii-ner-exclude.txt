@@ -5089,3 +5089,13 @@ CheckQuery
 Section 58(2)of
 G001
 approved_exporter_access_request
+Normalize
+NFKC
+Buckingham Palace，London
+Certificate of Good Manufacturing Practice (
+St\r\n
+commas
+Sesame St
+123 Sesame St,\nSesame Land,\n\n Sesame
+123 \r\n Test
+\n Testing

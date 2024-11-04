@@ -1,4 +1,5 @@
 import re
+import unicodedata
 from typing import Any
 
 from django import forms
@@ -540,14 +541,24 @@ class CFSManufacturerDetailsForm(forms.ModelForm):
             if self.instance.manufacturer_address_entry_type == AddressEntryType.SEARCH:
                 self.fields["manufacturer_address"].widget.attrs["readonly"] = True
 
-    def clean(self):
-        cleaned_data = super().clean()
+    def clean(self) -> dict[str, Any]:
+        cleaned_data: dict[str, Any] = super().clean()
 
         postcode = cleaned_data.get("manufacturer_postcode")
         address = cleaned_data.get("manufacturer_address")
 
         if postcode and not address:
             self.add_error("manufacturer_address", "You must enter this item")
+
+        if (
+            address
+            and cleaned_data.get("manufacturer_address_entry_type") == AddressEntryType.MANUAL
+        ):
+            cleaned_data["manufacturer_address"] = _normalize_address(
+                cleaned_data["manufacturer_address"]
+            )
+
+        return cleaned_data
 
 
 class CFSProductForm(forms.ModelForm):
@@ -716,6 +727,21 @@ class EditGMPForm(OptionalFormMixin, EditGMPFormBase):
 
     All fields are optional to allow partial record saving.
     """
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data: dict[str, Any] = super().clean()
+
+        if cleaned_data["responsible_person_address_entry_type"] == AddressEntryType.MANUAL:
+            cleaned_data["responsible_person_address"] = _normalize_address(
+                cleaned_data["responsible_person_address"]
+            )
+
+        if cleaned_data["manufacturer_address_entry_type"] == AddressEntryType.MANUAL:
+            cleaned_data["manufacturer_address"] = _normalize_address(
+                cleaned_data["manufacturer_address"]
+            )
+
+        return cleaned_data
 
 
 class SubmitGMPForm(EditGMPFormBase):
@@ -907,3 +933,19 @@ class BaseCFSProductFormset(BaseInlineFormSet):
 CFSProductFormset = forms.inlineformset_factory(
     CFSSchedule, CFSProduct, form=ManageCFSProductForm, formset=BaseCFSProductFormset, extra=1
 )
+
+
+def _normalize_address(address: str) -> str:
+    """Normalize address string to replace any unwanted characters.
+    These characters may not be displayed correctly in html causing an issue in the generated PDF documents.
+    """
+    address = address.strip()
+
+    # Normalize string to remove unwanted characters
+    address = unicodedata.normalize("NFKC", address)
+
+    # Strip trailing comma
+    address = address.rstrip(",")
+
+    # Replace comma without a following whitespace charatcer with a comma and a space
+    return re.sub(r",(?=\S)", ", ", address)
