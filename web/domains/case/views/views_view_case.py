@@ -237,7 +237,7 @@ def _view_opt(
         "supporting_documents": supporting_documents,
     }
 
-    return render(request, "web/domains/case/import/opt/view.html", context)
+    return render(request, "web/domains/case/import/legacy/opt_view.html", context)
 
 
 def get_fq_fields(file_type: str) -> list[str]:
@@ -282,7 +282,7 @@ def _view_textiles_quota(
         "supporting_documents": application.supporting_documents.filter(is_active=True),
     }
 
-    return render(request, "web/domains/case/import/textiles/view.html", context)
+    return render(request, "web/domains/case/import/legacy/tex_view.html", context)
 
 
 def _view_sps(
@@ -294,7 +294,7 @@ def _view_sps(
         "supporting_documents": application.supporting_documents.filter(is_active=True),
     }
 
-    return render(request, "web/domains/case/import/sps/view.html", context)
+    return render(request, "web/domains/case/import/legacy/sps_view.html", context)
 
 
 def _view_accessrequest(
