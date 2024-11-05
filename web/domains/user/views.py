@@ -365,7 +365,7 @@ def create_user_alias(user: User, org: Importer | Exporter, alias: str) -> None:
     )
 
     if user_alias not in organisation_get_contacts(org):
-        organisation_add_contact(org, user_alias)
+        organisation_add_contact(org, user_alias, assign_manage=True)
 
 
 class OneLoginTestAccountsDetailView(

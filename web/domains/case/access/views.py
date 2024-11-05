@@ -411,10 +411,12 @@ def close_access_request(
                 if access_request.response == AccessRequest.APPROVED:
                     if access_request.is_agent_request:
                         org = access_request.agent_link
+                        assign_manage = False
                     else:
                         org = access_request.link
+                        assign_manage = True
 
-                    organisation_add_contact(org, access_request.submitted_by)
+                    organisation_add_contact(org, access_request.submitted_by, assign_manage)
 
                 emails.send_access_request_closed_email(access_request)
 

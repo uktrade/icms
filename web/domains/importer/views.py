@@ -221,7 +221,8 @@ def create_importer(request: AuthenticatedHttpRequest, *, entity_type: str) -> H
             importer: Importer = form.save()
 
             if entity_type == "individual":
-                organisation_add_contact(importer, importer.user)
+                organisation_add_contact(importer, importer.user, assign_manage=True)
+
             messages.info(request, "Importer created successfully.")
             return redirect(reverse("importer-list") + "?" + urlencode({"name": importer.name}))
     else:
@@ -694,7 +695,7 @@ def create_agent(
             agent = form.save()
 
             if entity_type == "individual":
-                organisation_add_contact(agent, agent.user)
+                organisation_add_contact(agent, agent.user, assign_manage=False)
 
             return redirect(reverse("importer-agent-edit", kwargs={"pk": agent.pk}))
     else:
