@@ -581,7 +581,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         return render(
             request=request,
-            template_name="web/domains/case/import/management/checklist.html",
+            template_name="web/domains/case/import/manage/checklist.html",
             context=context,
         )
 

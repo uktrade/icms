@@ -80,7 +80,7 @@ def opt_manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: i
 
         return render(
             request=request,
-            template_name="web/domains/case/import/management/checklist.html",
+            template_name="web/domains/case/import/manage/checklist.html",
             context=context,
         )
 
@@ -137,7 +137,7 @@ def tex_manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: i
 
         return render(
             request=request,
-            template_name="web/domains/case/import/management/checklist.html",
+            template_name="web/domains/case/import/manage/checklist.html",
             context=context,
         )
 

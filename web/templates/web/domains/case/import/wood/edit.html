@@ -35,14 +35,14 @@
    between the importer and exporter, and upload the contract/pre-contract,
    below.</p>
    {% with read_only = false %}
-    {% include "web/domains/case/import/partials/wood/contract_documents_list.html" %}
+    {% include "web/domains/case/import/wood/partials/contract_documents_list.html" %}
    {% endwith %}
 
    <h4>Supporting documents</h4>
    <p class="bold">Please provide any further supporting documents regarding this application.</p>
    <p>This may include invoices, evidence of past trade, or contracts.</p>
    {% with read_only = false %}
-    {% include "web/domains/case/import/partials/wood/supporting_documents_list.html" %}
+    {% include "web/domains/case/import/wood/partials/supporting_documents_list.html" %}
    {% endwith %}
 
 {% endblock %}
