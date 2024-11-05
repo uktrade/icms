@@ -41,7 +41,7 @@
     {{ application_field(process.suggested_id, labels["suggested_id"]) }}
 
     {% with read_only = True %}
-      {% include "web/domains/case/import/partials/opt/documents_list.html" %}
+      {% include "web/domains/case/import/legacy/partials/opt/documents_list.html" %}
     {% endwith %}
   {% endcall %}
   <hr>
@@ -100,7 +100,7 @@
         {{ application_field(process|attr(field), process|verbose_name(field)) }}
       {% endfor %}
       {% with read_only = True, supporting_documents = data.supporting_documents %}
-        {% include "web/domains/case/import/partials/opt/documents_list.html" %}
+        {% include "web/domains/case/import/legacy/partials/opt/documents_list.html" %}
       {% endwith %}
     {% endcall %}
      <hr>
