@@ -63,7 +63,9 @@ def add(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int) -> Htt
 
         if form.is_valid():
             contact = form.cleaned_data["contact"]
-            organisation_add_contact(org, contact)
+
+            assign_manage = not org.is_agent()
+            organisation_add_contact(org, contact, assign_manage)
 
         else:
             messages.error(request, "Unable to add contact.")
@@ -219,7 +221,8 @@ class AcceptOrgContactInviteView(LoginRequiredMixin, UserPassesTestMixin, FormVi
         invite = self._get_invite()
 
         if form.cleaned_data["accept_invite"]:
-            organisation_add_contact(invite.organisation, self.request.user)
+            assign_manage = not invite.organisation.is_agent()
+            organisation_add_contact(invite.organisation, self.request.user, assign_manage)
 
         invite.processed = True
         invite.save()
