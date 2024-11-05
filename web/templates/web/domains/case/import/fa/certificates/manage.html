@@ -26,12 +26,12 @@
   {% if process.process_type == "SILApplication" and process.section5 %}
       <h4>Section 5 Authorities</h4>
       {% with read_only = False %}
-        {% include "web/domains/case/import/partials/fa-sil/verified-section5-authorities.html" %}
+        {% include "web/domains/case/import/fa-sil/partials/verified-section5-authorities.html" %}
       {% endwith %}
 
       <p class="bold">Please upload any Section 5 Authority Document(s) below</p>
       {% with read_only = False %}
-        {% include "web/domains/case/import/partials/fa-sil/user-section5-authorities.html" %}
+        {% include "web/domains/case/import/fa-sil/partials/user-section5-authorities.html" %}
       {% endwith %}
   {% endif %}
 {% endblock %}
