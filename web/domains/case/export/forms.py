@@ -947,5 +947,5 @@ def _normalize_address(address: str) -> str:
     # Strip trailing comma
     address = address.rstrip(",")
 
-    # Replace comma without a following whitespace charatcer with a comma and a space
+    # Replace comma without a following whitespace character with a comma and a space
     return re.sub(r",(?=\S)", ", ", address)
