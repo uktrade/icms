@@ -38,8 +38,13 @@ def newlines_to_commas(field: str) -> str:
     "123 Sesame St\nSesame Land\n\nSesame" -> "123 Sesame St, Sesame Land, Sesame"
     "123 Sesame St,\nSesame Land,\n\n Sesame" -> "123 Sesame St, Sesame Land, Sesame"
     """
+    # Replace all newlines with commas. Strip all spaces and commas before the newline
     field = re.sub(r"(\s+)?(,)?(\s+)?(\n+)", ", ", field.strip())
+
+    # Replace all whitespace with a single space and strip commas from the ends of the text
     field = clean_whitespace(field.strip(","))
+
+    # Replace double commas and commas separated by a space with a single comma
     return re.sub(r"(,)(( ,)+|(,)+)", ",", field)
 
 
