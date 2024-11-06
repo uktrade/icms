@@ -97,23 +97,27 @@ from .recipients import (
     get_organisation_contact_email_addresses,
     get_shared_mailbox_for_constabulary,
 )
-from .types import ImporterDetails
+from .types import ImporterDetails, RecipientDetails
 
 
 def send_new_user_welcome_email(user: User, site: Site) -> None:
-    NewUserWelcomeEmail(user=user, site=site, to=[user.email]).send()
+    NewUserWelcomeEmail(
+        user=user,
+        site=site,
+        recipient=RecipientDetails(first_name=user.first_name, email_address=user.email),
+    ).send()
 
 
 def send_access_requested_email(access_request: ImpAccessOrExpAccess) -> None:
     recipients = get_ilb_case_officers_email_addresses()
     for recipient in recipients:
-        AccessRequestEmail(access_request=access_request, to=[recipient]).send()
+        AccessRequestEmail(access_request=access_request, recipient=recipient).send()
 
 
 def send_access_request_closed_email(access_request: ImpAccessOrExpAccess) -> None:
     recipients = get_email_addresses_for_users([access_request.submitted_by])
     for recipient in recipients:
-        AccessRequestClosedEmail(access_request=access_request, to=[recipient]).send()
+        AccessRequestClosedEmail(access_request=access_request, recipient=recipient).send()
 
 
 def send_completed_application_email(application: ImpOrExp) -> None:
@@ -132,19 +136,19 @@ def send_completed_application_email(application: ImpOrExp) -> None:
 def send_application_extension_complete_email(application: ImpOrExp) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
-        ApplicationExtensionCompleteEmail(application=application, to=[recipient]).send()
+        ApplicationExtensionCompleteEmail(application=application, recipient=recipient).send()
 
 
 def send_application_variation_complete_email(application: ImpOrExp) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
-        ApplicationVariationCompleteEmail(application=application, to=[recipient]).send()
+        ApplicationVariationCompleteEmail(application=application, recipient=recipient).send()
 
 
 def send_application_complete_email(application: ImpOrExp) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
-        ApplicationCompleteEmail(application=application, to=[recipient]).send()
+        ApplicationCompleteEmail(application=application, recipient=recipient).send()
 
 
 def send_completed_application_process_notifications(application: ImpOrExp) -> None:
@@ -160,13 +164,13 @@ def send_completed_application_process_notifications(application: ImpOrExp) -> N
 def send_application_stopped_email(application: ImpOrExp) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
-        ApplicationStoppedEmail(application=application, to=[recipient]).send()
+        ApplicationStoppedEmail(application=application, recipient=recipient).send()
 
 
 def send_application_refused_email(application: ImpOrExp) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
-        ApplicationRefusedEmail(application=application, to=[recipient]).send()
+        ApplicationRefusedEmail(application=application, recipient=recipient).send()
 
 
 def send_approval_request_opened_email(approval_request: ImpOrExpApproval) -> None:
@@ -181,7 +185,7 @@ def send_exporter_approval_request_opened_email(approval_request: ExporterApprov
     recipients = get_organisation_contact_email_addresses(org)
     for recipient in recipients:
         ExporterAccessRequestApprovalOpenedEmail(
-            approval_request=approval_request, to=[recipient]
+            approval_request=approval_request, recipient=recipient
         ).send()
 
 
@@ -190,14 +194,16 @@ def send_importer_approval_request_opened_email(approval_request: ImporterApprov
     recipients = get_organisation_contact_email_addresses(org)
     for recipient in recipients:
         ImporterAccessRequestApprovalOpenedEmail(
-            approval_request=approval_request, to=[recipient]
+            approval_request=approval_request, recipient=recipient
         ).send()
 
 
 def send_approval_request_completed_email(approval_request: ImpOrExpApproval) -> None:
     recipients = get_ilb_case_officers_email_addresses()
     for recipient in recipients:
-        AccessRequestApprovalCompleteEmail(approval_request=approval_request, to=[recipient]).send()
+        AccessRequestApprovalCompleteEmail(
+            approval_request=approval_request, recipient=recipient
+        ).send()
 
 
 def send_withdrawal_email(withdrawal: WithdrawApplication) -> None:
@@ -240,7 +246,7 @@ def send_variation_request_cancelled_email(
     recipients = get_email_addresses_for_users([variation_request.requested_by])
     for recipient in recipients:
         VariationRequestCancelledEmail(
-            application=application, variation_request=variation_request, to=[recipient]
+            application=application, variation_request=variation_request, recipient=recipient
         ).send()
 
 
@@ -250,7 +256,7 @@ def send_variation_request_update_required_email(
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         VariationRequestUpdateRequiredEmail(
-            application=application, variation_request=variation_request, to=[recipient]
+            application=application, variation_request=variation_request, recipient=recipient
         ).send()
 
 
@@ -260,7 +266,7 @@ def send_variation_request_update_cancelled_email(
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         VariationRequestUpdateCancelledEmail(
-            application=application, variation_request=variation_request, to=[recipient]
+            application=application, variation_request=variation_request, recipient=recipient
         ).send()
 
 
@@ -276,7 +282,7 @@ def send_variation_request_update_received_email(
     recipients = get_email_addresses_for_users(send_to)
     for recipient in recipients:
         VariationRequestUpdateReceivedEmail(
-            application=application, variation_request=variation_request, to=[recipient]
+            application=application, variation_request=variation_request, recipient=recipient
         ).send()
 
 
@@ -286,7 +292,7 @@ def send_variation_request_refused_email(
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         VariationRequestRefusedEmail(
-            application=application, variation_request=variation_request, to=[recipient]
+            application=application, variation_request=variation_request, recipient=recipient
         ).send()
 
 
@@ -294,40 +300,42 @@ def send_withdrawal_opened_email(withdrawal: WithdrawApplication) -> None:
     application = withdrawal.export_application or withdrawal.import_application
     recipients = get_case_officers_email_addresses(application.process_type)
     for recipient in recipients:
-        WithdrawalOpenedEmail(withdrawal=withdrawal, to=[recipient]).send()
+        WithdrawalOpenedEmail(withdrawal=withdrawal, recipient=recipient).send()
 
 
 def send_withdrawal_accepted_email(withdrawal: WithdrawApplication) -> None:
     application = withdrawal.export_application or withdrawal.import_application
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
-        WithdrawalAcceptedEmail(withdrawal=withdrawal, to=[recipient]).send()
+        WithdrawalAcceptedEmail(withdrawal=withdrawal, recipient=recipient).send()
 
 
 def send_withdrawal_cancelled_email(withdrawal: WithdrawApplication) -> None:
     application = withdrawal.export_application or withdrawal.import_application
     recipients = get_case_officers_email_addresses(application)
     for recipient in recipients:
-        WithdrawalCancelledEmail(withdrawal=withdrawal, to=[recipient]).send()
+        WithdrawalCancelledEmail(withdrawal=withdrawal, recipient=recipient).send()
 
 
 def send_withdrawal_rejected_email(withdrawal: WithdrawApplication) -> None:
     application = withdrawal.export_application or withdrawal.import_application
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
-        WithdrawalRejectedEmail(withdrawal=withdrawal, to=[recipient]).send()
+        WithdrawalRejectedEmail(withdrawal=withdrawal, recipient=recipient).send()
 
 
 def send_application_reassigned_email(application: ImpOrExp, comment: str) -> None:
     recipients = get_email_addresses_for_users([application.case_owner])
     for recipient in recipients:
-        ApplicationReassignedEmail(application=application, comment=comment, to=[recipient]).send()
+        ApplicationReassignedEmail(
+            application=application, comment=comment, recipient=recipient
+        ).send()
 
 
 def send_application_reopened_email(application: ImpOrExp) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
-        ApplicationReopenedEmail(application=application, to=[recipient]).send()
+        ApplicationReopenedEmail(application=application, recipient=recipient).send()
 
 
 def send_application_update_response_email(application: ImpOrExp) -> None:
@@ -339,7 +347,7 @@ def send_application_update_response_email(application: ImpOrExp) -> None:
 
     recipients = get_email_addresses_for_users(send_to)
     for recipient in recipients:
-        ApplicationUpdateResponseEmail(application=application, to=[recipient]).send()
+        ApplicationUpdateResponseEmail(application=application, recipient=recipient).send()
 
 
 def send_application_update_email(update_request: UpdateRequest) -> None:
@@ -349,7 +357,7 @@ def send_application_update_email(update_request: UpdateRequest) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         ApplicationUpdateEmail(
-            application=application, update_request=update_request, to=[recipient]
+            application=application, update_request=update_request, recipient=recipient
         ).send()
 
 
@@ -359,13 +367,13 @@ def send_application_update_withdrawn_email(update_request: UpdateRequest) -> No
     )
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
-        ApplicationUpdateWithdrawnEmail(application=application, to=[recipient]).send()
+        ApplicationUpdateWithdrawnEmail(application=application, recipient=recipient).send()
 
 
 def send_firearms_supplementary_report_email(application: ImpOrExp) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
-        FirearmsSupplementaryReportEmail(application=application, to=[recipient]).send()
+        FirearmsSupplementaryReportEmail(application=application, recipient=recipient).send()
 
 
 def send_further_information_request_email(fir: FurtherInformationRequest) -> None:
@@ -401,7 +409,7 @@ def send_access_request_further_information_request_responded_email(
     recipients = get_email_addresses_for_users([fir.requested_by])
     for recipient in recipients:
         AccessRequestFurtherInformationRequestRespondedEmail(
-            fir=fir, access_request=access_request, to=[recipient]
+            fir=fir, access_request=access_request, recipient=recipient
         ).send()
 
 
@@ -412,7 +420,7 @@ def send_application_further_information_request_responded_email(
     recipients = get_email_addresses_for_users([fir.requested_by])
     for recipient in recipients:
         ApplicationFurtherInformationRequestRespondedEmail(
-            fir=fir, application=application, to=[recipient]
+            fir=fir, application=application, recipient=recipient
         ).send()
 
 
@@ -422,7 +430,7 @@ def send_access_request_further_information_request_withdrawn_email(
     recipients = get_email_addresses_for_users([access_request.submitted_by])
     for recipient in recipients:
         AccessRequestFurtherInformationRequestWithdrawnEmail(
-            fir=fir, access_request=access_request, to=[recipient]
+            fir=fir, access_request=access_request, recipient=recipient
         ).send()
 
 
@@ -433,7 +441,7 @@ def send_application_further_information_request_withdrawn_email(
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         ApplicationFurtherInformationRequestWithdrawnEmail(
-            fir=fir, application=application, to=[recipient]
+            fir=fir, application=application, recipient=recipient
         ).send()
 
 
@@ -443,7 +451,7 @@ def send_access_request_further_information_request_email(
     recipients = get_email_addresses_for_users([access_request.submitted_by])
     for recipient in recipients:
         AccessRequestFurtherInformationRequestEmail(
-            fir=fir, access_request=access_request, to=[recipient]
+            fir=fir, access_request=access_request, recipient=recipient
         ).send()
 
 
@@ -454,7 +462,7 @@ def send_application_further_information_request_email(
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         ApplicationFurtherInformationRequestEmail(
-            fir=fir, application=application, to=[recipient]
+            fir=fir, application=application, recipient=recipient
         ).send()
 
 
@@ -470,7 +478,7 @@ def send_mailshot_email_to_organisations(
 ) -> None:
     recipients = get_email_addresses_for_mailshot(organisation_class)
     for recipient in recipients:
-        MailshotEmail(mailshot=mailshot, site_domain=site_domain, to=[recipient]).send()
+        MailshotEmail(mailshot=mailshot, site_domain=site_domain, recipient=recipient).send()
 
 
 def send_retract_mailshot_email(mailshot: Mailshot) -> None:
@@ -485,16 +493,16 @@ def send_retract_mailshot_email_to_organisations(
 ) -> None:
     recipients = get_email_addresses_for_mailshot(organisation_class)
     for recipient in recipients:
-        RetractMailshotEmail(mailshot=mailshot, site_domain=site_domain, to=[recipient]).send()
+        RetractMailshotEmail(mailshot=mailshot, site_domain=site_domain, recipient=recipient).send()
 
 
 def send_case_email(case_email: CaseEmailModel, sent_by: User) -> None:
     recipients = get_email_addresses_for_case_email(case_email)
     for recipient in recipients:
         if case_email.attachments.exists():
-            CaseEmailWithDocuments(case_email=case_email, to=[recipient]).send()
+            CaseEmailWithDocuments(case_email=case_email, recipient=recipient).send()
         else:
-            CaseEmail(case_email=case_email, to=[recipient]).send()
+            CaseEmail(case_email=case_email, recipient=recipient).send()
     case_email.status = CaseEmailModel.Status.OPEN
     case_email.sent_datetime = timezone.now()
     case_email.sent_by = sent_by
@@ -524,19 +532,19 @@ def create_case_email(
 def send_licence_revoked_email(application: ImportApplication) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
-        LicenceRevokedEmail(application=application, to=[recipient]).send()
+        LicenceRevokedEmail(application=application, recipient=recipient).send()
 
 
 def send_certificate_revoked_email(application: ExportApplication) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
-        CertificateRevokedEmail(application=application, to=[recipient]).send()
+        CertificateRevokedEmail(application=application, recipient=recipient).send()
 
 
 def send_authority_archived_email(authority: Authority) -> None:
     recipients = get_ilb_case_officers_email_addresses()
     for recipient in recipients:
-        AuthorityArchivedEmail(authority=authority, to=[recipient]).send()
+        AuthorityArchivedEmail(authority=authority, recipient=recipient).send()
 
 
 def send_authority_expiring_section_5_email(
@@ -548,7 +556,7 @@ def send_authority_expiring_section_5_email(
             importers_details=importers_details,
             authority_type=Section5Authority.AUTHORITY_TYPE,
             expiry_date=expiry_date,
-            to=[recipient],
+            recipient=recipient,
         ).send()
 
 
@@ -562,18 +570,20 @@ def send_authority_expiring_firearms_email(
             authority_type=FirearmsAuthority.AUTHORITY_TYPE,
             expiry_date=expiry_date,
             constabulary=constabulary,
-            to=[recipient],
+            recipient=recipient,
         ).send()
 
 
 def send_constabulary_deactivated_firearms_email(application: DFLApplication) -> None:
     recipient = get_shared_mailbox_for_constabulary(application.constabulary)
-    ConstabularyDeactivatedFirearmsEmail(application=application, to=recipient).send()
+    ConstabularyDeactivatedFirearmsEmail(application=application, recipient=recipient).send()
 
 
 def send_org_contact_invite_email(
     organisation: Importer | Exporter, invite: ImporterContactInvite | ExporterContactInvite
 ) -> None:
     OrganisationContactInviteEmail(
-        organisation=organisation, invite=invite, to=[invite.email]
+        organisation=organisation,
+        invite=invite,
+        recipient=RecipientDetails(first_name=invite.first_name, email_address=invite.email),
     ).send()

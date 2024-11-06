@@ -84,6 +84,7 @@ def check_gov_notify_email_was_sent(
 
 
 def assert_common_email_personalisation(personalisation: dict, exp_subject: str, exp_in_body: str):
+    assert personalisation.pop("first_name")
     assert personalisation.pop("icms_contact_email") == settings.ILB_CONTACT_EMAIL
     assert personalisation.pop("icms_contact_phone") == settings.ILB_CONTACT_PHONE
     assert "icms_url" in personalisation

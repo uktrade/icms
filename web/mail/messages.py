@@ -17,6 +17,7 @@ from web.domains.case.types import (
     ImpOrExp,
     ImpOrExpApproval,
 )
+from web.mail.types import RecipientDetails
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
     CaseEmailDownloadLink,
@@ -74,9 +75,11 @@ from .url_helpers import (
 class GOVNotifyEmailMessage(EmailMessage):
     name: ClassVar[EmailTypes]
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, recipient: RecipientDetails, **kwargs: Any) -> None:
+        kwargs["to"] = [recipient.email_address]
         super().__init__(*args, **kwargs)
         self.template_id = self.get_template_id()
+        self.first_name = recipient.first_name
 
     def get_template_id(self) -> UUID:
         return EmailTemplate.objects.get(name=self.name).gov_notify_template_id
@@ -95,6 +98,7 @@ class GOVNotifyEmailMessage(EmailMessage):
             "subject": self.subject,
             "body": self.body,
             "service_name": self.get_service_name(),
+            "first_name": self.first_name,
         } | self.get_context()
 
     def get_context(self) -> dict[str, Any]:

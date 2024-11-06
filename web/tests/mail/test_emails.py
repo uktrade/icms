@@ -86,12 +86,14 @@ class TestEmails(AuthTestCase):
             "service_name": SiteName.CASEWORKER.label,
         }
         emails.send_access_requested_email(importer_access_request)
+        expected_personalisation["first_name"] = self.ilb_admin_two_user.first_name
         assert self.mock_gov_notify_client.send_email_notification.call_count == 2
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.ilb_admin_two_user.email,
             exp_template_id,
             personalisation=expected_personalisation,
         )
+        expected_personalisation["first_name"] = self.ilb_admin_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.ilb_admin_user.email,
             exp_template_id,
@@ -112,6 +114,7 @@ class TestEmails(AuthTestCase):
             "is_agent": "yes",
             "has_been_refused": "no",
             "service_name": "apply for an import licence",
+            "first_name": importer_access_request.submitted_by.first_name,
         }
         emails.send_access_request_closed_email(importer_access_request)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -135,6 +138,7 @@ class TestEmails(AuthTestCase):
             "is_agent": "no",
             "has_been_refused": "yes",
             "service_name": "apply for an export certificate",
+            "first_name": exporter_access_request.submitted_by.first_name,
         }
         emails.send_access_request_closed_email(exporter_access_request)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -161,6 +165,7 @@ class TestEmails(AuthTestCase):
             "user_type": "user",
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
+            "first_name": self.exporter_user.first_name,
         }
         emails.send_approval_request_opened_email(ear_approval)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 2
@@ -169,6 +174,7 @@ class TestEmails(AuthTestCase):
             exp_template_id,
             personalisation=expected_personalisation,
         )
+        expected_personalisation["first_name"] = exporter_secondary_contact.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             exporter_secondary_contact.email,
             exp_template_id,
@@ -189,6 +195,7 @@ class TestEmails(AuthTestCase):
             "user_type": "agent",
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
+            "first_name": self.importer_user.first_name,
         }
         emails.send_approval_request_opened_email(iar_approval)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -206,6 +213,7 @@ class TestEmails(AuthTestCase):
             "user_type": "user",
             "icms_url": get_caseworker_site_domain(),
             "service_name": SiteName.CASEWORKER.label,
+            "first_name": self.ilb_admin_user.first_name,
         }
         emails.send_approval_request_completed_email(ear_approval)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 2
@@ -214,6 +222,7 @@ class TestEmails(AuthTestCase):
             exp_template_id,
             personalisation=expected_personalisation,
         )
+        expected_personalisation["first_name"] = self.ilb_admin_two_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.ilb_admin_two_user.email,
             exp_template_id,
@@ -231,6 +240,7 @@ class TestEmails(AuthTestCase):
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
+            "first_name": "E2_main_contact_first_name",
         }
         emails.send_application_stopped_email(completed_cfs_app)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -251,6 +261,7 @@ class TestEmails(AuthTestCase):
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
+            "first_name": "E1_secondary_contact_first_name",
         }
         emails.send_application_reopened_email(completed_cfs_app)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -275,12 +286,14 @@ class TestEmails(AuthTestCase):
             "service_name": SiteName.EXPORTER.label,
         }
         emails.send_application_reopened_email(completed_cfs_app)
+        expected_personalisation["first_name"] = "E1_main_contact_first_name"
         assert self.mock_gov_notify_client.send_email_notification.call_count == 2
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             "E1_main_contact@example.com",  # /PS-IGNORE
             exp_template_id,
             personalisation=expected_personalisation,
         )
+        expected_personalisation["first_name"] = "E1_secondary_contact_first_name"
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             "E1_secondary_contact@example.com",  # /PS-IGNORE
             exp_template_id,
@@ -309,6 +322,7 @@ class TestEmails(AuthTestCase):
             "comment": expected_comment,
             "icms_url": get_caseworker_site_domain(),
             "service_name": SiteName.CASEWORKER.label,
+            "first_name": ilb_admin_two.first_name,
         }
 
         emails.send_application_reassigned_email(com_app_submitted, comment)
@@ -333,6 +347,7 @@ class TestEmails(AuthTestCase):
             "reason": fa_sil_app_submitted.refuse_reason,
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
+            "first_name": "I1_main_contact_first_name",
         }
         emails.send_application_refused_email(fa_sil_app_submitted)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -352,6 +367,7 @@ class TestEmails(AuthTestCase):
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
+            "first_name": "E1_main_contact_first_name",
         }
         emails.send_application_complete_email(completed_cfs_app)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -373,6 +389,7 @@ class TestEmails(AuthTestCase):
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
+            "first_name": "E1_main_contact_first_name",
         }
         emails.send_application_variation_complete_email(completed_cfs_app)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -392,6 +409,7 @@ class TestEmails(AuthTestCase):
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
+            "first_name": "E1_main_contact_first_name",
         }
         emails.send_application_extension_complete_email(completed_cfs_app)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -417,11 +435,13 @@ class TestEmails(AuthTestCase):
         }
         emails.send_withdrawal_email(withdrawal)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 2
+        expected_personalisation["first_name"] = "ilb_admin_user_first_name"
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             "ilb_admin_user@example.com",  # /PS-IGNORE
             exp_template_id,
             personalisation=expected_personalisation,
         )
+        expected_personalisation["first_name"] = "ilb_admin_two_first_name"
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             "ilb_admin_two@example.com",  # /PS-IGNORE
             exp_template_id,
@@ -439,6 +459,7 @@ class TestEmails(AuthTestCase):
             "reason": "",
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
+            "first_name": self.exporter_user.first_name,
         }
         emails.send_withdrawal_email(withdrawal)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -459,6 +480,7 @@ class TestEmails(AuthTestCase):
             "reason": "",
             "icms_url": get_caseworker_site_domain(),
             "service_name": SiteName.CASEWORKER.label,
+            "first_name": self.ilb_admin_user.first_name,
         }
         emails.send_withdrawal_email(withdrawal)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 2
@@ -467,6 +489,7 @@ class TestEmails(AuthTestCase):
             exp_template_id,
             personalisation=expected_personalisation,
         )
+        expected_personalisation["first_name"] = self.ilb_admin_two_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.ilb_admin_two_user.email,  # /PS-IGNORE
             exp_template_id,
@@ -486,6 +509,7 @@ class TestEmails(AuthTestCase):
             "reason_rejected": "Invalid",
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
+            "first_name": self.exporter_user.first_name,
         }
         emails.send_withdrawal_email(withdrawal)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -537,6 +561,7 @@ class TestEmails(AuthTestCase):
             "icms_url": get_caseworker_site_domain(),
             "service_name": SiteName.CASEWORKER.label,
             "application_url": get_case_view_url(completed_cfs_app, get_caseworker_site_domain()),
+            "first_name": self.ilb_admin_user.first_name,
         }
         emails.send_variation_request_email(
             vr, EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED, completed_cfs_app
@@ -569,6 +594,7 @@ class TestEmails(AuthTestCase):
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
+            "first_name": self.exporter_user.first_name,
         }
         emails.send_variation_request_email(
             vr, EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED, completed_cfs_app
@@ -598,6 +624,7 @@ class TestEmails(AuthTestCase):
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
+            "first_name": self.exporter_user.first_name,
         }
         emails.send_variation_request_email(
             vr, EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_CANCELLED, completed_cfs_app
@@ -627,6 +654,7 @@ class TestEmails(AuthTestCase):
             "icms_url": get_caseworker_site_domain(),
             "service_name": SiteName.CASEWORKER.label,
             "application_url": get_case_view_url(completed_cfs_app, get_caseworker_site_domain()),
+            "first_name": self.ilb_admin_user.first_name,
         }
         emails.send_variation_request_email(
             vr, EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_RECEIVED, completed_cfs_app
@@ -659,6 +687,7 @@ class TestEmails(AuthTestCase):
             "application_url": get_case_view_url(completed_dfl_app, get_importer_site_domain()),
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
+            "first_name": self.importer_user.first_name,
         }
         emails.send_variation_request_email(
             vr, EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED, completed_dfl_app
@@ -680,6 +709,7 @@ class TestEmails(AuthTestCase):
             "application_url": get_case_view_url(completed_dfl_app, get_importer_site_domain()),
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
+            "first_name": self.importer_user.first_name,
         }
         emails.send_firearms_supplementary_report_email(completed_dfl_app)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -711,6 +741,7 @@ class TestEmails(AuthTestCase):
             ),
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
+            "first_name": "access_request_user_first_name",
         }
         emails.send_further_information_request_email(fir)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -743,6 +774,7 @@ class TestEmails(AuthTestCase):
                 get_exporter_site_domain()
             ),
             "application_url": get_case_view_url(com_app_submitted, get_exporter_site_domain()),
+            "first_name": self.exporter_user.first_name,
         }
         emails.send_further_information_request_email(fir)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -773,6 +805,7 @@ class TestEmails(AuthTestCase):
             "fir_type": "access request",
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
+            "first_name": "access_request_user_first_name",
         }
         emails.send_further_information_request_withdrawn_email(fir)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -804,6 +837,7 @@ class TestEmails(AuthTestCase):
                 get_exporter_site_domain()
             ),
             "application_url": get_case_view_url(com_app_submitted, get_exporter_site_domain()),
+            "first_name": self.exporter_user.first_name,
         }
         emails.send_further_information_request_withdrawn_email(fir)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -835,6 +869,7 @@ class TestEmails(AuthTestCase):
             "icms_url": get_caseworker_site_domain(),
             "fir_url": get_manage_access_request_fir_url(importer_access_request),
             "service_name": SiteName.CASEWORKER.label,
+            "first_name": self.ilb_admin_user.first_name,
         }
         emails.send_further_information_request_responded_email(fir)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -867,6 +902,7 @@ class TestEmails(AuthTestCase):
                 get_caseworker_site_domain()
             ),
             "application_url": get_case_view_url(com_app_submitted, get_caseworker_site_domain()),
+            "first_name": self.ilb_admin_user.first_name,
         }
         emails.send_further_information_request_responded_email(fir)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -982,6 +1018,7 @@ class TestEmails(AuthTestCase):
             "icms_url": get_importer_site_domain(),
             "service_name": SiteName.IMPORTER.label,
             "licence_number": expected_licence_number,
+            "first_name": self.importer_user.first_name,
         }
         emails.send_licence_revoked_email(completed_dfl_app)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -1005,6 +1042,7 @@ class TestEmails(AuthTestCase):
             "icms_url": get_exporter_site_domain(),
             "service_name": SiteName.EXPORTER.label,
             "certificate_references": f"CFS/{year}/00001,CFS/{year}/00002",
+            "first_name": self.exporter_user.first_name,
         }
         emails.send_certificate_revoked_email(completed_cfs_app)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -1024,6 +1062,7 @@ class TestEmails(AuthTestCase):
             "application_url": get_case_manage_view_url(completed_dfl_app),
             "icms_url": get_caseworker_site_domain(),
             "service_name": SiteName.CASEWORKER.label,
+            "first_name": self.ilb_admin_user.first_name,
         }
         emails.send_application_update_response_email(completed_dfl_app)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -1052,6 +1091,7 @@ class TestEmails(AuthTestCase):
             "application_update_url": get_update_request_view_url(
                 wood_app_submitted, update_request, get_importer_site_domain()
             ),
+            "first_name": self.importer_user.first_name,
         }
         emails.send_application_update_email(update_request)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -1075,6 +1115,7 @@ class TestEmails(AuthTestCase):
                 get_importer_site_domain()
             ),
             "application_url": get_case_view_url(wood_app_submitted, get_importer_site_domain()),
+            "first_name": self.importer_user.first_name,
         }
         emails.send_application_update_withdrawn_email(update_request)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -1121,6 +1162,7 @@ class TestEmails(AuthTestCase):
                 get_caseworker_site_domain(),
                 reverse("importer-view", kwargs={"pk": self.importer.pk}),
             ),
+            "first_name": self.ilb_admin_user.first_name,
         }
         emails.send_authority_archived_email(authority)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 2
@@ -1152,33 +1194,37 @@ class TestEmails(AuthTestCase):
         expected_export_personalisation["mailshot_url"] = get_mailshot_detail_view_url(
             mailshot, get_exporter_site_domain()
         )
+        expected_import_personalisation["first_name"] = self.importer_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.importer_user.email,
             exp_template_id,
             personalisation=expected_import_personalisation,
         )
-
+        expected_import_personalisation["first_name"] = self.importer_two_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.importer_two_user.email,
             exp_template_id,
             personalisation=expected_import_personalisation,
         )
+        expected_import_personalisation["first_name"] = self.importer_agent_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.importer_agent_user.email,
             exp_template_id,
             personalisation=expected_import_personalisation,
         )
+        expected_export_personalisation["first_name"] = self.exporter_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.exporter_user.email,
             exp_template_id,
             personalisation=expected_export_personalisation,
         )
-
+        expected_export_personalisation["first_name"] = self.exporter_two_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.exporter_two_user.email,
             exp_template_id,
             personalisation=expected_export_personalisation,
         )
+        expected_export_personalisation["first_name"] = self.exporter_agent_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.exporter_agent_user.email,
             exp_template_id,
@@ -1207,33 +1253,38 @@ class TestEmails(AuthTestCase):
         expected_export_personalisation["mailshot_url"] = get_mailshot_detail_view_url(
             mailshot, get_exporter_site_domain()
         )
+
+        expected_import_personalisation["first_name"] = self.importer_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.importer_user.email,
             exp_template_id,
             personalisation=expected_import_personalisation,
         )
-
+        expected_import_personalisation["first_name"] = self.importer_two_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.importer_two_user.email,
             exp_template_id,
             personalisation=expected_import_personalisation,
         )
+        expected_import_personalisation["first_name"] = self.importer_agent_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.importer_agent_user.email,
             exp_template_id,
             personalisation=expected_import_personalisation,
         )
+        expected_export_personalisation["first_name"] = self.exporter_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.exporter_user.email,
             exp_template_id,
             personalisation=expected_export_personalisation,
         )
-
+        expected_export_personalisation["first_name"] = self.exporter_two_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.exporter_two_user.email,
             exp_template_id,
             personalisation=expected_export_personalisation,
         )
+        expected_export_personalisation["first_name"] = self.exporter_agent_user.first_name
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.exporter_agent_user.email,
             exp_template_id,
@@ -1276,6 +1327,7 @@ Section 5 references(s): 423,476,677\r\n"""
             "icms_url": get_caseworker_site_domain(),
             "service_name": SiteName.CASEWORKER.label,
             "maintain_importers_url": get_maintain_importers_view_url(),
+            "first_name": self.ilb_admin_user.first_name,
         }
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.ilb_admin_user.email,
@@ -1320,6 +1372,7 @@ Firearms references(s): 423,476,677\r\n"""
             "icms_url": get_caseworker_site_domain(),
             "service_name": SiteName.CASEWORKER.label,
             "maintain_importers_url": get_maintain_importers_view_url(),
+            "first_name": "con_user_first_name",
         }
 
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
@@ -1347,6 +1400,7 @@ Firearms references(s): 423,476,677\r\n"""
             "check_code": str(link.check_code),
             "documents_url": get_dfl_application_otd_url(link),
             "constabulary_name": "Derbyshire",
+            "first_name": "colleague",
         }
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
@@ -1370,6 +1424,7 @@ Firearms references(s): 423,476,677\r\n"""
             "account_recovery_url": get_account_recovery_url(expected_domain),
             "access_request_url": get_importer_access_request_url(),
             "organisation_type": "Importer",
+            "first_name": "applicant",
         }
 
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -1393,6 +1448,7 @@ Firearms references(s): 423,476,677\r\n"""
             "account_recovery_url": get_account_recovery_url(expected_domain),
             "access_request_url": get_exporter_access_request_url(),
             "organisation_type": "Exporter",
+            "first_name": "applicant",
         }
 
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -1426,7 +1482,7 @@ Firearms references(s): 423,476,677\r\n"""
             "icms_url": expected_domain,
             "service_name": "Apply for an import licence",
             "organisation_name": self.importer.display_name,
-            "first_name": invite.first_name,
+            "first_name": "bobs",
             "last_name": invite.last_name,
             "invited_by": invite.invited_by.full_name,
             "accept_invite_url": get_accept_org_invite_url(self.importer, invite),
@@ -1456,7 +1512,7 @@ Firearms references(s): 423,476,677\r\n"""
             "icms_url": expected_domain,
             "service_name": "Apply for an export certificate",
             "organisation_name": self.exporter.name,
-            "first_name": invite.first_name,
+            "first_name": "bobs",
             "last_name": invite.last_name,
             "invited_by": invite.invited_by.full_name,
             "accept_invite_url": get_accept_org_invite_url(self.exporter, invite),
