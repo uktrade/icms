@@ -11,6 +11,9 @@ SEND_AUTHORITY_EXPIRING_FIREARMS_TASK_NAME = "web.mail.send_authority_expiring_f
 
 DATE_FORMAT = "%-d %B %Y"
 
+DEFAULT_APPLICANT_GREETING = "applicant"
+DEFAULT_STAFF_GREETING = "colleague"
+
 
 class EmailTypes(TypedTextChoices):
     ACCESS_REQUEST = ("ACCESS_REQUEST", "Access Request")

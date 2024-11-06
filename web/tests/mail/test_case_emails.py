@@ -69,6 +69,7 @@ class TestExportCaseEmails(AuthTestCase):
                 "service_name": SiteName.EXPORTER.label,
                 "icms_contact_email": settings.ILB_CONTACT_EMAIL,
                 "icms_contact_phone": settings.ILB_CONTACT_PHONE,
+                "first_name": "colleague",
             },
         )
         case_email.refresh_from_db()
@@ -138,6 +139,7 @@ class TestImportCaseEmails(AuthTestCase):
                 "service_name": SiteName.IMPORTER.label,
                 "icms_contact_email": settings.ILB_CONTACT_EMAIL,
                 "icms_contact_phone": settings.ILB_CONTACT_PHONE,
+                "first_name": "colleague",
             },
         )
 
