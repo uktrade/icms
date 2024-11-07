@@ -30,7 +30,7 @@ urlpatterns = [
 ]
 
 
-if settings.IS_PRIVATE_APP:
+if settings.INCLUDE_PRIVATE_URLS:
     urlpatterns += [
         #
         # Django Admin Site (superuser admin site)

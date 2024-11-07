@@ -16,6 +16,9 @@ RATELIMIT_ENABLE = False
 FILE_UPLOAD_HANDLERS = ("web.tests.file_upload_handler.DummyFileUploadHandler",)  # type: ignore[assignment]
 APP_ENV = "test"
 
+# Ensure all endpoints are available when testing.
+INCLUDE_PRIVATE_URLS = True
+
 # Add so we can test the bypass chief views.
 ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD = True
 

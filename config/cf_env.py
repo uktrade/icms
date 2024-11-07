@@ -61,6 +61,10 @@ class CloudFoundryEnvironment(BaseSettings):
     allowed_hosts: list[str] = Field(alias="icms_allowed_hosts")
     debug: bool = Field(alias="icms_debug", default=False)
 
+    # TODO: Revisit in ECIL-269.
+    #       Remove default value when we have two running versions of ICMS.
+    include_private_urls: bool = True
+
     # Staff SSO
     staff_sso_enabled: bool
     staff_sso_authbroker_url: str

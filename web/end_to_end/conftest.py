@@ -20,7 +20,7 @@ def browser_context_args(browser_context_args: Dict[str, Any]) -> Dict[str, Any]
 
 class EnvironmentConfig(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore", validate_default=False, env_prefix="e2e_")
-    caseworker_url: str = "http://caseworker:8080/"
+    caseworker_url: str = "http://caseworker:8008/"
     exporter_url: str = "http://export-a-certificate:8080/"
     importer_url: str = "http://import-a-licence:8080/"
     user_password: str = "admin"
