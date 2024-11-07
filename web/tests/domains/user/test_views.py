@@ -61,8 +61,8 @@ class TestNewUserUpdateView:
         self.importer_user = importer_one_contact
         self.exporter_user = exporter_one_contact
 
-        self.importer_url = reverse("new-user-edit", kwargs={"user_pk": importer_one_contact.pk})
-        self.exporter_url = reverse("new-user-edit", kwargs={"user_pk": exporter_one_contact.pk})
+        self.importer_url = reverse("new-user-edit")
+        self.exporter_url = reverse("new-user-edit")
 
         self.importer_client = importer_client
         self.exporter_client = exporter_client

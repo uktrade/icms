@@ -106,14 +106,21 @@ class UserUpdateView(UserBaseMixin, UpdateView):
         return super().get_success_url()
 
 
-class NewUserUpdateView(LoginRequiredMixin, UpdateView):
+class NewUserUpdateView(LoginRequiredMixin, FormView):
     """View shown after a new user is redirected back to ICMS from GOV.UK One Login."""
 
-    # UpdateView config
-    model = User
-    pk_url_kwarg = "user_pk"
     form_class = OneLoginNewUserUpdateForm
     template_name = "web/domains/user/one_login/user_edit.html"
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+
+        return kwargs | {"instance": self.request.user}
+
+    def form_valid(self, form: OneLoginNewUserUpdateForm) -> HttpResponseRedirect:
+        form.save()
+
+        return super().form_valid(form)
 
     def get_success_url(self) -> str:
         site = self.request.site

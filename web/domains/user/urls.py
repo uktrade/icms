@@ -6,12 +6,12 @@ from . import views
 urlpatterns = [
     path("welcome/", views.NewUserWelcomeView.as_view(), name="user-welcome"),
     path("welcome/clear/", views.ClearNewUserWelcomeView.as_view(), name="user-welcome-clear"),
+    path("new-user/", views.NewUserUpdateView.as_view(), name="new-user-edit"),
     path(
         "<int:user_pk>/",
         include(
             [
                 path("", views.UserUpdateView.as_view(), name="user-edit"),
-                path("new-user/", views.NewUserUpdateView.as_view(), name="new-user-edit"),
                 path(
                     "number/",
                     include(
