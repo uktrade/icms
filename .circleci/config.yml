@@ -158,14 +158,21 @@ jobs:
             python manage.py add_dummy_data --password admin
 
       - run:
-          name: starting test server
+          name: starting test server (public)
           command: |
             source .env && export $(cut -d= -f1 < .env)
-            python manage.py runserver 8080
+            ICMS_INCLUDE_PRIVATE_URLS=False python manage.py runserver 8080
           background: true
 
       - run:
-          name: sleep whilst server starts
+          name: starting test server (private)
+          command: |
+            source .env && export $(cut -d= -f1 < .env)
+            ICMS_INCLUDE_PRIVATE_URLS=True python manage.py runserver 8008
+          background: true
+
+      - run:
+          name: sleep whilst servers start
           command: sleep 10
 
       - run:

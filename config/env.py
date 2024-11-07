@@ -31,6 +31,10 @@ class DBTPlatformEnvironment(BaseSettings):
     allowed_hosts: list[str]
     debug: bool = False
 
+    # TODO: Revisit in ECIL-269.
+    #       Remove default value when we have two running versions of ICMS.
+    include_private_urls: bool = True
+
     # S3 env vars
     aws_region: str = Field(alias="aws_region", default="")
     aws_storage_bucket_name: str = Field(alias="aws_storage_bucket_name", default="")

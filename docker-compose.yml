@@ -29,7 +29,9 @@ services:
             - DJANGO_SETTINGS_MODULE
             - PYTHONUNBUFFERED=1
             - ICMS_WEB_PORT
-            - ICMS_DEBUG=True # Used in entry.sh
+            - ICMS_DEBUG=True
+            - ICMS_INCLUDE_PRIVATE_URLS=False
+            - ICMS_WEB_PORT=8080
         env_file:
             - .env
         ports:
@@ -52,12 +54,39 @@ services:
         networks:
           backend:
             aliases:
-              - caseworker
               - export-a-certificate
               - import-a-licence
-          public:
-            aliases:
-              - caseworker  # Required for ICMS-HMRC to communicate with ICMS.
+    web-internal:
+        build:
+            context: .
+            dockerfile: local_deployment/Dockerfile
+        command: local_deployment/entry.sh
+        environment:
+            - DJANGO_SETTINGS_MODULE
+            - PYTHONUNBUFFERED=1
+            - ICMS_WEB_PORT
+            - ICMS_DEBUG=True
+            - ICMS_INCLUDE_PRIVATE_URLS=True
+            - ICMS_WEB_PORT=8008
+        env_file:
+            - .env
+        ports:
+            - "8008:8008"
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_started
+        volumes:
+            - ./test-reports:/code/test-reports # needed for ci
+            - .:/code
+        networks:
+            backend:
+                aliases:
+                    - caseworker
+            public:
+                aliases:
+                    - caseworker  # Required for ICMS-HMRC to communicate with ICMS.
     redis:
         # The version we will run when migrating to DBT Platform
         image: redis:7.0.15

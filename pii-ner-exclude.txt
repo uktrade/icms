@@ -4295,7 +4295,7 @@ View Importer
 {{ page_title }
 rm icms_pgdata icms_redis_data
 Setting ICMS Sites
-http://caseworker:8080 http://export-a-certificate:8080
+http://caseworker:8008 http://export-a-certificate:8080
 Test Chemical
 Select Constabulary
 Enter the Case Reference
@@ -5103,3 +5103,4 @@ GP
 {fixture!r
 Certificate - Certificate Reference Value
 01-Jan-2024
+INCLUDE_PRIVATE_URLS

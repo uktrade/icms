@@ -2,10 +2,10 @@ import logging
 from typing import Any
 
 from django.conf import settings
-from django.urls import resolve, reverse
+from django.urls import NoReverseMatch, resolve, reverse
 
 from web.permissions import Perms, can_user_view_search_cases
-from web.sites import SiteName
+from web.sites import SiteName, is_caseworker_site
 from web.types import AuthenticatedHttpRequest
 
 logger = logging.getLogger(__name__)
@@ -41,11 +41,16 @@ def has_view_access(
 
         # All class based views checked here.
         case _:
-            view_url = reverse(view_name)
-            view = resolve(view_url).func.view_class()
-            view.request = request
+            try:
+                view_url = reverse(view_name)
+                view = resolve(view_url).func.view_class()
+                view.request = request
 
-            has_perm = view.has_permission()
+                has_perm = view.has_permission()
+
+            # Now some urls are only available on private app this code can throw exceptions.
+            except NoReverseMatch:
+                has_perm = False
 
     return has_perm
 
@@ -184,7 +189,9 @@ class MenuDropDown(MenuItem):
 
 class ICMSAdminLink(SubMenuLink):
     def has_access(self, request: AuthenticatedHttpRequest) -> bool:
-        return request.user.has_perm(Perms.sys.is_icms_data_admin)
+        return is_caseworker_site(request.site) and request.user.has_perm(
+            Perms.sys.is_icms_data_admin
+        )
 
     def get_link(self) -> str:
         return reverse("icms_admin:index")

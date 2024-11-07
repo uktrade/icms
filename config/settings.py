@@ -478,7 +478,7 @@ EXPORTER_SITE_URL = env.exporter_site_url
 
 # TODO: Revisit in ECIL-269: Remove hardcoded value when we have two running versions of ICMS.
 # The codebase is deployed as both a public and private application
-IS_PRIVATE_APP = True
+INCLUDE_PRIVATE_URLS = env.include_private_urls
 
 # CSP Settings
 

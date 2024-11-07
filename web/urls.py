@@ -115,7 +115,7 @@ private_urls = [
     path("reports/", include("web.reports.urls")),
 ]
 
-if settings.IS_PRIVATE_APP:
+if settings.INCLUDE_PRIVATE_URLS:
     urlpatterns = public_urls + private_urls
 else:
     urlpatterns = public_urls
