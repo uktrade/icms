@@ -14,6 +14,8 @@ INSTALLED_APPS += [
     "django_extensions",
 ]
 
+INSTALLED_APPS.prepend("whitenoise.runserver_nostatic")
+
 # When debugging queries in console
 SHOW_DB_QUERIES = env.show_db_queries
 

@@ -439,13 +439,10 @@ if is_copilot() and env.app_env != "local":
 if env.sentry_enabled:
     init_sentry(env.sentry_dsn, env.sentry_environment)
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 # Settings for production environment
 if APP_ENV == "production":
-    # TODO: ICMSLST-2760 Add whitenoise static file compression.
-    #       Note - commented out code below is for older versions of django.
-    #       compression causes 50 error on server
-    # STATICFILES_STORAGE='whitenoise.storage.CompressedManifestStaticFilesStorage'
-
     INSTALLED_APPS += [  # NOQA
         "django_audit_log_middleware",
     ]
