@@ -476,6 +476,10 @@ CASEWORKER_SITE_URL = env.caseworker_site_url
 IMPORTER_SITE_URL = env.importer_site_url
 EXPORTER_SITE_URL = env.exporter_site_url
 
+# TODO: Revisit in ECIL-269: Remove hardcoded value when we have two running versions of ICMS.
+# The codebase is deployed as both a public and private application
+IS_PRIVATE_APP = True
+
 # CSP Settings
 
 # CSP policies
