@@ -38,7 +38,7 @@ class UserFullyRegisteredMiddleware:
         ):
             messages.info(request, "Please set your first and last name.")  # /PS-IGNORE
 
-            return redirect(reverse("new-user-edit", kwargs={"user_pk": request.user.pk}))
+            return redirect(reverse("new-user-edit"))
 
         response = self.get_response(request)
 

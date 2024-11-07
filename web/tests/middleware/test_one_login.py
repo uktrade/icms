@@ -27,7 +27,7 @@ class TestUserFullyRegisteredMiddleware:
             )
 
         assert response.status_code == 302
-        assert response.url == reverse("new-user-edit", kwargs={"user_pk": importer_one_contact.pk})
+        assert response.url == reverse("new-user-edit")
 
     def test_middleware_redirects_to_edit_new_user_last_name(self, rf, importer_one_contact):
         request = rf.request()
@@ -48,7 +48,7 @@ class TestUserFullyRegisteredMiddleware:
             )
 
         assert response.status_code == 302
-        assert response.url == reverse("new-user-edit", kwargs={"user_pk": importer_one_contact.pk})
+        assert response.url == reverse("new-user-edit")
 
     def test_middleware_does_not_redirect_to_edit_user(self, rf, importer_one_contact):
         request = rf.request()
