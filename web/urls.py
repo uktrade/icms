@@ -24,7 +24,8 @@ register_converter(converters.OrgTypeConverter, "orgtype")
 register_converter(converters.ChiefStatusConverter, "chiefstatus")
 
 
-urlpatterns = [
+# The following urls are served by all deployed instances of ICMS
+public_urls = [
     #
     # ICMS auth urls to direct users to correct auth mechanism.
     path("", RedirectBaseDomainView.as_view()),
@@ -46,26 +47,15 @@ urlpatterns = [
     path("case/", include("web.domains.case.urls")),
     path("cat/", include("web.domains.cat.urls")),
     path("check/", include("web.domains.checker.urls")),
-    path("chief/", include("web.domains.chief.urls", namespace="chief")),
-    path("commodity/", include("web.domains.commodity.urls")),
-    path("constabulary/", include("web.domains.constabulary.urls")),
     path("contacts/", include("web.domains.contacts.urls")),
-    path("country/", include("web.domains.country.urls")),
     path("export/", include("web.domains.case.export.urls", namespace="export")),
     path("exporter/", include("web.domains.exporter.urls")),
-    path("firearms/", include("web.domains.firearms.urls")),
     path("import/", include("web.domains.case._import.urls")),
     path("importer/", include("web.domains.importer.urls")),
     path("mailshot/", include("web.domains.mailshot.urls")),
     path("misc/", include("web.misc.urls")),
-    path("product-legislation/", include("web.domains.legislation.urls")),
-    path("sanction-emails/", include("web.domains.sanction_email.urls")),
-    path("section5/", include("web.domains.section5.urls")),
-    path("signature/", include("web.domains.signature.urls")),
-    path("template/", include("web.domains.template.urls")),
     path("user/", include("web.domains.user.urls")),
     path("workbasket/", include("web.domains.workbasket.urls")),
-    path("reports/", include("web.reports.urls")),
     #
     # Health check url
     path("health-check/", health_check, name="health-check"),
@@ -110,9 +100,29 @@ urlpatterns = [
     ),
 ]
 
+# The following urls should only be served on the private application
+private_urls = [
+    path("constabulary/", include("web.domains.constabulary.urls")),
+    path("signature/", include("web.domains.signature.urls")),
+    path("template/", include("web.domains.template.urls")),
+    path("commodity/", include("web.domains.commodity.urls")),
+    path("chief/", include("web.domains.chief.urls", namespace="chief")),
+    path("sanction-emails/", include("web.domains.sanction_email.urls")),
+    path("section5/", include("web.domains.section5.urls")),
+    path("firearms/", include("web.domains.firearms.urls")),
+    path("product-legislation/", include("web.domains.legislation.urls")),
+    path("country/", include("web.domains.country.urls")),
+    path("reports/", include("web.reports.urls")),
+]
+
+if settings.IS_PRIVATE_APP:
+    urlpatterns = public_urls + private_urls
+else:
+    urlpatterns = public_urls
+
+
 if settings.DEBUG:
     urlpatterns.extend([path("test-harness/", include("web.harness.urls"))])
-
 
 #
 # Add django model auth login urls for local development

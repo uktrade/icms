@@ -23,18 +23,23 @@ from web.admin import icms_admin_site
 # Custom 403 handler to send process_error exceptions to sentry
 handler403 = "web.views.handler403_capture_process_error_view"
 
-
 urlpatterns = [
-    #
-    # Django Admin Site (superuser admin site)
-    path("admin/", admin.site.urls),
-    #
-    # ICMS Admin site (Restricted admin site)
-    path("icms-admin/", icms_admin_site.urls),
     #
     # ICMS urls
     path("", include("web.urls")),
 ]
+
+
+if settings.IS_PRIVATE_APP:
+    urlpatterns += [
+        #
+        # Django Admin Site (superuser admin site)
+        path("admin/", admin.site.urls),
+        #
+        # ICMS Admin site (Restricted admin site)
+        path("icms-admin/", icms_admin_site.urls),
+    ]
+
 
 if settings.SHOW_DEBUG_TOOLBAR:
     import debug_toolbar
