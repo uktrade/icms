@@ -1,7 +1,4 @@
-from typing import Any
-
 from django.db import models
-from django.db.models import F
 
 from data_migration.models.base import MigrationBase
 from data_migration.models.reference import (
@@ -71,33 +68,6 @@ class ImportApplicationType(MigrationBase):
     default_commodity_group = models.ForeignKey(
         CommodityGroup, on_delete=models.SET_NULL, to_field="group_code", null=True
     )
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return [
-            "declaration_template_code_id",
-            "origin_country_group_id",
-            "consignment_country_group_id",
-            "master_country_group_id",
-            "commodity_type_id",
-            "default_commodity_group_id",
-        ]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {"declaration_template_id": F("declaration_template_code__id")}
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data = super().data_export(data)
-        data["sub_type"] = (data["type"] == "FA" and data["sub_type"]) or None
-        data["importer_printable"] = data["importer_printable"].lower() == "true"
-
-        for field in data.keys():
-            if field.endswith("_flag"):
-                data[field] = data[field].lower() == "true"
-
-        return data
 
 
 class Usage(MigrationBase):

@@ -1,8 +1,4 @@
-from collections.abc import Generator
-from typing import Any
-
 from django.db import models
-from django.db.models import F, OuterRef, Q, Subquery
 
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import File, FileTarget
@@ -29,10 +25,6 @@ class DFLApplication(FirearmBase):
     proof_checked = models.BooleanField(default=False)
     constabulary = models.ForeignKey(Constabulary, on_delete=models.PROTECT, null=True)
 
-    @classmethod
-    def models_to_populate(cls) -> list[str]:
-        return ["Process", "ImportApplication", cls.__name__, "DFLSupplementaryInfo"]
-
 
 class DFLGoodsCertificate(MigrationBase):
     target = models.ForeignKey(FileTarget, related_name="+", on_delete=models.PROTECT)
@@ -53,54 +45,6 @@ class DFLGoodsCertificate(MigrationBase):
         null=True,
     )
 
-    @classmethod
-    def get_source_data(cls) -> Generator:
-        """Queries the model to get the queryset of data for the V2 import"""
-
-        values = cls.get_values() + ["file_ptr_id"]
-        sub_query = File.objects.filter(target_id=OuterRef("target_id"))
-
-        # Exclude unsubmitted applications where goods description, reference or issuing country are null
-        exclude_query = Q(dfl_application__imad__submit_datetime__isnull=True) & Q(
-            Q(goods_description__isnull=True)
-            | Q(deactivated_certificate_reference__isnull=True)
-            | Q(issuing_country__isnull=True)
-        )
-
-        return (
-            cls.objects.select_related("target")
-            .prefetch_related("target__files")
-            .annotate(
-                file_ptr_id=Subquery(sub_query.values("pk")[:1]),
-            )
-            .exclude(file_ptr_id__isnull=True)
-            .exclude(exclude_query)
-            .values(*values)
-            .iterator(chunk_size=2000)
-        )
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        # This is a M2M field in V2
-        data.pop("dfl_application_id")
-
-        # Remove id and set file_ptr_id because V2 inherits from File model
-        data.pop("id")
-        data["goods_description"] = data["goods_description"] or data["goods_description_original"]
-        return data
-
-    @classmethod
-    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        return {
-            "id": data["id"],
-            "dflgoodscertificate_id": data["file_ptr_id"],
-            "dflapplication_id": data["dfl_application_id"],
-        }
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["legacy_ordinal", "target_id"]
-
 
 class DFLChecklist(ChecklistBase):
     imad = models.OneToOneField(
@@ -108,18 +52,6 @@ class DFLChecklist(ChecklistBase):
     )
     certificate_attached = models.CharField(max_length=3, null=True)
     certificate_issued = models.CharField(max_length=3, null=True)
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data = super().data_export(data)
-        data["deactivation_certificate_attached"] = data.pop("certificate_attached")
-        data["deactivation_certificate_issued"] = data.pop("certificate_issued")
-
-        return data
-
-    @classmethod
-    def y_n_fields(cls) -> list[str]:
-        return super().y_n_fields() + ["certificate_attached", "certificate_issued"]
 
 
 class DFLSupplementaryInfo(SupplementaryInfoBase):
@@ -144,23 +76,3 @@ class DFLSupplementaryReportFirearm(SupplementaryReportFirearmBase):
 
     goods_certificate_legacy_id = models.IntegerField()
     file = models.ForeignKey(File, on_delete=models.CASCADE, null=True, to_field="sr_goods_file_id")
-
-    @classmethod
-    def get_source_data(cls) -> Generator:
-        """Queries the model to get the queryset of data for the V2 import"""
-
-        values = cls.get_values() + ["goods_certificate_id"]
-        sub_query = DFLGoodsCertificate.objects.filter(
-            legacy_ordinal=OuterRef("goods_certificate_legacy_id"),
-            dfl_application_id=OuterRef("report__supplementary_info__imad__id"),
-        )
-
-        return (
-            cls.objects.select_related("report__supplementary_info__imad")
-            .annotate(
-                goods_certificate_id=Subquery(sub_query.values("target__files__pk")[:1]),
-            )
-            .exclude(goods_certificate_id__isnull=True)
-            .values(*values, document_id=F("file__id"))
-            .iterator(chunk_size=2000)
-        )

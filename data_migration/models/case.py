@@ -1,14 +1,6 @@
-from collections.abc import Generator
-from typing import Any
-
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import F, QuerySet, Value
-from django.db.models.expressions import Window
-from django.db.models.functions import RowNumber
 
 from data_migration.models.export_application.export import ExportApplication
-from data_migration.utils.format import str_to_list
 
 from .base import MigrationBase
 from .export_application import ExportApplicationCertificate
@@ -34,100 +26,12 @@ class CaseDocument(MigrationBase):
     reference = models.CharField(max_length=20, null=True)
     check_code = models.CharField(null=True, max_length=16)
 
-    @classmethod
-    def models_to_populate(cls) -> list[str]:
-        return ["File", cls.__name__]
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + [
-            "licence_id",
-            "cad_id",
-            "document_legacy_id",
-            "casedocument_ptr_id",
-            "certificate_id",
-        ]
-
-    @classmethod
-    def exclude_kwargs(cls) -> dict[str, Any]:
-        return {}
-
-    @classmethod
-    def get_source_data(cls) -> Generator:
-        exclude_kwargs = cls.exclude_kwargs()
-        values = cls.get_values()
-        values_kwargs = cls.get_values_kwargs()
-
-        return (
-            CaseDocument.objects.exclude(**exclude_kwargs)
-            .values(*values, **values_kwargs)
-            .iterator(chunk_size=2000)
-        )
-
-
-class ImportCaseDocument(CaseDocument):
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def models_to_populate(cls) -> list[str]:
-        return ["CaseDocument"]
-
-    @classmethod
-    def exclude_kwargs(cls) -> dict[str, Any]:
-        return {"licence__isnull": True}
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        content_type_id = ContentType.objects.get(
-            app_label="web", model="importapplicationlicence"
-        ).id
-
-        return {
-            "object_id": F("licence__pk"),
-            "document_id": F("document_legacy__pk"),
-            "content_type_id": Value(content_type_id),
-        }
-
-
-class ExportCaseDocument(CaseDocument):
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def exclude_kwargs(cls) -> dict[str, Any]:
-        return {"cad__isnull": True}
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        content_type_id = ContentType.objects.get(
-            app_label="web", model="exportapplicationcertificate"
-        ).id
-
-        return {
-            "object_id": F("cad__pk"),
-            "document_id": F("document_legacy__pk"),
-            "content_type_id": Value(content_type_id),
-        }
-
 
 class ExportCertificateCaseDocumentReferenceData(MigrationBase):
     certificate = models.OneToOneField(
         CaseDocument, on_delete=models.CASCADE, to_field="certificate_id"
     )
     country = models.ForeignKey(Country, on_delete=models.PROTECT)
-
-    @classmethod
-    def models_to_populate(cls) -> list[str]:
-        return ["File", "CaseDocument", "UniqueReference", cls.__name__]
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["certificate_id"]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {"case_document_reference_id": F("certificate__id")}
 
 
 class DocumentPackAcknowledgement(MigrationBase):
@@ -147,75 +51,6 @@ class DocumentPackAcknowledgement(MigrationBase):
         related_name="acknowledgements",
     )
 
-    @classmethod
-    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["id"] = data.pop("row_number")
-        return data
-
-    @classmethod
-    def clear_import_application(cls) -> QuerySet:
-        return (
-            ImportApplication.objects.filter(ima__licences__acknowledgements__isnull=False)
-            .values(
-                user_id=F("ima__licences__acknowledgements__user_id"),
-                importapplication_id=F("pk"),
-            )
-            .annotate(row_number=Window(expression=RowNumber()))
-            .distinct("user_id", "importapplication_id")
-        )
-
-    @classmethod
-    def clear_import_doc_pack(cls) -> QuerySet:
-        return (
-            ImportApplicationLicence.objects.filter(acknowledgements__isnull=False)
-            .values(
-                user_id=F("acknowledgements__user_id"),
-                importapplicationlicence_id=F("pk"),
-            )
-            .annotate(row_number=Window(expression=RowNumber()))
-            .distinct("user_id", "importapplicationlicence_id")
-        )
-
-    @classmethod
-    def clear_export_application(cls) -> QuerySet:
-        return (
-            ExportApplication.objects.filter(ca__certificates__acknowledgements__isnull=False)
-            .values(
-                user_id=F("ca__certificates__acknowledgements__user_id"),
-                exportapplication_id=F("pk"),
-            )
-            .annotate(row_number=Window(expression=RowNumber()))
-            .distinct("user_id", "exportapplication_id")
-        )
-
-    @classmethod
-    def clear_export_doc_pack(cls) -> QuerySet:
-        return (
-            ExportApplicationCertificate.objects.filter(acknowledgements__isnull=False)
-            .values(
-                user_id=F("acknowledgements__user_id"),
-                exportapplicationcertificate_id=F("pk"),
-            )
-            .annotate(row_number=Window(expression=RowNumber()))
-            .distinct("user_id", "exportapplicationcertificate_id")
-        )
-
-    @classmethod
-    def get_m2m_data(cls, target: models.Model) -> Generator:
-        match target._meta.model_name:
-            case "importapplicationlicence":
-                qs = cls.clear_import_doc_pack()
-            case "importapplication":
-                qs = cls.clear_import_application()
-            case "exportapplication":
-                qs = cls.clear_export_application()
-            case "exportapplicationcertificate":
-                qs = cls.clear_export_doc_pack()
-            case _:
-                raise ValueError(f"Unknown target {target._meta.model_name}")
-
-        return qs.iterator(chunk_size=2000)
-
 
 class VariationRequest(MigrationBase):
     import_application = models.ForeignKey(ImportApplication, on_delete=models.SET_NULL, null=True)
@@ -232,37 +67,6 @@ class VariationRequest(MigrationBase):
     update_request_reason = models.CharField(max_length=4000, null=True)
     closed_datetime = models.DateTimeField(null=True)
     closed_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        return data
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["import_application_id", "export_application_id"]
-
-    @classmethod
-    def get_m2m_data(cls, target: models.Model) -> Generator:
-        target_name = target._meta.model_name
-
-        if target_name == "exportapplication":
-            return (
-                cls.objects.exclude(export_application__isnull=True)
-                .values(
-                    "id",
-                    variationrequest_id=F("id"),
-                    exportapplication_id=F("export_application_id"),
-                )
-                .iterator(chunk_size=2000)
-            )
-
-        return (
-            cls.objects.exclude(import_application__isnull=True)
-            .values(
-                "id", variationrequest_id=F("id"), importapplication_id=F("import_application_id")
-            )
-            .iterator(chunk_size=2000)
-        )
 
 
 class CaseEmail(MigrationBase):
@@ -291,56 +95,10 @@ class CaseEmail(MigrationBase):
     email_type = models.CharField(max_length=30)
     constabulary_attachments_xml = models.TextField(null=True)
 
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        # TODO ICMSLST-2783: Remove email_type if added to web models
-        return super().get_excludes() + ["ima_id", "ca_id", "email_type"]
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        address_list_str = data.pop("cc_address_list_str") or ""
-        data["cc_address_list"] = str_to_list(address_list_str)
-
-        return data
-
-    @classmethod
-    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        return data
-
-    @classmethod
-    def get_m2m_data(cls, target: models.Model) -> Generator:
-        target_name = target._meta.model_name
-
-        if target_name == "exportapplication":
-            return (
-                cls.objects.exclude(ca__isnull=True)
-                .values("id", caseemail_id=F("id"), exportapplication_id=F("ca__id"))
-                .iterator(chunk_size=2000)
-            )
-
-        return (
-            cls.objects.select_related("ima")
-            .exclude(ima__isnull=True)
-            .values("id", importapplication_id=F("ima__id"), caseemail_id=F("id"))
-            .iterator(chunk_size=2000)
-        )
-
 
 class ConstabularyEmailAttachments(MigrationBase):
     file_target = models.ForeignKey(FileTarget, on_delete=models.CASCADE)
     caseemail = models.ForeignKey(CaseEmail, on_delete=models.CASCADE)
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return ["file_target_id"]
-
-    @classmethod
-    def get_exclude_parameters(cls) -> dict[str, Any]:
-        return {"file_target__files__isnull": True}
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {"file_id": F("file_target__files__id")}
 
 
 class CaseNote(MigrationBase):
@@ -363,87 +121,6 @@ class CaseNote(MigrationBase):
         null=True,
     )
 
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + [
-            "ima_id",
-            "export_application_id",
-            "file_folder_id",
-            "doc_folder_id",
-        ]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        # Updated by is a new field in V2
-        return {"updated_by_id": F("created_by_id")}
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        status = data.pop("status")
-        data["is_active"] = status != "DELETED"
-        return data
-
-    @classmethod
-    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        return data
-
-    @classmethod
-    def get_m2m_data(cls, target: models.Model) -> Generator:
-        target_name = target._meta.model_name
-
-        if target_name == "exportapplication":
-            return (
-                cls.objects.exclude(export_application__isnull=True)
-                .values("id", exportapplication_id=F("export_application_id"), casenote_id=F("id"))
-                .iterator(chunk_size=2000)
-            )
-
-        return (
-            cls.objects.select_related("ima")
-            .exclude(ima__isnull=True)
-            .values("id", importapplication_id=F("ima__id"), casenote_id=F("id"))
-            .iterator(chunk_size=2000)
-        )
-
-
-class CaseNoteFile(MigrationBase):
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["id"] = data.pop("row_number") + data.pop("start")
-        return data
-
-    @classmethod
-    def get_m2m_data(cls, target: models.Model) -> Generator:
-        ia_case_note_qs = (
-            File.objects.select_related("target__folder__case_note__pk")
-            .filter(target__folder__case_note__isnull=False)
-            .annotate(row_number=Window(expression=RowNumber()))
-            .values(
-                "row_number",
-                start=Value(0, output_field=models.IntegerField()),
-                file_id=F("pk"),
-                casenote_id=F("target__folder__case_note__pk"),
-            )
-        )
-
-        ea_start = ia_case_note_qs.count()
-        ea_case_note_qs = (
-            File.objects.select_related("doc_folder__case_note__pk")
-            .filter(doc_folder__case_note__isnull=False)
-            .annotate(row_number=Window(expression=RowNumber()))
-            .values(
-                "row_number",
-                start=Value(ea_start, output_field=models.IntegerField()),
-                file_id=F("pk"),
-                casenote_id=F("doc_folder__case_note__pk"),
-            )
-        )
-
-        return QuerySet.union(ia_case_note_qs, ea_case_note_qs).iterator(chunk_size=2000)
-
 
 class UpdateRequest(MigrationBase):
     ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id", null=True)
@@ -460,38 +137,8 @@ class UpdateRequest(MigrationBase):
     closed_datetime = models.DateTimeField(null=True)
     closed_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
 
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ima_id", "export_application_id"]
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        return data
-
-    @classmethod
-    def get_m2m_data(cls, target: models.Model) -> Generator:
-        target_name = target._meta.model_name
-
-        if target_name == "exportapplication":
-            return (
-                cls.objects.exclude(export_application__isnull=True)
-                .values(
-                    "id", exportapplication_id=F("export_application_id"), updaterequest_id=F("id")
-                )
-                .iterator(chunk_size=2000)
-            )
-
-        return (
-            cls.objects.select_related("ima")
-            .exclude(ima__isnull=True)
-            .values("id", importapplication_id=F("ima__id"), updaterequest_id=F("id"))
-            .iterator(chunk_size=2000)
-        )
-
 
 class FurtherInformationRequest(MigrationBase):
-    PROCESS_PK = True
-
     ia_ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id", null=True)
     export_application = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, null=True)
     access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE, null=True)
@@ -511,91 +158,6 @@ class FurtherInformationRequest(MigrationBase):
     folder = models.OneToOneField(
         FileFolder, on_delete=models.CASCADE, related_name="fir", null=True
     )
-
-    @classmethod
-    def models_to_populate(cls) -> list[str]:
-        return ["Process", cls.__name__]
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + [
-            "ia_ima_id",
-            "folder_id",
-            "export_application_id",
-            "access_request_id",
-            "email_cc_address_list_str",
-        ]
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["process_ptr_id"] = data.pop("id")
-        return data
-
-    @classmethod
-    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        return data
-
-    @classmethod
-    def get_m2m_data(cls, target: models.Model) -> Generator:
-        target_name = target._meta.model_name
-
-        if target_name == "exportapplication":
-            return (
-                cls.objects.exclude(export_application_id__isnull=True)
-                .values(
-                    "id",
-                    exportapplication_id=F("export_application_id"),
-                    furtherinformationrequest_id=F("id"),
-                )
-                .iterator(chunk_size=2000)
-            )
-
-        if target_name == "accessrequest":
-            return (
-                cls.objects.exclude(access_request_id__isnull=True)
-                .values(
-                    "id",
-                    accessrequest_id=F("access_request_id"),
-                    furtherinformationrequest_id=F("id"),
-                )
-                .iterator(chunk_size=2000)
-            )
-
-        return (
-            cls.objects.select_related("ia_ima")
-            .exclude(ia_ima__isnull=True)
-            .values(
-                "id", importapplication_id=F("ia_ima__id"), furtherinformationrequest_id=F("id")
-            )
-            .iterator(chunk_size=2000)
-        )
-
-
-class FIRFile(MigrationBase):
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["id"] = data.pop("row_number")
-        return data
-
-    @classmethod
-    def get_m2m_data(cls, target: models.Model) -> Generator:
-        return (
-            File.objects.select_related("target__folder__fir_id")
-            .filter(
-                target__folder__folder_type="IMP_RFI_DOCUMENTS",
-                target__folder__fir__isnull=False,
-            )
-            .annotate(row_number=Window(expression=RowNumber()))
-            .values(
-                "row_number",
-                file_id=F("pk"),
-                furtherinformationrequest_id=F("target__folder__fir__pk"),
-            )
-            .iterator(chunk_size=2000)
-        )
 
 
 class Mailshot(MigrationBase):
@@ -621,41 +183,6 @@ class Mailshot(MigrationBase):
     version = models.PositiveIntegerField(default=0)
     folder = models.OneToOneField(FileFolder, on_delete=models.CASCADE, related_name="mailshot")
 
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        return data
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["folder_id"]
-
-
-class MailshotDoc(MigrationBase):
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["id"] = data.pop("row_number")
-        return data
-
-    @classmethod
-    def get_m2m_data(cls, target: models.Model) -> Generator:
-        return (
-            File.objects.select_related("target__folder__mailshot_id")
-            .filter(
-                target__folder__folder_type="MAILSHOT_DOCUMENTS",
-                target__folder__mailshot__isnull=False,
-            )
-            .annotate(row_number=Window(expression=RowNumber()))
-            .values(
-                "row_number",
-                file_id=F("pk"),
-                mailshot_id=F("target__folder__mailshot__pk"),
-            )
-            .iterator(chunk_size=2000)
-        )
-
 
 class WithdrawApplication(MigrationBase):
     import_application = models.ForeignKey(ImportApplication, on_delete=models.CASCADE, null=True)
@@ -668,8 +195,3 @@ class WithdrawApplication(MigrationBase):
     response_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
     created_datetime = models.DateTimeField()
     updated_datetime = models.DateTimeField()
-
-    @classmethod
-    def get_exclude_parameters(cls) -> dict[str, Any]:
-        # No concept of draft withdrawal requests in V2. Do not migrate any that haven't been submitted
-        return {"status": "DRAFT"}

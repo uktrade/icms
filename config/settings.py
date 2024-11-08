@@ -39,7 +39,6 @@ SECRET_KEY = env.secret_key
 ALLOWED_HOSTS = ["*"]
 
 FIXTURE_DIRS = [
-    BASE_DIR / "data_migration/management/commands/fixtures",
     BASE_DIR / "web/management/commands/fixtures",
 ]
 
@@ -372,15 +371,6 @@ HAWK_AUTH_KEY = env.hawk_auth_key
 # But PositiveBigIntegerField was required to migrate legacy records.
 # So this constant is used in the Firearm Goods forms
 CHIEF_MAX_QUANTITY = 99_999_999_999.999
-
-# Data migration settings
-ALLOW_DATA_MIGRATION = env.allow_data_migration
-ICMS_V1_REPLICA_USER = env.v1_replica_user
-ICMS_V1_REPLICA_PASSWORD = env.v1_replica_password
-ICMS_V1_REPLICA_DSN = env.v1_replica_dsn
-ICMS_PROD_USER = env.prod_user
-ICMS_PROD_PASSWORD = env.prod_password
-DATA_MIGRATION_EMAIL_DOMAIN_EXCLUDE = env.data_migration_email_domain_exclude
 
 # Workbasket pagination setting
 WORKBASKET_PER_PAGE = env.workbasket_per_page

@@ -1,7 +1,4 @@
-from typing import Any
-
 from django.db import models
-from django.db.models import F
 
 from data_migration.models.base import MigrationBase
 from data_migration.models.flow import Process
@@ -30,15 +27,6 @@ class ExportApplicationType(MigrationBase):
         related_name="+",
         to_field="country_group_id",
     )
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + [
-            "country_group_legacy_id",
-            "country_of_manufacture_cg_id",
-            "country_group_id",
-            "country_group_for_manufacture_id",
-        ]
 
 
 class ExportApplication(MigrationBase):
@@ -75,45 +63,10 @@ class ExportApplication(MigrationBase):
     variations_xml = models.TextField(null=True)
     withdrawal_xml = models.TextField(null=True)
 
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        variation_no = data.pop("variation_no", 0)
-
-        if variation_no > 0:
-            reference = data["reference"]
-            data["reference"] = f"{reference}/{variation_no}"
-        return data
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + [
-            "ca_id",
-            "cad_id",
-            "exporter_office_legacy_id",
-            "agent_office_legacy_id",
-        ]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {
-            "process_ptr_id": F("id"),
-            "exporter_office_id": F("exporter_office_legacy__id"),
-            "agent_office_id": F("agent_office_legacy__id"),
-            "last_submit_datetime": F("submit_datetime"),
-        }
-
 
 class ExportApplicationCountries(MigrationBase):
     cad = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, to_field="cad_id")
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["cad_id"]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {"exportapplication_id": F("cad__id")}
 
 
 class ExportApplicationCertificate(MigrationBase):
@@ -130,29 +83,9 @@ class ExportApplicationCertificate(MigrationBase):
     revoke_reason = models.TextField(null=True)
     revoke_email_sent = models.BooleanField(default=False)
 
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ca_id", "cad_id", "document_pack_id"]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {"export_application_id": F("ca__id")}
-
 
 class ExportBase(MigrationBase):
     PROCESS_PK = True
 
     class Meta:
         abstract = True
-
-    @classmethod
-    def models_to_populate(cls) -> list[str]:
-        return ["Process", "ExportApplication", cls.__name__]
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["cad_id", "file_folder_id"]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {"exportapplication_ptr_id": F("id")}

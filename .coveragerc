@@ -8,7 +8,6 @@ omit =
     *manage.py
     *__init__.py
     *apps.py
-    data_migration/queries/*
     web/end_to_end/*
     web/tests/*
     web/migrations/*

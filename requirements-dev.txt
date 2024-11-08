@@ -12,7 +12,7 @@ asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   certvalidator
     #   endesive
     #   oscrypto
@@ -20,10 +20,10 @@ asttokens==2.4.1
     # via stack-data
 attrs==23.2.0
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   endesive
 authlib==1.3.2
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 backoff==2.2.1
     # via
     #   opentelemetry-exporter-otlp-proto-common
@@ -39,13 +39,13 @@ black==24.8.0
     # via -r requirements/requirements-dev.in
 boto3==1.35.20
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   django-chunk-upload-handlers
 boto3-stubs==1.35.20
     # via -r requirements/requirements-dev.in
 botocore==1.35.20
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   boto3
     #   s3transfer
 botocore-stubs==1.35.20
@@ -56,7 +56,7 @@ build==1.2.2
     # via pip-tools
 celery==5.4.0
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   dbt-copilot-python
     #   django-celery-results
 certifi==2024.8.30
@@ -65,7 +65,7 @@ certifi==2024.8.30
     #   sentry-sdk
 certvalidator==0.11.1
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   endesive
 cffi==1.17.1
     # via
@@ -95,13 +95,12 @@ coverage==7.6.1
     # via pytest-cov
 cryptography==43.0.1
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   authlib
     #   endesive
-    #   oracledb
     #   paramiko
 dbt-copilot-python==0.2.2
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 decorator==5.1.1
     # via
     #   ipdb
@@ -114,10 +113,10 @@ deprecated==1.2.14
 distlib==0.3.8
     # via virtualenv
 dj-database-url==2.2.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django==4.2.16
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   dj-database-url
     #   django-appconf
     #   django-celery-results
@@ -140,41 +139,41 @@ django-appconf==1.0.6
     #   django-compressor
     #   django-select2
 django-celery-results==2.5.1
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-chunk-upload-handlers==0.0.14
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-compressor==4.5.1
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-csp==3.8
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-debug-toolbar==4.4.6
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-extensions==3.2.3
     # via -r requirements/requirements-dev.in
 django-filter==24.3
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-guardian==2.4.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-htmlmin==0.11.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-log-formatter-asim==0.0.6
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-phonenumber-field==7.2.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-ratelimit==4.1.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-redis==5.4.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-select2==8.2.1
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-staff-sso-client==4.3.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 django-storages==1.14.4
     # via django-chunk-upload-handlers
 docopt==0.6.2
     # via notifications-python-client
 endesive==2.17.3
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 et-xmlfile==1.1.0
     # via openpyxl
 execnet==2.1.1
@@ -206,13 +205,13 @@ greenlet==3.0.3
 grpcio==1.66.1
     # via opentelemetry-exporter-otlp-proto-grpc
 gunicorn==23.0.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 html2text==2024.2.26
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 html5lib==1.1
     # via django-htmlmin
 humanize==4.10.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 identify==2.6.0
     # via pre-commit
 idna==3.8
@@ -230,7 +229,7 @@ isort==5.13.2
 jedi==0.19.1
     # via ipython
 jinja2==3.1.4
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 jmespath==1.0.1
     # via
     #   boto3
@@ -238,9 +237,7 @@ jmespath==1.0.1
 kombu==5.4.0
     # via celery
 lxml==4.9.3
-    # via
-    #   -r requirements/requirements-base.in
-    #   endesive
+    # via endesive
 markupsafe==2.1.5
     # via jinja2
 matplotlib-inline==0.1.7
@@ -248,7 +245,7 @@ matplotlib-inline==0.1.7
 mccabe==0.7.0
     # via flake8
 mohawk==1.1.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 mypy==1.11.2
     # via -r requirements/requirements-dev.in
 mypy-boto3-cloudformation==1.35.0
@@ -272,11 +269,11 @@ mypy-extensions==1.0.0
 nodeenv==1.9.1
     # via pre-commit
 notifications-python-client==10.0.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 oauthlib==3.2.2
     # via requests-oauthlib
 openpyxl==3.1.5
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 opentelemetry-api==1.22.0
     # via
     #   opentelemetry-distro
@@ -325,11 +322,9 @@ opentelemetry-semantic-conventions==0.43b0
     #   opentelemetry-sdk
 opentelemetry-util-http==0.43b0
     # via opentelemetry-instrumentation-wsgi
-oracledb==1.2.0
-    # via -r requirements/requirements-base.in
 oscrypto==1.3.0
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   certvalidator
     #   endesive
 packaging==24.1
@@ -342,21 +337,21 @@ packaging==24.1
     #   pytest
 paramiko==3.5.0
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   endesive
 parso==0.8.4
     # via jedi
 pathspec==0.12.1
     # via black
 pdf2image==1.17.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 pexpect==4.9.0
     # via ipython
 phonenumbers==8.13.45
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 pillow==10.4.0
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   endesive
     #   pdf2image
     #   reportlab
@@ -371,7 +366,7 @@ platformdirs==4.3.2
     #   black
     #   virtualenv
 playwright==1.47.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 pluggy==1.5.0
     # via pytest
 pre-commit==3.8.0
@@ -387,7 +382,7 @@ protobuf==4.25.4
     #   googleapis-common-protos
     #   opentelemetry-proto
 psycopg==3.2.2
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 psycopg-c==3.2.2
     # via psycopg
 ptyprocess==0.7.0
@@ -402,12 +397,12 @@ pycparser==2.22
     # via cffi
 pydantic==2.9.1
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   pydantic-settings
 pydantic-core==2.23.3
     # via pydantic
 pydantic-settings==2.5.2
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 pyee==12.0.0
     # via playwright
 pyflakes==3.2.0
@@ -422,18 +417,18 @@ pyjwt==2.9.0
     # via notifications-python-client
 pykcs11==1.4.4
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   endesive
 pymupdf==1.24.10
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 pymupdfb==1.24.10
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   pymupdf
 pynacl==1.5.0
     # via paramiko
 pypdf==4.3.1
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 pypng==0.20220715.0
     # via qrcode
 pyproject-hooks==1.1.0
@@ -463,7 +458,7 @@ pytest-xdist==3.6.1
     # via -r requirements/requirements-dev.in
 python-dateutil==2.8.2
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   botocore
     #   celery
     #   faker
@@ -472,12 +467,12 @@ python-dotenv==1.0.1
     # via pydantic-settings
 pytz==2023.3
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   endesive
 pyyaml==6.0.2
     # via pre-commit
 qrcode==7.4.2
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 rcssmin==1.1.2
     # via django-compressor
 redis==5.0.8
@@ -485,10 +480,10 @@ redis==5.0.8
     #   celery
     #   django-redis
 reportlab==4.2.2
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 requests==2.32.3
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   dbt-copilot-python
     #   endesive
     #   notifications-python-client
@@ -505,7 +500,7 @@ rjsmin==1.2.2
 s3transfer==0.10.2
     # via boto3
 sentry-sdk==2.14.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 six==1.16.0
     # via
     #   asttokens
@@ -525,7 +520,7 @@ stack-data==0.6.3
 terminaltables==3.1.10
     # via pip-check
 tqdm==4.66.5
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 traitlets==5.14.3
     # via
     #   ipython
@@ -573,7 +568,7 @@ tzdata==2024.1
     # via celery
 urllib3==2.2.3
     # via
-    #   -r requirements/requirements-base.in
+    #   -r /code/requirements/requirements-base.in
     #   botocore
     #   requests
     #   sentry-sdk
@@ -592,13 +587,13 @@ webencodings==0.5.1
 wheel==0.44.0
     # via pip-tools
 whitenoise==6.7.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 wrapt==1.16.0
     # via
     #   deprecated
     #   opentelemetry-instrumentation
 xlsxwriter==3.2.0
-    # via -r requirements/requirements-base.in
+    # via -r /code/requirements/requirements-base.in
 zipp==3.20.1
     # via importlib-metadata
 zope-event==5.0

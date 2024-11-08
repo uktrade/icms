@@ -1,14 +1,6 @@
-from typing import Any
-
 from django.db import models
-from django.db.models import F
 
 from data_migration.models.reference.country import Country, CountryTranslationSet
-from data_migration.utils.format import (
-    reformat_placeholders,
-    replace_apos,
-    strip_foxid_attribute,
-)
 
 from .base import MigrationBase
 
@@ -35,28 +27,6 @@ class TemplateVersion(MigrationBase):
     created_by = models.ForeignKey("data_migration.User", on_delete=models.PROTECT)
     template_type = models.CharField(max_length=50, null=False)
 
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        content = data["content"]
-        template_type = data.pop("template_type")
-
-        # Previous system users are not being migrated to V2, so replace their IDs with 0
-        if data["created_by_id"] in [2488, 1576, 804, 21]:
-            data["created_by_id"] = 0
-
-        if not content:
-            return data
-
-        content = strip_foxid_attribute(content)
-        content = replace_apos(content)
-
-        if template_type == "LETTER_TEMPLATE":
-            content = reformat_placeholders(content)
-
-        data["content"] = content
-
-        return data
-
 
 class TemplateCountry(MigrationBase):
     template = models.ForeignKey(Template, on_delete=models.CASCADE)
@@ -68,21 +38,6 @@ class CFSScheduleParagraph(MigrationBase):
     ordinal = models.IntegerField()
     name = models.CharField(max_length=100)
     content = models.TextField(null=True)
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        content = data["content"]
-        data["content"] = content and replace_apos(content)
-
-        return data
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {"order": F("ordinal")}
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ordinal"]
 
 
 class EndorsementTemplate(MigrationBase):

@@ -1,13 +1,7 @@
-from collections.abc import Generator
-from typing import Any
-
 from django.db import models
-from django.db.models import F
 
 from data_migration.models.base import MigrationBase
-from data_migration.models.file import File, FileM2MBase
 from data_migration.models.reference import Commodity, CommodityGroup, Country
-from data_migration.utils.format import validate_decimal
 
 from .import_application import ChecklistBase, ImportApplication, ImportApplicationBase
 
@@ -65,80 +59,6 @@ class OutwardProcessingTradeApplication(ImportApplicationBase):
     fq_further_auth_reasons = models.CharField(max_length=4000, null=True)
     fq_subcontract_production = models.CharField(max_length=3, null=True)
 
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data = super().data_export(data)
-        validate_decimal(["rate_of_yield", "reimport_period"], data)
-
-        return data
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {
-            "fq_employment_decreased_reasons": F("fq_employment_decreased_r"),
-            "fq_maintained_in_eu_reasons": F("fq_maintained_in_eu_r"),
-            "fq_prior_authorisation_reasons": F("fq_prior_authorisation_r"),
-            "fq_past_beneficiary_reasons": F("fq_past_beneficiary_r"),
-            "fq_further_authorisation_reasons": F("fq_further_auth_reasons"),
-            "cp_category": F("commodity_group__group_code"),
-            "cp_category_licence_description": F("commodity_group__group_description"),
-        }
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + [
-            "commodity_group_id",
-            "fq_employment_decreased_r",
-            "fq_maintained_in_eu_r",
-            "fq_prior_authorisation_r",
-            "fq_past_beneficiary_r",
-            "fq_further_auth_reasons",
-        ]
-
-
-class OutwardProcessingTradeFile(FileM2MBase):
-    TARGET_TYPES: dict[str, str] = {
-        "IMP_OPT_FURTHER_AUTH_DOC": "fq_further_authorisation",
-        "IMP_OPT_PRIOR_AUTH_DOC": "fq_prior_authorisation",
-        "IMP_SUPPORTING_DOC": "supporting_document",
-        "IMP_OPT_BENEFICIARY_DOC": "fq_past_beneficiary",
-        "IMP_OPT_EMPLOY_DOC": "fq_employment_decreased",
-        "FQ_NEW_APPLICATION": "fq_new_application",
-        "IMP_OPT_NEW_APP_JUST_DOC": "fq_new_application",
-        "IMP_OPT_SUBCONTRACT_DOC": "fq_subcontract_production",
-    }
-    TARGET_TYPE = list(TARGET_TYPES.keys())
-    FILE_MODEL = "outwardprocessingtradefile"
-    APP_MODEL = "outwardprocessingtradeapplication"
-
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def get_m2m_filter_kwargs(cls) -> dict[str, Any]:
-        filter_kwargs = super().get_m2m_filter_kwargs()
-
-        # Exclude docs that don't have an associated opt application
-        filter_kwargs["target__folder__import_application__isnull"] = False
-
-        return filter_kwargs
-
-    @classmethod
-    def get_source_data(cls) -> Generator:
-        filter_kwargs = cls.get_m2m_filter_kwargs()
-
-        return (
-            File.objects.filter(**filter_kwargs)
-            .values(file_ptr_id=F("pk"), target_type=F("target__target_type"))
-            .iterator(chunk_size=2000)
-        )
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data = super().data_export(data)
-        data["file_type"] = cls.TARGET_TYPES[data.pop("target_type")]
-        return data
-
 
 class OPTTegCommodity(MigrationBase):
     outwardprocessingtradeapplication = models.ForeignKey(
@@ -161,10 +81,3 @@ class OPTChecklist(ChecklistBase):
     endorsements_listed = None
     operator_requests_submitted = models.CharField(max_length=3, null=True)
     authority_to_issue = models.CharField(max_length=3, null=True)
-
-    @classmethod
-    def y_n_fields(cls) -> list[str]:
-        y_n_fields = super().y_n_fields() + ["operator_requests_submitted", "authority_to_issue"]
-        y_n_fields.remove("endorsements_listed")
-
-        return y_n_fields

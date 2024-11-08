@@ -1,5 +1,3 @@
-from typing import Any
-
 from django.db import models
 
 from data_migration.models.base import MigrationBase
@@ -29,16 +27,6 @@ class CertificateOfManufactureApplicationTemplate(MigrationBase):
     chemical_name = models.CharField(max_length=500, null=True)
     manufacturing_process = models.TextField(max_length=4000, null=True)
     countries_xml = models.TextField(null=True)
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["is_free_sale_uk"]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {
-            "is_pesticide_on_free_sale_uk": models.F("is_free_sale_uk"),
-        }
 
 
 class COMTemplateCountries(MigrationBase):
@@ -80,12 +68,6 @@ class CFSScheduleTemplate(MigrationBase):
         on_delete=models.CASCADE,
     )
 
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {
-            "created_by_id": models.F("application__template__owner_id"),
-        }
-
 
 class CFSTemplateCountries(MigrationBase):
     certificateoffreesaleapplicationtemplate = models.ForeignKey(
@@ -121,13 +103,3 @@ class CFSProductActiveIngredientTemplate(MigrationBase):
 class CFSTemplateLegislation(MigrationBase):
     cfsschedule = models.ForeignKey(CFSScheduleTemplate, on_delete=models.CASCADE)
     productlegislation = models.ForeignKey(ProductLegislation, on_delete=models.CASCADE)
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return ["cfsschedule_id"]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {
-            "cfsscheduletemplate_id": models.F("cfsschedule_id"),
-        }

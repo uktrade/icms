@@ -1,16 +1,9 @@
-from collections.abc import Generator
-from typing import Any
-
-from django.conf import settings
 from django.db import models
-from django.db.models import F
 
 from data_migration.models.base import MigrationBase
 from data_migration.models.flow import Process
 
 from .user import Exporter, Importer, User
-
-EXCLUDE_DOMAIN = settings.DATA_MIGRATION_EMAIL_DOMAIN_EXCLUDE
 
 
 class AccessRequest(MigrationBase):
@@ -49,83 +42,6 @@ class AccessRequest(MigrationBase):
     fir_xml = models.TextField(null=True)
     approval_xml = models.TextField(null=True)
 
-    # eori number and organisation registered number not found in source data
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        for k in ("agent_address", "request_reason", "response_reason", "organisation_address"):
-            data[k] = data.pop(k) or ""
-
-        return data
-
-    @classmethod
-    def models_to_populate(cls) -> list[str]:
-        return ["Process", cls.__name__]
-
-    @classmethod
-    def get_exclude_parameters(cls) -> dict[str, Any]:
-        if EXCLUDE_DOMAIN:
-            return {"submitted_by__username__iendswith": EXCLUDE_DOMAIN}
-        return {}
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + [
-            "id",
-            "iar_id",
-            "importer_id",
-            "exporter_id",
-            "request_type",
-        ]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {"process_ptr_id": F("id")}
-
-
-class ImporterAccessRequest(MigrationBase):
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def get_exclude_parameters(cls) -> dict[str, Any]:
-        if EXCLUDE_DOMAIN:
-            return {"submitted_by__username__iendswith": EXCLUDE_DOMAIN}
-        return {}
-
-    @classmethod
-    def get_source_data(cls) -> Generator:
-        return (
-            AccessRequest.objects.filter(
-                request_type__in=["MAIN_IMPORTER_ACCESS", "AGENT_IMPORTER_ACCESS"]
-            )
-            .exclude(**cls.get_exclude_parameters())
-            .values("request_type", accessrequest_ptr_id=F("id"), link_id=F("importer__id"))
-            .iterator(chunk_size=2000)
-        )
-
-
-class ExporterAccessRequest(MigrationBase):
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def get_exclude_parameters(cls) -> dict[str, Any]:
-        if EXCLUDE_DOMAIN:
-            return {"submitted_by__username__iendswith": EXCLUDE_DOMAIN}
-        return {}
-
-    @classmethod
-    def get_source_data(cls) -> Generator:
-        return (
-            AccessRequest.objects.filter(
-                request_type__in=["MAIN_EXPORTER_ACCESS", "AGENT_EXPORTER_ACCESS"]
-            )
-            .exclude(**cls.get_exclude_parameters())
-            .values("request_type", accessrequest_ptr_id=F("id"), link_id=F("exporter__id"))
-            .iterator(chunk_size=2000)
-        )
-
 
 class ApprovalRequest(MigrationBase):
     PROCESS_PK = True
@@ -154,41 +70,3 @@ class ApprovalRequest(MigrationBase):
     )
     response_date = models.DateTimeField(null=True)
     response_reason = models.TextField(null=True)
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["id"]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {"process_ptr_id": F("id")}
-
-
-class ImporterApprovalRequest(MigrationBase):
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def get_source_data(cls) -> Generator:
-        return (
-            ApprovalRequest.objects.filter(
-                access_request__request_type__in=["MAIN_IMPORTER_ACCESS", "AGENT_IMPORTER_ACCESS"]
-            )
-            .values(approvalrequest_ptr_id=F("id"))
-            .iterator(chunk_size=2000)
-        )
-
-
-class ExporterApprovalRequest(MigrationBase):
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def get_source_data(cls) -> Generator:
-        return (
-            ApprovalRequest.objects.filter(
-                access_request__request_type__in=["MAIN_EXPORTER_ACCESS", "AGENT_EXPORTER_ACCESS"]
-            )
-            .values(approvalrequest_ptr_id=F("id"))
-            .iterator(chunk_size=2000)
-        )

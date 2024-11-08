@@ -1,14 +1,8 @@
-import json
-from typing import Any
-
 from django.db import models
-from django.db.models import F
 
 from data_migration.models import File, User
 
 from .base import MigrationBase
-
-ANONYMOUS_USER_PK = 0
 
 
 class ScheduleReport(MigrationBase):
@@ -23,62 +17,7 @@ class ScheduleReport(MigrationBase):
     deleted_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
     parameters = models.JSONField(null=True)
 
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        reports = {
-            "IMP_ISSUED_CERTIFICATES": 1,
-            "IMP_DATA_EXTRACT": 3,
-            "ACCESS_REQUEST_REPORT": 2,
-            "IMP_FIREARMS_LICENCES": 5,
-            "IMP_FA_SUPPLEMENTARY_REPORTS_NCA": 4,
-        }
-        report_domain = data.pop("report_domain")
-        data["report_id"] = reports[report_domain]
-        data["status"] = "COMPLETED"
-        data["legacy_report_id"] = data["id"]
-        parameters = json.loads(data["parameters"])
-        data["parameters"] = cls.filter_parameters(parameters, report_domain)
-        data["scheduled_by_id"] = ANONYMOUS_USER_PK
-        if data["deleted_by_id"]:
-            data["status"] = "DELETED"
-            data["deleted_by_id"] = ANONYMOUS_USER_PK
-        return data
-
-    @classmethod
-    def filter_parameters(cls, data: dict[str, Any], report_domain: str) -> dict[str, Any]:
-        parameters = {"is_legacy_report": True}
-        for key, value in data.items():
-            if key == "application_type" and report_domain in [
-                "IMP_ISSUED_CERTIFICATES",
-                "IMP_DATA_EXTRACT",
-            ]:
-                parameters[key] = value
-            elif key == "request_date_from" and value:
-                parameters["date_from"] = value
-            elif key == "request_date_to" and value:
-                parameters["date_to"] = value
-            elif value:
-                parameters[key] = value
-        return parameters
-
 
 class GeneratedReport(MigrationBase):
     schedule = models.ForeignKey(ScheduleReport, on_delete=models.CASCADE)
     report_output = models.ForeignKey(File, on_delete=models.PROTECT, to_field="report_output_id")
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["status"] = "COMPLETED"
-        return data
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {"document_id": F("report_output__id")}
-
-    @classmethod
-    def models_to_populate(cls) -> list[str]:
-        return ["File", cls.__name__]
-
-    @classmethod
-    def get_excludes(cls):
-        return ["report_output_id"]

@@ -28,10 +28,6 @@ class Commodity(MigrationBase):
     start_datetime = models.DateTimeField(null=True)
     end_datetime = models.DateTimeField(null=True)
 
-    @staticmethod
-    def get_includes() -> list[str]:
-        return ["commodity_type__id"]
-
 
 class CommodityGroup(MigrationBase):
     is_active = models.BooleanField(default=True)
@@ -45,10 +41,6 @@ class CommodityGroup(MigrationBase):
     unit = models.ForeignKey(Unit, on_delete=models.SET_NULL, to_field="unit_type", null=True)
     start_datetime = models.DateTimeField(null=True)
     end_datetime = models.DateTimeField(null=True)
-
-    @staticmethod
-    def get_includes() -> list[str]:
-        return ["commodity_type__id", "unit__id"]
 
 
 class CommodityGroupCommodity(MigrationBase):

@@ -1,9 +1,6 @@
-from typing import Any
-
 from django.db import models
 
 from data_migration.models.reference import Commodity
-from data_migration.utils.format import validate_decimal
 
 from .import_application import ChecklistBase, ImportApplication, ImportApplicationBase
 
@@ -23,13 +20,6 @@ class DerogationsApplication(ImportApplicationBase):
     purpose_of_request = models.CharField(max_length=3, null=True)
     civilian_purpose_details = models.CharField(max_length=4096, null=True)
 
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data = super().data_export(data)
-        validate_decimal(["quantity", "value"], data)
-
-        return data
-
 
 class DerogationsChecklist(ChecklistBase):
     imad = models.OneToOneField(
@@ -40,13 +30,3 @@ class DerogationsChecklist(ChecklistBase):
     sncorf_response_within_30_days = models.CharField(max_length=3, null=True)
     beneficiaries_not_on_list = models.CharField(max_length=3, null=True)
     request_purpose_confirmed = models.CharField(max_length=3, null=True)
-
-    @classmethod
-    def y_n_fields(cls) -> list[str]:
-        return super().y_n_fields() + [
-            "supporting_document_received",
-            "sncorf_consulted",
-            "sncorf_response_within_30_days",
-            "beneficiaries_not_on_list",
-            "request_purpose_confirmed",
-        ]

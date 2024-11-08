@@ -4,8 +4,6 @@ from .base import MigrationBase
 
 
 class Process(MigrationBase):
-    PROCESS_PK = True
-
     process_type = models.CharField(max_length=50, default=None)
     is_active = models.BooleanField(default=True, db_index=True)
     created = models.DateTimeField()
@@ -19,7 +17,3 @@ class Process(MigrationBase):
 
     # access request id
     iar_id = models.IntegerField(null=True, unique=True)
-
-    @classmethod
-    def get_excludes(cls):
-        return ["ima_id", "ca_id", "iar_id"]
