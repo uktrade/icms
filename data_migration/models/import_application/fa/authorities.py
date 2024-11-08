@@ -1,10 +1,4 @@
-from collections.abc import Generator
-from typing import Any
-
 from django.db import models
-from django.db.models import F
-from django.db.models.expressions import Window
-from django.db.models.functions import RowNumber
 
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import FileFolder
@@ -29,21 +23,6 @@ class FirearmsAuthority(MigrationBase):
     archive_reason = models.CharField(max_length=60, null=True)
     other_archive_reason = models.TextField(null=True)
 
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["file_folder_id"]
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data = super().data_export(data)
-
-        archive_reason = data["archive_reason"]
-
-        if archive_reason:
-            data["archive_reason"] = archive_reason.split(",")
-
-        return data
-
 
 class FirearmsAct(MigrationBase):
     act = models.CharField(max_length=100)
@@ -66,39 +45,6 @@ class FirearmsAuthorityOffice(MigrationBase):
     firearmsauthority = models.ForeignKey(FirearmsAuthority, on_delete=models.CASCADE)
     office_legacy = models.ForeignKey(Office, on_delete=models.CASCADE, to_field="legacy_id")
 
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["office_legacy_id"]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return super().get_values_kwargs() | {"office_id": F("office_legacy__id")}
-
-
-class FirearmsAuthorityFile(MigrationBase):
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["id"] = data.pop("row_number")
-        return data
-
-    @classmethod
-    def get_source_data(cls) -> Generator:
-        return (
-            FirearmsAuthority.objects.select_related("file_folder")
-            .prefetch_related("file_folder__file_targets__files")
-            .annotate(row_number=Window(expression=RowNumber()))
-            .filter(file_folder__file_targets__files__id__isnull=False)
-            .values(
-                "row_number",
-                file_id=F("file_folder__file_targets__files__id"),
-                firearmsauthority_id=F("id"),
-            )
-            .iterator(chunk_size=2000)
-        )
-
 
 class Section5Authority(MigrationBase):
     is_active = models.BooleanField(null=False, default=True)
@@ -115,21 +61,6 @@ class Section5Authority(MigrationBase):
     archive_reason = models.CharField(max_length=60, null=True)
     other_archive_reason = models.TextField(null=True)
 
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["file_folder_id"]
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data = super().data_export(data)
-
-        archive_reason = data["archive_reason"]
-
-        if archive_reason:
-            data["archive_reason"] = archive_reason.split(",")
-
-        return data
-
 
 class Section5Clause(MigrationBase):
     clause = models.CharField(max_length=100)
@@ -140,10 +71,6 @@ class Section5Clause(MigrationBase):
     created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
     updated_datetime = models.DateTimeField(auto_now=True)
     updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+", null=True)
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["legacy_code"]
 
 
 class ClauseQuantity(MigrationBase):
@@ -156,36 +83,3 @@ class ClauseQuantity(MigrationBase):
 class Section5AuthorityOffice(MigrationBase):
     section5authority = models.ForeignKey(Section5Authority, on_delete=models.CASCADE)
     office_legacy = models.ForeignKey(Office, on_delete=models.CASCADE, to_field="legacy_id")
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["office_legacy_id"]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return super().get_values_kwargs() | {"office_id": F("office_legacy__id")}
-
-
-class Section5AuthorityFile(MigrationBase):
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["id"] = data.pop("row_number")
-        return data
-
-    @classmethod
-    def get_source_data(cls) -> Generator:
-        return (
-            Section5Authority.objects.select_related("file_folder")
-            .prefetch_related("file_folder__file_targets__files")
-            .annotate(row_number=Window(expression=RowNumber()))
-            .filter(file_folder__file_targets__files__id__isnull=False)
-            .values(
-                "row_number",
-                file_id=F("file_folder__file_targets__files__id"),
-                section5authority_id=F("id"),
-            )
-            .iterator(chunk_size=2000)
-        )

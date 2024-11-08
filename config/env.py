@@ -105,15 +105,6 @@ class DBTPlatformEnvironment(BaseSettings):
     hawk_auth_id: str
     hawk_auth_key: str
 
-    # Data migration - Section has defaults as they are only set in production
-    allow_data_migration: bool
-    v1_replica_user: str = ""
-    v1_replica_password: str = ""
-    v1_replica_dsn: str = ""
-    prod_user: str = ""
-    prod_password: str = ""
-    data_migration_email_domain_exclude: str = ""
-
     workbasket_per_page: int = 100
     set_inactive_app_types_active: bool = False
     show_db_queries: bool = False

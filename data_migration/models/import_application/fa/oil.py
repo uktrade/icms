@@ -21,10 +21,6 @@ class OpenIndividualLicenceApplication(FirearmBase):
     section1 = models.BooleanField(default=False)
     section2 = models.BooleanField(default=False)
 
-    @classmethod
-    def models_to_populate(cls) -> list[str]:
-        return ["Process", "ImportApplication", cls.__name__, "OILSupplementaryInfo"]
-
 
 class ChecklistFirearmsOILApplication(ChecklistBase):
     imad = models.OneToOneField(
@@ -46,11 +42,6 @@ class ChecklistFirearmsOILApplication(ChecklistBase):
         max_length=3,
         null=True,
     )
-
-    @classmethod
-    def y_n_fields(cls) -> list[str]:
-        fields = super().y_n_fields()
-        return fields + ["authority_required", "authority_received", "authority_police"]
 
 
 class OILSupplementaryInfo(SupplementaryInfoBase):

@@ -16,10 +16,6 @@ class ObsoleteCalibreGroup(MigrationBase):
     is_active = models.BooleanField(null=False, default=True)
     order = models.IntegerField(null=False)
 
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["legacy_id"]
-
 
 class ObsoleteCalibre(MigrationBase):
     legacy_id = models.IntegerField(unique=True)
@@ -32,11 +28,3 @@ class ObsoleteCalibre(MigrationBase):
     name = models.CharField(max_length=200, null=False)
     is_active = models.BooleanField(null=False, default=True)
     order = models.IntegerField(null=False)
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["calibre_group_id", "legacy_id"]
-
-    @classmethod
-    def get_includes(cls) -> list[str]:
-        return super().get_includes() + ["calibre_group__id"]

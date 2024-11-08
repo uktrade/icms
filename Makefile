@@ -41,9 +41,6 @@ showmigrations: ## make db migrations
 migrations: ## make db migrations
 	docker compose run --rm web python ./manage.py makemigrations web
 
-data_migrations: ## make data_migration migrations
-	docker compose run --rm web python ./manage.py makemigrations data_migration
-
 check_migrations: ## Check for missing migrations:
 	docker compose run --no-TTY --rm web python ./manage.py makemigrations --check --dry-run --settings=config.settings_local
 
@@ -125,9 +122,6 @@ test: ## run tests (circleci; don't use locally as it produces a coverage report
 		--cov-report xml:test-reports/cov.xml \
 		--maxprocesses=2 \
 		--cov-fail-under 87 ${args}
-
-migration_test: ## Run data migration tests
-	./run-tests.sh data_migration --create-db --numprocesses 2 ${args}
 
 end_to_end_clear_session: ## Clears the session cookies stored after running end to end tests
 	rm -f importer_user.json && \

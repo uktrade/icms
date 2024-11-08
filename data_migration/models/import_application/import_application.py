@@ -1,20 +1,10 @@
-from collections.abc import Generator
-from typing import Any
-
 from django.db import models
-from django.db.models import F
 
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import FileFolder
 from data_migration.models.flow import Process
 from data_migration.models.reference import CommodityGroup, Country, UniqueReference
 from data_migration.models.user import Importer, Office, User
-from data_migration.utils.format import (
-    reformat_placeholders,
-    str_to_bool,
-    str_to_yes_no,
-    strip_foxid_attribute,
-)
 
 from .import_application_type import ImportApplicationType
 
@@ -86,54 +76,6 @@ class ImportApplication(MigrationBase):
         UniqueReference, on_delete=models.PROTECT, null=True, to_field="uref"
     )
 
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return [
-            "ima_id",
-            "imad_id",
-            "file_folder_id",
-            "importer_office_legacy_id",
-            "agent_office_legacy_id",
-            "variations_xml",
-            "withdrawal_xml",
-            "licence_uref_id",
-        ]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {
-            "importer_office_id": F("importer_office_legacy__id"),
-            "agent_office_id": F("agent_office_legacy__id"),
-            "process_ptr_id": F("id"),
-            "last_submit_datetime": F("submit_datetime"),
-            "licence_reference_id": F(
-                "licence_uref__id",
-            ),
-        }
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        for field in data.keys():
-            if field.endswith("_flag"):
-                value = data[field]
-                data[field] = bool(value) and value.lower() == "true"
-
-        cover_letter_text = data["cover_letter_text"]
-
-        variation_no = data.pop("variation_no", 0)
-
-        if variation_no > 0:
-            reference = data["reference"]
-            data["reference"] = f"{reference}/{variation_no}"
-
-        if cover_letter_text:
-            cover_letter_text = strip_foxid_attribute(cover_letter_text)
-            cover_letter_text = reformat_placeholders(cover_letter_text)
-
-        data["cover_letter_text"] = cover_letter_text
-
-        return data
-
 
 class ChecklistBase(MigrationBase):
     class Meta:
@@ -145,51 +87,6 @@ class ChecklistBase(MigrationBase):
     validity_period_correct = models.CharField(max_length=3, null=True)
     endorsements_listed = models.CharField(max_length=3, null=True)
     authorisation = models.CharField(max_length=5, null=True)
-
-    @classmethod
-    def y_n_fields(cls) -> list[str]:
-        """Return a list of fields to be parsed to yes, no or n/a"""
-        return ["case_update", "fir_required", "validity_period_correct", "endorsements_listed"]
-
-    @classmethod
-    def bool_fields(cls) -> list[str]:
-        """Return a list of fields to be parsed to bool"""
-        return ["response_preparation", "authorisation"]
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["import_application_id"] = data.pop("imad__id")
-
-        for field in data.keys():
-            if field in cls.bool_fields():
-                data[field] = str_to_bool(data[field]) or False
-            elif field in cls.y_n_fields():
-                data[field] = str_to_yes_no(data[field])
-        return data
-
-    @classmethod
-    def get_source_data(cls) -> Generator:
-        """Queries the model to get the queryset of data for the V2 import"""
-
-        values = cls.get_values()
-        values_kwargs = cls.get_values_kwargs()
-        related = cls.get_related()
-        cl_excludes = {f"{f}__isnull": True for f in values if not f.endswith("id")}
-
-        return (
-            cls.objects.select_related(*related)
-            .exclude(**cl_excludes)
-            .values(*values, **values_kwargs)
-            .iterator(chunk_size=2000)
-        )
-
-    @classmethod
-    def get_includes(cls) -> list[str]:
-        return ["imad__id"]
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return ["imad_id"]
 
 
 class ImportApplicationLicence(MigrationBase):
@@ -211,34 +108,12 @@ class ImportApplicationLicence(MigrationBase):
     revoke_reason = models.TextField(null=True)
     revoke_email_sent = models.BooleanField()
 
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["import_application_id"] = data.pop("ima__id")
-
-        return data
-
-    @classmethod
-    def get_includes(cls) -> list[str]:
-        return ["ima__id"]
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ima_id", "imad_id", "document_pack_id", "issue_datetime"]
-
 
 class EndorsementImportApplication(MigrationBase):
     imad = models.ForeignKey(ImportApplication, on_delete=models.PROTECT, to_field="imad_id")
     content = models.TextField()
     created_datetime = models.DateTimeField(null=True)
     updated_datetime = models.DateTimeField(auto_now=True)
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["imad_id"]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {"import_application_id": F("imad__id")}
 
 
 class SIGLTransmission(MigrationBase):
@@ -252,37 +127,7 @@ class SIGLTransmission(MigrationBase):
     response_message = models.CharField(max_length=120, null=True)
     response_code = models.IntegerField(null=True)
 
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ima_id"]
-
-    @classmethod
-    def get_m2m_data(cls, target: models.Model) -> Generator:
-        return cls.objects.values(
-            "id", sigltransmission_id=F("id"), importapplication_id=F("ima__id")
-        ).iterator(chunk_size=2000)
-
 
 class ImportApplicationBase(MigrationBase):
-    PROCESS_PK = True
-
     class Meta:
         abstract = True
-
-    @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["importapplication_ptr_id"] = data.pop("imad__id")
-
-        return data
-
-    @classmethod
-    def get_includes(cls) -> list[str]:
-        return super().get_includes() + ["imad__id"]
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["imad_id"]
-
-    @classmethod
-    def models_to_populate(cls) -> list[str]:
-        return ["Process", "ImportApplication", cls.__name__]
