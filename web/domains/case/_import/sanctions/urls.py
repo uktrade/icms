@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import include, path
 
 from . import views
@@ -5,7 +6,7 @@ from . import views
 app_name = "sanctions"
 
 
-goods_urls = [
+public_goods_urls = [
     path("add/", views.add_goods, name="add-goods"),
     path("list/", views.SanctionsGoodsDetailView.as_view(), name="list-goods"),
     path(
@@ -14,6 +15,16 @@ goods_urls = [
             [
                 path("edit/", views.edit_goods, name="edit-goods"),
                 path("delete/", views.delete_goods, name="delete-goods"),
+            ]
+        ),
+    ),
+]
+
+private_goods_urls = [
+    path(
+        "<int:goods_pk>/",
+        include(
+            [
                 # Management url
                 path(
                     "edit-goods-licence/",
@@ -46,7 +57,7 @@ supporting_document_urls = [
 ]
 
 
-urlpatterns = [
+public_urls = [
     path(
         "<int:application_pk>/",
         include(
@@ -54,9 +65,18 @@ urlpatterns = [
                 # Applicant urls
                 path("edit/", views.edit_application, name="edit"),
                 path("submit/", views.submit_sanctions, name="submit-sanctions"),
-                path("goods/", include(goods_urls)),
+                path("goods/", include(public_goods_urls)),
                 path("support-document/", include(supporting_document_urls)),
             ]
         ),
     ),
 ]
+
+private_urls = [
+    path("<int:application_pk>/goods/", include(private_goods_urls)),
+]
+
+if settings.INCLUDE_PRIVATE_URLS:
+    urlpatterns = public_urls + private_urls
+else:
+    urlpatterns = public_urls
