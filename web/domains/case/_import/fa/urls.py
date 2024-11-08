@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import include, path
 
 from . import views
@@ -5,7 +6,7 @@ from . import views
 app_name = "fa"
 
 # Firearms and Ammunition - Common urls
-urlpatterns = [
+public_urls = [
     path(
         "<int:application_pk>/",
         include(
@@ -115,11 +116,6 @@ urlpatterns = [
                             path("", views.provide_report, name="provide-report"),
                             path("repoen/", views.reopen_report, name="reopen-report"),
                             path(
-                                "view/",
-                                views.ViewFirearmsReportDetailView.as_view(),
-                                name="view-report",
-                            ),
-                            path(
                                 "create/",
                                 views.create_report,
                                 name="create-report",
@@ -141,3 +137,32 @@ urlpatterns = [
         ),
     )
 ]
+
+private_urls = [
+    path(
+        "<int:application_pk>/",
+        include(
+            [
+                # Firearm workbasket links
+                path(
+                    "provide-report/",
+                    include(
+                        [
+                            # private
+                            path(
+                                "view/",
+                                views.ViewFirearmsReportDetailView.as_view(),
+                                name="view-report",
+                            )
+                        ]
+                    ),
+                ),
+            ]
+        ),
+    )
+]
+
+if settings.INCLUDE_PRIVATE_URLS:
+    urlpatterns = public_urls + private_urls
+else:
+    urlpatterns = public_urls
