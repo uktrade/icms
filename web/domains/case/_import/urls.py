@@ -44,7 +44,7 @@ imi_urls = [
     ),
 ]
 
-urlpatterns = [
+public_urls = [
     path("", views.ImportApplicationChoiceView.as_view(), name="choose"),
     # Create import application urls
     path("create/sanctions/", views.create_sanctions, name="create-sanctions"),
@@ -57,6 +57,9 @@ urlpatterns = [
     path("firearms/", include(firearms_urls)),
     path("wood/", include("web.domains.case._import.wood.urls")),
     path("legacy/", include("web.domains.case._import.legacy.urls")),
+]
+
+private_urls = [
     # ILB Admin Case management
     path(
         "case/<int:application_pk>/",
@@ -71,6 +74,12 @@ urlpatterns = [
     ),
     path("imi/", include(imi_urls)),
 ]
+
+if settings.INCLUDE_PRIVATE_URLS:
+    urlpatterns = public_urls + private_urls
+else:
+    urlpatterns = public_urls
+
 
 if not settings.SEND_LICENCE_TO_CHIEF and settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD:
     urlpatterns += [
