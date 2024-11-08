@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import include, path
 
 from . import views
@@ -5,7 +6,7 @@ from . import views
 app_name = "fa-dfl"
 
 # Firearms and Ammunition - Deactivated Firearms Licence urls
-urlpatterns = [
+public_urls = [
     path(
         "<int:application_pk>/",
         include(
@@ -29,16 +30,6 @@ urlpatterns = [
                                             "edit/", views.edit_goods_certificate, name="edit-goods"
                                         ),
                                         path(
-                                            "edit-description/",
-                                            views.edit_goods_certificate_description,
-                                            name="edit-goods-description",
-                                        ),
-                                        path(
-                                            "reset-description/",
-                                            views.reset_goods_certificate_description,
-                                            name="reset-goods-description",
-                                        ),
-                                        path(
                                             "view/", views.view_goods_certificate, name="view-goods"
                                         ),
                                         path(
@@ -53,7 +44,6 @@ urlpatterns = [
                     ),
                 ),
                 path("submit/", views.submit_dfl, name="submit"),
-                path("checklist/", views.manage_checklist, name="manage-checklist"),
                 path(
                     "report/<int:report_pk>/firearms/",
                     include(
@@ -109,3 +99,43 @@ urlpatterns = [
         ),
     )
 ]
+
+private_urls = [
+    path(
+        "<int:application_pk>/",
+        include(
+            [
+                path(
+                    "goods-certificate/",
+                    include(
+                        [
+                            path(
+                                "<int:document_pk>/",
+                                include(
+                                    [
+                                        path(
+                                            "edit-description/",
+                                            views.edit_goods_certificate_description,
+                                            name="edit-goods-description",
+                                        ),
+                                        path(
+                                            "reset-description/",
+                                            views.reset_goods_certificate_description,
+                                            name="reset-goods-description",
+                                        ),
+                                    ]
+                                ),
+                            ),
+                        ]
+                    ),
+                ),
+                path("checklist/", views.manage_checklist, name="manage-checklist"),
+            ]
+        ),
+    )
+]
+
+if settings.INCLUDE_PRIVATE_URLS:
+    urlpatterns = public_urls + private_urls
+else:
+    urlpatterns = public_urls
