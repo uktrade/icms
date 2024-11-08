@@ -1,32 +1,35 @@
+from django.conf import settings
 from django.urls import include, path
 
 from . import views
 
-document_urls = [
+public_urls = [
+    path("received/", views.ReceivedMailshotsView.as_view(), name="mailshot-received"),
     path(
-        "document/",
+        "<int:mailshot_pk>/",
         include(
             [
-                path("add/", views.add_document, name="mailshot-add-document"),
                 path(
-                    "<int:document_pk>/",
-                    include(
-                        [
-                            path("view/", views.view_document, name="mailshot-view-document"),
-                            path("delete/", views.delete_document, name="mailshot-delete-document"),
-                        ]
-                    ),
+                    "received/",
+                    views.MailshotReceivedDetailView.as_view(),
+                    name="mailshot-detail-received",
+                ),
+                path(
+                    "clear/", views.ClearMailshotFromWorkbasketView.as_view(), name="mailshot-clear"
+                ),
+                path(
+                    "document/<int:document_pk>/view/",
+                    views.view_document,
+                    name="mailshot-view-document",
                 ),
             ]
         ),
     ),
 ]
 
-
-urlpatterns = [
+private_urls = [
     path("", views.MailshotListView.as_view(), name="mailshot-list"),
     path("new/", views.MailshotCreateView.as_view(), name="mailshot-new"),
-    path("received/", views.ReceivedMailshotsView.as_view(), name="mailshot-received"),
     path(
         "<int:mailshot_pk>/",
         include(
@@ -36,17 +39,19 @@ urlpatterns = [
                 path("cancel-draft/", views.cancel_mailshot, name="mailshot-cancel-draft"),
                 path("publish-draft/", views.publish_mailshot, name="mailshot-publish-draft"),
                 path("retract/", views.MailshotRetractView.as_view(), name="mailshot-retract"),
-                path(
-                    "received/",
-                    views.MailshotReceivedDetailView.as_view(),
-                    name="mailshot-detail-received",
-                ),
                 path("republish/", views.republish, name="mailshot-republish"),
+                path("document/add/", views.add_document, name="mailshot-add-document"),
                 path(
-                    "clear/", views.ClearMailshotFromWorkbasketView.as_view(), name="mailshot-clear"
+                    "document/<int:document_pk>/delete/",
+                    views.delete_document,
+                    name="mailshot-delete-document",
                 ),
-                path("document/", include(document_urls)),
             ]
         ),
     ),
 ]
+
+if settings.INCLUDE_PRIVATE_URLS:
+    urlpatterns = public_urls + private_urls
+else:
+    urlpatterns = public_urls
