@@ -1,18 +1,17 @@
+from django.conf import settings
 from django.urls import include, path
 
 from . import views
 
 app_name = "fa-sil"
 
-urlpatterns = [
+public_urls = [
     path(
         "<int:application_pk>/",
         include(
             [
                 path("edit/", views.edit, name="edit"),
                 path("submit/", views.submit, name="submit"),
-                path("checklist/", views.manage_checklist, name="manage-checklist"),
-                path("set-cover-letter/", views.set_cover_letter, name="set-cover-letter"),
                 # Goods
                 path(
                     "sections/list",
@@ -32,16 +31,6 @@ urlpatterns = [
                                         path("edit/", views.edit_section, name="edit-section"),
                                         path(
                                             "delete/", views.delete_section, name="delete-section"
-                                        ),
-                                        path(
-                                            "response-prep-edit-goods/",
-                                            views.response_preparation_edit_goods,
-                                            name="response-prep-edit-goods",
-                                        ),
-                                        path(
-                                            "response-prep-reset-goods/",
-                                            views.response_preparation_reset_goods,
-                                            name="response-prep-reset-goods",
                                         ),
                                     ]
                                 ),
@@ -158,3 +147,45 @@ urlpatterns = [
         ),
     ),
 ]
+
+private_urls = [
+    path(
+        "<int:application_pk>/",
+        include(
+            [
+                path("checklist/", views.manage_checklist, name="manage-checklist"),
+                path("set-cover-letter/", views.set_cover_letter, name="set-cover-letter"),
+                # Goods
+                path(
+                    "<silsectiontype:sil_section_type>/",
+                    include(
+                        [
+                            path(
+                                "<int:section_pk>/",
+                                include(
+                                    [
+                                        path(
+                                            "response-prep-edit-goods/",
+                                            views.response_preparation_edit_goods,
+                                            name="response-prep-edit-goods",
+                                        ),
+                                        path(
+                                            "response-prep-reset-goods/",
+                                            views.response_preparation_reset_goods,
+                                            name="response-prep-reset-goods",
+                                        ),
+                                    ]
+                                ),
+                            ),
+                        ]
+                    ),
+                ),
+            ]
+        ),
+    ),
+]
+
+if settings.INCLUDE_PRIVATE_URLS:
+    urlpatterns = public_urls + private_urls
+else:
+    urlpatterns = public_urls
