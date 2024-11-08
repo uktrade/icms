@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import include, path
 
 from . import views
@@ -5,7 +6,7 @@ from . import views
 app_name = "fa-oil"
 
 
-urlpatterns = [
+public_urls = [
     path(
         "<int:application_pk>/",
         include(
@@ -13,8 +14,6 @@ urlpatterns = [
                 # Firearms and Ammunition - Open Individual Licence
                 path("edit/", views.edit_oil, name="edit"),
                 path("submit/", views.submit_oil, name="submit-oil"),
-                # Firearms and Ammunition - Management by ILB Admin
-                path("checklist/", views.manage_checklist, name="manage-checklist"),
                 path(
                     "report/<int:report_pk>/firearms/",
                     include(
@@ -58,3 +57,12 @@ urlpatterns = [
         ),
     )
 ]
+
+private_urls = [
+    path("<int:application_pk>/checklist/", views.manage_checklist, name="manage-checklist"),
+]
+
+if settings.INCLUDE_PRIVATE_URLS:
+    urlpatterns = public_urls + private_urls
+else:
+    urlpatterns = public_urls
