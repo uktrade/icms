@@ -1,3 +1,4 @@
+FileBasedCache
 whitenoise.runserver_nostatic
 pii-ner-exclude.txt
 kwargs={'mailshot_pk

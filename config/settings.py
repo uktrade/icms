@@ -297,9 +297,8 @@ CACHES = {
         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
     },
     "django_compressor_cache": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": REDIS_URL + "/3",
-        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": "~/django_compressor_cache",
     },
     # Using a separate cache for select2 to avoid conflicts with other caches, this is the recommended approach
     "select2": {
