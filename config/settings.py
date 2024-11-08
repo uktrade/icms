@@ -298,7 +298,7 @@ CACHES = {
     },
     "django_compressor_cache": {
         "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": "~/django_compressor_cache",
+        "LOCATION": BASE_DIR / "compressor_cache",
     },
     # Using a separate cache for select2 to avoid conflicts with other caches, this is the recommended approach
     "select2": {
