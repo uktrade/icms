@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import include, path
 
 from . import views
@@ -34,7 +35,8 @@ contract_document_urls = [
     ),
 ]
 
-urlpatterns = [
+
+public_urls = [
     path(
         "<int:application_pk>/",
         include(
@@ -44,6 +46,16 @@ urlpatterns = [
                 path("submit/", views.submit_wood_quota, name="submit-quota"),
                 path("contract-document/", include(contract_document_urls)),
                 path("support-document/", include(supporting_document_urls)),
+            ],
+        ),
+    ),
+]
+
+private_urls = [
+    path(
+        "<int:application_pk>/",
+        include(
+            [
                 # Management urls
                 path("checklist/", views.manage_checklist, name="manage-checklist"),
                 path("edit-goods-licence/", views.edit_goods, name="edit-goods-licence"),
@@ -51,3 +63,8 @@ urlpatterns = [
         ),
     ),
 ]
+
+if settings.INCLUDE_PRIVATE_URLS:
+    urlpatterns = public_urls + private_urls
+else:
+    urlpatterns = public_urls
