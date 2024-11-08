@@ -30,3 +30,8 @@ def test_ilb_admin_client_cant_access_private_urls(ilb_admin_client):
 
     response = ilb_admin_client.get("/signature/")
     assert response.status_code == HTTPStatus.NOT_FOUND
+
+    with override_settings(INCLUDE_PRIVATE_URLS=True):
+        reload_urlconf()
+        reload_urlconf("web.urls")
+        clear_url_caches()
