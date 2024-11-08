@@ -5104,3 +5104,4 @@ GP
 Certificate - Certificate Reference Value
 01-Jan-2024
 INCLUDE_PRIVATE_URLS
+HTTPStatus
