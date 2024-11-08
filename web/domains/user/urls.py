@@ -3,7 +3,7 @@ from django.urls import include, path
 
 from . import views
 
-urlpatterns = [
+public_urls = [
     path("welcome/", views.NewUserWelcomeView.as_view(), name="user-welcome"),
     path("welcome/clear/", views.ClearNewUserWelcomeView.as_view(), name="user-welcome-clear"),
     path("new-user/", views.NewUserUpdateView.as_view(), name="new-user-edit"),
@@ -73,7 +73,9 @@ urlpatterns = [
             ]
         ),
     ),
-    # Admin Views to view users in ICMS.
+]
+
+private_urls = [
     path("users/", views.UsersListView.as_view(), name="users-list"),
     path("users/<int:user_pk>/", views.UserDetailView.as_view(), name="user-details"),
     path(
@@ -87,6 +89,11 @@ urlpatterns = [
         name="user-deactivate",
     ),
 ]
+
+if settings.INCLUDE_PRIVATE_URLS:
+    urlpatterns = public_urls + private_urls
+else:
+    urlpatterns = public_urls
 
 
 if settings.APP_ENV in ("local", "dev", "uat", "staging"):
