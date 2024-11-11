@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.urls import include, path, register_converter
 
@@ -22,6 +24,8 @@ register_converter(converters.SILSectionTypeConverter, "silsectiontype")
 register_converter(converters.EntityTypeConverter, "entitytype")
 register_converter(converters.OrgTypeConverter, "orgtype")
 register_converter(converters.ChiefStatusConverter, "chiefstatus")
+
+logger = logging.getLogger(__name__)
 
 
 # The following urls are served by all deployed instances of ICMS
@@ -116,8 +120,10 @@ private_urls = [
 ]
 
 if settings.INCLUDE_PRIVATE_URLS:
+    logging.info("Including private urls")
     urlpatterns = public_urls + private_urls
 else:
+    logging.info("Excluding private urls")
     urlpatterns = public_urls
 
 
