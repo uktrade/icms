@@ -1,0 +1,40 @@
+{% extends "govuk_frontend_jinja/template.html" %}
+{# The above template is similar to this: #}
+{# https://design-system.service.gov.uk/styles/page-template/ #}
+
+{# https://design-system.service.gov.uk/components/ #}
+{# include all available govukXXX components #}
+{% import "gds/components.html" as gds %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ static("govuk-frontend.min.css") }}">
+{% endblock %}
+
+{% block header %}
+  {{ gds.govukHeader({ "productName": request.site.name }) }}
+{% endblock %}
+
+{% block footer %}
+  {{ gds.govukFooter({
+        "meta": {
+          "items": [
+            {"href": "#", "text": "Help"},
+            {"href": "#", "text": "Privacy"},
+            {"href": "#", "text": "Cookies"},
+            {"href": "#", "text": "Accessibility statement"},
+            {"href": "#", "text": "Contact"},
+            {"href": "#", "text": "Terms and conditions"},
+            {"href": "#", "text": "Government Digital Services"},
+          ]
+        }
+    }) }}
+{% endblock %}
+
+{% block bodyEnd %}
+  <script type="module" src="{{ static("govuk-frontend.min.js") }}"></script>
+  <script type="module" nonce="{{ request.csp_nonce }}">
+      import {initAll} from '/assets/govuk-frontend.min.js';
+
+      initAll();
+  </script>
+{% endblock %}

@@ -5106,3 +5106,28 @@ Certificate - Certificate Reference Value
 INCLUDE_PRIVATE_URLS
 HTTPStatus
 org_type>/<int
+ECIL Test Page
+{ static("govuk-frontend.min.css
+Writing
+{ static("govuk-frontend.min.js
+cspNonce
+govukButton
+{{ govukButton
+GMPC)</h2
+{{ gds.govukButton
+{{ gds.govukFooter
+govukCharacterCount -%
+govukInsetText -%
+govukNotificationBanner -%
+govukPhaseBanner -%
+govukSkipLink -%
+govuk_frontend_jinja
+govukBreadcrumbs%
+govukCheckboxes%
+{{ gds.govukHeader
+Evaluates
+node_modules/
+ECIL Prototype User
+node & npm
+npm -v
+govukNotificationBanner

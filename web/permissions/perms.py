@@ -95,6 +95,7 @@ class SysPerms(PermissionTextChoice):
     )
     search_all_cases = ("web.search_all_cases", "Can search across all cases.")
     is_icms_data_admin = "web.is_icms_data_admin", "Can maintain data in the ICMS admin site."
+    view_ecil_prototype = ("web.view_ecil_prototype", "Can view ECIL prototype.")
 
 
 class ImporterObjectPermissions(PermissionTextChoice):

@@ -202,6 +202,7 @@ if settings.DEBUG:
     extra_menu_items = [
         MenuLink(label="Permission Test Harness", view="harness:permissions", target="_blank"),
         MenuLink(label="L10N Test Harness", view="harness:l10n", target="_blank"),
+        MenuLink(label="ECIL Test Page", view="ecil:gds_example"),
     ]
 
 if settings.APP_ENV in ("local", "dev", "uat", "staging"):

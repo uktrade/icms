@@ -147,13 +147,15 @@ class Command(BaseCommand):
     def add_ilb_admin_users(self, password: str) -> None:
         ilb_admin_group = Group.objects.get(name="ILB Case Officer")
         ilb_admin_site_group = Group.objects.get(name="ICMS Admin Site User")
+        ecil_prototype_group = Group.objects.get(name="ECIL Prototype User")
+
         for index, user in enumerate(ADMIN_USERS, start=1):
             ilb_admin_user = self.create_user(
                 username="ilb_admin" if index == 1 else f"ilb_admin_{index}",
                 password=password,
                 first_name=user["first_name"],
                 last_name=user["last_name"],
-                groups=[ilb_admin_group, ilb_admin_site_group],
+                groups=[ilb_admin_group, ilb_admin_site_group, ecil_prototype_group],
             )
             if index == 1:
                 create_dummy_signature(ilb_admin_user)
@@ -161,6 +163,8 @@ class Command(BaseCommand):
 
     def add_exporters_and_users(self, password: str) -> None:
         exporter_user_group = Group.objects.get(name="Exporter User")
+        ecil_prototype_group = Group.objects.get(name="ECIL Prototype User")
+
         for index, users in enumerate(EXPORT_USERS, start=1):
             exporter = Exporter.objects.create(
                 is_active=True,
@@ -209,7 +213,7 @@ class Command(BaseCommand):
                 password=password,
                 first_name=users["first_name"],
                 last_name=users["last_name"],
-                groups=[exporter_user_group],
+                groups=[exporter_user_group, ecil_prototype_group],
                 linked_exporters=[exporter],
             )
             create_certificate_application_templates(exporter_user)
@@ -219,7 +223,7 @@ class Command(BaseCommand):
                 password=password,
                 first_name=users["agent_first_name"],
                 last_name=users["agent_last_name"],
-                groups=[exporter_user_group],
+                groups=[exporter_user_group, ecil_prototype_group],
                 linked_exporter_agents=[agent_exporter],
             )
             self.stdout.write(f"Created {exporter_username} & agent")
@@ -229,7 +233,7 @@ class Command(BaseCommand):
                     password=password,
                     first_name="Dani",
                     last_name="Winslow",
-                    groups=[exporter_user_group],
+                    groups=[exporter_user_group, ecil_prototype_group],
                     linked_importers=[exporter],
                     icms_v1_user=True,
                 )
@@ -237,6 +241,8 @@ class Command(BaseCommand):
 
     def add_importers_and_users(self, password: str) -> None:
         importer_user_group = Group.objects.get(name="Importer User")
+        ecil_prototype_group = Group.objects.get(name="ECIL Prototype User")
+
         for index, users in enumerate(IMPORT_USERS, start=1):
             importer = Importer.objects.create(
                 is_active=True,
@@ -353,7 +359,7 @@ class Command(BaseCommand):
                 password=password,
                 first_name=users["first_name"],
                 last_name=users["last_name"],
-                groups=[importer_user_group],
+                groups=[importer_user_group, ecil_prototype_group],
                 linked_importers=[importer],
             )
 
@@ -362,7 +368,7 @@ class Command(BaseCommand):
                 password=password,
                 first_name=users["agent_first_name"],
                 last_name=users["agent_last_name"],
-                groups=[importer_user_group],
+                groups=[importer_user_group, ecil_prototype_group],
                 linked_importer_agents=[importer_one_agent_one, importer_one_agent_two],
             )
             self.stdout.write(f"Created {importer_username} & agent")
@@ -372,7 +378,7 @@ class Command(BaseCommand):
                     password=password,
                     first_name="Bill",
                     last_name="Wesley",
-                    groups=[importer_user_group],
+                    groups=[importer_user_group, ecil_prototype_group],
                     linked_importers=[importer],
                     icms_v1_user=True,
                 )
@@ -443,6 +449,7 @@ class Command(BaseCommand):
         san_case_officer = Group.objects.get(name="Sanctions Case Officer")
         import_search_user = Group.objects.get(name="Import Search User")
         dev_admin_group = Group.objects.get(name="Dev Admin")
+        ecil_prototype_group = Group.objects.get(name="ECIL Prototype User")
 
         # Load application test data
         load_app_test_data()
@@ -461,14 +468,14 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Clara",
             last_name="Boone",
-            groups=[nca_case_officer],
+            groups=[nca_case_officer, ecil_prototype_group],
         )
         self.create_user(
             username="nca_admin_2",
             password=options["password"],
             first_name="Kara",
             last_name="Moses",
-            groups=[nca_case_officer],
+            groups=[nca_case_officer, ecil_prototype_group],
         )
 
         self.create_user(
@@ -476,7 +483,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Steven",
             last_name="Hall",
-            groups=[ho_case_officer],
+            groups=[ho_case_officer, ecil_prototype_group],
         )
 
         self.create_user(
@@ -484,7 +491,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Dawn",
             last_name="Cabrera",
-            groups=[ho_case_officer],
+            groups=[ho_case_officer, ecil_prototype_group],
         )
 
         self.create_user(
@@ -492,7 +499,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Karen",
             last_name="Bradley",
-            groups=[san_case_officer],
+            groups=[san_case_officer, ecil_prototype_group],
         )
 
         self.create_user(
@@ -500,7 +507,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Emilio",
             last_name="Mcgee",
-            groups=[san_case_officer],
+            groups=[san_case_officer, ecil_prototype_group],
         )
 
         self.create_user(
@@ -511,6 +518,7 @@ class Command(BaseCommand):
             linked_constabularies=Constabulary.objects.filter(
                 name__in=["Nottingham", "Lincolnshire", "Derbyshire"]
             ),
+            groups=[ecil_prototype_group],
         )
 
         self.create_user(
@@ -521,6 +529,7 @@ class Command(BaseCommand):
             linked_constabularies=Constabulary.objects.filter(
                 name__in=["Lancashire", "Merseyside"]
             ),
+            groups=[ecil_prototype_group],
         )
 
         self.create_user(
@@ -528,7 +537,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Hercule",
             last_name="Poirot",
-            groups=[import_search_user],
+            groups=[import_search_user, ecil_prototype_group],
         )
 
         self.create_user(
@@ -536,7 +545,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Safiyyah",
             last_name="Thomson",
-            groups=[import_search_user],
+            groups=[import_search_user, ecil_prototype_group],
         )
 
         self.create_user(
@@ -544,7 +553,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Maurice",
             last_name="Moss",
-            groups=[dev_admin_group],
+            groups=[dev_admin_group, ecil_prototype_group],
         )
 
         self.create_superuser("admin", options["password"])

@@ -137,4 +137,7 @@ def get_groups():
         "Dev Admin": {
             Perms.page.view_one_login_test_account_setup,
         },
+        "ECIL Prototype User": {
+            Perms.sys.view_ecil_prototype,
+        },
     }

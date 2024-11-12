@@ -1,0 +1,20 @@
+{% extends "ecil/base.html" %}
+
+{% block header %}
+  {# This wouldn't normally need setting as the base template uses request.site.name #}
+  {# Hardcoded here for the example page. #}
+  {{ gds.govukHeader({"productName": "Apply for an export certificate"}) }}
+{% endblock %}
+
+{% block content %}
+  <h1 class="govuk-heading-l">Apply for an export certificate</h1>
+  <p class="govuk-body">Use this service to apply for a certificate for use in overseas markets to provide assurance on specific products.</p>
+  <h2 class="govuk-heading-m">Certificate of Free Sale (CFS)</h2>
+  <p class="govuk-body">Products which meet UK standards that fall under Department for Business and Trade legislation.</p>
+  <h2 class="govuk-heading-m">Good Manufacturing Practice Certificate (GMPC)</h2>
+  <p class="govuk-body">Cosmetic products which meet UK good manufacturing practice standards. For use in China only.</p>
+  <h2 class="govuk-heading-m">Certificate of Manufacture (CoM)</h2>
+  <p class="govuk-body">Pesticides that are solely for use in overseas markets and will not be placed on the UK market.</p>
+  <p class="govuk-body">You will be taken to GOV.UK One Login. You will need to sign in or create an account before you can apply.</p>
+  {{ gds.govukButton({ "text": "Start now" }) }}
+{% endblock %}

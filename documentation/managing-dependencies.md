@@ -54,7 +54,7 @@ npm i --package-lock-only
 npm audit fix
 ```
 
-## Updating Javascript dependencies (When they get updated):
+## Updating V2 Javascript dependencies (When they get updated):
 Run the following command, this will install dependencies and copy them to the correct place
 
 ```bash
@@ -68,3 +68,30 @@ see the following code for the config:
 NPM_STATIC_FILES_LOCATION =
 NPM_FILE_PATTERNS
 ```
+
+## V3 Front-end Dependencies
+
+The front-end assets were initially added by doing the following:
+
+```bash
+# Install nvm
+# Download and install nvm, node & npm (https://nodejs.org/en/download/package-manager)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+nvm install --lts
+
+# check everything installed correctly.
+node -v
+npm -v
+
+# Install gds package
+npm install sass
+npm install govuk-frontend --save
+```
+
+The govuk-frontend package assets are currently manually copied from node_modules/ to assets/ by following these instructions:
+
+https://frontend.design-system.service.gov.uk/installing-with-npm/#get-the-css-assets-and-javascript-working
+
+This will change if and when we need to use a bundler to customise our gds frontend.
+
+https://frontend.design-system.service.gov.uk/install-using-precompiled-files/#what-you-cannot-do-with-the-precompiled-files
