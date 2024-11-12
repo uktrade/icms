@@ -94,7 +94,7 @@ FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 TEMPLATES = [
     # Jinja defined for IMCS templates.
     {
-        "BACKEND": "django.template.backends.jinja2.Jinja2",
+        "BACKEND": "web.ecil.template_backends.EcilJinja2Backend",
         "DIRS": [BASE_DIR / "web/templates"],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -108,6 +108,7 @@ TEMPLATES = [
                 "web.domains.case.context_processors.case",
                 "web.auth.context_processors.auth",
                 "web.sites.context_processors.sites",
+                "web.ecil.context_processors.govuk_frontend_jinja_template",
             ],
         },
     },
@@ -239,8 +240,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = "/assets/"
 STATIC_ROOT = BASE_DIR / "static/"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "assets"),
+]
 
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",

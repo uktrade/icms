@@ -31,6 +31,7 @@ public_urls = [
     path("", RedirectBaseDomainView.as_view()),
     path("login-start/", login_start_view, name="login-start"),
     path("logout/", logout_view, name="logout-user"),
+    path("ecil/", include("web.ecil.urls")),
     #
     # staff-sso-client login urls
     path("auth/", include("authbroker_client.urls")),

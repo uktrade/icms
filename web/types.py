@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 from django.db import models
 from django.http import HttpRequest
+from django.utils.functional import SimpleLazyObject
 
 if TYPE_CHECKING:
     from django.contrib.sites.models import Site
@@ -16,6 +17,8 @@ class AuthenticatedHttpRequest(HttpRequest):
     user: "User"
     icms: "ICMSMiddlewareContext"
     site: "Site"
+    # Added in csp.middleware.CSPMiddleware (Evaluates to a str)
+    csp_nonce: SimpleLazyObject
 
 
 # Update types.pyi when updating

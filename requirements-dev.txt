@@ -198,6 +198,8 @@ googleapis-common-protos==1.65.0
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
+govuk-frontend-jinja==3.4.0
+    # via -r /code/requirements/requirements-base.in
 greenlet==3.0.3
     # via
     #   gevent
@@ -229,7 +231,9 @@ isort==5.13.2
 jedi==0.19.1
     # via ipython
 jinja2==3.1.4
-    # via -r /code/requirements/requirements-base.in
+    # via
+    #   -r /code/requirements/requirements-base.in
+    #   govuk-frontend-jinja
 jmespath==1.0.1
     # via
     #   boto3
