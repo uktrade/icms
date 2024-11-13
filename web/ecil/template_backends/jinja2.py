@@ -3,6 +3,8 @@ from django.template.backends.jinja2 import Jinja2
 
 
 class EcilJinja2Backend(Jinja2):
+    app_dirname = "jinja2"
+
     def __init__(self, params):
         params = params.copy()
         self.dirs = list(params.get("DIRS"))
