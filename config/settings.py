@@ -96,6 +96,7 @@ TEMPLATES = [
     {
         "BACKEND": "web.ecil.template_backends.EcilJinja2Backend",
         "DIRS": [BASE_DIR / "web/templates"],
+        "NAME": "jinja2",
         "APP_DIRS": True,
         "OPTIONS": {
             "environment": "web.jinja2.environment",
