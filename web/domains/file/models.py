@@ -2,6 +2,7 @@ import logging
 
 import humanize
 from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
 from web.utils import datetime_format
@@ -24,6 +25,7 @@ class File(models.Model):
     path = models.CharField(max_length=4000)
     created_datetime = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    clam_av_results = models.JSONField(encoder=DjangoJSONEncoder, null=True)
 
     class Meta:
         ordering = ["-created_datetime"]

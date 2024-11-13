@@ -80,7 +80,11 @@ sqlsequencereset: ## Use this command to generate SQL which will fix cases where
 	docker compose run --rm web python ./manage.py sqlsequencereset web
 
 clean: ## removes python cache files from project
+
 	docker compose run --rm web find . -type d -name __pycache__ -exec rm -rf {} \+
+
+clean_local_buckets: ## removes all previous uploaded file cache so it is not replayed on start up
+	docker compose exec localstack rm /tmp/localstack/data/recorded_api_calls.json || true
 
 requirements-web: ## install javascript dependencies
 	docker compose run --rm web sh -c "python manage.py npm && python manage.py collect_npm"
@@ -107,6 +111,10 @@ psql: ## Starts psql
 local_s3: ## creates s3 buckets on localstack container
 	aws --endpoint-url=http://localhost:4566 s3 mb s3://icms.local
 	aws --endpoint-url=http://localhost:4566 s3api put-bucket-acl --bucket icms.local --acl public-read
+	aws --endpoint-url=http://localhost:4566 s3 mb s3://icms-tmp.local
+	aws --endpoint-url=http://localhost:4566 s3api put-bucket-acl --bucket icms-tmp.local --acl public-read
+	aws --endpoint-url=http://localhost:4566 s3api put-bucket-lifecycle-configuration --bucket icms-tmp.local --lifecycle-configuration file://local_deployment/s3/lifecycle.json
+
 
 list_s3: ## list S3 bucket contents on localstack container
 	aws --endpoint-url=http://localhost:4566 s3 ls s3://icms.local --human-readable
