@@ -94,7 +94,7 @@ FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 TEMPLATES = [
     # Jinja defined for IMCS templates.
     {
-        "BACKEND": "web.ecil.template_backends.EcilJinja2Backend",
+        "BACKEND": "web.ecil.template_backends.jinja2.EcilJinja2Backend",
         "DIRS": [BASE_DIR / "web/templates"],
         "APP_DIRS": True,
         "OPTIONS": {
