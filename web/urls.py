@@ -121,7 +121,7 @@ private_urls = [
 
 if settings.INCLUDE_PRIVATE_URLS:
     logging.info("Including private urls")
-    urlpatterns = public_urls + private_urls + [path("public-only-throw-error/", lambda x: 1 / 0)]
+    urlpatterns = public_urls + private_urls + [path("private-only-throw-error/", lambda x: 1 / 0)]
 else:
     logging.info("Excluding private urls")
     urlpatterns = public_urls + [path("public-only-throw-error/", lambda x: 1 / 0)]
