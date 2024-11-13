@@ -1,11 +1,11 @@
 {
   "name": "icms",
-    "scripts": {
+  "scripts": {
     "build": "echo build",
     "test": ""
   },
   "engines": {
-    "node": "22.11.0"
+    "node": "20.11.0"
   },
   "version": "1.0.0",
   "description": "ICMS",
