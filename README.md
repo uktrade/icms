@@ -229,8 +229,7 @@ adding and upgrading dependencies.
 
 ## Deployments
 
-- ICMS Jenkins view: https://jenkins.ci.uktrade.digital/view/ICMS/
-- ci-pipeline config: https://github.com/uktrade/ci-pipeline-config/blob/master/icms.yaml
+- You can view the status of the build and deployments in the [AWS CodePipeline console](https://eu-west-2.console.aws.amazon.com/codesuite/codepipeline/pipelines)
 
 ## File Uploads
 
@@ -238,6 +237,7 @@ Files are uploaded directly to S3 without being saved into file system of the
 app. The app in turn sends the file to ClamAV for malware/virus checking. See
 ICMSFileField.
 
+Information on how ClamAV works and how to set it up can be found here: https://readme.trade.gov.uk/docs/playbooks/clamav.html
 
 ## Environment Variables
 
