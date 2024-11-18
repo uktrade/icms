@@ -1,0 +1,9 @@
+{% import "gds/components.html" as gds %}
+
+{# Set errors to pass down to django/forms/div.html #}
+{% if form.GDS_FORM and form.errors %}
+  {% set errors %}
+    {{ gds.govukErrorSummary(form.error_summary_kwargs) }}
+  {% endset %}
+{% endif %}
+{% include "django/forms/div.html" %}

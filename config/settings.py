@@ -88,8 +88,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 DATABASES = env.get_database_config()
 
-# https://docs.djangoproject.com/en/4.2/ref/settings/#std-setting-FORM_RENDERER
-FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
+# Custom field renderer to handle rendering govuk-frontend-jinja macros
+FORM_RENDERER = "web.ecil.gds.forms.renderers.GDSTemplateSetting"
 
 TEMPLATES = [
     # Jinja defined for IMCS templates.

@@ -5134,3 +5134,38 @@ govukNotificationBanner
 IMA_SANCTIONS_RFI
 INCLUDE SUGGESTIONS IF
 is_user_org_admin %
+BoundField
+{{ govukInput(gds_kwargs
+{{ gds.govukInput(gds_kwargs
+{{ gds.govukRadios(gds_kwargs
+{{ _f }
+GovUKRadioInputField
+National Insurance
+GovUKPasswordInputField
+ICMSFileField
+{{ gds.govukCharacterCount(gds_kwargs
+Remove `
+https://design-system.service.gov.uk/components/password-input/
+{{ gds.govukCheckboxes(gds_kwargs
+Year
+f"{self.name}_2
+{{ gds.govukDateInput(gds_kwargs
+{{ gds.govukFileUpload(gds_kwargs
+GovUKPasswordInputField" %}
+{{ gds.govukPasswordInput(gds_kwargs
+https://design-system.service.gov.uk/components/select/
+{{ gds.govukTextarea(gds_kwargs
+GDSFormMixin
+GovUKDateInputField
+assert form.is_valid
+assertHTMLEqual(expected_html
+TestGovUKPasswordInputField
+GovUKTextInputField
+eml
+gif
+jpeg
+jpg
+xlsb
+print(actual_html
+date_input_field_1
+{{ gds.govukErrorSummary(form.error_summary_kwargs

@@ -1,0 +1,37 @@
+{% import "gds/components.html" as gds %}
+
+{% set fieldClass = field.field.__class__.__name__ %}
+
+{# Create a variable holding the field html #}
+{%- set _f -%}
+{% if fieldClass == "GovUKCharacterCountField" %}
+  {{ gds.govukCharacterCount(gds_kwargs) }}
+{% elif fieldClass == "GovUKCheckboxesField" %}
+  {{ gds.govukCheckboxes(gds_kwargs) }}
+{% elif fieldClass == "GovUKDateInputField" %}
+  {{ gds.govukDateInput(gds_kwargs) }}
+{% elif fieldClass == "GovUKFileUploadField" %}
+  {{ gds.govukFileUpload(gds_kwargs) }}
+{% elif fieldClass == "GovUKPasswordInputField" %}
+  {{ gds.govukPasswordInput(gds_kwargs) }}
+{% elif fieldClass == "GovUKRadioInputField" %}
+  {{ gds.govukRadios(gds_kwargs) }}
+{% elif fieldClass == "GovUKSelectField" %}
+  {{ gds.govukSelect(gds_kwargs) }}
+{% elif fieldClass == "GovUKTextareaField" %}
+  {{ gds.govukTextarea(gds_kwargs) }}
+{% elif fieldClass == "GovUKTextInputField" %}
+  {{ gds.govukInput(gds_kwargs) }}
+{% else %}
+  {# Default ICMS V2 rendering (for forms that don't use the forms/fields.html macros )#}
+  {% include "django/forms/field.html" %}
+{% endif %}
+{%- endset -%}
+
+{% if field.field.radio_conditional %}
+  {# Save the field to gds_radio_conditional_fields to render later #}
+  {% do field.form.gds_radio_conditional_fields.__setitem__(field.name, _f) %}
+{% else %}
+  {# Render the field now #}
+  {{ _f }}
+{% endif %}
