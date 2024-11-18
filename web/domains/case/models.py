@@ -184,11 +184,11 @@ class WithdrawApplication(models.Model):
     class Meta:
         constraints = [
             models.CheckConstraint(
-                check=Q(import_application__isnull=False) | Q(export_application__isnull=False),
+                condition=Q(import_application__isnull=False) | Q(export_application__isnull=False),
                 name="application_one_null",
             ),
             models.CheckConstraint(
-                check=Q(import_application__isnull=True) | Q(export_application__isnull=True),
+                condition=Q(import_application__isnull=True) | Q(export_application__isnull=True),
                 name="application_one_not_null",
             ),
         ]

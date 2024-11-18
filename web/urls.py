@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.urls import include, path, register_converter
+from django.urls.converters import REGISTERED_CONVERTERS
 
 from web import converters
 from web.domains.checker.views import V1ToV2RedirectCheckCertificateView
@@ -15,13 +16,19 @@ from web.views import (
     logout_view,
 )
 
-register_converter(converters.NegativeIntConverter, "negint")
-register_converter(converters.CaseTypeConverter, "casetype")
-register_converter(converters.ExportApplicationTypeConverter, "exportapplicationtype")
-register_converter(converters.SILSectionTypeConverter, "silsectiontype")
-register_converter(converters.EntityTypeConverter, "entitytype")
-register_converter(converters.OrgTypeConverter, "orgtype")
-register_converter(converters.ChiefStatusConverter, "chiefstatus")
+
+def register_converter_if_required(converter, type_name):
+    if type_name not in REGISTERED_CONVERTERS:
+        register_converter(converter, type_name)
+
+
+register_converter_if_required(converters.NegativeIntConverter, "negint")
+register_converter_if_required(converters.CaseTypeConverter, "casetype")
+register_converter_if_required(converters.ExportApplicationTypeConverter, "exportapplicationtype")
+register_converter_if_required(converters.SILSectionTypeConverter, "silsectiontype")
+register_converter_if_required(converters.EntityTypeConverter, "entitytype")
+register_converter_if_required(converters.OrgTypeConverter, "orgtype")
+register_converter_if_required(converters.ChiefStatusConverter, "chiefstatus")
 
 
 # The following urls are served by all deployed instances of ICMS

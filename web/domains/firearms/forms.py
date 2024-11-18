@@ -50,9 +50,9 @@ class ObsoleteCalibreGroupFilter(FilterSet):
         super().__init__(*args, **kwargs)
 
         # ModelChoiceFilter only works for FKs
-        self.filters["group_name"].extra["choices"] = (
+        self.filters["group_name"].extra["choices"] = [
             (row.name, row.name) for row in ObsoleteCalibreGroup.objects.filter(is_active=True)
-        )
+        ]
 
     def filter_display_archived(self, queryset, name, value):
         return queryset

@@ -7686,7 +7686,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="withdrawapplication",
             constraint=models.CheckConstraint(
-                check=models.Q(
+                condition=models.Q(
                     ("import_application__isnull", False),
                     ("export_application__isnull", False),
                     _connector="OR",
@@ -7697,7 +7697,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="withdrawapplication",
             constraint=models.CheckConstraint(
-                check=models.Q(
+                condition=models.Q(
                     ("import_application__isnull", True),
                     ("export_application__isnull", True),
                     _connector="OR",
