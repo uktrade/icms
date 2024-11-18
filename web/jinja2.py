@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.utils import formats, timezone
 from guardian.core import ObjectPermissionChecker
 from jinja2 import Environment, pass_eval_context
+from jinja2.ext import ExprStmtExtension
 from markupsafe import Markup, escape
 
 from web.domains.case.services import case_progress
@@ -137,7 +138,7 @@ def environment(**options):
     # https://github.com/pytest-dev/pytest-django/issues/327
     options.pop("string_if_invalid", None)
 
-    env = Environment(extensions=[CompressorExtension], **options)
+    env = Environment(extensions=[CompressorExtension, ExprStmtExtension], **options)
     env.globals.update(
         {
             "static": staticfiles_storage.url,
