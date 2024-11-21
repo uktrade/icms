@@ -8,6 +8,7 @@ AWS_REGION = "eu-west-2"
 AWS_ACCESS_KEY_ID = "test"
 AWS_SECRET_ACCESS_KEY = "test"
 AWS_STORAGE_BUCKET_NAME = "icms.local"
+AWS_TMP_STORAGE_BUCKET_NAME = "icms-tmp.local"
 AWS_S3_ENDPOINT_URL = env.local_aws_s3_endpoint_url
 
 INSTALLED_APPS += [
