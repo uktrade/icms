@@ -4,15 +4,31 @@
 #
 #    pip-compile --output-file=requirements-dev.txt --strip-extras requirements/requirements-dev.in
 #
+aiodns==3.2.0
+    # via checkov
+aiohappyeyeballs==2.4.3
+    # via aiohttp
+aiohttp==3.11.6
+    # via
+    #   checkov
+    #   cloudfoundry-client
+    #   dbt-platform-helper
+    #   openai
+aiomultiprocess==0.9.1
+    # via checkov
+aiosignal==1.3.1
+    # via aiohttp
 amqp==5.2.0
     # via kombu
 annotated-types==0.7.0
     # via pydantic
+argcomplete==3.5.1
+    # via checkov
 asgiref==3.8.1
     # via django
 asn1crypto==1.5.1
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   certvalidator
     #   endesive
     #   oscrypto
@@ -20,33 +36,57 @@ asttokens==2.4.1
     # via stack-data
 attrs==23.2.0
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
+    #   aiohttp
     #   endesive
+    #   jsonschema
 authlib==1.3.2
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
+aws-sam-translator==1.92.0
+    # via cfn-lint
 backoff==2.2.1
     # via
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
+bc-detect-secrets==1.5.4
+    # via checkov
+bc-jsonpath-ng==1.6.1
+    # via checkov
+bc-python-hcl2==0.4.2
+    # via checkov
 bcrypt==4.2.0
     # via paramiko
+beartype==0.19.0
+    # via spdx-tools
 beautifulsoup4==4.12.3
-    # via django-htmlmin
+    # via
+    #   django-htmlmin
+    #   policy-sentry
 billiard==4.2.0
     # via celery
 black==24.8.0
     # via -r requirements/requirements-dev.in
+boolean-py==4.0
+    # via license-expression
 boto3==1.35.20
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
+    #   aws-sam-translator
+    #   checkov
+    #   cloudsplaining
+    #   dbt-platform-helper
     #   django-chunk-upload-handlers
 boto3-stubs==1.35.20
-    # via -r requirements/requirements-dev.in
+    # via
+    #   -r requirements/requirements-dev.in
+    #   dbt-platform-helper
 botocore==1.35.20
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   boto3
+    #   cloudsplaining
+    #   dbt-platform-helper
     #   s3transfer
 botocore-stubs==1.35.20
     # via
@@ -54,57 +94,98 @@ botocore-stubs==1.35.20
     #   boto3-stubs
 build==1.2.2
     # via pip-tools
+cached-property==2.0.1
+    # via cloudsplaining
+cachetools==5.5.0
+    # via checkov
 celery==5.4.0
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   dbt-copilot-python
     #   django-celery-results
 certifi==2024.8.30
     # via
+    #   dbt-platform-helper
     #   requests
     #   sentry-sdk
 certvalidator==0.11.1
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   endesive
 cffi==1.17.1
     # via
     #   cryptography
+    #   pycares
     #   pynacl
 cfgv==3.4.0
     # via pre-commit
+cfn-flip==1.3.0
+    # via dbt-platform-helper
+cfn-lint==1.20.0
+    # via dbt-platform-helper
 chardet==5.2.0
     # via reportlab
 charset-normalizer==3.3.2
-    # via requests
+    # via
+    #   checkov
+    #   requests
+checkov==3.2.10
+    # via dbt-platform-helper
 click==8.1.7
     # via
     #   black
     #   celery
+    #   cfn-flip
+    #   checkov
     #   click-didyoumean
+    #   click-option-group
     #   click-plugins
     #   click-repl
+    #   cloudsplaining
+    #   dbt-platform-helper
     #   pip-tools
+    #   policy-sentry
+    #   spdx-tools
 click-didyoumean==0.3.1
     # via celery
+click-option-group==0.5.6
+    # via cloudsplaining
 click-plugins==1.1.1
     # via celery
 click-repl==0.3.0
     # via celery
+cloudfoundry-client==1.35.2
+    # via dbt-platform-helper
+cloudsplaining==0.6.3
+    # via checkov
+colorama==0.4.6
+    # via checkov
+configargparse==1.7
+    # via checkov
+contextlib2==21.6.0
+    # via schema
 coverage==7.6.1
     # via pytest-cov
 cryptography==43.0.1
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   authlib
+    #   dbt-platform-helper
     #   endesive
     #   paramiko
+cyclonedx-python-lib==6.4.4
+    # via checkov
 dbt-copilot-python==0.2.2
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
+dbt-platform-helper==12.0.2
+    # via -r requirements/requirements-dev.in
 decorator==5.1.1
     # via
+    #   bc-jsonpath-ng
     #   ipdb
     #   ipython
+defusedxml==0.7.1
+    # via py-serializable
 deprecated==1.2.14
     # via
     #   opentelemetry-api
@@ -113,10 +194,10 @@ deprecated==1.2.14
 distlib==0.3.8
     # via virtualenv
 dj-database-url==2.2.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django==4.2.16
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   dj-database-url
     #   django-appconf
     #   django-celery-results
@@ -139,41 +220,47 @@ django-appconf==1.0.6
     #   django-compressor
     #   django-select2
 django-celery-results==2.5.1
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-chunk-upload-handlers==0.0.14
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-compressor==4.5.1
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-csp==3.8
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-debug-toolbar==4.4.6
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-extensions==3.2.3
     # via -r requirements/requirements-dev.in
 django-filter==24.3
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-guardian==2.4.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-htmlmin==0.11.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-log-formatter-asim==0.0.6
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-phonenumber-field==7.2.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-ratelimit==4.1.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-redis==5.4.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-select2==8.2.1
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-staff-sso-client==4.3.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 django-storages==1.14.4
     # via django-chunk-upload-handlers
+docker==7.1.0
+    # via checkov
+dockerfile-parse==2.0.1
+    # via checkov
 docopt==0.6.2
     # via notifications-python-client
+dpath==2.1.3
+    # via checkov
 endesive==2.17.3
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 et-xmlfile==1.1.0
     # via openpyxl
 execnet==2.1.1
@@ -192,14 +279,22 @@ flake8==7.1.1
     # via -r requirements/requirements-dev.in
 freezegun==1.5.1
     # via -r requirements/requirements-dev.in
+frozenlist==1.5.0
+    # via
+    #   aiohttp
+    #   aiosignal
 gevent==24.2.1
     # via gunicorn
+gitdb==4.0.11
+    # via gitpython
+gitpython==3.1.43
+    # via checkov
 googleapis-common-protos==1.65.0
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
 govuk-frontend-jinja==3.4.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 greenlet==3.0.3
     # via
     #   gevent
@@ -207,19 +302,23 @@ greenlet==3.0.3
 grpcio==1.66.1
     # via opentelemetry-exporter-otlp-proto-grpc
 gunicorn==23.0.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 html2text==2024.2.26
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 html5lib==1.1
     # via django-htmlmin
 humanize==4.10.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 identify==2.6.0
     # via pre-commit
 idna==3.8
-    # via requests
+    # via
+    #   requests
+    #   yarl
 importlib-metadata==6.11.0
-    # via opentelemetry-api
+    # via
+    #   checkov
+    #   opentelemetry-api
 iniconfig==2.0.0
     # via pytest
 ipdb==0.13.13
@@ -232,16 +331,44 @@ jedi==0.19.1
     # via ipython
 jinja2==3.1.4
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
+    #   cloudsplaining
+    #   dbt-platform-helper
     #   govuk-frontend-jinja
+    #   jinja2-simple-tags
+jinja2-simple-tags==0.5.0
+    # via dbt-platform-helper
 jmespath==1.0.1
     # via
     #   boto3
     #   botocore
+    #   checkov
+jsonpatch==1.33
+    # via cfn-lint
+jsonpointer==3.0.0
+    # via jsonpatch
+jsonschema==4.17.3
+    # via
+    #   aws-sam-translator
+    #   checkov
+    #   dbt-platform-helper
+junit-xml==1.9
+    # via checkov
 kombu==5.4.0
     # via celery
+lark==1.2.2
+    # via
+    #   bc-python-hcl2
+    #   pycep-parser
+license-expression==30.4.0
+    # via
+    #   checkov
+    #   cyclonedx-python-lib
+    #   spdx-tools
 lxml==4.9.3
     # via endesive
+markdown==3.7
+    # via cloudsplaining
 markupsafe==2.1.5
     # via jinja2
 matplotlib-inline==0.1.7
@@ -249,11 +376,19 @@ matplotlib-inline==0.1.7
 mccabe==0.7.0
     # via flake8
 mohawk==1.1.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
+mpmath==1.3.0
+    # via sympy
+multidict==6.1.0
+    # via
+    #   aiohttp
+    #   yarl
 mypy==1.11.2
     # via -r requirements/requirements-dev.in
 mypy-boto3-cloudformation==1.35.0
     # via boto3-stubs
+mypy-boto3-codebuild==1.35.59
+    # via dbt-platform-helper
 mypy-boto3-dynamodb==1.35.0
     # via boto3-stubs
 mypy-boto3-ec2==1.35.8
@@ -270,14 +405,24 @@ mypy-extensions==1.0.0
     # via
     #   black
     #   mypy
+networkx==2.6.3
+    # via
+    #   cfn-lint
+    #   checkov
 nodeenv==1.9.1
     # via pre-commit
 notifications-python-client==10.0.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
+numpy==2.1.3
+    # via rustworkx
+oauth2-client==1.4.2
+    # via cloudfoundry-client
 oauthlib==3.2.2
     # via requests-oauthlib
+openai==0.28.1
+    # via checkov
 openpyxl==3.1.5
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 opentelemetry-api==1.22.0
     # via
     #   opentelemetry-distro
@@ -328,34 +473,40 @@ opentelemetry-util-http==0.43b0
     # via opentelemetry-instrumentation-wsgi
 oscrypto==1.3.0
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   certvalidator
     #   endesive
-packaging==24.1
+packageurl-python==0.13.4
+    # via
+    #   checkov
+    #   cyclonedx-python-lib
+packaging==23.2
     # via
     #   black
     #   build
+    #   checkov
     #   gunicorn
     #   pip-check
-    #   pipdeptree
     #   pytest
 paramiko==3.5.0
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   endesive
 parso==0.8.4
     # via jedi
 pathspec==0.12.1
-    # via black
+    # via
+    #   black
+    #   yamllint
 pdf2image==1.17.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 pexpect==4.9.0
     # via ipython
 phonenumbers==8.13.45
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 pillow==10.4.0
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   endesive
     #   pdf2image
     #   reportlab
@@ -363,36 +514,57 @@ pip-check==2.9
     # via -r requirements/requirements-dev.in
 pip-tools==7.4.1
     # via -r requirements/requirements-dev.in
-pipdeptree==2.23.3
-    # via -r requirements/requirements-dev.in
 platformdirs==4.3.2
     # via
     #   black
     #   virtualenv
 playwright==1.47.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 pluggy==1.5.0
     # via pytest
-pre-commit==3.8.0
+ply==3.11
+    # via
+    #   bc-jsonpath-ng
+    #   spdx-tools
+policy-sentry==0.12.15
+    # via cloudsplaining
+polling2==0.5.0
+    # via cloudfoundry-client
+pre-commit==3.5.0
     # via
     #   -r requirements/requirements-dev.in
     #   django-log-formatter-asim
+prettytable==3.12.0
+    # via
+    #   checkov
+    #   dbt-platform-helper
 prompt-toolkit==3.0.47
     # via
     #   click-repl
     #   ipython
+propcache==0.2.0
+    # via
+    #   aiohttp
+    #   yarl
 protobuf==4.25.4
     # via
+    #   cloudfoundry-client
     #   googleapis-common-protos
     #   opentelemetry-proto
 psycopg==3.2.2
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 psycopg-c==3.2.2
     # via psycopg
 ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.3
     # via stack-data
+py-serializable==1.1.2
+    # via cyclonedx-python-lib
+pycares==4.4.0
+    # via aiodns
+pycep-parser==0.4.1
+    # via checkov
 pycodestyle==2.12.1
     # via
     #   -r requirements/requirements-dev.in
@@ -401,12 +573,14 @@ pycparser==2.22
     # via cffi
 pydantic==2.9.1
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
+    #   aws-sam-translator
+    #   checkov
     #   pydantic-settings
 pydantic-core==2.23.3
     # via pydantic
 pydantic-settings==2.5.2
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 pyee==12.0.0
     # via playwright
 pyflakes==3.2.0
@@ -421,24 +595,28 @@ pyjwt==2.9.0
     # via notifications-python-client
 pykcs11==1.4.4
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   endesive
 pymupdf==1.24.10
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 pymupdfb==1.24.10
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   pymupdf
 pynacl==1.5.0
     # via paramiko
+pyparsing==3.2.0
+    # via rdflib
 pypdf==4.3.1
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 pypng==0.20220715.0
     # via qrcode
 pyproject-hooks==1.1.0
     # via
     #   build
     #   pip-tools
+pyrsistent==0.20.0
+    # via jsonschema
 pytest==8.3.3
     # via
     #   -r requirements/requirements-dev.in
@@ -462,7 +640,7 @@ pytest-xdist==3.6.1
     # via -r requirements/requirements-dev.in
 python-dateutil==2.8.2
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   botocore
     #   celery
     #   faker
@@ -471,27 +649,52 @@ python-dotenv==1.0.1
     # via pydantic-settings
 pytz==2023.3
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   endesive
-pyyaml==6.0.2
-    # via pre-commit
+pyyaml==6.0.1
+    # via
+    #   bc-detect-secrets
+    #   cfn-flip
+    #   cfn-lint
+    #   checkov
+    #   cloudfoundry-client
+    #   cloudsplaining
+    #   dbt-platform-helper
+    #   policy-sentry
+    #   pre-commit
+    #   spdx-tools
+    #   yamllint
 qrcode==7.4.2
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 rcssmin==1.1.2
     # via django-compressor
+rdflib==7.1.1
+    # via spdx-tools
 redis==5.0.8
     # via
     #   celery
     #   django-redis
+regex==2024.11.6
+    # via
+    #   cfn-lint
+    #   pycep-parser
 reportlab==4.2.2
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 requests==2.32.3
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
+    #   bc-detect-secrets
+    #   checkov
+    #   cloudfoundry-client
     #   dbt-copilot-python
+    #   dbt-platform-helper
+    #   docker
     #   endesive
     #   notifications-python-client
+    #   oauth2-client
+    #   openai
     #   opentelemetry-exporter-otlp-proto-http
+    #   policy-sentry
     #   pytest-base-url
     #   requests-mock
     #   requests-oauthlib
@@ -501,19 +704,40 @@ requests-oauthlib==2.0.0
     # via django-staff-sso-client
 rjsmin==1.2.2
     # via django-compressor
+rustworkx==0.13.2
+    # via checkov
 s3transfer==0.10.2
     # via boto3
+schema==0.7.5
+    # via
+    #   cloudsplaining
+    #   dbt-platform-helper
+    #   policy-sentry
+semantic-version==2.10.0
+    # via spdx-tools
+semver==3.0.2
+    # via dbt-platform-helper
 sentry-sdk==2.14.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 six==1.16.0
     # via
     #   asttokens
+    #   cfn-flip
     #   html5lib
+    #   junit-xml
     #   mohawk
     #   python-dateutil
     #   requests-mock
+slack-sdk==3.33.4
+    # via dbt-platform-helper
+smmap==5.0.1
+    # via gitdb
+sortedcontainers==2.4.0
+    # via cyclonedx-python-lib
 soupsieve==2.6
     # via beautifulsoup4
+spdx-tools==0.8.3
+    # via checkov
 sqlparse==0.5.1
     # via
     #   -r requirements/requirements-dev.in
@@ -521,10 +745,21 @@ sqlparse==0.5.1
     #   django-debug-toolbar
 stack-data==0.6.3
     # via ipython
+sympy==1.13.3
+    # via cfn-lint
+tabulate==0.9.0
+    # via checkov
+termcolor==2.3.0
+    # via checkov
 terminaltables==3.1.10
     # via pip-check
+tomlkit==0.12.5
+    # via dbt-platform-helper
 tqdm==4.66.5
-    # via -r /code/requirements/requirements-base.in
+    # via
+    #   -r requirements/requirements-base.in
+    #   checkov
+    #   openai
 traitlets==5.14.3
     # via
     #   ipython
@@ -551,11 +786,15 @@ types-tqdm==4.66.0.20240417
     # via -r requirements/requirements-dev.in
 typing-extensions==4.12.2
     # via
+    #   aws-sam-translator
     #   boto3-stubs
+    #   cfn-lint
+    #   checkov
     #   dj-database-url
     #   ipython
     #   mypy
     #   mypy-boto3-cloudformation
+    #   mypy-boto3-codebuild
     #   mypy-boto3-dynamodb
     #   mypy-boto3-ec2
     #   mypy-boto3-lambda
@@ -564,16 +803,22 @@ typing-extensions==4.12.2
     #   mypy-boto3-sqs
     #   opentelemetry-sdk
     #   psycopg
+    #   pycep-parser
     #   pydantic
     #   pydantic-core
     #   pyee
     #   qrcode
 tzdata==2024.1
     # via celery
+unidiff==0.7.5
+    # via bc-detect-secrets
+uritools==4.0.3
+    # via spdx-tools
 urllib3==2.2.3
     # via
-    #   -r /code/requirements/requirements-base.in
+    #   -r requirements/requirements-base.in
     #   botocore
+    #   docker
     #   requests
     #   sentry-sdk
     #   types-requests
@@ -585,19 +830,31 @@ vine==5.1.0
 virtualenv==20.26.4
     # via pre-commit
 wcwidth==0.2.13
-    # via prompt-toolkit
+    # via
+    #   prettytable
+    #   prompt-toolkit
 webencodings==0.5.1
     # via html5lib
+websocket-client==1.6.4
+    # via cloudfoundry-client
 wheel==0.44.0
     # via pip-tools
 whitenoise==6.7.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
 wrapt==1.16.0
     # via
     #   deprecated
     #   opentelemetry-instrumentation
 xlsxwriter==3.2.0
-    # via -r /code/requirements/requirements-base.in
+    # via -r requirements/requirements-base.in
+xmltodict==0.14.2
+    # via spdx-tools
+yamllint==1.35.1
+    # via dbt-platform-helper
+yarl==1.17.2
+    # via
+    #   aiohttp
+    #   checkov
 zipp==3.20.1
     # via importlib-metadata
 zope-event==5.0
