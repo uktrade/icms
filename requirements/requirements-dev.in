@@ -35,3 +35,4 @@ types-python-dateutil==2.9.0.20240906
 types-pytz==2023.3
 types-requests==2.32.0.20240914
 types-tqdm==4.66.0.20240417
+dbt-platform-helper==12.0.2
