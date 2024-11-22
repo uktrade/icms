@@ -132,6 +132,28 @@ class UserPhoneNumberForm(forms.ModelForm):
 class UserEmailForm(forms.ModelForm):
     class Meta:
         model = Email
+        fields = ["email", "type"]
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].lower()
+        if Email.objects.filter(user=self.user, email=email).exists():
+            raise forms.ValidationError("Email address has already added to your account.")
+        return email
+
+    def save(self, commit=True):
+        email = super().save(commit=False)
+        email.user = self.user
+        email.save()
+        return email
+
+
+class UpdateUserEmailForm(forms.ModelForm):
+    class Meta:
+        model = Email
         fields = ["email", "type", "comment", "portal_notifications", "is_primary"]
         labels = {
             "email": "Email Address",
@@ -155,8 +177,14 @@ class UserEmailForm(forms.ModelForm):
             "is_primary": "Preferred contact address",
         }
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+
     def save(self, commit=True):
-        email = super().save(commit=True)
+        email = super().save(commit=False)
+        email.user = self.user
+        email.save()
 
         # Extra logic to ensure there is always one primary email.
         previous_primary = email.user.emails.filter(is_primary=True).exclude(pk=email.pk).first()
@@ -169,9 +197,7 @@ class UserEmailForm(forms.ModelForm):
         # Set the form instance email to primary if one doesn't already exist.
         elif not email.is_primary and not previous_primary:
             email.is_primary = True
-
-            if commit:
-                email.save()
+            email.save()
 
         return email
 
