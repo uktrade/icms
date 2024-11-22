@@ -2,6 +2,7 @@ import datetime as dt
 from unittest.mock import Mock
 
 import pytest
+from django.conf import settings
 
 from web.domains.case.services import document_pack
 from web.domains.template.context import CoverLetterTemplateContext
@@ -432,6 +433,20 @@ def test_get_fir_template_data_import(fa_sil_app_submitted, ilb_admin_client, il
 
     assert subject == f"Request for more information {app.reference}"
     assert "You need to provide some more information" in body
+
+
+def test_get_fir_template_data_sanctions(sanctions_app_submitted, ilb_admin_client, ilb_admin_user):
+    app = sanctions_app_submitted
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+    app.refresh_from_db()
+
+    subject, body = get_fir_template_data(app, ilb_admin_user)
+
+    assert subject == f"Request for more information {app.reference}"
+    assert (
+        f"Contact {settings.ICMS_SANCTIONS_EMAIL} if you have any questions about your application"
+        in body
+    )
 
 
 def test_get_fir_template_data_export(gmp_app_submitted, ilb_admin_client, ilb_admin_user):

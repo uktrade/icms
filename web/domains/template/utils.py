@@ -198,7 +198,13 @@ def get_application_update_template_data(application: ImpOrExp) -> tuple[str, st
 def get_fir_template_data(process: Process, current_user: User) -> tuple[str, str]:
     match process:
         case ImportApplication():
-            return get_email_template_subject_body(process, Template.Codes.IMA_RFI)
+            match process.process_type:
+                case ProcessTypes.SANCTIONS:
+                    return get_email_template_subject_body(
+                        process, Template.Codes.IMA_SANCTIONS_RFI
+                    )
+                case _:
+                    return get_email_template_subject_body(process, Template.Codes.IMA_RFI)
         case ExportApplication():
             return get_email_template_subject_body(process, Template.Codes.CA_RFI_EMAIL)
         case AccessRequest():

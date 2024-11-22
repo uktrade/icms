@@ -224,6 +224,25 @@ Yours sincerely,
 [[CASE_OFFICER_NAME]]
 """
 
+IMA_RFI_SANCTIONS_BODY = """Dear [[IMPORTER_NAME]],
+
+You need to provide some more information for Import Licencing Branch (ILB) to process your application.
+[DESCRIBE WHAT INFORMATION OR CLARIFICATION IS NEEDED. INCLUDE SUGGESTIONS IF RELEVANT]
+ regarding [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT].
+
+Your application will not be processed further until you respond to this request.
+
+The application will be closed if the requested response is not received within 1 working day of this email.
+
+Contact [[SANCTIONS_EMAIL_ADDRESS]] if you have any questions about your application.
+
+Include case reference number [[CASE_REFERENCE]] in your email, so we know which application you are contacting us about.
+
+Yours sincerely,
+
+[[CASE_OFFICER_NAME]]
+"""
+
 CA_RFI_BODY = f"""Dear [[EXPORTER_NAME]],
 
 Some more information is needed for the Import Licencing Branch (ILB) to process your application.
@@ -341,6 +360,11 @@ EMAIL_CONTENT = [
         FIREARMS_CONSTABULARY_BODY,
     ),
     (Template.Codes.IMA_RFI, "Request for more information [[CASE_REFERENCE]]", IMA_RFI_BODY),
+    (
+        Template.Codes.IMA_SANCTIONS_RFI,
+        "Request for more information [[CASE_REFERENCE]]",
+        IMA_RFI_SANCTIONS_BODY,
+    ),
     (Template.Codes.CA_RFI_EMAIL, "Request for more information [[CASE_REFERENCE]]", CA_RFI_BODY),
     (Template.Codes.CA_HSE_EMAIL, "Biocidal product enquiry [[CASE_REFERENCE]]", HSE_BODY),
     (
