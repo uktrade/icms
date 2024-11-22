@@ -12,7 +12,10 @@ from web.one_login.constants import ONE_LOGIN_UNSET_NAME
 from web.sites import SiteName, get_exporter_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
-from web.tests.helpers import check_gov_notify_email_was_sent
+from web.tests.helpers import (
+    check_gov_notify_email_was_sent,
+    get_messages_from_response,
+)
 
 
 class TestUserUpdateView:
@@ -178,6 +181,7 @@ class TestUserDeleteTelephoneView:
 class TestUserCreateEmailView:
     @pytest.fixture(autouse=True)
     def setup(self, importer_client, importer_one_contact, exporter_client, exporter_one_contact):
+        self.importer_one_contact = importer_one_contact
         self.importer_url = reverse("user-email-add", kwargs={"user_pk": importer_one_contact.pk})
         self.exporter_url = reverse("user-email-add", kwargs={"user_pk": exporter_one_contact.pk})
 
@@ -196,6 +200,51 @@ class TestUserCreateEmailView:
 
         response = self.exporter_client.get(self.exporter_url)
         assert response.status_code == HTTPStatus.OK
+
+    def test_add_email_address_primary_true(self):
+        assert self.importer_one_contact.emails.filter(is_primary=True).count() == 1
+        data = {
+            "email": "test@example.com",  # /PS-IGNORE
+            "type": "WORK",
+            "is_primary": True,
+        }
+        response = self.importer_client.post(self.importer_url, data=data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert (
+            self.importer_one_contact.emails.get(is_primary=True).email
+            == "test@example.com"  # /PS-IGNORE
+        )
+
+    def test_add_email_address_primary_false(self):
+        assert self.importer_one_contact.emails.filter(is_primary=True).count() == 1
+        data = {
+            "email": "test@example.com",  # /PS-IGNORE
+            "type": "WORK",
+            "is_primary": False,
+        }
+        response = self.importer_client.post(self.importer_url, data=data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert (
+            self.importer_one_contact.emails.get(is_primary=True).email
+            == "I1_main_contact@example.com"  # /PS-IGNORE
+        )
+
+    def test_add_email_address_no_primary_set(self):
+        email = self.importer_one_contact.emails.get(is_primary=True)
+        email.is_primary = False
+        email.save()
+
+        data = {
+            "email": "test@example.com",  # /PS-IGNORE
+            "type": "WORK",
+            "is_primary": False,
+        }
+        response = self.importer_client.post(self.importer_url, data=data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert (
+            self.importer_one_contact.emails.get(is_primary=True).email
+            == "test@example.com"  # /PS-IGNORE
+        )
 
 
 class TestUserUpdateEmailView:
@@ -233,6 +282,7 @@ class TestUserUpdateEmailView:
 class TestUserDeleteEmailView:
     @pytest.fixture(autouse=True)
     def setup(self, importer_client, importer_one_contact, exporter_client, exporter_one_contact):
+        self.importer_one_contact = importer_one_contact
         self.importer_email = add_user_email(importer_one_contact, "test_importer_email")
         self.exporter_email = add_user_email(exporter_one_contact, "test_exporter_email")
 
@@ -260,6 +310,49 @@ class TestUserDeleteEmailView:
 
         response = self.exporter_client.post(self.exporter_url)
         assert response.status_code == HTTPStatus.FOUND
+
+    def test_delete_email(self):
+        assert self.importer_one_contact.emails.all().count() == 2
+        response = self.importer_client.post(self.importer_url)
+        assert response.status_code == HTTPStatus.FOUND
+        assert get_messages_from_response(response) == []
+        assert self.importer_one_contact.emails.all().count() == 1
+
+    def test_delete_email_delete_primary_error(self):
+        assert self.importer_one_contact.emails.all().count() == 2
+        url = reverse(
+            "user-email-delete",
+            kwargs={
+                "user_pk": self.importer_one_contact.pk,
+                "email_pk": self.importer_one_contact.emails.get(is_primary=True).pk,
+            },
+        )
+
+        response = self.importer_client.post(url)
+        assert response.status_code == HTTPStatus.FOUND
+        assert get_messages_from_response(response) == [
+            "Unable to delete Primary email address. Please set another email address as primary before deleting."
+        ]
+        assert self.importer_one_contact.emails.all().count() == 2
+
+    def test_delete_login_email_error(self):
+        login_email = self.importer_one_contact.emails.get(email=self.importer_one_contact.email)
+        login_email.is_primary = False
+        login_email.save()
+
+        url = reverse(
+            "user-email-delete",
+            kwargs={"user_pk": self.importer_one_contact.pk, "email_pk": login_email.pk},
+        )
+
+        assert self.importer_one_contact.emails.all().count() == 2
+
+        response = self.importer_client.post(url)
+        assert response.status_code == HTTPStatus.FOUND
+        assert get_messages_from_response(response) == [
+            "Unable to delete email address used for account login."
+        ]
+        assert self.importer_one_contact.emails.all().count() == 2
 
 
 class TestUsersListView(AuthTestCase):

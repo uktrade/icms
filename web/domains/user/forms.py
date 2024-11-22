@@ -169,9 +169,7 @@ class UserEmailForm(forms.ModelForm):
         # Set the form instance email to primary if one doesn't already exist.
         elif not email.is_primary and not previous_primary:
             email.is_primary = True
-
-            if commit:
-                email.save()
+            email.save()
 
         return email
 
