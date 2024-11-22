@@ -245,6 +245,8 @@ class EmailTemplateContext:
                 return self.process.importer.display_name
             case "IMPORTER_ADDRESS":
                 return str(self.process.importer_office)
+            case "SANCTIONS_EMAIL_ADDRESS":
+                return settings.ICMS_SANCTIONS_EMAIL
         return self._application_context(item)
 
     def _export_context(self, item: str) -> str:

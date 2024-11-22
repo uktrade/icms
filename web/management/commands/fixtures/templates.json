@@ -1179,6 +1179,19 @@
         }
     },
     {
+        "model": "web.template",
+        "pk": 93,
+        "fields": {
+            "is_active": true,
+            "template_name": "Further Information Request Email (Sanctions)",
+            "template_code": "IMA_SANCTIONS_RFI",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "IMA",
+            "country_translation_set": null,
+            "countries": []
+        }
+    },
+    {
         "model": "web.templateversion",
         "pk": 1,
         "fields": {
@@ -2393,6 +2406,20 @@
             "version_number": 1,
             "title": "ICMS Case Reference [[CASE_REFERENCE]] Stopped",
             "content": "Processing on ICMS Case Reference [[CASE_REFERENCE]] has been stopEmail enquiries.ilb@trade.gov.uk  if you believe this is in error or need more information.",
+            "created_by": 0
+        }
+    },
+    {
+        "model": "web.templateversion",
+        "pk": 90,
+        "fields": {
+            "template": 93,
+            "start_datetime": "2024-11-21T09:29:40.418Z",
+            "end_datetime": null,
+            "is_active": true,
+            "version_number": 1,
+            "title": "Request for more information [[CASE_REFERENCE]]",
+            "content": "Dear [[IMPORTER_NAME]],\\n\\nYou need to provide some more information for Import Licencing Branch (ILB) to process your application.\\n\\n[DESCRIBE WHAT INFORMATION OR CLARIFICATION IS NEEDED. INCLUDE SUGGESTIONS IF RELEVANT]\\n\\nregarding [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT].\\n\\nYour application will not be processed further until you respond to this request.\\n\\nThe application will be closed if the requested response is not received within 1 working day of this email.\\n\\nContact [[SANCTIONS_EMAIL_ADDRESS]] if you have any questions about your application.\\n\\nInclude case reference number [[CASE_REFERENCE]] in your email, so we know which application you are contacting us about.\\n\\nYours sincerely,\\n\\n[[CASE_OFFICER_NAME]]",
             "created_by": 0
         }
     }
