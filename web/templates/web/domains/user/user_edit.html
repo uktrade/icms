@@ -93,6 +93,7 @@
     <tr>
       <th>Email Address</th>
       <th>Type</th>
+      <th>Is Verified</th>
       <th>Primary Email</th>
       <th>Portal Notifications</th>
       <th>Comment</th>
@@ -104,11 +105,19 @@
       <tr>
         <td>{{ email.email }}</td>
         <td>{{ email.get_type_display() }}</td>
+        <td>{{ "Yes" if email.is_verified else "No" }}</td>
         <td>{{ "Yes" if email.is_primary }}</td>
         <td>{{ "Yes" if email.portal_notifications else "No" }}</td>
         <td>{{ email.comment or "" }}</td>
         <td>
-          <a href="{{ icms_url('user-email-edit', kwargs={'user_pk':request.user.pk, 'email_pk': email.pk}) }}" class="button small-button icon-pencil">Edit</a>
+          {% if email.is_verified  %}
+            <a href="{{ icms_url('user-email-edit', kwargs={'user_pk':request.user.pk, 'email_pk': email.pk}) }}" class="button small-button icon-pencil">Edit</a>
+          {% elif email.email != request.user.email %}
+            <form method="post" action="{{ icms_url('user-send-verify-email', kwargs={'user_pk':request.user.pk, 'email_pk': email.pk}) }}" class="form-inline">
+              {{ csrf_input }}
+              <button type="submit" class="button small-button icon-mail2">Resend Verification email</button>
+            </form>
+          {% endif %}
           {# Can't delete primary email or email used to log in to the service. #}
           {% if not email.is_primary and not email.email|lower == request.user.email|lower %}
             <form method="post" action="{{ icms_url('user-email-delete', kwargs={'user_pk':request.user.pk, 'email_pk': email.pk}) }}" class="form-inline">
