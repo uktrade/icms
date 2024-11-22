@@ -1,18 +1,25 @@
+import datetime as dt
+import uuid
 from http import HTTPStatus
 from typing import Any
 
 import pytest
 from django.urls import reverse
+from freezegun import freeze_time
 from pytest_django.asserts import assertContains, assertRedirects
 
 from web.forms.fields import JQUERY_DATE_FORMAT
 from web.mail.constants import EmailTypes
-from web.models import Email, PhoneNumber, User
+from web.mail.url_helpers import get_email_verification_url
+from web.models import Email, EmailVerification, PhoneNumber, User
 from web.one_login.constants import ONE_LOGIN_UNSET_NAME
-from web.sites import SiteName, get_exporter_site_domain
+from web.sites import SiteName, get_exporter_site_domain, get_importer_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
-from web.tests.helpers import check_gov_notify_email_was_sent
+from web.tests.helpers import (
+    check_gov_notify_email_was_sent,
+    get_messages_from_response,
+)
 
 
 class TestUserUpdateView:
@@ -178,6 +185,7 @@ class TestUserDeleteTelephoneView:
 class TestUserCreateEmailView:
     @pytest.fixture(autouse=True)
     def setup(self, importer_client, importer_one_contact, exporter_client, exporter_one_contact):
+        self.importer_one_contact = importer_one_contact
         self.importer_url = reverse("user-email-add", kwargs={"user_pk": importer_one_contact.pk})
         self.exporter_url = reverse("user-email-add", kwargs={"user_pk": exporter_one_contact.pk})
 
@@ -197,12 +205,56 @@ class TestUserCreateEmailView:
         response = self.exporter_client.get(self.exporter_url)
         assert response.status_code == HTTPStatus.OK
 
+    def test_add_email_address_primary_true(self):
+        assert self.importer_one_contact.emails.filter(is_primary=True).count() == 1
+        data = {
+            "email": "test@example.com",  # /PS-IGNORE
+            "type": Email.WORK,
+        }
+        response = self.importer_client.post(self.importer_url, data=data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert (
+            self.importer_one_contact.emails.get(is_primary=True).email
+            == "I1_main_contact@example.com"  # /PS-IGNORE
+        )
+        check_gov_notify_email_was_sent(
+            1,
+            ["test@example.com"],  # /PS-IGNORE
+            EmailTypes.EMAIL_VERIFICATION,
+            {
+                "icms_url": get_importer_site_domain(),
+                "service_name": SiteName.IMPORTER.label,
+                "email_verification_url": get_email_verification_url(
+                    EmailVerification.objects.last(), get_importer_site_domain()
+                ),
+            },
+        )
+
+    def test_add_email_address_primary_false(self):
+        assert self.importer_one_contact.emails.filter(is_primary=True).count() == 1
+        data = {
+            "email": "test@example.com",  # /PS-IGNORE
+            "type": Email.WORK,
+            "is_primary": False,
+        }
+        response = self.importer_client.post(self.importer_url, data=data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert (
+            self.importer_one_contact.emails.get(is_primary=True).email
+            == "I1_main_contact@example.com"  # /PS-IGNORE
+        )
+
 
 class TestUserUpdateEmailView:
     @pytest.fixture(autouse=True)
     def setup(self, importer_client, importer_one_contact, exporter_client, exporter_one_contact):
-        self.importer_email = add_user_email(importer_one_contact, "test_importer_email")
-        self.exporter_email = add_user_email(exporter_one_contact, "test_exporter_email")
+        self.importer_one_contact = importer_one_contact
+        self.importer_email = add_user_email(
+            importer_one_contact, "test_importer_email", is_verified=True
+        )
+        self.exporter_email = add_user_email(
+            exporter_one_contact, "test_exporter_email", is_verified=True
+        )
 
         self.importer_url = reverse(
             "user-email-edit",
@@ -229,10 +281,28 @@ class TestUserUpdateEmailView:
         response = self.exporter_client.get(self.exporter_url)
         assert response.status_code == HTTPStatus.OK
 
+    def test_add_email_address_no_primary_set(self):
+        email = self.importer_one_contact.emails.get(is_primary=True)
+        email.is_primary = False
+        email.save()
+
+        data = {
+            "email": "test@example.com",  # /PS-IGNORE
+            "type": Email.WORK,
+            "is_primary": False,
+        }
+        response = self.importer_client.post(self.importer_url, data=data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert (
+            self.importer_one_contact.emails.get(is_primary=True).email
+            == "test@example.com"  # /PS-IGNORE
+        )
+
 
 class TestUserDeleteEmailView:
     @pytest.fixture(autouse=True)
     def setup(self, importer_client, importer_one_contact, exporter_client, exporter_one_contact):
+        self.importer_one_contact = importer_one_contact
         self.importer_email = add_user_email(importer_one_contact, "test_importer_email")
         self.exporter_email = add_user_email(exporter_one_contact, "test_exporter_email")
 
@@ -260,6 +330,144 @@ class TestUserDeleteEmailView:
 
         response = self.exporter_client.post(self.exporter_url)
         assert response.status_code == HTTPStatus.FOUND
+
+    def test_delete_email(self):
+        assert self.importer_one_contact.emails.all().count() == 2
+        response = self.importer_client.post(self.importer_url)
+        assert response.status_code == HTTPStatus.FOUND
+        assert get_messages_from_response(response) == []
+        assert self.importer_one_contact.emails.all().count() == 1
+
+    def test_delete_another_users_email_error(self):
+        assert self.importer_one_contact.emails.all().count() == 2
+        response = self.importer_client.post(self.exporter_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert self.importer_one_contact.emails.all().count() == 2
+
+    def test_delete_primary_email_error(self):
+        assert self.importer_one_contact.emails.all().count() == 2
+        url = reverse(
+            "user-email-delete",
+            kwargs={
+                "user_pk": self.importer_one_contact.pk,
+                "email_pk": self.importer_one_contact.emails.get(is_primary=True).pk,
+            },
+        )
+
+        response = self.importer_client.post(url)
+        assert response.status_code == HTTPStatus.FOUND
+        assert get_messages_from_response(response) == [
+            "Unable to delete Primary email address. Please set another email address as primary before deleting."
+        ]
+        assert self.importer_one_contact.emails.all().count() == 2
+
+    def test_delete_login_email_error(self):
+        login_email = self.importer_one_contact.emails.get(email=self.importer_one_contact.email)
+        login_email.is_primary = False
+        login_email.save()
+
+        url = reverse(
+            "user-email-delete",
+            kwargs={"user_pk": self.importer_one_contact.pk, "email_pk": login_email.pk},
+        )
+
+        assert self.importer_one_contact.emails.all().count() == 2
+
+        response = self.importer_client.post(url)
+        assert response.status_code == HTTPStatus.FOUND
+        assert get_messages_from_response(response) == [
+            "Unable to delete email address used for account login."
+        ]
+        assert self.importer_one_contact.emails.all().count() == 2
+
+
+class TestUserSendVerifyEmailView(AuthTestCase):
+
+    def test_resend_verify_email(self):
+        email = Email.objects.create(
+            email="test_verify@example.com", type=Email.WORK, user=self.importer_user  # /PS-IGNORE
+        )
+        url = reverse(
+            "user-send-verify-email",
+            kwargs={"user_pk": self.importer_user.pk, "email_pk": email.pk},
+        )
+        response = self.importer_client.post(url)
+        assert response.status_code == HTTPStatus.FOUND
+        check_gov_notify_email_was_sent(
+            1,
+            ["test_verify@example.com"],  # /PS-IGNORE
+            EmailTypes.EMAIL_VERIFICATION,
+            {
+                "icms_url": get_importer_site_domain(),
+                "service_name": SiteName.IMPORTER.label,
+                "email_verification_url": get_email_verification_url(
+                    EmailVerification.objects.last(), get_importer_site_domain()
+                ),
+            },
+        )
+        assert [
+            "Email sent to test_verify@example.com, Please check your inbox to complete adding the email address to your account"  # /PS-IGNORE
+        ] == get_messages_from_response(response)
+
+    def test_resend_verify_email_not_found(self):
+        email = Email.objects.create(
+            email="test_verify@example.com", type=Email.WORK, user=self.exporter_user  # /PS-IGNORE
+        )
+        url = reverse(
+            "user-send-verify-email",
+            kwargs={"user_pk": self.importer_user.pk, "email_pk": email.pk},
+        )
+        response = self.importer_client.post(url)
+        assert response.status_code == HTTPStatus.NOT_FOUND
+
+    def test_resend_verify_email_deleted_email_address(self):
+        url = reverse(
+            "user-send-verify-email",
+            kwargs={"user_pk": self.importer_user.pk, "email_pk": 0},
+        )
+        response = self.importer_client.post(url)
+        assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+class TestUserVerifyEmailView(AuthTestCase):
+
+    @freeze_time("2024-08-01 12:00:00")
+    def test_verify_email(self):
+        email = Email.objects.create(
+            email="test_verify@example.com", type=Email.WORK, user=self.importer_user  # /PS-IGNORE
+        )
+        verification = EmailVerification.objects.create(email=email)
+        url = reverse("email-verify", kwargs={"token": verification.token})
+
+        response = self.importer_client.get(url)
+        assert response.status_code == HTTPStatus.FOUND
+        assertRedirects(
+            response,
+            reverse(
+                "user-email-edit",
+                kwargs={"user_pk": self.importer_user.pk, "email_pk": email.pk},
+            ),
+        )
+        assert get_messages_from_response(response) == [
+            "Email address test_verify@example.com has now been verified."  # /PS-IGNORE
+        ]
+        verification.refresh_from_db()
+        assert verification.verified_at == dt.datetime(2024, 8, 1, 12, 0, 0, tzinfo=dt.UTC)
+
+        email.refresh_from_db()
+        assert email.is_verified is True
+
+    def test_verify_email_not_found(self):
+        url = reverse("email-verify", kwargs={"token": uuid.uuid4()})
+        response = self.importer_client.get(url)
+        assert response.status_code == HTTPStatus.FOUND
+        assertRedirects(
+            response,
+            reverse(
+                "user-edit",
+                kwargs={"user_pk": self.importer_user.pk},
+            ),
+        )
 
 
 class TestUsersListView(AuthTestCase):
@@ -406,7 +614,11 @@ class TestDeactivateUserView(AuthTestCase):
 
 
 def add_user_email(
-    user: User, email_prefix: str, portal_notifications: bool = True, is_primary: bool = False
+    user: User,
+    email_prefix: str,
+    portal_notifications: bool = True,
+    is_primary: bool = False,
+    is_verified: bool = False,
 ) -> Email:
     return Email.objects.create(
         user=user,
@@ -414,6 +626,7 @@ def add_user_email(
         type=Email.WORK,
         portal_notifications=portal_notifications,
         is_primary=is_primary,
+        is_verified=is_verified,
     )
 
 
