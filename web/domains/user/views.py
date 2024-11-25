@@ -152,11 +152,21 @@ class UserUpdateTelephoneView(UserBaseMixin, UpdateView):
     extra_context = {"sub_title": "Edit Phone Number"}
     template_name = "web/domains/user/user_edit_related.html"
 
+    def get_queryset(self) -> QuerySet[PhoneNumber]:
+        qs = super().get_queryset()
+
+        return qs.filter(user=self.request.user)
+
 
 class UserDeleteTelephoneView(UserBaseMixin, SingleObjectMixin, RedirectView):
     http_method_names = ["post"]
     model = PhoneNumber
     pk_url_kwarg = "phonenumber_pk"
+
+    def get_queryset(self) -> QuerySet[PhoneNumber]:
+        qs = super().get_queryset()
+
+        return qs.filter(user=self.request.user)
 
     def post(self, request, *args, **kwargs):
         phone_number = self.get_object()
@@ -185,11 +195,21 @@ class UserUpdateEmailView(UserBaseMixin, UpdateView):
     extra_context = {"sub_title": "Edit Email Address"}
     template_name = "web/domains/user/user_edit_related.html"
 
+    def get_queryset(self) -> QuerySet[Email]:
+        qs = super().get_queryset()
+
+        return qs.filter(user=self.request.user)
+
 
 class UserDeleteEmailView(UserBaseMixin, SingleObjectMixin, RedirectView):
     http_method_names = ["post"]
     model = Email
     pk_url_kwarg = "email_pk"
+
+    def get_queryset(self) -> QuerySet[Email]:
+        qs = super().get_queryset()
+
+        return qs.filter(user=self.request.user)
 
     def post(self, request, *args, **kwargs):
         email = self.get_object()
