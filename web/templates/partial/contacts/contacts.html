@@ -107,14 +107,16 @@
                   </a>
                 </div>
               </div>
-              <div class="row">
-                <div class="twelve columns">
-                  <form method="post" action="{{ icms_url('contacts:delete', kwargs={'org_type': org_type, 'org_pk': object.pk, 'contact_pk': user.pk}) }}">
-                    {{ csrf_input }}
-                    <button type="submit" class="button small-button icon-bin">Delete</button>
-                  </form>
+              {% if is_user_org_admin %}
+                <div class="row">
+                  <div class="twelve columns">
+                    <form method="post" action="{{ icms_url('contacts:delete', kwargs={'org_type': org_type, 'org_pk': object.pk, 'contact_pk': user.pk}) }}">
+                      {{ csrf_input }}
+                      <button type="submit" class="button small-button icon-bin">Delete</button>
+                    </form>
+                  </div>
                 </div>
-              </div>
+              {% endif %}
             </td>
           {% endif %}
         </tr>

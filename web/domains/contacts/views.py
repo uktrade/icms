@@ -54,6 +54,7 @@ def add(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int) -> Htt
     model_class = _get_class_imp_or_exp(org_type)
     org: Org = get_object_or_404(model_class, pk=org_pk)
 
+    # Doesn't use can_user_manage_org_contacts as normal org contacts should never use this view.
     if not is_user_org_admin(request.user, org):
         raise PermissionDenied
 

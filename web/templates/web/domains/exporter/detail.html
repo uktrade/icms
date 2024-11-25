@@ -61,7 +61,7 @@
     {% endwith %}
   {% endif %}
 
-  {% with read_only = True, can_manage_contacts = False %}
+  {% with read_only = True, can_manage_contacts = False, is_user_org_admin = False %}
       {% include "partial/contacts/contacts.html" %}
   {% endwith %}
 
