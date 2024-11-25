@@ -139,6 +139,7 @@ def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
         "contacts": contacts,
         "object_permissions": object_permissions,
         "can_manage_contacts": can_manage_contacts,
+        "is_user_org_admin": is_user_org_admin(request.user, exporter),
         "org_type": "exporter",
     }
 
@@ -322,6 +323,7 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
         "contacts": contacts,
         "object_permissions": object_permissions,
         "can_manage_contacts": can_manage_contacts,
+        "is_user_org_admin": is_user_org_admin(request.user, exporter),
         "org_type": "exporter",
         "base_template": user_context["base_template"],
         "parent_url": parent_url,

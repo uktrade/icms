@@ -131,7 +131,6 @@ private_note_urls = [
 
 # All admin urls are private
 private_admin_urls = [
-    path("manage/", views_misc.manage_case, name="manage"),
     path("take-ownership/", views_misc.take_ownership, name="take-ownership"),
     path("release-ownership/", views_misc.release_ownership, name="release-ownership"),
     path("reassign-ownership/", views_misc.reassign_ownership, name="reassign-ownership"),
@@ -241,10 +240,12 @@ public_further_information_requests_urls = [
             ]
         ),
     ),
+    # TODO: Revisit in ECIL-339
+    #       Requires public endpoint as used in email link sent from public web.
+    path("manage/", views_fir.manage_firs, name="manage-firs"),
 ]
 
 private_further_information_requests_urls = [
-    path("manage/", views_fir.manage_firs, name="manage-firs"),
     path("add/", views_fir.add_fir, name="add-fir"),
     path(
         "<int:fir_pk>/",
@@ -442,6 +443,9 @@ public_urls = [
                     "<int:application_pk>/",
                     include(
                         [
+                            # TODO: Revisit in ECIL-339
+                            #       Requires public endpoint as used in email link sent from public web.
+                            path("admin/manage/", views_misc.manage_case, name="manage"),
                             # Common to applicant/ILB Admin (import/export/accessrequest)
                             path("view/", views_view_case.view_case, name="view"),
                             #
