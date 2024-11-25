@@ -10,14 +10,24 @@
   {{ gds.govukCheckboxes(gds_kwargs) }}
 {% elif fieldClass == "GovUKDateInputField" %}
   {{ gds.govukDateInput(gds_kwargs) }}
+{% elif fieldClass == "GovUKDecimalField" %}
+  {{ gds.govukInput(gds_kwargs) }}
+{% elif fieldClass == "GovUKEmailField" %}
+  {{ gds.govukInput(gds_kwargs) }}
 {% elif fieldClass == "GovUKFileUploadField" %}
   {{ gds.govukFileUpload(gds_kwargs) }}
+{% elif fieldClass == "GovUKFloatField" %}
+  {{ gds.govukInput(gds_kwargs) }}
+{% elif fieldClass == "GovUKIntegerField" %}
+  {{ gds.govukInput(gds_kwargs) }}
 {% elif fieldClass == "GovUKPasswordInputField" %}
   {{ gds.govukPasswordInput(gds_kwargs) }}
 {% elif fieldClass == "GovUKRadioInputField" %}
   {{ gds.govukRadios(gds_kwargs) }}
 {% elif fieldClass == "GovUKSelectField" %}
   {{ gds.govukSelect(gds_kwargs) }}
+{% elif fieldClass == "GovUKSlugField" %}
+  {{ gds.govukInput(gds_kwargs) }}
 {% elif fieldClass == "GovUKTextareaField" %}
   {{ gds.govukTextarea(gds_kwargs) }}
 {% elif fieldClass == "GovUKTextInputField" %}

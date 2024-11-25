@@ -1,4 +1,5 @@
 import datetime as dt
+from decimal import Decimal
 from typing import Any, ClassVar
 
 from django import forms
@@ -199,6 +200,53 @@ class GovUKDateInputField(GDSMixin, forms.MultiValueField):
             return None
 
 
+class GovUKDecimalField(GDSMixin, forms.DecimalField):
+    class BF(forms.BoundField):
+        def get_context(self) -> dict[str, Any]:
+            context = super().get_context()
+
+            number_attrs = {
+                # Taken from forms.DecimalField
+                "step": str(Decimal(1).scaleb(-self.field.decimal_places)).lower(),
+            }
+
+            # All options available here:
+            # https://design-system.service.gov.uk/components/text-input/
+            context["gds_kwargs"] = {
+                "id": self.auto_id,
+                "name": self.name,
+                "type": "number",
+                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
+                "hint": {"text": self.help_text} if self.help_text else None,
+                "value": self.value(),
+                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
+                "attributes": self.field.widget.attrs | number_attrs,
+            }
+
+            return context
+
+
+class GovUKEmailField(GDSMixin, forms.EmailField):
+    class BF(forms.BoundField):
+        def get_context(self) -> dict[str, Any]:
+            context = super().get_context()
+
+            # All options available here:
+            # https://design-system.service.gov.uk/components/text-input/
+            context["gds_kwargs"] = {
+                "id": self.auto_id,
+                "name": self.name,
+                "type": "email",
+                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
+                "hint": {"text": self.help_text} if self.help_text else None,
+                "value": self.value(),
+                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
+                "attributes": self.field.widget.attrs,
+            }
+
+            return context
+
+
 class GovUKFileUploadField(GDSMixin, ICMSFileField):
     class BF(forms.BoundField):
         def get_context(self) -> dict[str, Any]:
@@ -211,6 +259,50 @@ class GovUKFileUploadField(GDSMixin, ICMSFileField):
                 "name": self.name,
                 "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
                 "hint": {"text": do_mark_safe(self.help_text)} if self.help_text else None,
+            }
+
+            return context
+
+
+class GovUKFloatField(GDSMixin, forms.FloatField):
+    class BF(forms.BoundField):
+        def get_context(self) -> dict[str, Any]:
+            context = super().get_context()
+
+            # All options available here:
+            # https://design-system.service.gov.uk/components/text-input/
+            context["gds_kwargs"] = {
+                "id": self.auto_id,
+                "name": self.name,
+                "type": "number",
+                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
+                "hint": {"text": self.help_text} if self.help_text else None,
+                "value": self.value(),
+                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
+                "attributes": self.field.widget.attrs,
+            }
+
+            return context
+
+
+class GovUKIntegerField(GDSMixin, forms.IntegerField):
+    """Custom field using django IntegerField validation and rendering a gds text-input."""
+
+    class BF(forms.BoundField):
+        def get_context(self) -> dict[str, Any]:
+            context = super().get_context()
+
+            # All options available here:
+            # https://design-system.service.gov.uk/components/text-input/
+            context["gds_kwargs"] = {
+                "id": self.auto_id,
+                "name": self.name,
+                "type": "number",
+                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
+                "hint": {"text": self.help_text} if self.help_text else None,
+                "value": self.value(),
+                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
+                "attributes": self.field.widget.attrs,
             }
 
             return context
@@ -287,6 +379,26 @@ class GovUKSelectField(GDSMixin, forms.ChoiceField):
                 "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
                 "attributes": self.field.widget.attrs,
                 "items": items,
+            }
+
+            return context
+
+
+class GovUKSlugField(GDSMixin, forms.SlugField):
+    class BF(forms.BoundField):
+        def get_context(self) -> dict[str, Any]:
+            context = super().get_context()
+
+            # All options available here:
+            # https://design-system.service.gov.uk/components/text-input/
+            context["gds_kwargs"] = {
+                "id": self.auto_id,
+                "name": self.name,
+                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
+                "hint": {"text": self.help_text} if self.help_text else None,
+                "value": self.value(),
+                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
+                "attributes": self.field.widget.attrs,
             }
 
             return context

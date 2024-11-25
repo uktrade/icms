@@ -1,11 +1,10 @@
 from typing import Any
 
-from django import forms
-
 from web.ecil.gds import forms as gds_forms
+from web.models import ECILExample
 
 
-class GDSForm(gds_forms.GDSFormMixin, forms.Form):
+class ExampleGDSForm(gds_forms.GDSForm):
     text_input_field = gds_forms.GovUKTextInputField(
         label="What is the name of the event?",
         help_text="Sample help text",
@@ -103,3 +102,67 @@ class GDSForm(gds_forms.GDSFormMixin, forms.Form):
         self.clean_radio_conditional_fields("radio_input_field", ["text", "text_two", "text_three"])
 
         return cleaned_data
+
+
+class ExampleGDSModelForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ECILExample
+        fields = [
+            # Supported GDS Fields
+            "big_integer_field",
+            # "editable_binary_field",
+            "boolean_field",
+            "optional_boolean_field",
+            "char_field",
+            "char_choice_field",
+            "optional_char_field",
+            "date_field",
+            "decimal_field",
+            "email_field",
+            "float_field",
+            "integer_field",
+            "positive_big_integer_field",
+            "positive_integer_field",
+            "positive_small_integer_field",
+            "slug_field",
+            "small_integer_field",
+            "text_field",
+            # Currently unsupported (Defaulting to Django default field)
+            # "datetime_field",
+            # "duration_field",
+            # "foreign_key_field",
+            # "ip_address_field",
+            # "json_field",
+            # "many_to_many_field",
+            # "time_field",
+            # "url_field",
+            # "uuid_field",
+        ]
+
+
+class ExampleConditionalGDSModelForm(gds_forms.GDSModelForm):
+    # Conditional field for "char_choice_field" field
+    blue = gds_forms.GovUKTextInputField(
+        label="I am a conditional field",
+        help_text="With some helptext",
+        radio_conditional=True,
+    )
+
+    # Conditional field for "char_choice_field" field
+    red = gds_forms.GovUKTextInputField(
+        label="I am another conditional field",
+        help_text="With some helptext",
+        radio_conditional=True,
+    )
+
+    # Conditional field for "char_choice_field" field
+    yellow = gds_forms.GovUKTextInputField(
+        label="I am yet another conditional field",
+        help_text="With some helptext",
+        radio_conditional=True,
+    )
+
+    class Meta:
+        model = ECILExample
+        fields = ["blue", "red", "yellow", "char_choice_field"]
+        formfield_callback = gds_forms.GDSFormfieldCallback(["blue", "green", "red"])

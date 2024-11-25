@@ -156,6 +156,7 @@ from web.domains.sigl.models import SIGLTransmission
 from web.domains.signature.models import Signature
 from web.domains.template.models import CFSScheduleParagraph, Template, TemplateVersion
 from web.domains.user.models import Email, PhoneNumber, User
+from web.ecil.models import ECILExample
 from web.flow.models import Process, Task
 from web.mail.models import EmailTemplate
 from web.models.models import GlobalPermission, UniqueReference
@@ -202,6 +203,7 @@ __all__ = [
     "DFLSupplementaryInfo",
     "DFLSupplementaryReport",
     "DFLSupplementaryReportFirearm",
+    "ECILExample",
     "Email",
     "EmailTemplate",
     "EndorsementImportApplication",
