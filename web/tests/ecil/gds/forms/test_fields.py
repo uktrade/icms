@@ -1,8 +1,8 @@
 import datetime as dt
+from decimal import Decimal
 from unittest import mock
 
 import pytest
-from django import forms
 from django.core.files.uploadedfile import SimpleUploadedFile
 from pytest_django.asserts import assertHTMLEqual
 
@@ -10,12 +10,12 @@ from web.ecil.gds import forms as gds
 
 
 class TestGovUKCharacterCountField:
-    class MaxLengthForm(gds.GDSFormMixin, forms.Form):
+    class MaxLengthForm(gds.GDSForm):
         field = gds.GovUKCharacterCountField(
             label="Test label", help_text="Test help_text", max_length=5
         )
 
-    class MaxWordsForm(gds.GDSFormMixin, forms.Form):
+    class MaxWordsForm(gds.GDSForm):
         field = gds.GovUKCharacterCountField(
             label="Test label", help_text="Test help_text", max_words=5
         )
@@ -112,7 +112,7 @@ class TestGovUKCharacterCountField:
             ValueError, match="You must specify either a max_length or max_words value."
         ):
 
-            class NoMaxAttributeForm(gds.GDSFormMixin, forms.Form):
+            class NoMaxAttributeForm(gds.GDSForm):
                 field = gds.GovUKCharacterCountField(label="Test label", help_text="Test help_text")
 
     def test_both_max_attributes_set_form(self):
@@ -120,7 +120,7 @@ class TestGovUKCharacterCountField:
             ValueError, match="You must only specify either a max_length or max_words value."
         ):
 
-            class NoMaxAttributeForm(gds.GDSFormMixin, forms.Form):
+            class NoMaxAttributeForm(gds.GDSForm):
                 field = gds.GovUKCharacterCountField(
                     label="Test label",
                     help_text="Test help_text",
@@ -130,7 +130,7 @@ class TestGovUKCharacterCountField:
 
 
 class TestGovUKCheckboxesField:
-    class Form(gds.GDSFormMixin, forms.Form):
+    class Form(gds.GDSForm):
         field = gds.GovUKCheckboxesField(
             label="Test label",
             help_text="Test help_text",
@@ -200,7 +200,7 @@ class TestGovUKCheckboxesField:
 
 
 class TestGovUKDateInputField:
-    class Form(gds.GDSFormMixin, forms.Form):
+    class Form(gds.GDSForm):
         field = gds.GovUKDateInputField(
             label="Test label",
             help_text="Test help_text",
@@ -285,8 +285,117 @@ class TestGovUKDateInputField:
         assertHTMLEqual(expected_html, actual_html)
 
 
+class TestGovUKDecimalField:
+    class Form(gds.GDSForm):
+        field = gds.GovUKDecimalField(
+            label="Test label",
+            help_text="Test help_text",
+            min_value=0,
+            max_value=1000,
+            max_digits=5,
+            decimal_places=2,
+        )
+
+    def test_form_valid(self):
+        data = {"field": "123.45"}
+        form = self.Form(data=data)
+
+        assert form.is_valid()
+        assert form.cleaned_data["field"] == Decimal("123.45")
+
+    def test_form_invalid(self):
+        data = {"field": "123.456"}
+        form = self.Form(data=data)
+
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert form.errors["field"] == ["Ensure that there are no more than 5 digits in total."]
+
+    def test_template(self):
+        data = {"field": "value"}
+        form = self.Form(data=data)
+
+        expected_html = """
+            <div>
+              <div class="govuk-form-group govuk-form-group--error">
+                <h1 class="govuk-label-wrapper">
+                  <label class="govuk-label govuk-label--l" for="id_field">
+                    Test label
+                  </label>
+                </h1>
+                <div id="id_field-hint" class="govuk-hint">
+                  Test help_text
+                </div>
+                <p id="id_field-error" class="govuk-error-message">
+                  <span class="govuk-visually-hidden">Error:</span> Enter a number.
+                </p>
+                <input
+                  class="govuk-input govuk-input--error" id="id_field" name="field" type="number"
+                  value="value" aria-describedby="id_field-hint id_field-error"
+                  min="0" max="1000" step="0.01"
+                >
+              </div>
+            </div>
+        """
+        actual_html = form.as_div()
+
+        assertHTMLEqual(expected_html, actual_html)
+
+
+class TestGovUKEmailField:
+    valid_email = "email@example.com"  # /PS-IGNORE
+
+    class Form(gds.GDSForm):
+        field = gds.GovUKEmailField(
+            label="Test label",
+            help_text="Test help_text",
+        )
+
+    def test_form_valid(self):
+        data = {"field": self.valid_email}
+        form = self.Form(data=data)
+
+        assert form.is_valid()
+        assert form.cleaned_data["field"] == self.valid_email
+
+    def test_form_invalid(self):
+        data = {"field": "valuee"}
+        form = self.Form(data=data)
+
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert form.errors["field"] == ["Enter a valid email address."]
+
+    def test_template(self):
+        data = {"field": self.valid_email}
+        form = self.Form(data=data)
+
+        expected_html = f"""
+            <div>
+              <div class="govuk-form-group">
+                <h1 class="govuk-label-wrapper">
+                  <label class="govuk-label govuk-label--l" for="id_field">
+                    Test label
+                  </label>
+                </h1>
+                <div id="id_field-hint" class="govuk-hint">
+                  Test help_text
+                </div>
+                <input
+                  class="govuk-input" id="id_field" name="field" type="email" value="{self.valid_email}"
+                  aria-describedby="id_field-hint"
+                  maxlength="320"
+                >
+              </div>
+            </div>
+        """
+        actual_html = form.as_div()
+
+        assertHTMLEqual(expected_html, actual_html)
+
+
 class TestGovUKFileUploadField:
-    class Form(gds.GDSFormMixin, forms.Form):
+    class Form(gds.GDSForm):
         field = gds.GovUKFileUploadField(
             label="Test label",
             help_text="Test help_text",
@@ -345,8 +454,119 @@ class TestGovUKFileUploadField:
         assertHTMLEqual(expected_html, actual_html)
 
 
+class TestGovUKFloatField:
+    class Form(gds.GDSForm):
+        field = gds.GovUKFloatField(
+            label="Test label",
+            help_text="Test help_text",
+            min_value=0,
+            max_value=1000,
+        )
+
+    def test_form_valid(self):
+        data = {"field": 123.45}
+        form = self.Form(data=data)
+
+        assert form.is_valid()
+        assert form.cleaned_data["field"] == 123.45
+
+    def test_form_invalid(self):
+        data = {"field": 1000.01}
+        form = self.Form(data=data)
+
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert form.errors["field"] == ["Ensure this value is less than or equal to 1000."]
+
+    def test_template(self):
+        data = {"field": 123.45}
+        form = self.Form(data=data)
+
+        expected_html = """
+            <div>
+              <div class="govuk-form-group">
+                <h1 class="govuk-label-wrapper">
+                  <label class="govuk-label govuk-label--l" for="id_field">
+                    Test label
+                  </label>
+                </h1>
+                <div id="id_field-hint" class="govuk-hint">
+                  Test help_text
+                </div>
+                <input
+                  class="govuk-input" id="id_field" name="field" type="number" value="123.45"
+                  aria-describedby="id_field-hint"
+                  min="0" max="1000" step="any"
+                >
+              </div>
+            </div>
+        """
+        actual_html = form.as_div()
+
+        assertHTMLEqual(expected_html, actual_html)
+
+
+class TestGovUKIntegerField:
+    class Form(gds.GDSForm):
+        field = gds.GovUKIntegerField(
+            label="Test label",
+            help_text="Test help_text",
+            min_value=0,
+            max_value=1000,
+        )
+
+    def test_form_valid(self):
+        data = {"field": 123}
+        form = self.Form(data=data)
+
+        assert form.is_valid()
+        assert form.cleaned_data["field"] == 123
+
+    def test_form_invalid(self):
+        data = {"field": 1001}
+        form = self.Form(data=data)
+
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert form.errors["field"] == ["Ensure this value is less than or equal to 1000."]
+
+        data = {"field": 1001.01}
+        form = self.Form(data=data)
+
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert form.errors["field"] == ["Enter a whole number."]
+
+    def test_template(self):
+        data = {"field": 123}
+        form = self.Form(data=data)
+
+        expected_html = """
+            <div>
+              <div class="govuk-form-group">
+                <h1 class="govuk-label-wrapper">
+                  <label class="govuk-label govuk-label--l" for="id_field">
+                    Test label
+                  </label>
+                </h1>
+                <div id="id_field-hint" class="govuk-hint">
+                  Test help_text
+                </div>
+                <input
+                  class="govuk-input" id="id_field" name="field" type="number" value="123"
+                  aria-describedby="id_field-hint"
+                  min="0" max="1000"
+                >
+              </div>
+            </div>
+        """
+        actual_html = form.as_div()
+
+        assertHTMLEqual(expected_html, actual_html)
+
+
 class TestGovUKPasswordInputField:
-    class Form(gds.GDSFormMixin, forms.Form):
+    class Form(gds.GDSForm):
         field = gds.GovUKPasswordInputField(
             label="Test label",
             help_text="Test help_text",
@@ -401,14 +621,14 @@ class TestGovUKPasswordInputField:
 
 
 class TestGovUKRadioInputField:
-    class Form(gds.GDSFormMixin, forms.Form):
+    class Form(gds.GDSForm):
         field = gds.GovUKRadioInputField(
             label="Test label",
             help_text="Test help_text",
             choices=[("one", "One"), ("two", "Two"), ("three", "Three")],
         )
 
-    class ConditionalForm(gds.GDSFormMixin, forms.Form):
+    class ConditionalForm(gds.GDSForm):
         one = gds.GovUKTextInputField(
             label="Conditional test label 1",
             help_text="Conditional help text 1",
@@ -600,7 +820,7 @@ class TestGovUKRadioInputField:
 
 
 class TestGovUKSelectField:
-    class Form(gds.GDSFormMixin, forms.Form):
+    class Form(gds.GDSForm):
         field = gds.GovUKSelectField(
             label="Test label",
             help_text="Test help_text",
@@ -652,8 +872,116 @@ class TestGovUKSelectField:
         assertHTMLEqual(expected_html, actual_html)
 
 
+class TestGovUKSlugField:
+    class Form(gds.GDSForm):
+        field = gds.GovUKSlugField(
+            label="Test label",
+            help_text="Test help_text",
+            max_length=5,
+            allow_unicode=False,
+        )
+
+    class UnicodeForm(gds.GDSForm):
+        field = gds.GovUKSlugField(
+            label="Test label",
+            help_text="Test help_text",
+            max_length=5,
+            allow_unicode=True,
+        )
+
+    def test_form_valid(self):
+        data = {"field": "value"}
+        form = self.Form(data=data)
+
+        assert form.is_valid()
+        assert form.cleaned_data["field"] == "value"
+
+    def test_form_invalid(self):
+        data = {"field": "☃☃☃☃☃"}
+        form = self.Form(data=data)
+
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert form.errors["field"] == [
+            "Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
+        ]
+
+    def test_template(self):
+        data = {"field": "value"}
+        form = self.Form(data=data)
+
+        expected_html = """
+            <div>
+              <div class="govuk-form-group">
+                <h1 class="govuk-label-wrapper">
+                  <label class="govuk-label govuk-label--l" for="id_field">
+                    Test label
+                  </label>
+                </h1>
+                <div id="id_field-hint" class="govuk-hint">
+                  Test help_text
+                </div>
+                <input
+                  class="govuk-input" id="id_field" name="field" type="text" value="value"
+                  aria-describedby="id_field-hint"
+                  maxlength="5"
+                >
+              </div>
+            </div>
+
+        """
+        actual_html = form.as_div()
+
+        assertHTMLEqual(expected_html, actual_html)
+
+    def test_unicode_form_valid(self):
+        data = {"field": "valüe"}
+        form = self.UnicodeForm(data=data)
+
+        assert form.is_valid()
+        assert form.cleaned_data["field"] == "valüe"
+
+    def test_unicode_form_invalid(self):
+        # A snowman isn't a Unicode letter
+        data = {"field": "val☃e"}
+        form = self.UnicodeForm(data=data)
+
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert form.errors["field"] == [
+            "Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or hyphens."
+        ]
+
+    def test_unicode_template(self):
+        data = {"field": "value"}
+        form = self.UnicodeForm(data=data)
+
+        expected_html = """
+            <div>
+              <div class="govuk-form-group">
+                <h1 class="govuk-label-wrapper">
+                  <label class="govuk-label govuk-label--l" for="id_field">
+                    Test label
+                  </label>
+                </h1>
+                <div id="id_field-hint" class="govuk-hint">
+                  Test help_text
+                </div>
+                <input
+                  class="govuk-input" id="id_field" name="field" type="text" value="value"
+                  aria-describedby="id_field-hint"
+                  maxlength="5"
+                >
+              </div>
+            </div>
+        """
+        actual_html = form.as_div()
+
+        assertHTMLEqual(expected_html, actual_html)
+
+
 class TestGovUKTextareaField:
-    class Form(gds.GDSFormMixin, forms.Form):
+    class Form(gds.GDSForm):
         field = gds.GovUKTextareaField(label="Test label", help_text="Test help_text", max_length=5)
 
     def test_form_valid(self):
@@ -698,7 +1026,7 @@ class TestGovUKTextareaField:
 
 
 class TestGovUKTextInputField:
-    class Form(gds.GDSFormMixin, forms.Form):
+    class Form(gds.GDSForm):
         field = gds.GovUKTextInputField(
             label="Test label",
             help_text="Test help_text",

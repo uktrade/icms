@@ -1,7 +1,10 @@
 from typing import Any
 
 from django import forms
+from django.db import models
 from django.forms.utils import ErrorDict
+
+from . import fields as gds_fields
 
 
 class GDSFormMixin:
@@ -52,3 +55,157 @@ class GDSFormMixin:
                 for field_name, error in self.errors.items()
             ],
         }
+
+
+class GDSForm(GDSFormMixin, forms.Form): ...  # noqa: E701
+
+
+def get_gds_formfield(db_field: models.Field, **kwargs: Any) -> forms.Field:
+    """Return an appropriate django form field foe each db_field type.
+
+    Used this to determine form field type:
+    https://docs.djangoproject.com/en/5.1/topics/forms/modelforms/#field-types
+    """
+
+    if not kwargs.get("label"):
+        kwargs["label"] = db_field.verbose_name
+
+    if not kwargs.get("help_text"):
+        kwargs["help_text"] = db_field.help_text
+
+    if db_field.blank:
+        kwargs["required"] = False
+
+    match db_field:
+        #
+        # CharField and child classes (child classes before parent class)
+        case models.EmailField():
+            field_cls = gds_fields.GovUKEmailField
+
+        case models.SlugField():
+            field_cls = gds_fields.GovUKSlugField
+
+        case models.CharField():
+            # Render the char field with choices as a radio group
+            if db_field.choices:
+                field_cls = gds_fields.GovUKRadioInputField
+                kwargs["choices"] = db_field.choices
+            else:
+                if db_field.null:
+                    kwargs["empty_value"] = None
+                if db_field.max_length:
+                    kwargs["max_length"] = db_field.max_length
+
+                field_cls = gds_fields.GovUKTextInputField
+
+        #
+        # IntegerField and child classes (child classes before parent class)
+        case models.PositiveBigIntegerField():
+            field_cls = gds_fields.GovUKIntegerField
+            kwargs |= {"min_value": 0, "max_value": models.PositiveBigIntegerField.MAX_BIGINT}
+
+        case models.BigIntegerField():
+            field_cls = gds_fields.GovUKIntegerField
+            max_value = models.BigIntegerField.MAX_BIGINT
+            kwargs |= {"min_value": -max_value - 1, "max_value": max_value}
+
+        case models.PositiveSmallIntegerField():
+            field_cls = gds_fields.GovUKIntegerField
+            kwargs["min_value"] = 0
+
+        case models.SmallIntegerField():
+            # Default Django form field: IntegerField
+            field_cls = gds_fields.GovUKIntegerField
+
+        case models.PositiveIntegerField():
+            field_cls = gds_fields.GovUKIntegerField
+            kwargs["min_value"] = 0
+
+        case models.IntegerField():
+            field_cls = gds_fields.GovUKIntegerField
+
+        #
+        # All Other fields that inherit directly from Field
+        case models.BinaryField():
+            field_cls = gds_fields.GovUKTextInputField
+
+        case models.BooleanField():
+            if db_field.null:
+                choices = [(True, "Yes"), (False, "No"), ("", "N/a")]
+                kwargs["required"] = False
+            else:
+                choices = [(True, "Yes"), (False, "No")]
+
+            kwargs["choices"] = choices
+            field_cls = gds_fields.GovUKRadioInputField
+
+        case models.DateTimeField():
+            # Unsupported but need to define here as it's a subclass of DateField
+            field_cls = db_field.formfield
+
+        case models.DateField():
+            # Default Django form field: DateField
+            field_cls = gds_fields.GovUKDateInputField
+
+        case models.DecimalField():
+            df: models.DecimalField = db_field
+            kwargs["max_digits"] = df.max_digits
+            kwargs["decimal_places"] = df.decimal_places
+            field_cls = gds_fields.GovUKDecimalField
+
+        case models.FileField():
+            field_cls = gds_fields.GovUKFileUploadField
+
+        case models.FloatField():
+            field_cls = gds_fields.GovUKFloatField
+
+        case models.TextField():
+            if db_field.max_length:
+                kwargs["max_length"] = db_field.max_length
+                field_cls = gds_fields.GovUKCharacterCountField
+            else:
+                field_cls = gds_fields.GovUKTextareaField
+
+        # Fields not supported by either ModelForm or GDS components.
+        case (
+            models.AutoField()
+            | models.BigAutoField()
+            | models.DurationField()
+            | models.FilePathField()
+            | models.ForeignKey()
+            | models.ImageField()
+            | models.GenericIPAddressField()
+            | models.JSONField()
+            | models.ManyToManyField()
+            | models.SmallAutoField()
+            | models.TimeField()
+            | models.URLField()
+            | models.UUIDField()
+        ):
+            field_cls = db_field.formfield
+
+        case _:
+            raise ValueError(f"Unsupported db_field: {db_field}")
+
+    return field_cls(**kwargs)
+
+
+class GDSModelForm(GDSFormMixin, forms.ModelForm):
+    class Meta:
+        formfield_callback = get_gds_formfield
+
+
+class GDSFormfieldCallback:
+    def __init__(self, conditional_fields: list[str]) -> None:
+        """Callable class that sets conditional fields.
+
+        :param conditional_fields: list of conditional fields that are used by GovUKRadioInputField.
+        """
+
+        self.conditional_fields = conditional_fields
+
+    def __call__(self, db_field: models.Field, **kwargs: Any) -> forms.Field:
+        if db_field.name in self.conditional_fields:
+            kwargs["radio_conditional"] = True
+
+        return get_gds_formfield(db_field, **kwargs)

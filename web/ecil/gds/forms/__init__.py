@@ -2,24 +2,37 @@ from .fields import (
     GovUKCharacterCountField,
     GovUKCheckboxesField,
     GovUKDateInputField,
+    GovUKDecimalField,
+    GovUKEmailField,
     GovUKFileUploadField,
+    GovUKFloatField,
+    GovUKIntegerField,
     GovUKPasswordInputField,
     GovUKRadioInputField,
     GovUKSelectField,
+    GovUKSlugField,
     GovUKTextareaField,
     GovUKTextInputField,
 )
-from .forms import GDSFormMixin
+from .forms import GDSForm, GDSFormfieldCallback, GDSFormMixin, GDSModelForm
 
 __all__ = [
+    "GDSForm",
+    "GDSFormfieldCallback",
     "GDSFormMixin",
+    "GDSModelForm",
     "GovUKCharacterCountField",
     "GovUKCheckboxesField",
     "GovUKDateInputField",
+    "GovUKDecimalField",
+    "GovUKEmailField",
     "GovUKFileUploadField",
+    "GovUKFloatField",
+    "GovUKIntegerField",
     "GovUKPasswordInputField",
     "GovUKRadioInputField",
     "GovUKSelectField",
+    "GovUKSlugField",
     "GovUKTextareaField",
     "GovUKTextInputField",
 ]
