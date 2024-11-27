@@ -304,6 +304,15 @@ class LoginRequiredSelect2AutoResponseView(LoginRequiredMixin, AutoResponseView)
 
     raise_exception = True
 
+    def options(self, request, *args, **kwargs):
+        response = super().options(request, *args, **kwargs)
+        response["Access-Control-Allow-Origin"] = f"https://{self.request.site.domain}"
+        response["Access-Control-Allow-Methods"] = ", ".join(self._allowed_methods())
+        response["Access-Control-Max-Age"] = 86400
+        response["Access-Control-Allow-Headers"] = "X-Requested-With"
+
+        return response
+
 
 class ModelFilterView(
     LoginRequiredMixin, PermissionRequiredMixin, DataDisplayConfigMixin, ListView
