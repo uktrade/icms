@@ -279,6 +279,20 @@ class TestLoginRequiredSelect2AutoResponseView(AuthTestCase):
             ],
         }
 
+    def test_exporter_search_options(self, exporter_client, exporter):
+        response = exporter_client.get(
+            reverse("export:create-application", kwargs={"type_code": "cfs"})
+        )
+        create_app_form: CreateExportApplicationForm = response.context["form"]
+        exporter_widget: ContactWidget = create_app_form.fields["exporter"].widget
+        qd = QueryDict(mutable=True)
+        qd.update({"term": "Test", "field_id": exporter_widget.field_id})
+        url = reverse("login-required-select2-view") + f"?{qd.urlencode()}"
+
+        response = exporter_client.options(url)
+        assert response.status_code == HTTPStatus.OK
+        assert response.headers["Allow"] == "GET, HEAD, OPTIONS"
+
     def test_commodity_usage_country(self, ilb_admin_client):
         commodity_group = CommodityGroup.objects.first()
         application_type = ImportApplicationType.objects.get(

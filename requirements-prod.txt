@@ -9,7 +9,9 @@ amqp==5.2.0
 annotated-types==0.7.0
     # via pydantic
 asgiref==3.8.1
-    # via django
+    # via
+    #   django
+    #   django-cors-headers
 asn1crypto==1.5.1
     # via
     #   -r /code/requirements/requirements-base.in
@@ -103,6 +105,7 @@ django==5.1.3
     #   django-celery-results
     #   django-chunk-upload-handlers
     #   django-compressor
+    #   django-cors-headers
     #   django-csp
     #   django-debug-toolbar
     #   django-filter
@@ -125,6 +128,8 @@ django-celery-results==2.5.1
 django-chunk-upload-handlers==0.0.15
     # via -r /code/requirements/requirements-base.in
 django-compressor==4.5.1
+    # via -r /code/requirements/requirements-base.in
+django-cors-headers==4.6.0
     # via -r /code/requirements/requirements-base.in
 django-csp==3.8
     # via -r /code/requirements/requirements-base.in

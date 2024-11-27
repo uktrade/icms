@@ -13,6 +13,7 @@ dj-database-url==2.3.0
 django-celery-results==2.5.1
 django-chunk-upload-handlers==0.0.15
 django-compressor==4.5.1
+django-cors-headers==4.6.0
 django-csp~=3.7
 django-debug-toolbar~=4.4
 django-filter==24.3
