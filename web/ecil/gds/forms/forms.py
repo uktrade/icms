@@ -47,7 +47,7 @@ class GDSFormMixin:
         if not self.errors:
             return {}
 
-        # TODO: Revisit in ECIL-325 to fix radio and checkbox input fields.
+        # TODO: Revisit in ECIL-325 to fix checkbox, date and radio input fields.
         return {
             "titleText": "There is a problem",
             "errorList": [

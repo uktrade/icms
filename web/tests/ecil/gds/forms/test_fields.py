@@ -227,7 +227,44 @@ class TestGovUKDateInputField:
 
         assert not form.is_valid()
         assert len(form.errors) == 1
-        assert form.errors["field"] == ["Enter a list of values."]
+        assert form.errors["field"] == ["month must be in 1..12"]
+
+        data = {
+            "field_0": "23",  # Day
+            "field_1": "12",  # Month
+            "field_2": "-1",  # Year
+        }
+        form = self.Form(data=data)
+
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert form.errors["field"] == ["Enter a valid year"]
+
+        data = {
+            "field_0": "45",  # Day
+            "field_1": "12",  # Month
+            "field_2": "2022",  # Year
+        }
+        form = self.Form(data=data)
+
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert form.errors["field"] == ["day is out of range for month"]
+
+        data = {
+            "field_0": "foo",  # Day
+            "field_1": "bar",  # Month
+            "field_2": "baz",  # Year
+        }
+        form = self.Form(data=data)
+
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert form.errors["field"] == [
+            "Enter a valid day",
+            "Enter a valid month",
+            "Enter a valid year",
+        ]
 
     def test_template(self):
         data = {
