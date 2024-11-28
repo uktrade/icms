@@ -166,3 +166,10 @@ class ExampleConditionalGDSModelForm(gds_forms.GDSModelForm):
         model = ECILExample
         fields = ["blue", "red", "yellow", "char_choice_field"]
         formfield_callback = gds_forms.GDSFormfieldCallback(["blue", "green", "red"])
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+
+        self.clean_radio_conditional_fields("char_choice_field", ["blue", "red", "yellow"])
+
+        return cleaned_data
