@@ -8,6 +8,7 @@ from jinja2.filters import do_mark_safe
 
 from web.domains.file.utils import ICMSFileField
 
+from . import serializers
 from .validators import MaxWordsValidator
 
 
@@ -16,6 +17,9 @@ class GDSMixin:
     template_name: ClassVar[str | None] = None
     # BoundField class that defines Nunjucks context
     BF: ClassVar[type[forms.BoundField]]
+
+    def get_overrides(self) -> dict[str, Any]:
+        return {}
 
     def __init__(self, *args: Any, radio_conditional: bool = False, **kwargs: Any) -> None:
         """Mixin class for all GDS form fields
@@ -36,6 +40,29 @@ class GDSMixin:
 
     def get_bound_field(self, form, field_name):
         return self.BF(form, self, field_name)
+
+
+class GDSBoundField(forms.BoundField):
+    def _get_label(self) -> serializers.InputLabel:
+        return serializers.InputLabel(
+            text=self.label,
+            isPageHeading=True,
+            classes="govuk-label--l",
+        )
+
+    def _get_hint(self) -> serializers.InputHint | None:
+        if not self.help_text:
+            return None
+
+        return serializers.InputHint(
+            text=self.help_text,
+        )
+
+    def _get_errors(self) -> serializers.ErrorMessage | None:
+        if not self.errors:
+            return None
+
+        return serializers.ErrorMessage(text=" ".join(self.errors))
 
 
 class GovUKCharacterCountField(GDSMixin, forms.CharField):
@@ -61,57 +88,53 @@ class GovUKCharacterCountField(GDSMixin, forms.CharField):
         if max_words is not None:
             self.validators.append(MaxWordsValidator(max_words))
 
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
-            # All options available here:
-            # https://design-system.service.gov.uk/components/character-count/
-            context["gds_kwargs"] = {
-                "id": self.auto_id,
-                "name": self.name,
-                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
-                "hint": {"text": self.help_text} if self.help_text else None,
+            serializer = serializers.CharacterCountKwargs(
+                id=self.auto_id,
+                name=self.name,
+                label=self._get_label(),
+                hint=self._get_hint(),
                 # TODO: ECIL-323 Remove `or ""` after ECIL-323 is fixed.
-                "value": self.value() or "",
-                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
-                "attributes": self.field.widget.attrs,
-            }
-
-            if self.field.max_length:
-                context["gds_kwargs"]["maxlength"] = self.field.max_length
-
-            if self.field.max_words:
-                context["gds_kwargs"]["maxwords"] = self.field.max_words
+                value=self.value() or "",
+                maxlength=str(self.field.max_length) if self.field.max_length else None,
+                maxwords=str(self.field.max_words) if self.field.max_words else None,
+                errorMessage=self._get_errors(),
+                attributes=self.field.widget.attrs,
+                **self.field.get_overrides(),
+            )
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
 
 class GovUKCheckboxesField(GDSMixin, forms.MultipleChoiceField):
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
-            items = [{"value": value, "text": label} for value, label in self.field.choices]
-
-            # All options available here:
-            # https://design-system.service.gov.uk/components/checkboxes/
-            context["gds_kwargs"] = {
-                "id": self.auto_id,
-                "name": self.name,
-                "fieldset": {
-                    "legend": {
-                        "text": self.label,
-                        "isPageHeading": True,
-                        "classes": "govuk-fieldset__legend--l",
-                    }
-                },
-                "hint": {"text": self.help_text} if self.help_text else None,
-                "values": self.data or self.initial or [],
-                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
-                "attributes": self.field.widget.attrs,
-                "items": items,
-            }
+            serializer = serializers.CheckboxesFieldKwargs(
+                name=self.name,
+                fieldset=serializers.Fieldset(
+                    legend=serializers.FieldsetLegend(
+                        text=self.label,
+                        isPageHeading=True,
+                        classes="govuk-fieldset__legend--l",
+                    )
+                ),
+                hint=self._get_hint(),
+                items=[
+                    serializers.CheckboxItem(value=value, text=label)
+                    for value, label in self.field.choices
+                ],
+                values=self.data or self.initial or [],
+                errorMessage=self._get_errors(),
+                attributes=self.field.widget.attrs,
+                **self.field.get_overrides(),
+            )
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
@@ -166,40 +189,32 @@ class GovUKDateInputField(GDSMixin, forms.MultiValueField):
 
         super().__init__(fields, *args, **kwargs)
 
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
-
-            items = [
-                {"label": "Day", "name": f"{self.name}_0"},
-                {"label": "Month", "name": f"{self.name}_1"},
-                {"label": "Year", "name": f"{self.name}_2"},
-            ]
 
             value = self.value()
             if not isinstance(value, list):
                 value = self.field.widget.decompress(value)
 
-            for i, val in enumerate(value):
-                items[i]["value"] = val
-
-            # All options available here:
-            # https://design-system.service.gov.uk/components/date-input/
-            context["gds_kwargs"] = {
-                "id": self.auto_id,
-                # "namePrefix": self.name,
-                "fieldset": {
-                    "legend": {
-                        "text": self.label,
-                        "isPageHeading": True,
-                        "classes": "govuk-fieldset__legend--l",
-                    }
-                },
-                "hint": {"text": self.help_text} if self.help_text else None,
-                "items": items,
-                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
-                "attributes": self.field.widget.attrs,
-            }
+            serializer = serializers.DateInputKwargs(
+                id=self.auto_id,
+                fieldset=serializers.Fieldset(
+                    legend=serializers.FieldsetLegend(
+                        text=self.label, isPageHeading=True, classes="govuk-fieldset__legend--l"
+                    )
+                ),
+                hint=self._get_hint(),
+                items=[
+                    serializers.DateItem(label="Day", name=f"{self.name}_0", value=value[0]),
+                    serializers.DateItem(label="Month", name=f"{self.name}_1", value=value[1]),
+                    serializers.DateItem(label="Year", name=f"{self.name}_2", value=value[2]),
+                ],
+                errorMessage=self._get_errors(),
+                attributes=self.field.widget.attrs,
+                **self.field.get_overrides(),
+            )
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
@@ -275,7 +290,7 @@ class GovUKDateInputField(GDSMixin, forms.MultiValueField):
 
 
 class GovUKDecimalField(GDSMixin, forms.DecimalField):
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
@@ -284,77 +299,88 @@ class GovUKDecimalField(GDSMixin, forms.DecimalField):
                 "step": str(Decimal(1).scaleb(-self.field.decimal_places)).lower(),
             }
 
-            # All options available here:
-            # https://design-system.service.gov.uk/components/text-input/
-            context["gds_kwargs"] = {
-                "id": self.auto_id,
-                "name": self.name,
-                "type": "number",
-                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
-                "hint": {"text": self.help_text} if self.help_text else None,
-                "value": self.value(),
-                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
-                "attributes": self.field.widget.attrs | number_attrs,
-            }
+            serializer = serializers.TextInputKwargs(
+                id=self.auto_id,
+                name=self.name,
+                type="number",
+                label=self._get_label(),
+                hint=self._get_hint(),
+                value=self.value(),
+                errorMessage=self._get_errors(),
+                attributes=self.field.widget.attrs | number_attrs,
+                **self.field.get_overrides(),
+            )
+
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
 
 class GovUKEmailField(GDSMixin, forms.EmailField):
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
-            # All options available here:
-            # https://design-system.service.gov.uk/components/text-input/
-            context["gds_kwargs"] = {
-                "id": self.auto_id,
-                "name": self.name,
-                "type": "email",
-                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
-                "hint": {"text": self.help_text} if self.help_text else None,
-                "value": self.value(),
-                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
-                "attributes": self.field.widget.attrs,
-            }
+            serializer = serializers.TextInputKwargs(
+                id=self.auto_id,
+                name=self.name,
+                type="email",
+                label=self._get_label(),
+                hint=self._get_hint(),
+                value=self.value(),
+                errorMessage=self._get_errors(),
+                attributes=self.field.widget.attrs,
+                **self.field.get_overrides(),
+            )
+
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
 
 class GovUKFileUploadField(GDSMixin, ICMSFileField):
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
-            # All options available here:
-            # https://design-system.service.gov.uk/components/file-upload/
-            context["gds_kwargs"] = {
-                "id": self.auto_id,
-                "name": self.name,
-                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
-                "hint": {"text": do_mark_safe(self.help_text)} if self.help_text else None,
-            }
+            serializer = serializers.FileUploadKwargs(
+                id=self.auto_id,
+                name=self.name,
+                label=self._get_label(),
+                hint=self._get_hint(),
+                errorMessage=self._get_errors(),
+                **self.field.get_overrides(),
+            )
+
+            gds_kwargs = serializer.model_dump(exclude_defaults=True)
+
+            # The hint contains HTML so do_mark_safe after model_dump
+            if gds_kwargs.get("hint"):
+                gds_kwargs["hint"]["text"] = do_mark_safe(gds_kwargs["hint"]["text"])
+
+            context["gds_kwargs"] = gds_kwargs
 
             return context
 
 
 class GovUKFloatField(GDSMixin, forms.FloatField):
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
-            # All options available here:
-            # https://design-system.service.gov.uk/components/text-input/
-            context["gds_kwargs"] = {
-                "id": self.auto_id,
-                "name": self.name,
-                "type": "number",
-                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
-                "hint": {"text": self.help_text} if self.help_text else None,
-                "value": self.value(),
-                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
-                "attributes": self.field.widget.attrs,
-            }
+            serializer = serializers.TextInputKwargs(
+                id=self.auto_id,
+                name=self.name,
+                type="number",
+                label=self._get_label(),
+                hint=self._get_hint(),
+                value=self.value(),
+                errorMessage=self._get_errors(),
+                attributes=self.field.widget.attrs,
+                **self.field.get_overrides(),
+            )
+
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
@@ -362,48 +388,50 @@ class GovUKFloatField(GDSMixin, forms.FloatField):
 class GovUKIntegerField(GDSMixin, forms.IntegerField):
     """Custom field using django IntegerField validation and rendering a gds text-input."""
 
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
-            # All options available here:
-            # https://design-system.service.gov.uk/components/text-input/
-            context["gds_kwargs"] = {
-                "id": self.auto_id,
-                "name": self.name,
-                "type": "number",
-                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
-                "hint": {"text": self.help_text} if self.help_text else None,
-                "value": self.value(),
-                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
-                "attributes": self.field.widget.attrs,
-            }
+            serializer = serializers.TextInputKwargs(
+                id=self.auto_id,
+                name=self.name,
+                type="number",
+                label=self._get_label(),
+                hint=self._get_hint(),
+                value=self.value(),
+                errorMessage=self._get_errors(),
+                attributes=self.field.widget.attrs,
+                **self.field.get_overrides(),
+            )
+
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
 
 class GovUKPasswordInputField(GDSMixin, forms.CharField):
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
-            # All options available here:
-            # https://design-system.service.gov.uk/components/password-input/
-            context["gds_kwargs"] = {
-                "id": self.auto_id,
-                "name": self.name,
-                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
-                "hint": {"text": self.help_text} if self.help_text else None,
-                "value": self.value(),
-                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
-                "attributes": self.field.widget.attrs,
-            }
+            serializer = serializers.PasswordInputKwargs(
+                id=self.auto_id,
+                name=self.name,
+                label=self._get_label(),
+                hint=self._get_hint(),
+                value=self.value(),
+                errorMessage=self._get_errors(),
+                attributes=self.field.widget.attrs,
+                **self.field.get_overrides(),
+            )
+
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
 
 class GovUKRadioInputField(GDSMixin, forms.ChoiceField):
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
@@ -413,107 +441,111 @@ class GovUKRadioInputField(GDSMixin, forms.ChoiceField):
                 if value in self.form.gds_radio_conditional_fields:
                     item["conditional"] = {"html": self.form.gds_radio_conditional_fields[value]}
 
-                items.append(item)
+                items.append(serializers.RadioItem(**item))
 
-            # All options available here:
-            # https://design-system.service.gov.uk/components/password-input/
-            context["gds_kwargs"] = {
-                "name": self.name,
-                "fieldset": {
-                    "legend": {
-                        "text": self.label,
-                        "isPageHeading": True,
-                        "classes": "govuk-fieldset__legend--l",
-                    }
-                },
-                "hint": {"text": self.help_text} if self.help_text else None,
-                "value": self.value(),
-                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
-                "items": items,
-            }
+            serializer = serializers.RadioInputKwargs(
+                name=self.name,
+                fieldset=serializers.Fieldset(
+                    legend=serializers.FieldsetLegend(
+                        text=self.label, isPageHeading=True, classes="govuk-fieldset__legend--l"
+                    )
+                ),
+                hint=self._get_hint(),
+                items=items,
+                value=self.value(),
+                errorMessage=self._get_errors(),
+                **self.field.get_overrides(),
+            )
+
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
 
 class GovUKSelectField(GDSMixin, forms.ChoiceField):
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
-            items = [{"value": value, "text": label} for value, label in self.field.choices]
+            serializer = serializers.SelectFieldKwargs(
+                id=self.auto_id,
+                name=self.name,
+                label=self._get_label(),
+                hint=self._get_hint(),
+                items=[
+                    serializers.SelectItem(value=value, text=label)
+                    for value, label in self.field.choices
+                ],
+                value=self.value(),
+                errorMessage=self._get_errors(),
+                attributes=self.field.widget.attrs,
+                **self.field.get_overrides(),
+            )
 
-            # All options available here:
-            # https://design-system.service.gov.uk/components/select/
-            context["gds_kwargs"] = {
-                "id": self.auto_id,
-                "name": self.name,
-                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
-                "hint": {"text": self.help_text} if self.help_text else None,
-                "value": self.value(),
-                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
-                "attributes": self.field.widget.attrs,
-                "items": items,
-            }
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
 
 class GovUKSlugField(GDSMixin, forms.SlugField):
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
-            # All options available here:
-            # https://design-system.service.gov.uk/components/text-input/
-            context["gds_kwargs"] = {
-                "id": self.auto_id,
-                "name": self.name,
-                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
-                "hint": {"text": self.help_text} if self.help_text else None,
-                "value": self.value(),
-                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
-                "attributes": self.field.widget.attrs,
-            }
+            serializer = serializers.TextInputKwargs(
+                id=self.auto_id,
+                name=self.name,
+                label=self._get_label(),
+                hint=self._get_hint(),
+                value=self.value(),
+                errorMessage=self._get_errors(),
+                attributes=self.field.widget.attrs,
+                **self.field.get_overrides(),
+            )
+
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
 
 class GovUKTextareaField(GDSMixin, forms.CharField):
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
-            # All options available here:
-            # https://design-system.service.gov.uk/components/textarea/
-            context["gds_kwargs"] = {
-                "id": self.auto_id,
-                "name": self.name,
-                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
-                "hint": {"text": self.help_text} if self.help_text else None,
+            serializer = serializers.TextareaFieldKwargs(
+                id=self.auto_id,
+                name=self.name,
+                label=self._get_label(),
+                hint=self._get_hint(),
                 # TODO: ECIL-323 Remove `or ""` after ECIL-323 is fixed.
-                "value": self.value() or "",
-                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
-                "attributes": self.field.widget.attrs,
-            }
+                value=self.value() or "",
+                errorMessage=self._get_errors(),
+                attributes=self.field.widget.attrs,
+                **self.field.get_overrides(),
+            )
+
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
 
 class GovUKTextInputField(GDSMixin, forms.CharField):
-    class BF(forms.BoundField):
+    class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
-            # All options available here:
-            # https://design-system.service.gov.uk/components/text-input/
-            context["gds_kwargs"] = {
-                "id": self.auto_id,
-                "name": self.name,
-                "label": {"text": self.label, "classes": "govuk-label--l", "isPageHeading": True},
-                "hint": {"text": self.help_text} if self.help_text else None,
-                "value": self.value(),
-                "errorMessage": {"text": " ".join(self.errors)} if self.errors else None,
-                "attributes": self.field.widget.attrs,
-            }
+            serializer = serializers.TextInputKwargs(
+                id=self.auto_id,
+                name=self.name,
+                label=self._get_label(),
+                hint=self._get_hint(),
+                value=self.value(),
+                errorMessage=self._get_errors(),
+                attributes=self.field.widget.attrs,
+                **self.field.get_overrides(),
+            )
+
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context

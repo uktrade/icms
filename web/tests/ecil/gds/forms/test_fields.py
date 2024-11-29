@@ -501,14 +501,14 @@ class TestGovUKFloatField:
         )
 
     def test_form_valid(self):
-        data = {"field": 123.45}
+        data = {"field": "123.45"}
         form = self.Form(data=data)
 
         assert form.is_valid()
         assert form.cleaned_data["field"] == 123.45
 
     def test_form_invalid(self):
-        data = {"field": 1000.01}
+        data = {"field": "1000.01"}
         form = self.Form(data=data)
 
         assert not form.is_valid()
@@ -516,7 +516,7 @@ class TestGovUKFloatField:
         assert form.errors["field"] == ["Ensure this value is less than or equal to 1000."]
 
     def test_template(self):
-        data = {"field": 123.45}
+        data = {"field": "123.45"}
         form = self.Form(data=data)
 
         expected_html = """
@@ -553,21 +553,21 @@ class TestGovUKIntegerField:
         )
 
     def test_form_valid(self):
-        data = {"field": 123}
+        data = {"field": "123"}
         form = self.Form(data=data)
 
         assert form.is_valid()
         assert form.cleaned_data["field"] == 123
 
     def test_form_invalid(self):
-        data = {"field": 1001}
+        data = {"field": "1001"}
         form = self.Form(data=data)
 
         assert not form.is_valid()
         assert len(form.errors) == 1
         assert form.errors["field"] == ["Ensure this value is less than or equal to 1000."]
 
-        data = {"field": 1001.01}
+        data = {"field": "1001.01"}
         form = self.Form(data=data)
 
         assert not form.is_valid()
@@ -575,7 +575,7 @@ class TestGovUKIntegerField:
         assert form.errors["field"] == ["Enter a whole number."]
 
     def test_template(self):
-        data = {"field": 123}
+        data = {"field": "123"}
         form = self.Form(data=data)
 
         expected_html = """
