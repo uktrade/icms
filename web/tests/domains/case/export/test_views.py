@@ -491,3 +491,60 @@ class TestCFSScheduleMangeProductsView(AuthTestCase):
             "Test product 1",
             "Test product 2",
         ]
+
+
+class TestEditCFS(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, cfs_app_in_progress):
+        self.app: CertificateOfFreeSaleApplication = cfs_app_in_progress
+        self.schedule = self.app.schedules.first()
+        self.url = reverse("export:cfs-edit", kwargs={"application_pk": self.app.pk})
+        self.schedule_url = reverse(
+            "export:cfs-schedule-edit",
+            kwargs={
+                "application_pk": self.app.pk,
+                "schedule_pk": self.schedule.pk,
+            },
+        )
+        self.data = {
+            x: getattr(self.schedule, x) or ""
+            for x in [
+                "exporter_status",
+                "brand_name_holder",
+                "biocidal_claim",
+                "product_eligibility",
+                "goods_placed_on_uk_market",
+                "goods_export_only",
+                "any_raw_materials",
+                "final_product_end_use",
+                "schedule_statements_accordance_with_standards",
+                "schedule_statements_is_responsible_person",
+            ]
+        }
+
+        self.data["legislations"] = [ProductLegislation.objects.filter(is_active=True).first().pk]
+        self.data["country_of_manufacture"] = Country.objects.filter(is_active=True).first().pk
+
+    def test_raw_material_uses(self):
+
+        data = self.data | {"any_raw_materials": "yes", "final_product_end_use": "test end use"}
+
+        response = self.exporter_client.post(self.schedule_url, data=data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.schedule.refresh_from_db()
+
+        assert self.schedule.any_raw_materials == "yes"
+        assert self.schedule.final_product_end_use == "test end use"
+
+    def test_raw_material_uses_removed(self):
+
+        data = self.data | {"any_raw_materials": "no", "final_product_end_use": "test end use"}
+
+        response = self.exporter_client.post(self.schedule_url, data=data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.schedule.refresh_from_db()
+
+        assert self.schedule.any_raw_materials == "no"
+        assert self.schedule.final_product_end_use == ""
