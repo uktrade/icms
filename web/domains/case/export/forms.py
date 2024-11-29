@@ -439,6 +439,21 @@ class EditCFSScheduleForm(OptionalFormMixin, CFSScheduleFormBase):
     All fields are optional to allow partial record saving.
     """
 
+    def clean(self) -> dict[str, Any]:
+        cleaned_data: dict[str, Any] = super().clean()
+
+        if not self.is_valid():
+            return cleaned_data
+
+        # Check any raw materials field
+        any_raw_materials: str = cleaned_data["any_raw_materials"]
+
+        # Clear the final_product_end_use data if not needed.
+        if any_raw_materials == YesNoChoices.no:
+            cleaned_data["final_product_end_use"] = ""
+
+        return cleaned_data
+
 
 class SubmitCFSScheduleForm(CFSScheduleFormBase):
     """Form used when submitting the CFS schedule.
@@ -446,7 +461,7 @@ class SubmitCFSScheduleForm(CFSScheduleFormBase):
     All fields are fully validated to ensure form is correct.
     """
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         cleaned_data: dict[str, Any] = super().clean()
 
         if not self.is_valid():
@@ -458,10 +473,6 @@ class SubmitCFSScheduleForm(CFSScheduleFormBase):
 
         if any_raw_materials == YesNoChoices.yes and not final_product_end_use:
             self.add_error("final_product_end_use", "You must enter this item")
-
-        # Clear the final_product_end_use data if not needed.
-        elif any_raw_materials == YesNoChoices.no:
-            cleaned_data["final_product_end_use"] = ""
 
         # Check goods field
         goods_placed_on_uk_market: str = cleaned_data["goods_placed_on_uk_market"]
