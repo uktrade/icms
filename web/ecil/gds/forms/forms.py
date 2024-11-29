@@ -131,10 +131,10 @@ def get_gds_formfield(db_field: models.Field, **kwargs: Any) -> forms.Field:
 
         case models.BooleanField():
             if db_field.null:
-                choices = [(True, "Yes"), (False, "No"), ("", "N/a")]
+                choices = [("True", "Yes"), ("False", "No"), ("", "N/a")]
                 kwargs["required"] = False
             else:
-                choices = [(True, "Yes"), (False, "No")]
+                choices = [("True", "Yes"), ("False", "No")]
 
             kwargs["choices"] = choices
             field_cls = gds_fields.GovUKRadioInputField
