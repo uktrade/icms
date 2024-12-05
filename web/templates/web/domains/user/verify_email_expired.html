@@ -1,0 +1,16 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+
+{% block page_title %}Email Verification Expired{% endblock %}
+{#{% block context_header %}Email Verification Expired{% endblock %}#}
+
+
+{% block main_content %}
+  <h3>This link has now expired</h3>
+  <div class="info-box info-box-warning">
+    This email verification link has now expired.
+  </div>
+  {%- call forms.form(action=icms_url('user-send-verify-email',kwargs={'email_pk': email.pk}), method='post', csrf_input=csrf_input) -%}
+    {{ forms.submit_button(padding_cols="zero", btn_label="Resend verification email") }}
+  {%- endcall -%}
+{% endblock %}

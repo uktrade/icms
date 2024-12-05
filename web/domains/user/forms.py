@@ -134,8 +134,8 @@ class UserEmailForm(forms.ModelForm):
         model = Email
         fields = ["email", "type"]
 
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop("user", None)
+    def __init__(self, *args: Any, user: User, **kwargs: Any) -> None:
+        self.user = user
         super().__init__(*args, **kwargs)
 
     def clean_email(self):
@@ -177,8 +177,8 @@ class UpdateUserEmailForm(forms.ModelForm):
             "is_primary": "Preferred contact address",
         }
 
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop("user", None)
+    def __init__(self, *args: Any, user: User, **kwargs: Any) -> None:
+        self.user = user
         super().__init__(*args, **kwargs)
 
     def save(self, commit=True):
