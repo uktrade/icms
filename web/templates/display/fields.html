@@ -18,10 +18,14 @@
     </div>
     <div class="six columns">
         <span class="text-widget {% if field_span_classes %}{{ field_span_classes }}{% endif %}">
-          {% if is_safe_html %}
-            {{ field | safe}}
+          {% if field != None %}
+            {% if is_safe_html %}
+              {{ field | safe}}
+            {% else %}
+              {{ field | nl2br }}
+            {% endif %}
           {% else %}
-            {{ field | nl2br or default }}
+            {{ default }}
           {% endif %}
         </span>
     </div>

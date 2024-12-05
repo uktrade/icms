@@ -25,7 +25,7 @@
       "Is the applicant company the manufacturer of the pesticide?") }}
     {{ application_field(process.product_name, "Product Name") }}
     {{ application_field(process.chemical_name, "Chemical Name") }}
-    {{ application_field(process.manufacturing_process|nl2br, "Manufacturing Process") }}
+    {{ application_field(process.manufacturing_process, "Manufacturing Process") }}
   {% endcall %}
 
 {% endblock %}
