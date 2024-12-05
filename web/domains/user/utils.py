@@ -12,5 +12,5 @@ def user_list_view_qs() -> QuerySet[User]:
 
 
 def send_and_create_email_verification(email: Email, site: Site) -> None:
-    verification = EmailVerification.objects.create(email=email)
+    verification, _ = EmailVerification.objects.get_or_create(email=email, processed=False)
     send_email_verification_email(verification, site)

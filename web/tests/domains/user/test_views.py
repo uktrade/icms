@@ -389,7 +389,7 @@ class TestUserSendVerifyEmailView(AuthTestCase):
         )
         url = reverse(
             "user-send-verify-email",
-            kwargs={"user_pk": self.importer_user.pk, "email_pk": email.pk},
+            kwargs={"email_pk": email.pk},
         )
         response = self.importer_client.post(url)
         assert response.status_code == HTTPStatus.FOUND
@@ -415,7 +415,7 @@ class TestUserSendVerifyEmailView(AuthTestCase):
         )
         url = reverse(
             "user-send-verify-email",
-            kwargs={"user_pk": self.importer_user.pk, "email_pk": email.pk},
+            kwargs={"email_pk": email.pk},
         )
         response = self.importer_client.post(url)
         assert response.status_code == HTTPStatus.NOT_FOUND
@@ -423,7 +423,7 @@ class TestUserSendVerifyEmailView(AuthTestCase):
     def test_resend_verify_email_deleted_email_address(self):
         url = reverse(
             "user-send-verify-email",
-            kwargs={"user_pk": self.importer_user.pk, "email_pk": 0},
+            kwargs={"email_pk": 0},
         )
         response = self.importer_client.post(url)
         assert response.status_code == HTTPStatus.NOT_FOUND
@@ -437,7 +437,7 @@ class TestUserVerifyEmailView(AuthTestCase):
             email="test_verify@example.com", type=Email.WORK, user=self.importer_user  # /PS-IGNORE
         )
         verification = EmailVerification.objects.create(email=email)
-        url = reverse("email-verify", kwargs={"token": verification.token})
+        url = reverse("email-verify", kwargs={"code": verification.code})
 
         response = self.importer_client.get(url)
         assert response.status_code == HTTPStatus.FOUND
@@ -458,7 +458,7 @@ class TestUserVerifyEmailView(AuthTestCase):
         assert email.is_verified is True
 
     def test_verify_email_not_found(self):
-        url = reverse("email-verify", kwargs={"token": uuid.uuid4()})
+        url = reverse("email-verify", kwargs={"code": uuid.uuid4()})
         response = self.importer_client.get(url)
         assert response.status_code == HTTPStatus.FOUND
         assertRedirects(

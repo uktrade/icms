@@ -97,12 +97,12 @@ class Email(models.Model):
     WORK = "WORK"
     HOME = "HOME"
     TYPES = ((WORK, "Work"), (HOME, "Home"))
-    email = models.EmailField(max_length=254, blank=False, null=False)
-    type = models.CharField(max_length=30, choices=TYPES, blank=False, null=False, default=WORK)
-    portal_notifications = models.BooleanField(blank=False, null=False, default=False)
+    email = models.EmailField(max_length=254)
+    type = models.CharField(max_length=30, choices=TYPES, default=WORK)
+    portal_notifications = models.BooleanField(default=False)
     comment = models.CharField(max_length=4000, blank=True, null=True)
-    is_primary = models.BooleanField(blank=False, null=False, default=False)
-    is_verified = models.BooleanField(blank=False, null=False, default=False)
+    is_primary = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="emails"
@@ -114,9 +114,10 @@ class Email(models.Model):
 
 class EmailVerification(models.Model):
     email = models.ForeignKey(Email, on_delete=models.CASCADE)
-    token = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    code = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    processed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     verified_at = models.DateTimeField(auto_now=True)
 
     def get_email_verification_url(self):
-        return reverse("email-verify", kwargs={"token": self.token})
+        return reverse("email-verify", kwargs={"code": self.code})

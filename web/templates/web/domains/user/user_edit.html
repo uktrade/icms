@@ -113,7 +113,7 @@
           {% if email.is_verified  %}
             <a href="{{ icms_url('user-email-edit', kwargs={'user_pk':request.user.pk, 'email_pk': email.pk}) }}" class="button small-button icon-pencil">Edit</a>
           {% elif email.email != request.user.email %}
-            <form method="post" action="{{ icms_url('user-send-verify-email', kwargs={'user_pk':request.user.pk, 'email_pk': email.pk}) }}" class="form-inline">
+            <form method="post" action="{{ icms_url('user-send-verify-email', kwargs={'email_pk': email.pk}) }}" class="form-inline">
               {{ csrf_input }}
               <button type="submit" class="button small-button icon-mail2">Resend Verification email</button>
             </form>
