@@ -47,13 +47,27 @@ class GDSFormMixin:
         if not self.errors:
             return {}
 
-        # TODO: Revisit in ECIL-325 to fix checkbox, date and radio input fields.
+        error_list = []
+
+        for field_name, error in self.errors.items():
+            match self.fields[field_name]:
+                case gds_fields.GovUKDateInputField():
+                    # Default the date input link to the first field.
+                    href = f"#id_{field_name}_0"
+                case gds_fields.GovUKCheckboxesField():
+                    # Default to the first checkbox item
+                    href = f"#id_{field_name}_0"
+                case gds_fields.GovUKRadioInputField():
+                    # Default to the first radio item
+                    href = f"#id_{field_name}_0"
+                case _:
+                    href = f"#id_{field_name}"
+
+            error_list.append({"text": error, "href": href})
+
         return {
             "titleText": "There is a problem",
-            "errorList": [
-                {"text": error, "href": f"#id_{field_name}"}
-                for field_name, error in self.errors.items()
-            ],
+            "errorList": error_list,
         }
 
 
