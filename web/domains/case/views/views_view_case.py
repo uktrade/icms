@@ -327,13 +327,19 @@ def _view_cfs(
     labels = {f.name: getattr(f, "verbose_name", "") for f in cfs_fields}
     app_countries = "\n".join(application.countries.all().values_list("name", flat=True))
 
+    if application.submit_datetime:
+        show_eu_fields = application.submit_datetime < dt.datetime(2021, 1, 1, tzinfo=dt.UTC)
+    else:
+        # Default to False as it's a current app and therefore after 2021/01/01
+        show_eu_fields = False
+
     context = {
         "process": application,
         "labels": labels,
         "application_countries": app_countries,
         "schedules": application.schedules.all().order_by("created_at"),
         "page_title": get_case_page_title("export", application, "View"),
-        "show_eu_fields": application.submit_datetime < dt.datetime(2021, 1, 1, tzinfo=dt.UTC),
+        "show_eu_fields": show_eu_fields,
     }
 
     return render(request, "web/domains/case/export/cfs-view.html", context)

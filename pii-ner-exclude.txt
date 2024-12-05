@@ -5199,3 +5199,4 @@ https://github.com/wildfish/crispy-forms-gds/blob/master/src/crispy_forms_gds/fi
 MultiValueField
 dict[str
 HTML
+{{ application_field(process.manufacturing_process
