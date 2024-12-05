@@ -12,7 +12,7 @@ from . import serializers
 from .validators import MaxWordsValidator
 
 
-class GDSMixin:
+class GDSFieldMixin:
     # Field template name
     template_name: ClassVar[str | None] = None
     # BoundField class that defines Nunjucks context
@@ -65,7 +65,7 @@ class GDSBoundField(forms.BoundField):
         return serializers.ErrorMessage(text=" ".join(self.errors))
 
 
-class GovUKCharacterCountField(GDSMixin, forms.CharField):
+class GovUKCharacterCountField(GDSFieldMixin, forms.CharField):
     def __init__(
         self, *args: Any, max_length: int | None = None, max_words: int | None = None, **kwargs: Any
     ) -> None:
@@ -110,7 +110,7 @@ class GovUKCharacterCountField(GDSMixin, forms.CharField):
             return context
 
 
-class GovUKCheckboxesField(GDSMixin, forms.MultipleChoiceField):
+class GovUKCheckboxesField(GDSFieldMixin, forms.MultipleChoiceField):
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
@@ -126,8 +126,8 @@ class GovUKCheckboxesField(GDSMixin, forms.MultipleChoiceField):
                 ),
                 hint=self._get_hint(),
                 items=[
-                    serializers.CheckboxItem(value=value, text=label)
-                    for value, label in self.field.choices
+                    serializers.CheckboxItem(id=f"{self.auto_id}_{i}", value=value, text=label)
+                    for i, (value, label) in enumerate(self.field.choices)
                 ],
                 values=self.data or self.initial or [],
                 errorMessage=self._get_errors(),
@@ -163,7 +163,7 @@ class DateMultiWidget(forms.MultiWidget):
         return None, None, None
 
 
-class GovUKDateInputField(GDSMixin, forms.MultiValueField):
+class GovUKDateInputField(GDSFieldMixin, forms.MultiValueField):
     widget = DateMultiWidget
 
     default_error_messages = {
@@ -206,9 +206,15 @@ class GovUKDateInputField(GDSMixin, forms.MultiValueField):
                 ),
                 hint=self._get_hint(),
                 items=[
-                    serializers.DateItem(label="Day", name=f"{self.name}_0", value=value[0]),
-                    serializers.DateItem(label="Month", name=f"{self.name}_1", value=value[1]),
-                    serializers.DateItem(label="Year", name=f"{self.name}_2", value=value[2]),
+                    serializers.DateItem(
+                        label="Day", name=f"{self.name}_0", value=value[0], id=f"{self.auto_id}_0"
+                    ),
+                    serializers.DateItem(
+                        label="Month", name=f"{self.name}_1", value=value[1], id=f"{self.auto_id}_1"
+                    ),
+                    serializers.DateItem(
+                        label="Year", name=f"{self.name}_2", value=value[2], id=f"{self.auto_id}_2"
+                    ),
                 ],
                 errorMessage=self._get_errors(),
                 attributes=self.field.widget.attrs,
@@ -289,7 +295,7 @@ class GovUKDateInputField(GDSMixin, forms.MultiValueField):
             return None
 
 
-class GovUKDecimalField(GDSMixin, forms.DecimalField):
+class GovUKDecimalField(GDSFieldMixin, forms.DecimalField):
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
@@ -316,7 +322,7 @@ class GovUKDecimalField(GDSMixin, forms.DecimalField):
             return context
 
 
-class GovUKEmailField(GDSMixin, forms.EmailField):
+class GovUKEmailField(GDSFieldMixin, forms.EmailField):
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
@@ -338,7 +344,7 @@ class GovUKEmailField(GDSMixin, forms.EmailField):
             return context
 
 
-class GovUKFileUploadField(GDSMixin, ICMSFileField):
+class GovUKFileUploadField(GDSFieldMixin, ICMSFileField):
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
@@ -363,7 +369,7 @@ class GovUKFileUploadField(GDSMixin, ICMSFileField):
             return context
 
 
-class GovUKFloatField(GDSMixin, forms.FloatField):
+class GovUKFloatField(GDSFieldMixin, forms.FloatField):
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
@@ -385,7 +391,7 @@ class GovUKFloatField(GDSMixin, forms.FloatField):
             return context
 
 
-class GovUKIntegerField(GDSMixin, forms.IntegerField):
+class GovUKIntegerField(GDSFieldMixin, forms.IntegerField):
     """Custom field using django IntegerField validation and rendering a gds text-input."""
 
     class BF(GDSBoundField):
@@ -409,7 +415,7 @@ class GovUKIntegerField(GDSMixin, forms.IntegerField):
             return context
 
 
-class GovUKPasswordInputField(GDSMixin, forms.CharField):
+class GovUKPasswordInputField(GDSFieldMixin, forms.CharField):
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
@@ -430,14 +436,14 @@ class GovUKPasswordInputField(GDSMixin, forms.CharField):
             return context
 
 
-class GovUKRadioInputField(GDSMixin, forms.ChoiceField):
+class GovUKRadioInputField(GDSFieldMixin, forms.ChoiceField):
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
 
             items = []
-            for value, label in self.field.choices:
-                item = {"value": value, "text": label}
+            for i, (value, label) in enumerate(self.field.choices):
+                item = {"id": f"{self.auto_id}_{i}", "value": value, "text": label}
                 if value in self.form.gds_radio_conditional_fields:
                     item["conditional"] = {"html": self.form.gds_radio_conditional_fields[value]}
 
@@ -462,7 +468,7 @@ class GovUKRadioInputField(GDSMixin, forms.ChoiceField):
             return context
 
 
-class GovUKSelectField(GDSMixin, forms.ChoiceField):
+class GovUKSelectField(GDSFieldMixin, forms.ChoiceField):
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
@@ -487,7 +493,7 @@ class GovUKSelectField(GDSMixin, forms.ChoiceField):
             return context
 
 
-class GovUKSlugField(GDSMixin, forms.SlugField):
+class GovUKSlugField(GDSFieldMixin, forms.SlugField):
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
@@ -508,7 +514,7 @@ class GovUKSlugField(GDSMixin, forms.SlugField):
             return context
 
 
-class GovUKTextareaField(GDSMixin, forms.CharField):
+class GovUKTextareaField(GDSFieldMixin, forms.CharField):
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
@@ -530,7 +536,7 @@ class GovUKTextareaField(GDSMixin, forms.CharField):
             return context
 
 
-class GovUKTextInputField(GDSMixin, forms.CharField):
+class GovUKTextInputField(GDSFieldMixin, forms.CharField):
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()

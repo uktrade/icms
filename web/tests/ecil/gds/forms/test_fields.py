@@ -172,20 +172,20 @@ class TestGovUKCheckboxesField:
                   </div>
                   <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                     <div class="govuk-checkboxes__item">
-                      <input class="govuk-checkboxes__input" id="field" name="field" type="checkbox" value="one" checked>
-                      <label class="govuk-label govuk-checkboxes__label" for="field">
+                      <input class="govuk-checkboxes__input" id="id_field_0" name="field" type="checkbox" value="one" checked>
+                      <label class="govuk-label govuk-checkboxes__label" for="id_field_0">
                         One
                       </label>
                     </div>
                     <div class="govuk-checkboxes__item">
-                      <input class="govuk-checkboxes__input" id="field-2" name="field" type="checkbox" value="two">
-                      <label class="govuk-label govuk-checkboxes__label" for="field-2">
+                      <input class="govuk-checkboxes__input" id="id_field_1" name="field" type="checkbox" value="two">
+                      <label class="govuk-label govuk-checkboxes__label" for="id_field_1">
                         Two
                       </label>
                     </div>
                     <div class="govuk-checkboxes__item">
-                      <input class="govuk-checkboxes__input" id="field-3" name="field" type="checkbox" value="three">
-                      <label class="govuk-label govuk-checkboxes__label" for="field-3">
+                      <input class="govuk-checkboxes__input" id="id_field_2" name="field" type="checkbox" value="three">
+                      <label class="govuk-label govuk-checkboxes__label" for="id_field_2">
                         Three
                       </label>
                     </div>
@@ -286,30 +286,29 @@ class TestGovUKDateInputField:
                   <div id="id_field-hint" class="govuk-hint">
                     Test help_text
                   </div>
-                  <div class="govuk-date-input"
-                       id="id_field">
+                  <div class="govuk-date-input" id="id_field">
                     <div class="govuk-date-input__item">
                       <div class="govuk-form-group">
-                        <label class="govuk-label govuk-date-input__label" for="id_field-field_0">
+                        <label class="govuk-label govuk-date-input__label" for="id_field_0">
                           Day
                         </label>
-                        <input class="govuk-input govuk-date-input__input " id="id_field-field_0" name="field_0" type="text" value="23" inputmode="numeric">
+                        <input class="govuk-input govuk-date-input__input " id="id_field_0" name="field_0" type="text" value="23" inputmode="numeric">
                       </div>
                     </div>
                     <div class="govuk-date-input__item">
                       <div class="govuk-form-group">
-                        <label class="govuk-label govuk-date-input__label" for="id_field-field_1">
+                        <label class="govuk-label govuk-date-input__label" for="id_field_1">
                           Month
                         </label>
-                        <input class="govuk-input govuk-date-input__input " id="id_field-field_1" name="field_1" type="text" value="7" inputmode="numeric">
+                        <input class="govuk-input govuk-date-input__input " id="id_field_1" name="field_1" type="text" value="7" inputmode="numeric">
                       </div>
                     </div>
                     <div class="govuk-date-input__item">
                       <div class="govuk-form-group">
-                        <label class="govuk-label govuk-date-input__label" for="id_field-field_2">
+                        <label class="govuk-label govuk-date-input__label" for="id_field_2">
                           Year
                         </label>
-                        <input class="govuk-input govuk-date-input__input " id="id_field-field_2" name="field_2" type="text" value="2022" inputmode="numeric">
+                        <input class="govuk-input govuk-date-input__input " id="id_field_2" name="field_2" type="text" value="2022" inputmode="numeric">
                       </div>
                     </div>
                   </div>
@@ -726,21 +725,20 @@ class TestGovUKRadioInputField:
                   </div>
                   <div class="govuk-radios" data-module="govuk-radios">
                     <div class="govuk-radios__item">
-                      <input class="govuk-radios__input" id="field" name="field" type="radio" value="one"
-                             checked>
-                      <label class="govuk-label govuk-radios__label" for="field">
+                      <input class="govuk-radios__input" id="id_field_0" name="field" type="radio" value="one" checked>
+                      <label class="govuk-label govuk-radios__label" for="id_field_0">
                         One
                       </label>
                     </div>
                     <div class="govuk-radios__item">
-                      <input class="govuk-radios__input" id="field-2" name="field" type="radio" value="two">
-                      <label class="govuk-label govuk-radios__label" for="field-2">
+                      <input class="govuk-radios__input" id="id_field_1" name="field" type="radio" value="two">
+                      <label class="govuk-label govuk-radios__label" for="id_field_1">
                         Two
                       </label>
                     </div>
                     <div class="govuk-radios__item">
-                      <input class="govuk-radios__input" id="field-3" name="field" type="radio" value="three">
-                      <label class="govuk-label govuk-radios__label" for="field-3">
+                      <input class="govuk-radios__input" id="id_field_2" name="field" type="radio" value="three">
+                      <label class="govuk-label govuk-radios__label" for="id_field_2">
                         Three
                       </label>
                     </div>
@@ -790,12 +788,12 @@ class TestGovUKRadioInputField:
                   </div>
                   <div class="govuk-radios" data-module="govuk-radios">
                     <div class="govuk-radios__item">
-                      <input class="govuk-radios__input" id="field" name="field" type="radio" value="one" data-aria-controls="conditional-field">
-                      <label class="govuk-label govuk-radios__label" for="field">
+                      <input class="govuk-radios__input" id="id_field_0" name="field" type="radio" value="one" data-aria-controls="conditional-id_field_0">
+                      <label class="govuk-label govuk-radios__label" for="id_field_0">
                         One
                       </label>
                     </div>
-                    <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-field">
+                    <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-id_field_0">
                       <div class="govuk-form-group">
                         <h1 class="govuk-label-wrapper">
                           <label class="govuk-label govuk-label--l" for="id_one">
@@ -809,12 +807,15 @@ class TestGovUKRadioInputField:
                       </div>
                     </div>
                     <div class="govuk-radios__item">
-                      <input class="govuk-radios__input" id="field-2" name="field" type="radio" value="two" checked data-aria-controls="conditional-field-2">
-                      <label class="govuk-label govuk-radios__label" for="field-2">
+                      <input
+                        class="govuk-radios__input" id="id_field_1" name="field" type="radio" value="two" checked
+                        data-aria-controls="conditional-id_field_1"
+                        >
+                      <label class="govuk-label govuk-radios__label" for="id_field_1">
                         Two
                       </label>
                     </div>
-                    <div class="govuk-radios__conditional" id="conditional-field-2">
+                    <div class="govuk-radios__conditional" id="conditional-id_field_1">
                       <div class="govuk-form-group">
                         <h1 class="govuk-label-wrapper">
                           <label class="govuk-label govuk-label--l" for="id_two">
@@ -828,12 +829,12 @@ class TestGovUKRadioInputField:
                       </div>
                     </div>
                     <div class="govuk-radios__item">
-                      <input class="govuk-radios__input" id="field-3" name="field" type="radio" value="three" data-aria-controls="conditional-field-3">
-                      <label class="govuk-label govuk-radios__label" for="field-3">
+                      <input class="govuk-radios__input" id="id_field_2" name="field" type="radio" value="three" data-aria-controls="conditional-id_field_2">
+                      <label class="govuk-label govuk-radios__label" for="id_field_2">
                         Three
                       </label>
                     </div>
-                    <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-field-3">
+                    <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-id_field_2">
                       <div class="govuk-form-group">
                         <h1 class="govuk-label-wrapper">
                           <label class="govuk-label govuk-label--l" for="id_three">
