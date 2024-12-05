@@ -5,8 +5,9 @@ from typing import Any
 
 import pytest
 from django.urls import reverse
+from django.utils import timezone
 from freezegun import freeze_time
-from pytest_django.asserts import assertContains, assertRedirects
+from pytest_django.asserts import assertContains, assertInHTML, assertRedirects
 
 from web.forms.fields import JQUERY_DATE_FORMAT
 from web.mail.constants import EmailTypes
@@ -381,15 +382,14 @@ class TestUserDeleteEmailView:
         assert self.importer_one_contact.emails.all().count() == 2
 
 
-class TestUserSendVerifyEmailView(AuthTestCase):
-
+class TestSendVerifyEmailView(AuthTestCase):
     def test_resend_verify_email(self):
         email = Email.objects.create(
             email="test_verify@example.com", type=Email.WORK, user=self.importer_user  # /PS-IGNORE
         )
         url = reverse(
             "user-send-verify-email",
-            kwargs={"user_pk": self.importer_user.pk, "email_pk": email.pk},
+            kwargs={"email_pk": email.pk},
         )
         response = self.importer_client.post(url)
         assert response.status_code == HTTPStatus.FOUND
@@ -415,7 +415,7 @@ class TestUserSendVerifyEmailView(AuthTestCase):
         )
         url = reverse(
             "user-send-verify-email",
-            kwargs={"user_pk": self.importer_user.pk, "email_pk": email.pk},
+            kwargs={"email_pk": email.pk},
         )
         response = self.importer_client.post(url)
         assert response.status_code == HTTPStatus.NOT_FOUND
@@ -423,21 +423,20 @@ class TestUserSendVerifyEmailView(AuthTestCase):
     def test_resend_verify_email_deleted_email_address(self):
         url = reverse(
             "user-send-verify-email",
-            kwargs={"user_pk": self.importer_user.pk, "email_pk": 0},
+            kwargs={"email_pk": 0},
         )
         response = self.importer_client.post(url)
         assert response.status_code == HTTPStatus.NOT_FOUND
 
 
-class TestUserVerifyEmailView(AuthTestCase):
-
+class TestVerifyEmailView(AuthTestCase):
     @freeze_time("2024-08-01 12:00:00")
     def test_verify_email(self):
         email = Email.objects.create(
             email="test_verify@example.com", type=Email.WORK, user=self.importer_user  # /PS-IGNORE
         )
         verification = EmailVerification.objects.create(email=email)
-        url = reverse("email-verify", kwargs={"token": verification.token})
+        url = reverse("email-verify", kwargs={"code": verification.code})
 
         response = self.importer_client.get(url)
         assert response.status_code == HTTPStatus.FOUND
@@ -458,7 +457,7 @@ class TestUserVerifyEmailView(AuthTestCase):
         assert email.is_verified is True
 
     def test_verify_email_not_found(self):
-        url = reverse("email-verify", kwargs={"token": uuid.uuid4()})
+        url = reverse("email-verify", kwargs={"code": uuid.uuid4()})
         response = self.importer_client.get(url)
         assert response.status_code == HTTPStatus.FOUND
         assertRedirects(
@@ -468,6 +467,50 @@ class TestUserVerifyEmailView(AuthTestCase):
                 kwargs={"user_pk": self.importer_user.pk},
             ),
         )
+
+    def test_verify_email_expired(self):
+        email = Email.objects.create(
+            email="test_verify@example.com", type=Email.WORK, user=self.importer_user  # /PS-IGNORE
+        )
+
+        older_than_two_weeks = timezone.now() - dt.timedelta(weeks=2, microseconds=1)
+        with freeze_time(older_than_two_weeks):
+            verification = EmailVerification.objects.create(email=email)
+
+        url = reverse("email-verify", kwargs={"code": verification.code})
+
+        response = self.importer_client.get(url)
+        assert response.status_code == HTTPStatus.FOUND
+        assertRedirects(
+            response,
+            reverse("user-verify-email-expired", kwargs={"email_pk": email.pk}),
+        )
+
+
+class TestVerifyEmailExpiredView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
+        self.email = Email.objects.create(
+            email="test_verify@example.com", type=Email.WORK, user=self.importer_user  # /PS-IGNORE
+        )
+
+        older_than_two_weeks = timezone.now() - dt.timedelta(weeks=2, microseconds=1)
+        with freeze_time(older_than_two_weeks):
+            EmailVerification.objects.create(email=self.email)
+
+        self.url = reverse("user-verify-email-expired", kwargs={"email_pk": self.email.pk})
+
+    def test_permission(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.NOT_FOUND
+
+    def test_get(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertInHTML("This email verification link has now expired.", response.content.decode())
 
 
 class TestUsersListView(AuthTestCase):

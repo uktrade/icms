@@ -1,3 +1,4 @@
+import datetime as dt
 from typing import Any
 
 from django.conf import settings
@@ -13,7 +14,9 @@ from django.forms import Form
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.generic import (
     CreateView,
     DetailView,
@@ -23,6 +26,8 @@ from django.views.generic import (
     UpdateView,
 )
 from django.views.generic.detail import SingleObjectMixin
+from django_ratelimit import UNSAFE
+from django_ratelimit.decorators import ratelimit
 
 from web.domains.template.context import UserManagementContext
 from web.domains.template.utils import replace_template_values
@@ -178,25 +183,58 @@ class UserDeleteTelephoneView(UserBaseMixin, SingleObjectMixin, RedirectView):
         return super().post(request, *args, **kwargs)
 
 
+@method_decorator(ratelimit(key="ip", rate="5/m", method=UNSAFE, block=True), name="post")
+class SendVerifyEmailView(LoginRequiredMixin, SingleObjectMixin, View):
+    http_method_names = ["post"]
+    model = Email
+    pk_url_kwarg = "email_pk"
+
+    def get_queryset(self) -> QuerySet[Email]:
+        qs = super().get_queryset()
+        return qs.filter(user=self.request.user)
+
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        email = self.get_object()
+        send_and_create_email_verification(email, self.request.site)
+        messages.info(
+            self.request,
+            f"Email sent to {email.email}, Please check your inbox to complete adding the email address to your account",
+        )
+
+        return redirect(reverse("user-edit", kwargs={"user_pk": self.request.user.pk}))
+
+
 class VerifyEmailView(LoginRequiredMixin, SingleObjectMixin, RedirectView):
     http_method_names = ["get"]
-    slug_url_kwarg = "token"
+    slug_url_kwarg = "code"
     model = EmailVerification
-    slug_field = "token"
+    slug_field = "code"
     context_object_name = "email_verification"
 
     def get_queryset(self) -> QuerySet[EmailVerification]:
         qs = super().get_queryset()
 
-        return qs.filter(email__user=self.request.user)
+        return qs.filter(email__user=self.request.user, processed=False)
 
     def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.object = self.get_object()
-        if self.object and not self.object.email.is_verified:
-            self.object.email.is_verified = True
-            self.object.email.save()
-            self.object.save()
-            messages.info(self.request, f"Email address {self.object.email} has now been verified.")
+
+        two_weeks_ago = timezone.now() - dt.timedelta(weeks=2)
+        if self.object:
+            if self.object.created_at < two_weeks_ago:
+                return redirect(
+                    reverse("user-verify-email-expired", kwargs={"email_pk": self.object.email.pk})
+                )
+
+            if not self.object.email.is_verified:
+                self.object.email.is_verified = True
+                self.object.email.save()
+                self.object.processed = True
+                self.object.save()
+                messages.info(
+                    self.request, f"Email address {self.object.email} has now been verified."
+                )
+
         return super().get(request, *args, **kwargs)
 
     def get_object(self, *args: Any, **kwargs: Any) -> EmailVerification | None:
@@ -215,23 +253,25 @@ class VerifyEmailView(LoginRequiredMixin, SingleObjectMixin, RedirectView):
             return reverse("user-edit", kwargs={"user_pk": self.request.user.pk})
 
 
-class SendVerifyEmailView(UserBaseMixin, SingleObjectMixin, RedirectView):
-    http_method_names = ["post"]
+class VerifyEmailExpiredView(LoginRequiredMixin, SingleObjectMixin, TemplateView):
+    # SingleObjectMixin config
     model = Email
     pk_url_kwarg = "email_pk"
+    context_object_name = "email"
 
-    def get_queryset(self) -> QuerySet[PhoneNumber]:
+    # TemplateView config
+    http_method_names = ["get"]
+    template_name = "web/domains/user/verify_email_expired.html"
+
+    def get_queryset(self) -> QuerySet[EmailVerification]:
         qs = super().get_queryset()
+
         return qs.filter(user=self.request.user)
 
-    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        email = self.get_object()
-        send_and_create_email_verification(email, self.request.site)
-        messages.info(
-            self.request,
-            f"Email sent to {email.email}, Please check your inbox to complete adding the email address to your account",
-        )
-        return super().post(request, *args, **kwargs)
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        self.object = self.get_object()
+
+        return super().get(request, *args, **kwargs)
 
 
 class UserCreateEmailView(UserBaseMixin, CreateView):

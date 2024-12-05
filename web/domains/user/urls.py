@@ -7,7 +7,24 @@ public_urls = [
     path("welcome/", views.NewUserWelcomeView.as_view(), name="user-welcome"),
     path("welcome/clear/", views.ClearNewUserWelcomeView.as_view(), name="user-welcome-clear"),
     path("new-user/", views.NewUserUpdateView.as_view(), name="new-user-edit"),
-    path("email/verifiy/<uuid:token>/", views.VerifyEmailView.as_view(), name="email-verify"),
+    path(
+        "email/",
+        include(
+            [
+                path("verifiy/<uuid:code>/", views.VerifyEmailView.as_view(), name="email-verify"),
+                path(
+                    "<int:email_pk>/send-verify/",
+                    views.SendVerifyEmailView.as_view(),
+                    name="user-send-verify-email",
+                ),
+                path(
+                    "<int:email_pk>/verify-email-expired/",
+                    views.VerifyEmailExpiredView.as_view(),
+                    name="user-verify-email-expired",
+                ),
+            ]
+        ),
+    ),
     path(
         "<int:user_pk>/",
         include(
@@ -64,11 +81,6 @@ public_urls = [
                                             "delete/",
                                             views.UserDeleteEmailView.as_view(),
                                             name="user-email-delete",
-                                        ),
-                                        path(
-                                            "verify/",
-                                            views.SendVerifyEmailView.as_view(),
-                                            name="user-send-verify-email",
                                         ),
                                     ]
                                 ),
