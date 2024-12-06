@@ -114,6 +114,7 @@ class EmailTypes(TypedTextChoices):
     RETRACT_MAILSHOT = ("RETRACT_MAILSHOT", "Retract Mailshot")
     NEW_USER_WELCOME = ("NEW_USER_WELCOME", "New User Welcome")
     ORG_CONTACT_INVITE = ("ORG_CONTACT_INVITE", "New Organisation Contact Invite")
+    EMAIL_VERIFICATION = ("EMAIL_VERIFICATION", "Email Verification")
 
 
 class CaseEmailCodes(TypedTextChoices):

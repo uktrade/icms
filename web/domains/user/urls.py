@@ -7,6 +7,12 @@ public_urls = [
     path("welcome/", views.NewUserWelcomeView.as_view(), name="user-welcome"),
     path("welcome/clear/", views.ClearNewUserWelcomeView.as_view(), name="user-welcome-clear"),
     path("new-user/", views.NewUserUpdateView.as_view(), name="new-user-edit"),
+    path("email/verifiy/<uuid:code>/", views.VerifyEmailView.as_view(), name="email-verify"),
+    path(
+        "email/<int:email_pk>/send-verify/",
+        views.SendVerifyEmailView.as_view(),
+        name="user-send-verify-email",
+    ),
     path(
         "<int:user_pk>/",
         include(

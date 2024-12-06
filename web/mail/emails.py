@@ -19,6 +19,7 @@ from web.models import CaseEmail as CaseEmailModel
 from web.models import (
     Constabulary,
     DFLApplication,
+    EmailVerification,
     ExportApplication,
     Exporter,
     ExporterApprovalRequest,
@@ -65,6 +66,7 @@ from .messages import (
     CaseEmailWithDocuments,
     CertificateRevokedEmail,
     ConstabularyDeactivatedFirearmsEmail,
+    EmailVerificationEmail,
     ExporterAccessRequestApprovalOpenedEmail,
     FirearmsAuthorityExpiringEmail,
     FirearmsSupplementaryReportEmail,
@@ -586,4 +588,14 @@ def send_org_contact_invite_email(
         organisation=organisation,
         invite=invite,
         recipient=RecipientDetails(first_name=invite.first_name, email_address=invite.email),
+    ).send()
+
+
+def send_email_verification_email(verification: EmailVerification, site: Site) -> None:
+    EmailVerificationEmail(
+        site=site,
+        verification=verification,
+        recipient=RecipientDetails(
+            email_address=verification.email.email, first_name=verification.email.user.first_name
+        ),
     ).send()
