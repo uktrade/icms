@@ -1,5 +1,7 @@
 from django.db import models
 
+from .model_fields import AddressLineField
+
 
 class Office(models.Model):
     """Office for importer/exporters"""
@@ -12,28 +14,28 @@ class Office(models.Model):
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
 
-    address_1 = models.CharField(max_length=100, verbose_name="Address line 1")
-    address_2 = models.CharField(
+    address_1 = AddressLineField(max_length=100, verbose_name="Address line 1")
+    address_2 = AddressLineField(
         max_length=100, null=True, blank=True, verbose_name="Address line 2"
     )
-    address_3 = models.CharField(
+    address_3 = AddressLineField(
         max_length=100, null=True, blank=True, verbose_name="Address line 3"
     )
-    address_4 = models.CharField(
+    address_4 = AddressLineField(
         max_length=100, null=True, blank=True, verbose_name="Address line 4"
     )
-    address_5 = models.CharField(
+    address_5 = AddressLineField(
         max_length=100, null=True, blank=True, verbose_name="Address line 5"
     )
 
     # Extra address_x fields that appear for exporters only
-    address_6 = models.CharField(
+    address_6 = AddressLineField(
         max_length=100, null=True, blank=True, verbose_name="Address line 6"
     )
-    address_7 = models.CharField(
+    address_7 = AddressLineField(
         max_length=100, null=True, blank=True, verbose_name="Address line 7"
     )
-    address_8 = models.CharField(
+    address_8 = AddressLineField(
         max_length=100, null=True, blank=True, verbose_name="Address line 8"
     )
 
