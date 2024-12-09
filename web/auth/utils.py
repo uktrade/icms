@@ -83,7 +83,7 @@ def get_or_create_icms_user(
         UserEmail.objects.get_or_create(
             user=user,
             email=provider_email,
-            defaults={"is_primary": True, "portal_notifications": True},
+            defaults={"is_primary": True, "portal_notifications": True, "is_verified": True},
         )
 
     return user, created

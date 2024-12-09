@@ -18,6 +18,7 @@ from web.mail.url_helpers import (
     get_case_manage_view_url,
     get_case_view_url,
     get_dfl_application_otd_url,
+    get_email_verification_url,
     get_exporter_access_request_url,
     get_importer_access_request_url,
     get_mailshot_detail_view_url,
@@ -33,6 +34,7 @@ from web.models import (
     Constabulary,
     ConstabularyLicenceDownloadLink,
     EmailTemplate,
+    EmailVerification,
     ExporterAccessRequest,
     ExporterContactInvite,
     FirearmsAuthority,
@@ -1523,4 +1525,73 @@ Firearms references(s): 423,476,677\r\n"""
             invite.email,
             exp_template_id,
             personalisation=expected_import_personalisation,
+        )
+
+    def test_send_email_verification_exporter(self, exporter_one_contact):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.EMAIL_VERIFICATION)
+        expected_email_address = "test_verify@example.com"  # /PS-IGNORE
+        email = exporter_one_contact.emails.create(email=expected_email_address, type="WORK")
+
+        email_verification = EmailVerification.objects.create(email=email)
+        site = Site.objects.get(name=SiteName.EXPORTER)
+        emails.send_email_verification_email(email_verification, site)
+        expected_export_personalisation = default_personalisation() | {
+            "email_verification_url": get_email_verification_url(
+                email_verification, get_exporter_site_domain()
+            ),
+            "icms_url": get_exporter_site_domain(),
+            "service_name": SiteName.EXPORTER.label,
+            "first_name": "E1_main_contact_first_name",
+        }
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            expected_email_address,
+            exp_template_id,
+            personalisation=expected_export_personalisation,
+        )
+
+    def test_send_email_verification_importer(self, importer_one_contact):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.EMAIL_VERIFICATION)
+        expected_email_address = "test_verify@example.com"  # /PS-IGNORE
+        email = importer_one_contact.emails.create(email=expected_email_address, type="WORK")
+
+        email_verification = EmailVerification.objects.create(email=email)
+        site = Site.objects.get(name=SiteName.IMPORTER)
+        emails.send_email_verification_email(email_verification, site)
+        expected_import_personalisation = default_personalisation() | {
+            "email_verification_url": get_email_verification_url(
+                email_verification, get_importer_site_domain()
+            ),
+            "icms_url": get_importer_site_domain(),
+            "service_name": SiteName.IMPORTER.label,
+            "first_name": "I1_main_contact_first_name",
+        }
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            expected_email_address,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
+        )
+
+    def test_send_email_verification_caseworker(self, ilb_admin_user):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.EMAIL_VERIFICATION)
+        expected_email_address = "test_verify@example.com"  # /PS-IGNORE
+        email = ilb_admin_user.emails.create(email=expected_email_address, type="WORK")
+
+        email_verification = EmailVerification.objects.create(email=email)
+        site = Site.objects.get(name=SiteName.CASEWORKER)
+        emails.send_email_verification_email(email_verification, site)
+        expected_caseworker_personalisation = default_personalisation() | {
+            "email_verification_url": get_email_verification_url(
+                email_verification, get_caseworker_site_domain()
+            ),
+            "icms_url": get_caseworker_site_domain(),
+            "service_name": SiteName.CASEWORKER.label,
+            "first_name": "ilb_admin_user_first_name",
+        }
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            expected_email_address,
+            exp_template_id,
+            personalisation=expected_caseworker_personalisation,
         )

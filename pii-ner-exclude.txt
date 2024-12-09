@@ -5203,3 +5203,6 @@ HTML
 # Conditional
 GovUKSelectField
 id_text_input_field
+EmailTemplate
+EmailVerification
+web.email

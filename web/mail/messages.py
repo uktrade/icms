@@ -24,6 +24,7 @@ from web.models import (
     Constabulary,
     ConstabularyLicenceDownloadLink,
     DFLApplication,
+    EmailVerification,
     Exporter,
     ExporterContactInvite,
     FurtherInformationRequest,
@@ -42,6 +43,7 @@ from web.sites import (
     get_caseworker_site_domain,
     get_exporter_site_domain,
     get_importer_site_domain,
+    is_caseworker_site,
     is_exporter_site,
     is_importer_site,
 )
@@ -58,6 +60,7 @@ from .url_helpers import (
     get_case_manage_view_url,
     get_case_view_url,
     get_dfl_application_otd_url,
+    get_email_verification_url,
     get_exporter_access_request_url,
     get_importer_access_request_url,
     get_importer_view_url,
@@ -852,3 +855,27 @@ class OrganisationContactInviteEmail(GOVNotifyEmailMessage):
                 return get_exporter_site_domain()
             case _:
                 raise ValueError(f"Unknown organisation: {self.organisation}")
+
+
+@final
+class EmailVerificationEmail(GOVNotifyEmailMessage):
+    name = EmailTypes.EMAIL_VERIFICATION
+
+    def __init__(
+        self, *args: Any, verification: EmailVerification, site: Site, **kwargs: Any
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.site = site
+        self.url = get_email_verification_url(verification, self.get_site_domain())
+
+    def get_context(self) -> dict[str, Any]:
+        return super().get_context() | {"email_verification_url": self.url}
+
+    def get_site_domain(self) -> str:
+        if is_importer_site(self.site):
+            return get_importer_site_domain()
+        elif is_exporter_site(self.site):
+            return get_exporter_site_domain()
+        elif is_caseworker_site(self.site):
+            return get_caseworker_site_domain()
+        raise ValueError(f"Unknown site: {self.site}")

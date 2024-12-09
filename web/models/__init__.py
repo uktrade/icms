@@ -155,7 +155,7 @@ from web.domains.section5.models import (
 from web.domains.sigl.models import SIGLTransmission
 from web.domains.signature.models import Signature
 from web.domains.template.models import CFSScheduleParagraph, Template, TemplateVersion
-from web.domains.user.models import Email, PhoneNumber, User
+from web.domains.user.models import Email, EmailVerification, PhoneNumber, User
 from web.ecil.models import ECILExample
 from web.flow.models import Process, Task
 from web.mail.models import EmailTemplate
@@ -206,6 +206,7 @@ __all__ = [
     "ECILExample",
     "Email",
     "EmailTemplate",
+    "EmailVerification",
     "EndorsementImportApplication",
     "ExportApplication",
     "ExportApplicationCertificate",

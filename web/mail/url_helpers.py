@@ -10,6 +10,7 @@ from web.models import (
     CaseEmailDownloadLink,
     ConstabularyLicenceDownloadLink,
     DFLApplication,
+    EmailVerification,
     Exporter,
     ExporterContactInvite,
     FirearmsAuthority,
@@ -220,3 +221,7 @@ def get_manage_access_request_fir_url(access_request: AccessRequest) -> str:
             "case:manage-firs", kwargs={"application_pk": access_request.pk, "case_type": "access"}
         ),
     )
+
+
+def get_email_verification_url(verification: EmailVerification, domain: str) -> str:
+    return urljoin(domain, verification.get_email_verification_url())

@@ -10,10 +10,11 @@ from django.contrib.auth.mixins import (
 from django.db import transaction
 from django.db.models import QuerySet
 from django.forms import Form
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.generic import (
     CreateView,
     DetailView,
@@ -23,9 +24,12 @@ from django.views.generic import (
     UpdateView,
 )
 from django.views.generic.detail import SingleObjectMixin
+from django_ratelimit import UNSAFE
+from django_ratelimit.decorators import ratelimit
 
 from web.domains.template.context import UserManagementContext
 from web.domains.template.utils import replace_template_values
+from web.domains.user.utils import send_and_create_email_verification
 from web.mail.constants import CaseEmailCodes
 from web.mail.emails import send_case_email
 from web.middleware.one_login import new_one_login_user
@@ -39,12 +43,14 @@ from .actions import ActivateUser, DeactivateUser
 from .forms import (
     OneLoginNewUserUpdateForm,
     OneLoginTestAccountsCreateForm,
+    UpdateUserEmailForm,
     UserDetailsUpdateForm,
     UserEmailForm,
     UserListFilter,
     UserManagementEmailForm,
     UserPhoneNumberForm,
 )
+from .models import EmailVerification
 from .utils import user_list_view_qs
 
 
@@ -139,7 +145,7 @@ class UserCreateTelephoneView(UserBaseMixin, CreateView):
     extra_context = {"sub_title": "Add Phone Number"}
     template_name = "web/domains/user/user_add_related.html"
 
-    def get_form(self, form_class=None):
+    def get_form(self, form_class: Form | None = None) -> UserPhoneNumberForm:
         form = super().get_form(form_class)
         form.instance.user = self.request.user
         return form
@@ -168,11 +174,70 @@ class UserDeleteTelephoneView(UserBaseMixin, SingleObjectMixin, RedirectView):
 
         return qs.filter(user=self.request.user)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         phone_number = self.get_object()
         phone_number.delete()
 
         return super().post(request, *args, **kwargs)
+
+
+@method_decorator(ratelimit(key="ip", rate="5/m", method=UNSAFE, block=True), name="post")
+class SendVerifyEmailView(LoginRequiredMixin, SingleObjectMixin, View):
+    http_method_names = ["post"]
+    model = Email
+    pk_url_kwarg = "email_pk"
+
+    def get_queryset(self) -> QuerySet[Email]:
+        qs = super().get_queryset()
+        return qs.filter(user=self.request.user)
+
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        email = self.get_object()
+        send_and_create_email_verification(email, self.request.site)
+        messages.info(
+            self.request,
+            f"Email sent to {email.email}, Please check your inbox to complete adding the email address to your account",
+        )
+
+        return redirect(reverse("user-edit", kwargs={"user_pk": self.request.user.pk}))
+
+
+class VerifyEmailView(LoginRequiredMixin, SingleObjectMixin, RedirectView):
+    http_method_names = ["get"]
+    slug_url_kwarg = "code"
+    model = EmailVerification
+    slug_field = "code"
+    context_object_name = "email_verification"
+
+    def get_queryset(self) -> QuerySet[EmailVerification]:
+        qs = super().get_queryset()
+
+        return qs.filter(email__user=self.request.user, processed=False)
+
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        self.object = self.get_object()
+        if self.object and not self.object.email.is_verified:
+            self.object.email.is_verified = True
+            self.object.email.save()
+            self.object.processed = True
+            self.object.save()
+            messages.info(self.request, f"Email address {self.object.email} has now been verified.")
+        return super().get(request, *args, **kwargs)
+
+    def get_object(self, *args: Any, **kwargs: Any) -> EmailVerification | None:
+        try:
+            return super().get_object(*args, **kwargs)
+        except Http404:
+            return None
+
+    def get_redirect_url(self, *args: Any, **kwargs: Any) -> str:
+        if self.object:
+            return reverse(
+                "user-email-edit",
+                kwargs={"user_pk": self.request.user.pk, "email_pk": self.object.email.pk},
+            )
+        else:
+            return reverse("user-edit", kwargs={"user_pk": self.request.user.pk})
 
 
 class UserCreateEmailView(UserBaseMixin, CreateView):
@@ -181,24 +246,33 @@ class UserCreateEmailView(UserBaseMixin, CreateView):
     extra_context = {"sub_title": "Add Email Address"}
     template_name = "web/domains/user/user_add_related.html"
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.instance.user = self.request.user
+    def get_form_kwargs(self) -> dict[str, Any]:
+        return super().get_form_kwargs() | {"user": self.request.user}
 
-        return form
+    def form_valid(self, form: UserEmailForm) -> HttpResponseRedirect:
+        response = super().form_valid(form)
+        send_and_create_email_verification(self.object, self.request.site)
+        messages.info(
+            self.request,
+            f"Email sent to {self.object.email}, Please check your inbox to complete adding the email address to your account",
+        )
+        return response
 
 
 class UserUpdateEmailView(UserBaseMixin, UpdateView):
     model = Email
     pk_url_kwarg = "email_pk"
-    form_class = UserEmailForm
+    form_class = UpdateUserEmailForm
     extra_context = {"sub_title": "Edit Email Address"}
     template_name = "web/domains/user/user_edit_related.html"
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        return super().get_form_kwargs() | {"user": self.request.user}
 
     def get_queryset(self) -> QuerySet[Email]:
         qs = super().get_queryset()
 
-        return qs.filter(user=self.request.user)
+        return qs.filter(user=self.request.user, is_verified=True)
 
 
 class UserDeleteEmailView(UserBaseMixin, SingleObjectMixin, RedirectView):
@@ -211,7 +285,7 @@ class UserDeleteEmailView(UserBaseMixin, SingleObjectMixin, RedirectView):
 
         return qs.filter(user=self.request.user)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         email = self.get_object()
 
         if email.is_primary:
