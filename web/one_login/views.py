@@ -1,4 +1,5 @@
 import logging
+from http import HTTPStatus
 from typing import Any
 
 from authlib.common.security import generate_token
@@ -6,7 +7,7 @@ from authlib.jose.errors import InvalidClaimError
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate, login
 from django.core.exceptions import SuspiciousOperation
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -114,3 +115,22 @@ class AuthCallbackView(View):
         next_url = get_next_url(request) or getattr(settings, "LOGIN_REDIRECT_URL", "/")
 
         return redirect(next_url)
+
+
+class OIDCBackChannelLogoutView(View):
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        # 1. Validate that the JWT kid claim in the logout token header exists in the JWKS (JSON web key set) returned by the /jwks endpoint.
+        # 2. Check the JWT alg header matches the value for the key you are using.
+        # 3. Use the key to validate the signature on the logout token according to the JSON Web Signature Specification.
+        # 4. Check the value of iss (issuer) matches the Issuer Identifier specified in GOV.UK One Login’s discovery endpoint.
+        # 5. Check the aud (audience) claim is the same client ID you received when you registered your service to use GOV.UK One Login.
+        # 6. Check the iat (issued at) claim is in the past.
+        # 7. Check the exp (expiry) claim is in the future.
+        # 8. Check the logout token contains a sub (subject identifier) claim, otherwise known as the unique ID of a user.
+        # 9. Check the logout token contains an events claim, which should be a JSON object with a single key:
+        #    http://schemas.openid.net/event/backchannel-logout – the value for the key should be an empty object.
+        # 10. Check your service has not received another logout token with the same jti claim in the last 3 minutes.
+
+        return HttpResponse(status=HTTPStatus.OK)

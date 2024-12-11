@@ -3260,7 +3260,6 @@ openid
 LOW_LEVEL & two-factor
 P1
 private_key_jwt
-ICMSLST-2300 Revisit
 "Check if the user
 https://oidc.onelogin.gov.uk/.well-known/openid-configuration
 Magic
@@ -5231,3 +5230,8 @@ v3.19.1
 José João Caminhão Cachaçaria Pêssegó
 Jose Joao Caminhao
 Cachacaria Pessego
+JWT
+JWKS
+the JSON Web Signature Specification
+Issuer
+expiry
