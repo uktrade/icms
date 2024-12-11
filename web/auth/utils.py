@@ -80,11 +80,16 @@ def get_or_create_icms_user(
         user.email = provider_email
         user.save()
 
-        UserEmail.objects.get_or_create(
+        email, email_created = UserEmail.objects.get_or_create(
             user=user,
             email=provider_email,
             defaults={"is_primary": True, "portal_notifications": True, "is_verified": True},
         )
+
+        # set is_verified for users logging in via one login if it's not already set.
+        if not email_created and not email.is_verified:
+            email.is_verified = True
+            email.save()
 
     return user, created
 
