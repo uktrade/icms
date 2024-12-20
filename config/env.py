@@ -38,6 +38,9 @@ class DBTPlatformEnvironment(BaseSettings):
     # S3 env vars
     aws_region: str = Field(alias="aws_region", default="")
     aws_storage_bucket_name: str = Field(alias="aws_storage_bucket_name", default="")
+    aws_tmp_storage_bucket_name: str | None = Field(
+        alias="aws_tmp_storage_bucket_name", default=None
+    )
 
     # Redis env vars
     celery_broker_url: str = Field(alias="celery_broker_url", default="")
@@ -165,9 +168,13 @@ class DBTPlatformEnvironment(BaseSettings):
         """Return s3 bucket config that matches keys used in CF"""
 
         if self.build_step:
-            return {"aws_region": "", "bucket_name": ""}
+            return {"aws_region": "", "bucket_name": "", "tmp_bucket_name": None}
 
-        return {"aws_region": self.aws_region, "bucket_name": self.aws_storage_bucket_name}
+        return {
+            "aws_region": self.aws_region,
+            "bucket_name": self.aws_storage_bucket_name,
+            "tmp_bucket_name": self.aws_tmp_storage_bucket_name,
+        }
 
     def get_redis_url(self) -> str:
         if self.build_step:

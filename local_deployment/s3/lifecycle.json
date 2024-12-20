@@ -1,0 +1,13 @@
+{
+    "Rules": [
+        {
+            "ID": "Delete files older than 1 day",
+            "Prefix": "",
+            "Status": "Enabled",
+            "Expiration":
+                {
+                    "Days": 1
+                }
+        }
+    ]
+}
