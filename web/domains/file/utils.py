@@ -144,11 +144,14 @@ def create_file_model(
     if extra_args is None:
         extra_args = {}
 
+    content_type_extra = getattr(f, "content_type_extra", {})
+    clam_av_results = content_type_extra.get("clam_av_results")
     return related_file_manager.create(
         filename=f.original_name,
         file_size=f.file_size,
         content_type=f.content_type,
         path=f.name,
         created_by=created_by,
+        clam_av_results=clam_av_results or None,
         **extra_args,
     )

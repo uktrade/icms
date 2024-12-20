@@ -11,5 +11,6 @@ class DummyFileUploadHandler(TemporaryFileUploadHandler):
         # Set extra attributes the real file handlers add.
         file.original_name = f"original_name: {self.file_name}"
         file.file_size = file.size
+        file.content_type_extra = self.content_type_extra
 
         return file

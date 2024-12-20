@@ -220,6 +220,7 @@ ICMS_SANCTIONS_EMAIL = env.sanctions_email
 app_bucket_creds = env.get_s3_bucket_config()
 AWS_REGION = app_bucket_creds.get("aws_region")
 AWS_STORAGE_BUCKET_NAME = app_bucket_creds.get("bucket_name")
+AWS_TMP_STORAGE_BUCKET_NAME = app_bucket_creds.get("tmp_bucket_name")
 
 if not is_copilot():
     # Only required in Cloud Foundry.

@@ -5206,3 +5206,11 @@ id_text_input_field
 EmailTemplate
 EmailVerification
 web.email
+rm /tmp
+Days
+S3 Cache
+CopySource
+eml
+gif
+jpeg
+jpg
