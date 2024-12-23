@@ -58,6 +58,7 @@ class EditScheduleEventHandler {
     const selectedLegislations = this.legislationSelect2.val();
     const isExportOnly = getIsExportOnlyValue();
 
+    updateCPTPPWarning(selectedLegislations, this.legislationConfig);
     updateIsResponsiblePerson(selectedLegislations, isExportOnly, this.legislationConfig);
     showIsBiocidalClaim(selectedLegislations, this.legislationConfig);
   }
@@ -70,7 +71,7 @@ class EditScheduleEventHandler {
     // other event handlers can run
     const new_change_event = new Event("change");
 
-    if (goodsOnUKMarket){
+    if (goodsOnUKMarket) {
       document.querySelector(`input[type=radio][name="goods_export_only"][value="no"]`).checked = true
       document.querySelector(`input[type=radio][name="goods_export_only"][value="no"]`).dispatchEvent(new_change_event)
     } else {
@@ -94,7 +95,7 @@ class EditScheduleEventHandler {
 }
 
 
-function setEndUse (value) {
+function setEndUse(value) {
   const endUse = document.querySelector('#final-product-end-use-wrapper');
   endUse.style.display = value === "yes" ? "block" : "none";
 }
@@ -109,14 +110,14 @@ function getRadioElements(radioName) {
 }
 
 function getCheckedRadioValue(radioName) {
-    const selectedRadio = document.querySelector(`input[type=radio][name=${radioName}]:checked`);
-    let value = "";
+  const selectedRadio = document.querySelector(`input[type=radio][name=${radioName}]:checked`);
+  let value = "";
 
-    if (selectedRadio !== null) {
-      value = selectedRadio.value;
-    }
+  if (selectedRadio !== null) {
+    value = selectedRadio.value;
+  }
 
-    return value;
+  return value;
 }
 
 
@@ -136,6 +137,43 @@ function updateIsResponsiblePerson(legislations, exportOnly, config) {
 
 
 /**
+ * Either show or hide the cptpp warning depending on the config.
+ *
+ * @param {Array.<string>} legislations List of selected legislations
+ * @param {Object.<string, {isEUCosmeticsRegulation: boolean}>} config
+ */
+function updateCPTPPWarning(legislations, config) {
+  const isEUCosmeticsRegulation = checkIsEUCosmeticsRegulation(legislations, config);
+  const wrapper = document.querySelector("#cptpp-warning-wrapper")
+
+  if (wrapper) {
+    wrapper.style.display = isEUCosmeticsRegulation ? "block" : "none";
+  }
+}
+
+
+/**
+ * Return true if isEUCosmeticsRegulation in legislations.
+ *
+ * @param {Array.<string>} legislations List of selected legislations
+ * @param {Object.<string, {isEUCosmeticsRegulation: boolean}>} config
+ */
+function checkIsEUCosmeticsRegulation(legislations, config) {
+  for (const legislation of legislations) {
+
+    if (config.hasOwnProperty(legislation)) {
+      let legislationConfig = config[legislation];
+
+      if (legislationConfig.isEUCosmeticsRegulation) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+
+/**
  * Return true if responsible person statement should be shown.
  *
  * @param {Array.<string>} legislations List of selected legislations
@@ -143,20 +181,7 @@ function updateIsResponsiblePerson(legislations, exportOnly, config) {
  * @param {Object.<string, {isEUCosmeticsRegulation: boolean}>} config
  */
 function showResponsiblePersonStatement(legislations, exportOnly, config) {
-  let isEUCosmeticsRegulation = false;
-
-  for (const legislation of legislations) {
-
-    if (config.hasOwnProperty(legislation)) {
-      let legislationConfig = config[legislation];
-
-      if (legislationConfig.isEUCosmeticsRegulation) {
-        isEUCosmeticsRegulation = true;
-
-        break;
-      }
-    }
-  }
+  const isEUCosmeticsRegulation = checkIsEUCosmeticsRegulation(legislations, config);
   const notExportOnly = exportOnly === "no";
 
   return isEUCosmeticsRegulation && notExportOnly;

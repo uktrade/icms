@@ -14,6 +14,10 @@ from guardian.shortcuts import get_objects_for_user
 
 import web.forms.widgets as icms_widgets
 from web.domains.case.forms import application_contacts
+from web.domains.country.utils import (
+    get_cptpp_countries_list,
+    get_selected_cptpp_countries,
+)
 from web.domains.file.utils import ICMSFileField
 from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import ICMSModelSelect2Widget
@@ -352,6 +356,30 @@ class SubmitCFSForm(EditCFSFormBase):
 
     All fields are fully validated to ensure form is correct.
     """
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data: dict[str, Any] = super().clean()
+
+        # Check that cosmetics aren't being exported to countries within the CPTPP
+        # This may want to be moved to the schedule level rather than the application level
+        has_cosmetics = self.instance.schedules.filter(
+            legislations__is_eu_cosmetics_regulation=True
+        ).exists()
+
+        cptpp_selected = get_selected_cptpp_countries(cleaned_data["countries"])
+
+        if has_cosmetics and cptpp_selected.exists():
+            cptpp_countries_list = get_cptpp_countries_list()
+            self.add_error(
+                "countries",
+                (
+                    f"This application is not necessary. A Certificate of Free Sale (CFS) for cosmetic "
+                    f"products is no longer required for {cptpp_countries_list} due to the UK’s accession to "
+                    f"the Comprehensive and Progressive Agreement for Trans-Pacific Partnership (CPTPP)."
+                ),
+            )
+
+        return cleaned_data
 
 
 class CFSScheduleFormBase(forms.ModelForm):

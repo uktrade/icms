@@ -9,11 +9,12 @@ from web.domains.case.export.forms import (
     EditCFSScheduleForm,
     EditCOMForm,
     EditGMPForm,
+    SubmitCFSForm,
     SubmitCFSScheduleForm,
     SubmitGMPForm,
 )
 from web.forms.widgets import RadioSelectInline
-from web.models import ProductLegislation
+from web.models import Country, ProductLegislation
 from web.models.shared import AddressEntryType, YesNoChoices
 
 
@@ -138,6 +139,23 @@ def test_submit_cfs_schedule_form_biocidal_claim_required(cfs_app_in_progress):
     form = SubmitCFSScheduleForm(data=model_to_dict(app_schedule), instance=app_schedule)
     assert not form.is_valid()
     assert form.errors["biocidal_claim"][0] == "This field is required."
+
+
+@pytest.mark.django_db
+def test_submit_cfs_form_cptpp_cosmetics(cfs_app_in_progress):
+    """Tests that the biocidal_claim field is required when one of the legislations is biocidal."""
+    app = cfs_app_in_progress
+    country = Country.util.get_cptpp_countries().last()
+    app.countries.add(country)
+
+    app_schedule = app.schedules.get()
+    app_schedule.legislations.add(
+        ProductLegislation.objects.filter(is_eu_cosmetics_regulation=True)[0]
+    )
+
+    form = SubmitCFSForm(data={"countries": app.countries.all()}, instance=app)
+    assert not form.is_valid()
+    assert "This application is not necessary." in form.errors["countries"][0]
 
 
 @pytest.mark.django_db

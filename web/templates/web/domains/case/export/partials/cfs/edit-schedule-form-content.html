@@ -2,6 +2,18 @@
 {{ fields.field(form.exporter_status, tooltip_msg_id="manufacturer-guidance-tooltip") }}
 {{ fields.field(form.brand_name_holder) }}
 {{ fields.field(form.legislations) }}
+{% if cptpp_countries_list %}
+  <div id="cptpp-warning-wrapper" class="info-box info-box-warning" {% if not show_cptpp_warning %}style="display: none"{% endif %}>
+    <p>
+      A Certificate of Free Sale (CFS) for cosmetic products is no longer required for {{ cptpp_countries_list }}
+      due to the UK’s accession to the Comprehensive and Progressive Agreement for Trans-Pacific Partnership (CPTPP).
+    </p>
+    <p>
+      Please contact <a href="mailto:{{ ilb_contact_email }}">{{ ilb_contact_email }}</a> if you encounter any problems or are
+      still being asked by any of the CPTPP countries to provide a CFS for cosmetics.
+    </p>
+  </div>
+{% endif %}
 <div id="biocidal-claim-question-wrapper" {% if not is_biocidal_claim %} style="display: none;"{% endif %}>
   {{ fields.field(form.biocidal_claim, mark_safe=True, show_optional_indicator=False) }}
 </div>
