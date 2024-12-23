@@ -1,5 +1,6 @@
 from typing import NamedTuple
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -26,6 +27,10 @@ from web.domains.case.utils import (
     view_application_file,
 )
 from web.domains.cat.utils import template_in_user_templates
+from web.domains.country.utils import (
+    get_cptpp_countries_list,
+    get_selected_cptpp_countries_list,
+)
 from web.domains.file.utils import create_file_model
 from web.flow.models import ProcessTypes
 from web.models import (
@@ -362,6 +367,7 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             "form": form,
             "schedules": schedules,
             "case_type": "export",
+            "cptpp_countries_list": get_cptpp_countries_list(),
         }
 
         return render(request, "web/domains/case/export/cfs-edit.html", context)
@@ -426,13 +432,14 @@ def cfs_edit_schedule(
             else:
                 form = EditCFSScheduleForm(**form_kwargs)
 
-        schedule_legislations = schedule.legislations.filter(is_active=True)
-
         show_schedule_statements_is_responsible_person = (
             get_show_schedule_statements_is_responsible_person(schedule)
         )
 
+        schedule_legislations = schedule.legislations.filter(is_active=True)
+        has_cosmetics = schedule_legislations.filter(is_eu_cosmetics_regulation=True).exists()
         legislation_config = get_csf_schedule_legislation_config()
+        cptpp_countries_list = get_selected_cptpp_countries_list(application.countries.all())
 
         context = {
             "page_title": "Edit Schedule",
@@ -460,6 +467,9 @@ def cfs_edit_schedule(
                 "export:cfs-schedule-manage-products",
                 kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
             ),
+            "show_cptpp_warning": has_cosmetics and cptpp_countries_list,
+            "cptpp_countries_list": cptpp_countries_list,
+            "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
         }
 
         return render(request, "web/domains/case/export/cfs-edit-schedule.html", context)
@@ -845,6 +855,7 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
 
             # Check that the schedule has products if legislation has been set
             schedule_legislations = schedule.legislations.filter(is_active=True)
+
             if schedule_legislations.exists() and not schedule.products.exists():
                 product_page_errors = PageErrors(
                     page_name=f"Schedule {idx} - Product",

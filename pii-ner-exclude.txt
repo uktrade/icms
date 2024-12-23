@@ -5214,3 +5214,9 @@ eml
 gif
 jpeg
 jpg
+CPTPP
+Progressive Agreement for Trans-Pacific Partnership
+Comprehensive and Progressive Agreement for Trans-Pacific Partnership
+checkIsEUCosmeticsRegulation(legislations
+Trans-Pacific Partnership
+CPTTP

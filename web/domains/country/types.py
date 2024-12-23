@@ -29,6 +29,7 @@ class CountryGroupName(TypedTextChoices):
     #
     EU = "EU", "All EU countries"
     NON_EU = "NON_EU", "Non EU Single Countries"
+    CPTPP = "CPTPP", "Comprehensive and Progressive Agreement for Trans-Pacific Partnership"
 
     #
     # Inactive Import Applications

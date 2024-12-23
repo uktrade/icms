@@ -169,3 +169,6 @@ class UtilityCountryManager(CountryMangerBase):
 
     def get_non_eu_countries(self) -> QuerySet["Country"]:
         return self._get_country_group_countries(CountryGroupName.NON_EU)
+
+    def get_cptpp_countries(self) -> QuerySet["Country"]:
+        return self._get_country_group_countries(CountryGroupName.CPTPP)
