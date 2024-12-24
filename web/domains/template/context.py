@@ -6,6 +6,7 @@ from django.db.models.functions import Concat
 
 from web.domains.case.services import document_pack
 from web.flow.models import ProcessTypes
+from web.mail.types import RecipientDetails
 from web.models import (
     AccessRequest,
     CFSProduct,
@@ -379,3 +380,16 @@ class UserManagementContext:
             case "FIRST_NAME", _, _:
                 return self.user.first_name
         raise ValueError(f"{item} is not a valid user management template context value")
+
+
+class MailshotTemplateContext:
+    def __init__(self, recipient: RecipientDetails):
+        self.recipient = recipient
+
+    def __getitem__(self, item: str) -> str:
+        match item:
+            case "FIRST_NAME":
+                return self.recipient.first_name
+            case "EMAIL_ADDRESS":
+                return self.recipient.email_address
+        raise ValueError(f"{item} is not a valid mail shot template context value")
