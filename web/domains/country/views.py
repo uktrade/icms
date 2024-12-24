@@ -144,7 +144,7 @@ class CountryGroupView(ModelDetailView):
 
 class CountryGroupEditView(PostActionMixin, ModelUpdateView):
     # PostActionMixin config
-    post_actions = ["add_country", "save", "accept_countries"]
+    post_actions = ["add_country", "save", "accept_countries", "filter_countries"]
 
     # ModelUpdateView config
     model = CountryGroup
