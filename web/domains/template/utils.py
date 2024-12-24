@@ -18,6 +18,7 @@ from web.models import (
     User,
 )
 
+from ...mail.types import RecipientDetails
 from .constants import TemplateCodes
 from .context import (
     CoverLetterTemplateContext,
@@ -28,7 +29,6 @@ from .context import (
 from .models import CFSScheduleParagraph, Template, TemplateVersion
 
 if TYPE_CHECKING:
-    from web.mail.messages import BaseMailshotEmail
     from web.types import DocumentTypes
 
     from .context import TemplateContextProcessor
@@ -110,12 +110,12 @@ def get_cover_letter_content(application: ImportApplication, document_type: "Doc
     return replace_template_values(application.cover_letter_text, context)
 
 
-def get_mailshot_content(mailshot: "BaseMailshotEmail"):
+def get_mailshot_content(mailshot_body: str, recipient: RecipientDetails) -> str:
     """Gets the mailshot email template body with the placeholder values substituted out for real ones.
 
     e.g. Dear [[FIRST_NAME]] --> Dear James"""
-    context = MailshotTemplateContext(recipient=mailshot.recipient)
-    return replace_template_values(mailshot.get_body(), context)
+    context = MailshotTemplateContext(recipient=recipient)
+    return replace_template_values(mailshot_body, context)
 
 
 def get_email_template_subject_body(

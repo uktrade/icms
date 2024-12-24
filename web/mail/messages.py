@@ -785,7 +785,7 @@ class BaseMailshotEmail(GOVNotifyEmailMessage):
     def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         context["subject"] = self.get_subject()
-        context["body"] = get_mailshot_content(self)
+        context["body"] = get_mailshot_content(self.get_body(), self.recipient)
         context["mailshot_url"] = get_mailshot_detail_view_url(self.mailshot, self.site_domain)
         return context
 
