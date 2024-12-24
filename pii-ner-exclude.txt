@@ -5220,3 +5220,4 @@ Comprehensive and Progressive Agreement for Trans-Pacific Partnership
 checkIsEUCosmeticsRegulation(legislations
 Trans-Pacific Partnership
 CPTTP
+Dear Test
