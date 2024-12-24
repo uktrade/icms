@@ -222,6 +222,14 @@ class TestCountryGroupEditView(AuthTestCase):
         assert countries[1].name == "New Country 2"
         assert countries[2].name == "New Country 3"
 
+    def test_country_filter_view(self):
+        response = self.ilb_admin_client.post(
+            self.url, {"action": "filter_countries", "country_name": "Australia"}
+        )
+        countries = response.context_data["filter"].qs
+        assert countries.count() == 1
+        assert countries.first().name == "Australia"
+
 
 class TestCountryTranslationSetListView(AuthTestCase):
     @pytest.fixture(autouse=True)
