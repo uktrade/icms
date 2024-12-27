@@ -17,6 +17,7 @@ from web.domains.case.types import (
     ImpOrExp,
     ImpOrExpApproval,
 )
+from web.domains.template.utils import get_mailshot_content
 from web.mail.types import RecipientDetails
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
@@ -79,6 +80,7 @@ class GOVNotifyEmailMessage(EmailMessage):
     name: ClassVar[EmailTypes]
 
     def __init__(self, *args: Any, recipient: RecipientDetails, **kwargs: Any) -> None:
+        self.recipient = recipient
         kwargs["to"] = [recipient.email_address]
         super().__init__(*args, **kwargs)
         self.template_id = self.get_template_id()
@@ -783,7 +785,7 @@ class BaseMailshotEmail(GOVNotifyEmailMessage):
     def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         context["subject"] = self.get_subject()
-        context["body"] = self.get_body()
+        context["body"] = get_mailshot_content(self.get_body(), self.recipient)
         context["mailshot_url"] = get_mailshot_detail_view_url(self.mailshot, self.site_domain)
         return context
 
