@@ -1,6 +1,7 @@
 from enum import StrEnum
 from typing import Any
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import (
@@ -26,8 +27,12 @@ from web.domains.case.export.utils import (
     process_products_file,
 )
 from web.domains.case.export.views import (
-    get_csf_schedule_legislation_config,
+    get_cfs_schedule_legislation_config,
     get_show_schedule_statements_is_responsible_person,
+)
+from web.domains.country.utils import (
+    get_cptpp_countries_list,
+    get_selected_cptpp_countries_list,
 )
 from web.models import (
     CertificateApplicationTemplate,
@@ -270,17 +275,29 @@ class CATEditView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMix
 
         if app_type == ExportApplicationType.Types.FREE_SALE:
             if step == CatSteps.CFS:
-                extra["schedules"] = self.object.cfs_template.schedules.all().order_by("created_at")
+                extra["cptpp_countries_list"] = get_cptpp_countries_list()
+                extra["schedules"] = self.object.cfs_template.schedules.order_by("created_at")
 
             if step == CatSteps.CFS_SCHEDULE:
                 schedule = self.object.cfs_template.schedules.get(pk=self.kwargs["step_pk"])
+                schedule_legislations = schedule.legislations.filter(is_active=True)
+                has_cosmetics = schedule_legislations.filter(
+                    is_eu_cosmetics_regulation=True
+                ).exists()
+                cptpp_countries_list = get_selected_cptpp_countries_list(
+                    self.object.cfs_template.countries.all()
+                )
+
                 extra["is_cfs_cat"] = True
                 extra["schedule"] = schedule
                 extra["process"] = self.object.cfs_template
-                extra["legislation_config"] = get_csf_schedule_legislation_config()
+                extra["legislation_config"] = get_cfs_schedule_legislation_config()
                 extra["show_schedule_statements_is_responsible_person"] = (
                     get_show_schedule_statements_is_responsible_person(schedule)
                 )
+                extra["show_cptpp_warning"] = has_cosmetics and cptpp_countries_list
+                extra["cptpp_countries_list"] = cptpp_countries_list
+                extra["ilb_contact_email"] = settings.ILB_CONTACT_EMAIL
 
                 cfs_schedule_kwargs = {
                     "cat_pk": self.object.pk,
@@ -298,7 +315,7 @@ class CATEditView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMix
                 # Products section context
                 extra["is_biocidal"] = schedule.is_biocidal()
                 extra["is_biocidal_claim"] = schedule.is_biocidal_claim()
-                extra["products"] = schedule.products.all().order_by("pk")
+                extra["products"] = schedule.products.order_by("pk")
                 extra["product_upload_form"] = ProductsFileUploadForm()
                 extra["has_legislation"] = schedule.legislations.filter(is_active=True).exists()
                 extra["upload_product_spreadsheet_url"] = reverse(
@@ -338,7 +355,7 @@ class CATEditView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMix
                 app_specific: list[tuple[str, str]] = []
 
                 template: CertificateOfFreeSaleApplicationTemplate = self.object.cfs_template
-                for s_id, s in enumerate(template.schedules.all().order_by("id"), start=1):
+                for s_id, s in enumerate(template.schedules.order_by("id"), start=1):
                     app_specific.extend(self._get_schedule_links(s, s_id, url_name))
 
             case ExportApplicationType.Types.MANUFACTURE:
@@ -493,7 +510,7 @@ def copy_schedule(schedule: CFSScheduleTemplate, user: User) -> None:
     # ManyToMany you can just use `.all()` to get the records
     # ForeignKeys you have to fetch from the db before the save.
     legislations_to_copy = schedule.legislations.all()
-    products_to_copy = [p for p in schedule.products.all().order_by("pk")]
+    products_to_copy = [p for p in schedule.products.order_by("pk")]
 
     schedule.pk = None
     schedule._state.adding = True
@@ -505,8 +522,8 @@ def copy_schedule(schedule: CFSScheduleTemplate, user: User) -> None:
 
     # copy the product records
     for product in products_to_copy:
-        product_types_to_copy = [pt for pt in product.product_type_numbers.all().order_by("pk")]
-        ingredients_to_copy = [i for i in product.active_ingredients.all().order_by("pk")]
+        product_types_to_copy = [pt for pt in product.product_type_numbers.order_by("pk")]
+        ingredients_to_copy = [i for i in product.active_ingredients.order_by("pk")]
 
         product.pk = None
         product._state.adding = True

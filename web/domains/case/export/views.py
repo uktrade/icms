@@ -438,7 +438,7 @@ def cfs_edit_schedule(
 
         schedule_legislations = schedule.legislations.filter(is_active=True)
         has_cosmetics = schedule_legislations.filter(is_eu_cosmetics_regulation=True).exists()
-        legislation_config = get_csf_schedule_legislation_config()
+        legislation_config = get_cfs_schedule_legislation_config()
         cptpp_countries_list = get_selected_cptpp_countries_list(application.countries.all())
 
         context = {
@@ -475,7 +475,7 @@ def cfs_edit_schedule(
         return render(request, "web/domains/case/export/cfs-edit-schedule.html", context)
 
 
-def get_csf_schedule_legislation_config() -> dict[int, dict[str, bool]]:
+def get_cfs_schedule_legislation_config() -> dict[int, dict[str, bool]]:
     return {
         legislation.pk: {
             "isEUCosmeticsRegulation": legislation.is_eu_cosmetics_regulation,
