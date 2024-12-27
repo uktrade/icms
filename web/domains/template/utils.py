@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from web.domains.case.types import ImpOrExp
 from web.flow.models import ProcessTypes
+from web.mail.types import RecipientDetails
 from web.models import (
     AccessRequest,
     CertificateOfFreeSaleApplication,
@@ -22,6 +23,7 @@ from .constants import TemplateCodes
 from .context import (
     CoverLetterTemplateContext,
     EmailTemplateContext,
+    MailshotTemplateContext,
     ScheduleParagraphContext,
 )
 from .models import CFSScheduleParagraph, Template, TemplateVersion
@@ -82,7 +84,7 @@ def replace_template_values(content: str | None, context: "TemplateContextProces
     """Returns the template content with the placeholders replaced with their value
 
     Calling this function with replacements={'foo': 'bar'} will return the template content
-    with all occurences of [[foo]] replaced with bar"""
+    with all occurrences of [[foo]] replaced with bar"""
 
     if content is None:
         return ""
@@ -106,6 +108,14 @@ def get_template_content(template: Template, context: "TemplateContextProcessor"
 def get_cover_letter_content(application: ImportApplication, document_type: "DocumentTypes") -> str:
     context = CoverLetterTemplateContext(application, document_type)
     return replace_template_values(application.cover_letter_text, context)
+
+
+def get_mailshot_content(mailshot_body: str, recipient: RecipientDetails) -> str:
+    """Gets the mailshot email template body with the placeholder values substituted out for real ones.
+
+    e.g. Dear [[FIRST_NAME]] --> Dear James"""
+    context = MailshotTemplateContext(recipient=recipient)
+    return replace_template_values(mailshot_body, context)
 
 
 def get_email_template_subject_body(
