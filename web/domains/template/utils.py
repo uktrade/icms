@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from web.domains.case.types import ImpOrExp
 from web.flow.models import ProcessTypes
+from web.mail.types import RecipientDetails
 from web.models import (
     AccessRequest,
     CertificateOfFreeSaleApplication,
@@ -18,7 +19,6 @@ from web.models import (
     User,
 )
 
-from ...mail.types import RecipientDetails
 from .constants import TemplateCodes
 from .context import (
     CoverLetterTemplateContext,
