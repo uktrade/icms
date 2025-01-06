@@ -84,7 +84,6 @@ class GOVNotifyEmailMessage(EmailMessage):
         kwargs["to"] = [recipient.email_address]
         super().__init__(*args, **kwargs)
         self.template_id = self.get_template_id()
-        self.first_name = recipient.first_name
 
     def get_template_id(self) -> UUID:
         return EmailTemplate.objects.get(name=self.name).gov_notify_template_id
@@ -103,7 +102,6 @@ class GOVNotifyEmailMessage(EmailMessage):
             "subject": self.subject,
             "body": self.body,
             "service_name": self.get_service_name(),
-            "first_name": self.first_name,
         } | self.get_context()
 
     def get_context(self) -> dict[str, Any]:
