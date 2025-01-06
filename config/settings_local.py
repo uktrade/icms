@@ -1,4 +1,6 @@
 # flake8: noqa: F405
+import subprocess
+
 from .settings import *
 
 DEBUG = True
@@ -51,3 +53,12 @@ RATELIMIT_ENABLE = False
 # sometimes we want to run celery tasks synchronously to help with debugging
 CELERY_TASK_ALWAYS_EAGER = env.celery_task_always_eager
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = env.celery_eager_propagates_exceptions
+
+# Current environment
+CURRENT_BRANCH = subprocess.run(["git", "branch", "--show-current"], capture_output=True)
+if CURRENT_BRANCH.returncode == 0:
+    CURRENT_BRANCH = CURRENT_BRANCH.stdout.decode("utf-8").replace("\n", "")
+else:
+    CURRENT_BRANCH = "unknown"
+
+CURRENT_ENVIRONMENT = "local"

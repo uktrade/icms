@@ -109,6 +109,7 @@ TEMPLATES = [
                 "web.auth.context_processors.auth",
                 "web.sites.context_processors.sites",
                 "web.ecil.context_processors.govuk_frontend_jinja_template",
+                "web.misc.context_processors.environment_information",
             ],
         },
     },
@@ -557,3 +558,8 @@ if SHOW_DEBUG_TOOLBAR:
         "INTERCEPT_REDIRECTS": False,
         "SHOW_TOOLBAR_CALLBACK": lambda x: SHOW_DEBUG_TOOLBAR,
     }
+
+# Current environment
+CURRENT_BRANCH = env.current_branch
+CURRENT_TAG = env.current_tag
+CURRENT_ENVIRONMENT = env.current_environment

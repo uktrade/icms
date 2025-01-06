@@ -36,6 +36,13 @@
     {% endcompress %}
 
     {% block css %}{% endblock %}
+    {% if CURRENT_ENVIRONMENT != "prod" and CURRENT_ENVIRONMENT != "hotfix" %}
+      <style>
+        #menu-bar {
+          background: red !important;
+        }
+      </style>
+    {% endif %}
   </head>
 
   <body>

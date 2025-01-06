@@ -153,6 +153,11 @@ class DBTPlatformEnvironment(BaseSettings):
     # Flag to decide if we want to save the PDFs generated as part of the visual regression tests - useful for debugging
     save_generated_pdfs: bool = True
 
+    # Current environment
+    current_branch: str = Field(alias="GIT_BRANCH", default="unknown")
+    current_tag: str = Field(alias="GIT_TAG", default="")
+    current_environment: str = Field(alias="COPILOT_ENVIRONMENT_NAME", default="unknown")
+
     def get_allowed_hosts(self) -> list[str]:
         return setup_allowed_hosts(self.allowed_hosts)
 
