@@ -284,6 +284,7 @@ class IncorrectTypeUserSerializer(UserSerializer):
 
 class TestIssuedCertificateReportInterface:
     @pytest.fixture(autouse=True)
+    @freeze_time("2024-02-11 12:00:00")
     def _setup(self, report_schedule, ilb_admin_user):
         self.report_schedule = report_schedule
         self.ilb_admin_user = ilb_admin_user
@@ -367,7 +368,7 @@ class TestIssuedCertificateReportInterface:
                 "Business Days to Process": 7,
                 "Case Processing Time": "8d 1h 7m",
                 "Case Reference": "CA/2024/00001",
-                "Certificate Reference": "CFS/2024/00002",
+                "Certificate Reference": f"CFS/{dt.date.today().year}/00002",
                 "Contact Full Name": "E1_main_contact_first_name E1_main_contact_last_name",
                 "Countries of Manufacture": "Afghanistan",
                 "Country": "Zimbabwe",
@@ -390,7 +391,7 @@ class TestIssuedCertificateReportInterface:
                 "Business Days to Process": 7,
                 "Case Processing Time": "8d 1h 7m",
                 "Case Reference": "CA/2024/00001",
-                "Certificate Reference": "CFS/2024/00001",
+                "Certificate Reference": f"CFS/{dt.date.today().year}/00001",
                 "Contact Full Name": "E1_main_contact_first_name E1_main_contact_last_name",
                 "Countries of Manufacture": "Afghanistan",
                 "Country": "Afghanistan",
@@ -423,7 +424,7 @@ class TestIssuedCertificateReportInterface:
                 "Business Days to Process": 7,
                 "Case Processing Time": "8d 1h 7m",
                 "Case Reference": "GA/2024/00001",
-                "Certificate Reference": "GMP/2024/00001",
+                "Certificate Reference": f"GMP/{dt.date.today().year}/00001",
                 "Contact Full Name": "E1_main_contact_first_name E1_main_contact_last_name",
                 "Countries of Manufacture": "",
                 "Country": "China",
@@ -458,7 +459,7 @@ class TestIssuedCertificateReportInterface:
                 "Business Days to Process": 7,
                 "Case Processing Time": "8d 1h 7m",
                 "Case Reference": "CA/2024/00001",
-                "Certificate Reference": "COM/2024/00001",
+                "Certificate Reference": f"COM/{dt.date.today().year}/00001",
                 "Contact Full Name": "E1_main_contact_first_name E1_main_contact_last_name",
                 "Countries of Manufacture": "",
                 "Country": "Afghanistan",
@@ -783,7 +784,7 @@ class TestImportLicenceInterface:
                 "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
                 "Coo Country Name": "",
                 "Coc Country Name": "",
-                "Shipping Year": 2024,
+                "Shipping Year": dt.date.today().year,
                 "Com Group Name": "",
                 "Commodity Codes": "",
                 "Initial Submitted Datetime": "01/01/2024 12:00:00",
