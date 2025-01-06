@@ -155,7 +155,7 @@ def test_submit_cfs_form_cptpp_cosmetics(cfs_app_in_progress):
 
     form = SubmitCFSForm(data={"countries": app.countries.all()}, instance=app)
     assert not form.is_valid()
-    assert "This application is not necessary." in form.errors["countries"][0]
+    assert "This application is not required." in form.errors["countries"][0]
 
 
 @pytest.mark.django_db

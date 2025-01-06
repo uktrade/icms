@@ -5220,6 +5220,12 @@ Comprehensive and Progressive Agreement for Trans-Pacific Partnership
 checkIsEUCosmeticsRegulation(legislations
 Trans-Pacific Partnership
 CPTTP
+EditCFSEventHandler(countrySelect2
+updateCPTPPInfo(selectedCountries
+countryArray.slice(0
+id_countries").select2("data
+country_config|tojson
+trans-pacific-partnershipcptpp">Comprehensive
 Dear Test
 "Add the current environment & branch
 CURRENT_ENVIRONMENT
