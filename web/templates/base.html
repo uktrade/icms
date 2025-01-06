@@ -38,12 +38,12 @@
     {% block css %}{% endblock %}
     {% if SHOW_ENVIRONMENT_INFO %}
       {#
-      changing the colour of the header if we're not on production. Also allowing for displaying the
-      environment details information
+      changing the colour of the header if we're not on production and depending on the site. 
+      Also allow extra room to displaying the environment details information
       #}
       <style>
         #menu-bar {
-          background: red !important;
+          background: {{ HEADER_COLOUR }} !important;
           height: fit-content !important;
           padding-bottom: 10px !important;
         }
