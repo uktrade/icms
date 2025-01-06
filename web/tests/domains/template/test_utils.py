@@ -5,6 +5,7 @@ import pytest
 from django.conf import settings
 
 from web.domains.case.services import document_pack
+from web.domains.mailshot.models import Mailshot
 from web.domains.template.context import CoverLetterTemplateContext
 from web.domains.template.utils import (
     ScheduleParagraphs,
@@ -20,6 +21,8 @@ from web.domains.template.utils import (
     get_fir_template_data,
     get_letter_fragment,
 )
+from web.mail.messages import MailshotEmail
+from web.mail.types import RecipientDetails
 from web.models import (
     CertificateOfManufactureApplication,
     CFSSchedule,
@@ -37,6 +40,8 @@ from web.models import (
     Template,
 )
 from web.models.shared import YesNoChoices
+from web.sites import get_importer_site_domain
+from web.tests.domains.mailshot.test_views import _create_mailshot
 from web.tests.helpers import CaseURLS
 from web.types import DocumentTypes
 from web.views.actions import EditTemplate
@@ -754,3 +759,22 @@ class TestCreateSchedule:
     def test_no_edit_cfs_schedule_template(self):
         cfs_schedule_template = Template.objects.get(template_type=Template.CFS_SCHEDULE)
         assert not EditTemplate().display(cfs_schedule_template)
+
+
+def test_get_mailshot_content(ilb_admin_user):
+    mailshot = _create_mailshot(
+        status=Mailshot.Statuses.DRAFT,
+        user=ilb_admin_user,
+    )
+    mailshot.email_body = "Dear [[FIRST_NAME]], your email address is [[EMAIL_ADDRESS]]"
+    mailshot.save()
+
+    test_recipient = RecipientDetails(
+        first_name="Test", email_address="test@example.com"  # /PS-IGNORE
+    )
+
+    mailshot_email = MailshotEmail(
+        mailshot=mailshot, site_domain=get_importer_site_domain(), recipient=test_recipient
+    )
+    body = mailshot_email.get_context()["body"]
+    assert body == "Dear Test, your email address is test@example.com"  # /PS-IGNORE
