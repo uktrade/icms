@@ -55,9 +55,9 @@ CELERY_TASK_ALWAYS_EAGER = env.celery_task_always_eager
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = env.celery_eager_propagates_exceptions
 
 # Current environment
-CURRENT_BRANCH = subprocess.run(["git", "branch", "--show-current"], capture_output=True)
-if CURRENT_BRANCH.returncode == 0:
-    CURRENT_BRANCH = CURRENT_BRANCH.stdout.decode("utf-8").replace("\n", "")
+GET_GIT_BRANCH = subprocess.run(["git", "branch", "--show-current"], capture_output=True)
+if GET_GIT_BRANCH.returncode == 0:
+    CURRENT_BRANCH = GET_GIT_BRANCH.stdout.decode("utf-8").replace("\n", "")
 else:
     CURRENT_BRANCH = "unknown"
 
