@@ -14,10 +14,7 @@ from guardian.shortcuts import get_objects_for_user
 
 import web.forms.widgets as icms_widgets
 from web.domains.case.forms import application_contacts
-from web.domains.country.utils import (
-    get_cptpp_countries_list,
-    get_selected_cptpp_countries,
-)
+from web.domains.country.utils import get_selected_cptpp_countries_list
 from web.domains.file.utils import ICMSFileField
 from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import ICMSModelSelect2Widget
@@ -366,15 +363,14 @@ class SubmitCFSForm(EditCFSFormBase):
             legislations__is_eu_cosmetics_regulation=True
         ).exists()
 
-        cptpp_selected = get_selected_cptpp_countries(cleaned_data["countries"])
+        cptpp_selected_list = get_selected_cptpp_countries_list(cleaned_data["countries"])
 
-        if has_cosmetics and cptpp_selected.exists():
-            cptpp_countries_list = get_cptpp_countries_list()
+        if has_cosmetics and cptpp_selected_list:
             self.add_error(
                 "countries",
                 (
-                    f"This application is not necessary. A Certificate of Free Sale (CFS) for cosmetic "
-                    f"products is no longer required for {cptpp_countries_list} due to the UK’s accession to "
+                    f"This application is not required. A Certificate of Free Sale (CFS) for cosmetic "
+                    f"products is no longer required for {cptpp_selected_list}, following the UK’s accession to "
                     f"the Comprehensive and Progressive Agreement for Trans-Pacific Partnership (CPTPP)."
                 ),
             )

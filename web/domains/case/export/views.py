@@ -368,6 +368,9 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             "schedules": schedules,
             "case_type": "export",
             "cptpp_countries_list": get_cptpp_countries_list(),
+            "country_config": {
+                country.pk: country.name for country in Country.util.get_cptpp_countries()
+            },
         }
 
         return render(request, "web/domains/case/export/cfs-edit.html", context)
