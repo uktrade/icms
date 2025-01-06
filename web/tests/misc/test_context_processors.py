@@ -39,7 +39,7 @@ def test_environment_information(rf: RequestFactory, db):
 
 
 @override_settings(
-    CURRENT_BRANCH="test-branch", CURRENT_ENVIRONMENT="test", CURRENT_TAG="v1.0.0", DEBUG=False
+    CURRENT_BRANCH="test-branch", CURRENT_ENVIRONMENT="prod", CURRENT_TAG="v1.0.0", DEBUG=True
 )
 def test_environment_information_show_environment_banner(rf: RequestFactory, db):
     request = rf.request()
