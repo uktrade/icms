@@ -36,10 +36,16 @@
     {% endcompress %}
 
     {% block css %}{% endblock %}
-    {% if CURRENT_ENVIRONMENT != "prod" and CURRENT_ENVIRONMENT != "hotfix" %}
+    {% if SHOW_ENVIRONMENT_INFO %}
+      {# 
+      changing the colour of the header if we're not on production. Also allowing for displaying the 
+      environment details information
+      #}
       <style>
         #menu-bar {
           background: red !important;
+          height: fit-content !important;
+          padding-bottom: 10px !important;
         }
       </style>
     {% endif %}
