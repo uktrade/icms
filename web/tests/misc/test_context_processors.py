@@ -41,10 +41,14 @@ def test_environment_information(rf: RequestFactory, db):
 @override_settings(
     CURRENT_BRANCH="test-branch", CURRENT_ENVIRONMENT="test", CURRENT_TAG="v1.0.0", DEBUG=False
 )
-def test_environment_information_show_environment_banner(rf: RequestFactory):
-    assert environment_information(rf.request()) == {
+def test_environment_information_show_environment_banner(rf: RequestFactory, db):
+    request = rf.request()
+    request.site = Site.objects.get(name=SiteName.IMPORTER)
+
+    assert environment_information(request) == {
         "CURRENT_ENVIRONMENT": "test",
         "CURRENT_BRANCH": "test-branch",
         "CURRENT_TAG": "v1.0.0",
         "SHOW_ENVIRONMENT_INFO": False,
+        "HEADER_COLOUR": "green",
     }
