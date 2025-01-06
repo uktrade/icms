@@ -37,8 +37,8 @@
 
     {% block css %}{% endblock %}
     {% if SHOW_ENVIRONMENT_INFO %}
-      {# 
-      changing the colour of the header if we're not on production. Also allowing for displaying the 
+      {#
+      changing the colour of the header if we're not on production. Also allowing for displaying the
       environment details information
       #}
       <style>
@@ -46,6 +46,11 @@
           background: red !important;
           height: fit-content !important;
           padding-bottom: 10px !important;
+        }
+
+        #environment_banner {
+            width:100%;
+            text-align: center;
         }
       </style>
     {% endif %}

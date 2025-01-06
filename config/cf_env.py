@@ -174,9 +174,9 @@ class CloudFoundryEnvironment(BaseSettings):
     save_generated_pdfs: bool = True
 
     # Current environment
-    current_branch: str = Field(alias="GIT_BRANCH", default="unknown")
-    current_tag: str = Field(alias="GIT_TAG", default="")
-    current_environment: str = Field(alias="COPILOT_ENVIRONMENT_NAME", default="unknown")
+    current_branch: str = "unknown"
+    current_environment: str = "local"
+    current_tag: str | None = None
 
     def get_allowed_hosts(self) -> list[str]:
         return self.allowed_hosts
