@@ -51,6 +51,7 @@
         #environment_banner {
             width:100%;
             text-align: center;
+            margin-top: 10px;
         }
       </style>
     {% endif %}
@@ -119,6 +120,14 @@
 
     <footer>
       {% block footer %}
+          {% if SHOW_ENVIRONMENT_INFO %}
+            <div id="environment_banner" data-testid="environment_banner" >
+              Environment: <strong>{{ CURRENT_ENVIRONMENT }}</strong>, Branch: <strong>{{ CURRENT_BRANCH }}</strong>, Commit: <strong>{{ CURRENT_COMMIT }}</strong>
+              {% if CURRENT_TAG %}
+                , Tag: <strong>{{ CURRENT_TAG }}</strong>
+              {% endif %}
+            </div>
+          {% endif %}
           <div class="footer-link">
             <a href="{{ icms_url('support:landing') }}" target="_blank">Help and support</a>
           </div>

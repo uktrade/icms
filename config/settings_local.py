@@ -54,11 +54,17 @@ RATELIMIT_ENABLE = False
 CELERY_TASK_ALWAYS_EAGER = env.celery_task_always_eager
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = env.celery_eager_propagates_exceptions
 
-# Current environment
+# Current environment information
 GET_GIT_BRANCH = subprocess.run(["git", "branch", "--show-current"], capture_output=True)
 if GET_GIT_BRANCH.returncode == 0:
     CURRENT_BRANCH = GET_GIT_BRANCH.stdout.decode("utf-8").replace("\n", "")
 else:
     CURRENT_BRANCH = "unknown"
+
+GET_GIT_COMMIT = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True)
+if GET_GIT_COMMIT.returncode == 0:
+    CURRENT_COMMIT = GET_GIT_COMMIT.stdout.decode("utf-8").replace("\n", "")
+else:
+    CURRENT_COMMIT = "unknown"
 
 CURRENT_ENVIRONMENT = "local"

@@ -16,6 +16,7 @@ def environment_information(request: HttpRequest) -> dict[str, str]:
         "CURRENT_ENVIRONMENT": settings.CURRENT_ENVIRONMENT,
         "CURRENT_BRANCH": settings.CURRENT_BRANCH,
         "CURRENT_TAG": settings.CURRENT_TAG,
+        "CURRENT_COMMIT": settings.CURRENT_COMMIT,
         "SHOW_ENVIRONMENT_INFO": settings.CURRENT_ENVIRONMENT != "prod",
         "HEADER_COLOUR": header_colours[request.site.name],
     }

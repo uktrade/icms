@@ -563,3 +563,4 @@ if SHOW_DEBUG_TOOLBAR:
 CURRENT_BRANCH = env.current_branch
 CURRENT_TAG = env.current_tag
 CURRENT_ENVIRONMENT = env.current_environment
+CURRENT_COMMIT = env.current_commit

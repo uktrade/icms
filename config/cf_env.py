@@ -176,6 +176,7 @@ class CloudFoundryEnvironment(BaseSettings):
     # Current environment
     current_branch: str = "unknown"
     current_environment: str = "local"
+    current_commit: str = "unknown"
     current_tag: str | None = None
 
     def get_allowed_hosts(self) -> list[str]:

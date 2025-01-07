@@ -5230,3 +5230,4 @@ Dear Test
 "Add the current environment & branch
 CURRENT_ENVIRONMENT
 width:100%
+CURRENT_COMMIT

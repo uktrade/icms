@@ -6,7 +6,11 @@ from web.sites import SiteName
 
 
 @override_settings(
-    CURRENT_BRANCH="test-branch", CURRENT_ENVIRONMENT="test", CURRENT_TAG="v1.0.0", DEBUG=True
+    CURRENT_BRANCH="test-branch",
+    CURRENT_ENVIRONMENT="test",
+    CURRENT_TAG="v1.0.0",
+    CURRENT_COMMIT="fsdfji23",
+    DEBUG=True,
 )
 def test_environment_information(rf: RequestFactory, db):
     request = rf.request()
@@ -15,6 +19,7 @@ def test_environment_information(rf: RequestFactory, db):
         "CURRENT_ENVIRONMENT": "test",
         "CURRENT_BRANCH": "test-branch",
         "CURRENT_TAG": "v1.0.0",
+        "CURRENT_COMMIT": "fsdfji23",
         "SHOW_ENVIRONMENT_INFO": True,
         "HEADER_COLOUR": "green",
     }
@@ -24,6 +29,7 @@ def test_environment_information(rf: RequestFactory, db):
         "CURRENT_ENVIRONMENT": "test",
         "CURRENT_BRANCH": "test-branch",
         "CURRENT_TAG": "v1.0.0",
+        "CURRENT_COMMIT": "fsdfji23",
         "SHOW_ENVIRONMENT_INFO": True,
         "HEADER_COLOUR": "grey",
     }
@@ -33,13 +39,18 @@ def test_environment_information(rf: RequestFactory, db):
         "CURRENT_ENVIRONMENT": "test",
         "CURRENT_BRANCH": "test-branch",
         "CURRENT_TAG": "v1.0.0",
+        "CURRENT_COMMIT": "fsdfji23",
         "SHOW_ENVIRONMENT_INFO": True,
         "HEADER_COLOUR": "red",
     }
 
 
 @override_settings(
-    CURRENT_BRANCH="test-branch", CURRENT_ENVIRONMENT="prod", CURRENT_TAG="v1.0.0", DEBUG=True
+    CURRENT_BRANCH="test-branch",
+    CURRENT_ENVIRONMENT="prod",
+    CURRENT_TAG="v1.0.0",
+    CURRENT_COMMIT="fsdfji23",
+    DEBUG=True,
 )
 def test_environment_information_show_environment_banner(rf: RequestFactory, db):
     request = rf.request()
@@ -49,6 +60,7 @@ def test_environment_information_show_environment_banner(rf: RequestFactory, db)
         "CURRENT_ENVIRONMENT": "prod",
         "CURRENT_BRANCH": "test-branch",
         "CURRENT_TAG": "v1.0.0",
+        "CURRENT_COMMIT": "fsdfji23",
         "SHOW_ENVIRONMENT_INFO": False,
         "HEADER_COLOUR": "green",
     }

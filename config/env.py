@@ -156,6 +156,7 @@ class DBTPlatformEnvironment(BaseSettings):
     # Current environment
     current_branch: str = Field(alias="GIT_BRANCH", default="unknown")
     current_tag: str = Field(alias="GIT_TAG", default="")
+    current_commit: str = Field(alias="GIT_COMMIT", default="")
     current_environment: str = Field(alias="COPILOT_ENVIRONMENT_NAME", default="unknown")
 
     def get_allowed_hosts(self) -> list[str]:

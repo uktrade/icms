@@ -41,14 +41,3 @@
     </li>
   {% endif %}
 </ul>
-{% if SHOW_ENVIRONMENT_INFO %}
-  <div data-testid="environment_banner" id="environment_banner">
-    Environment: <strong>{{ CURRENT_ENVIRONMENT }}</strong>
-    <br>
-    Branch: <strong>{{ CURRENT_BRANCH }}</strong>
-    {% if CURRENT_TAG %}
-      <br>
-      Tag: <strong>{{ CURRENT_TAG }}</strong>
-    {% endif %}
-  </div>
-{% endif %}
