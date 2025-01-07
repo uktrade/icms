@@ -1,6 +1,6 @@
 repository: icms
 builder:
   name: paketobuildpacks/builder-jammy-full
-  version: 0.3.339
+  version: 0.3.436
 packs:
   - acodeninja/playwright
