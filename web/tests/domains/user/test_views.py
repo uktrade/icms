@@ -7,13 +7,13 @@ import pytest
 from django.urls import reverse
 from django.utils import timezone
 from freezegun import freeze_time
+from govuk_onelogin_django.constants import ONE_LOGIN_UNSET_NAME
 from pytest_django.asserts import assertContains, assertInHTML, assertRedirects
 
 from web.forms.fields import JQUERY_DATE_FORMAT
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_email_verification_url
 from web.models import Email, EmailVerification, PhoneNumber, User
-from web.one_login.constants import ONE_LOGIN_UNSET_NAME
 from web.sites import SiteName, get_exporter_site_domain, get_importer_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL

@@ -2,8 +2,7 @@ from dataclasses import dataclass, field
 from typing import Any, TypedDict
 
 from django.conf import settings
-
-from web.one_login.constants import ONE_LOGIN_UNSET_NAME
+from govuk_onelogin_django.constants import ONE_LOGIN_UNSET_NAME
 
 from .constants import DEFAULT_APPLICANT_GREETING
 

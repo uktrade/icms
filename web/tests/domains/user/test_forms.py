@@ -1,6 +1,7 @@
 import random
 
 from django.test import TestCase
+from govuk_onelogin_django.constants import ONE_LOGIN_UNSET_NAME
 
 from web.domains.user.forms import (
     OneLoginNewUserUpdateForm,
@@ -9,7 +10,6 @@ from web.domains.user.forms import (
     UserPhoneNumberForm,
 )
 from web.models import PhoneNumber
-from web.one_login.constants import ONE_LOGIN_UNSET_NAME
 
 TOTAL_TEST_USERS = 20
 

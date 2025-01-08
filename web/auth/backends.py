@@ -3,6 +3,8 @@ from typing import Any
 from authbroker_client.backends import AuthbrokerBackend
 from django.contrib.auth.backends import ModelBackend
 from django.http import HttpRequest
+from govuk_onelogin_django.backends import OneLoginBackend
+from govuk_onelogin_django.types import UserInfo as OneLoginUserInfo
 from guardian.backends import check_support
 from guardian.conf import settings as guardian_settings
 from guardian.ctypes import get_content_type
@@ -10,8 +12,6 @@ from guardian.exceptions import WrongAppError
 
 from web.mail.emails import send_new_user_welcome_email
 from web.models import User
-from web.one_login.backends import OneLoginBackend
-from web.one_login.types import UserInfo as OneLoginUserInfo
 from web.sites import is_caseworker_site
 
 from .types import STAFF_SSO_ID, StaffSSOProfile, StaffSSOUserCreateData

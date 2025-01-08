@@ -23,11 +23,11 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from django_filters import FilterSet
 from django_select2.views import AutoResponseView
+from govuk_onelogin_django.utils import get_one_login_logout_url
 
 from web.domains.case.shared import ImpExpStatus
 from web.flow.errors import ProcessError, ProcessStatusError, TaskError
 from web.models import Task
-from web.one_login.utils import get_one_login_logout_url
 from web.sites import (
     get_exporter_site_domain,
     get_importer_site_domain,

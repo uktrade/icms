@@ -5,6 +5,7 @@ import pytest
 from django.http import QueryDict
 from django.test import override_settings
 from django.urls import reverse, reverse_lazy
+from govuk_onelogin_django.utils import get_one_login_logout_url
 from pytest_django.asserts import assertRedirects
 
 from web.domains.case.export.forms import CreateExportApplicationForm
@@ -13,7 +14,6 @@ from web.domains.commodity.forms import UsageForm
 from web.domains.commodity.widgets import UsageCountryWidget
 from web.domains.contacts.widgets import ContactWidget
 from web.models import CommodityGroup, ImportApplicationType
-from web.one_login.utils import get_one_login_logout_url
 from web.tests.auth import AuthTestCase
 from web.views import views
 

@@ -76,6 +76,8 @@ module = [
     "endesive.*",
     "PIL.*",
     "reportlab.*",
+    # TODO: Remove when ECIL-441 has been done
+    "govuk_onelogin_django.*"
 ]
 ignore_missing_imports = true
 
