@@ -3,21 +3,23 @@
 {% block main_content %}
   {{ super() }}
 
-  <div class="info-box info-box-info">
-    <h4>Document Preview</h4>
+  {% if not readonly_view %}
+    <div class="info-box info-box-info">
+      <h4>Document Preview</h4>
 
-    <p>Click below if you wish to preview documents before issuing.</p>
+      <p>Click below if you wish to preview documents before issuing.</p>
 
-    <ul>
-    {% for country in countries %}
-      <li>
-        <a href="{{ icms_url('case:certificate-preview', kwargs={'application_pk': process.pk, 'country_pk': country.pk, 'case_type': case_type}) }}"
-          target="_blank"
-          rel="noopener noreferrer">
-            Certificate of Good Manufacturing Practice ({{ country.name }})
-        </a>
-      </li>
-    {% endfor %}
-    </ul>
-  </div>
+      <ul>
+      {% for country in countries %}
+        <li>
+          <a href="{{ icms_url('case:certificate-preview', kwargs={'application_pk': process.pk, 'country_pk': country.pk, 'case_type': case_type}) }}"
+            target="_blank"
+            rel="noopener noreferrer">
+              Certificate of Good Manufacturing Practice ({{ country.name }})
+          </a>
+        </li>
+      {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
 {% endblock %}
