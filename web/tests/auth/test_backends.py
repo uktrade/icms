@@ -6,9 +6,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.utils.timezone import make_aware
 from freezegun import freeze_time
+from govuk_onelogin_django.types import UserInfo
 
 from web.auth.backends import ICMSGovUKOneLoginBackend, ICMSStaffSSOBackend
-from web.one_login.types import UserInfo
 from web.sites import SiteName
 
 # NOTE: Copied tests from here:
@@ -218,7 +218,7 @@ def test_get_user_user_doesnt_exist():
 class TestICMSGovUKOneLoginBackend:
     @freeze_time("2024-01-01 12:00:00")
     @mock.patch.multiple(
-        "web.one_login.backends",
+        "govuk_onelogin_django.backends",
         get_client=mock.DEFAULT,
         has_valid_token=mock.DEFAULT,
         get_userinfo=mock.DEFAULT,
@@ -245,7 +245,7 @@ class TestICMSGovUKOneLoginBackend:
 
     @freeze_time("2024-01-01 12:00:00")
     @mock.patch.multiple(
-        "web.one_login.backends",
+        "govuk_onelogin_django.backends",
         get_client=mock.DEFAULT,
         has_valid_token=mock.DEFAULT,
         get_userinfo=mock.DEFAULT,
@@ -288,7 +288,7 @@ class TestICMSGovUKOneLoginBackend:
 
     @freeze_time("2024-01-01 12:00:00")
     @mock.patch.multiple(
-        "web.one_login.backends",
+        "govuk_onelogin_django.backends",
         get_client=mock.DEFAULT,
         has_valid_token=mock.DEFAULT,
         get_userinfo=mock.DEFAULT,
@@ -335,7 +335,7 @@ class TestICMSGovUKOneLoginBackend:
 
     @freeze_time("2024-01-01 12:00:00")
     @mock.patch.multiple(
-        "web.one_login.backends",
+        "govuk_onelogin_django.backends",
         get_client=mock.DEFAULT,
         has_valid_token=mock.DEFAULT,
         get_userinfo=mock.DEFAULT,

@@ -5,10 +5,10 @@ from django.contrib.sites.models import Site
 from django.db import transaction
 from django.http import HttpRequest
 from django.utils import timezone
+from govuk_onelogin_django.types import UserCreateData as OneLoginUserCreateData
 
 from web.models import Email as UserEmail
 from web.models import User
-from web.one_login.types import UserCreateData as OneLoginUserCreateData
 from web.sites import is_exporter_site, is_importer_site
 
 from .types import StaffSSOUserCreateData

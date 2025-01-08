@@ -2,9 +2,9 @@ from unittest import mock
 
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from govuk_onelogin_django.constants import ONE_LOGIN_UNSET_NAME
 
 from web.middleware.one_login import UserFullyRegisteredMiddleware
-from web.one_login.constants import ONE_LOGIN_UNSET_NAME
 
 
 class TestUserFullyRegisteredMiddleware:

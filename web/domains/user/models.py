@@ -4,10 +4,9 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
+from govuk_onelogin_django.constants import ONE_LOGIN_UNSET_NAME
 from guardian.core import ObjectPermissionChecker
 from guardian.mixins import GuardianUserMixin
-
-from web.one_login.constants import ONE_LOGIN_UNSET_NAME
 
 
 class User(GuardianUserMixin, AbstractUser):

@@ -4,11 +4,11 @@ from django import forms
 from django.forms.widgets import EmailInput, Select, Textarea
 from django.utils.translation import gettext_lazy as _
 from django_filters import CharFilter, ChoiceFilter, FilterSet
+from govuk_onelogin_django.constants import ONE_LOGIN_UNSET_NAME
 
 from web.forms.fields import JqueryDateField, PhoneNumberField
 from web.forms.widgets import ICMSModelSelect2Widget, YesNoRadioSelectInline
 from web.models import Email, Exporter, Importer, PhoneNumber, User
-from web.one_login.constants import ONE_LOGIN_UNSET_NAME
 
 
 class OneLoginNewUserUpdateForm(forms.ModelForm):

@@ -20,9 +20,9 @@ import jinja2
 from dbt_copilot_python.utility import is_copilot
 from django.forms import Field
 from django_log_formatter_asim import ASIMFormatter
+from govuk_onelogin_django import types as one_login_types
 
 from config.env import env
-from web.one_login import types as one_login_types
 from web.utils.sentry import init_sentry
 
 # Build paths inside the project like this: BASE_DIR / "subdir".
@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     # STAFF-SSO client app
     "authbroker_client",
+    # GOV.OK One Login Client app
+    "govuk_onelogin_django",
 ]
 
 MIDDLEWARE = [
@@ -464,7 +466,7 @@ else:
 
     # Used to change one login auth level (remove 2FA in non-production)
     if env.gov_uk_one_login_authentication_level_override:
-        GOV_UK_ONE_LOGIN_AUTHENTICATION_LEVEL = env.gov_uk_one_login_authentication_level_override  # type: ignore[assignment]
+        GOV_UK_ONE_LOGIN_AUTHENTICATION_LEVEL = env.gov_uk_one_login_authentication_level_override
 
 # Site URL management
 CASEWORKER_SITE_URL = env.caseworker_site_url

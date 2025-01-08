@@ -26,6 +26,7 @@ django-select2==8.2.1
 django-staff-sso-client==4.3.0
 endesive==2.17.3
 govuk-frontend-jinja==3.4.0
+govuk-onelogin-django==0.1.0
 gunicorn[gevent]==23.0.0
 html2text==2024.2.26
 humanize==4.10.0

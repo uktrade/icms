@@ -3,9 +3,9 @@ from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import resolve, reverse
+from govuk_onelogin_django.constants import ONE_LOGIN_UNSET_NAME
 
 from web.models import User
-from web.one_login.constants import ONE_LOGIN_UNSET_NAME
 
 
 class UserFullyRegisteredMiddleware:

@@ -44,7 +44,7 @@ public_urls = [
     path("auth/", include("authbroker_client.urls")),
     #
     # gov-uk-one-login urls
-    path("one-login/", include("web.one_login.urls")),
+    path("one-login/", include("govuk_onelogin_django.urls")),
     #
     # ICMS V1 Account recovery view
     path("account-recovery/", LegacyAccountRecoveryView.as_view(), name="account-recovery"),
