@@ -18,11 +18,11 @@
     {{ icms_link(request, icms_url('case:manage-withdrawals', kwargs={'application_pk': process.pk, 'case_type': 'export'}),
                  'Application Withdrawals (' + processing|string + '/' + total|string + ')') }}
   {% endwith %}
-  
+
   {% with total = process.case_emails.count(), open = process.case_emails.filter(status="OPEN").count() %}
     {% if process.process_type == "CertificateOfFreeSaleApplication" %}
       {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'export'}), 'HSE Emails (' + open|string + '/' + total|string + ')') }}
-  
+
     {% elif process.process_type == "CertificateofGoodManufacturingPractice" %}
       {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'export'}), 'BEIS Emails (' + open|string + '/' + total|string + ')') }}
     {% endif %}
@@ -47,9 +47,7 @@
   {{ icms_link(request, icms_url('case:list-notes', kwargs={'application_pk': process.pk, 'case_type': 'export'}),
      'Case Notes (' + process.case_notes.active().count()|string + ')') }}
 
-  {% if process.status != "COMPLETED" and not all_vr.exists() %}
-    {{ icms_link(request, icms_url('case:prepare-response', kwargs={'case_type': 'export', 'application_pk': process.pk}), 'Response Preparation') }}
-  {% endif %}
+  {{ icms_link(request, icms_url('case:prepare-response', kwargs={'case_type': 'export', 'application_pk': process.pk}), 'Response Preparation') }}
 
   {% if show_revocation is not defined %}
     {% set show_revocation=False %}
