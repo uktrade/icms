@@ -6,6 +6,23 @@
 
 {% block main_content %}
   <h3>Response Preparation</h3>
+  {% if case_type == "import" and not process.importer.eori_number and not process.importer_office.eori_number %}
+    <div class="info-box info-box-warning">
+      <p>EORI number has not been set for this importer or importer office. The EORI number must be set on the importer or office before sending the case to CDS.
+        <a
+          href="{{ icms_url('importer-edit', kwargs={'pk': process.importer.pk}) }}"
+          target="_blank"
+          rel="noopener noreferrer">
+          Click here
+        </a> to edit the importer details.</p>
+        <a
+          href="{{ icms_url('importer-office-edit', kwargs={'importer_pk': process.importer.pk, 'office_pk': process.importer_office.pk}) }}"
+          target="_blank"
+          rel="noopener noreferrer">
+          Click here
+        </a> to edit the office details.</p>
+    </div>
+  {% endif %}
   {% block document_buttons %}
     {% if process.application_approved and not readonly_view and not variation_refused %}
       {% if cover_letter_flag %}
