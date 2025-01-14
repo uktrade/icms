@@ -174,6 +174,8 @@ GOV_UK_ONE_LOGIN_EXPORTER_CLIENT_ID = env.gov_uk_one_login_exporter_client_id
 GOV_UK_ONE_LOGIN_EXPORTER_CLIENT_SECRET = env.gov_uk_one_login_exporter_client_secret
 GOV_UK_ONE_LOGIN_AUTHENTICATION_LEVEL = one_login_types.AuthenticationLevel.MEDIUM_LEVEL
 GOV_UK_ONE_LOGIN_CONFIDENCE_LEVEL = one_login_types.IdentityConfidenceLevel.NONE
+# Disable default back-channel logout and override in ICMS (search for ICMSOIDCBackChannelLogoutView)
+GOV_UK_ONE_LOGIN_BACK_CHANNEL_ENABLED = False
 
 #
 # Authentication feature flags
