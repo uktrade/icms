@@ -15,6 +15,7 @@ from web.views import (
     login_start_view,
     logout_view,
 )
+from web.views.views import ICMSOIDCBackChannelLogoutView
 
 
 def register_converter_if_required(converter, type_name):
@@ -38,6 +39,8 @@ public_urls = [
     path("", RedirectBaseDomainView.as_view()),
     path("login-start/", login_start_view, name="login-start"),
     path("logout/", logout_view, name="logout-user"),
+    #
+    # New ECIL urls
     path("ecil/", include("web.ecil.urls")),
     #
     # staff-sso-client login urls
@@ -45,6 +48,12 @@ public_urls = [
     #
     # gov-uk-one-login urls
     path("one-login/", include("govuk_onelogin_django.urls")),
+    # GOV.UK One Login OIDC back-channel logout view
+    path(
+        "one-login-back-channel-logout/",
+        ICMSOIDCBackChannelLogoutView.as_view(),
+        name="one-login-back-channel-logout",
+    ),
     #
     # ICMS V1 Account recovery view
     path("account-recovery/", LegacyAccountRecoveryView.as_view(), name="account-recovery"),

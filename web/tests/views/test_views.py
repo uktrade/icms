@@ -1,7 +1,10 @@
+import logging
 from http import HTTPStatus
 from unittest import mock
 
+import govuk_onelogin_django
 import pytest
+from django.conf import settings
 from django.http import QueryDict
 from django.test import override_settings
 from django.urls import reverse, reverse_lazy
@@ -15,6 +18,7 @@ from web.domains.commodity.widgets import UsageCountryWidget
 from web.domains.contacts.widgets import ContactWidget
 from web.models import CommodityGroup, ImportApplicationType
 from web.tests.auth import AuthTestCase
+from web.tests.helpers import get_test_client
 from web.views import views
 
 
@@ -347,3 +351,53 @@ def test_banner_colour_change(ilb_admin_client, exporter_client, importer_client
 def test_banner_colour_doesnt_change(ilb_admin_client):
     response = ilb_admin_client.get(reverse("workbasket"))
     assert "#menu-bar { background:" not in response.content.decode()
+
+
+class TestICMSOIDCBackChannelLogoutView:
+    @pytest.fixture(autouse=True)
+    def setup(self, importer_client):
+        self.client = importer_client
+        self.url = reverse("one-login-back-channel-logout")
+
+    @mock.patch.object(
+        govuk_onelogin_django.views.OIDCBackChannelLogoutView, "validate_logout_token"
+    )
+    def test_back_channel_logout(
+        self, mock_validate_logout_token, importer_site, importer_one_contact
+    ):
+        response = self.client.get(reverse("workbasket"))
+        assert response.status_code == HTTPStatus.OK
+
+        mock_validate_logout_token.return_value = importer_one_contact.username
+        # mock_back_channel_logout.validate_logout_token.return_value = importer_one_contact.username
+
+        # Fresh test client to mimic request coming from GOV.UK One Login
+        client = get_test_client(importer_site.domain)
+
+        response = client.post(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        login_url = reverse(settings.LOGIN_URL)
+        workbasket_url = reverse("workbasket")
+        response = self.client.get(workbasket_url, follow=True)
+        assertRedirects(response, f"{login_url}?next={workbasket_url}", status_code=302)
+
+    @mock.patch.object(
+        govuk_onelogin_django.views.OIDCBackChannelLogoutView, "validate_logout_token"
+    )
+    def test_back_channel_logout_unknown_sub(
+        self, mock_validate_logout_token, importer_site, caplog
+    ):
+        mock_validate_logout_token.return_value = "unknown"
+
+        response = self.client.post(self.url)
+        # Response is always 200 even if there is an error
+        assert response.status_code == HTTPStatus.OK
+
+        assert caplog.record_tuples == [
+            (
+                "web.views.views",
+                logging.ERROR,
+                "ICMSOIDCBackChannelLogoutView: Unable to log user out with sub: unknown",
+            )
+        ]

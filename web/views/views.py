@@ -5,15 +5,19 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib import auth
+from django.contrib.auth import SESSION_KEY
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.sessions.backends.cache import KEY_PREFIX
+from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django.urls import resolve, reverse
+from django.utils.decorators import method_decorator
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 from django.views.defaults import permission_denied
@@ -22,12 +26,15 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from django_filters import FilterSet
+from django_ratelimit import UNSAFE
+from django_ratelimit.decorators import ratelimit
 from django_select2.views import AutoResponseView
 from govuk_onelogin_django.utils import get_one_login_logout_url
+from govuk_onelogin_django.views import OIDCBackChannelLogoutView
 
 from web.domains.case.shared import ImpExpStatus
 from web.flow.errors import ProcessError, ProcessStatusError, TaskError
-from web.models import Task
+from web.models import Task, User
 from web.sites import (
     get_exporter_site_domain,
     get_importer_site_domain,
@@ -153,6 +160,27 @@ def logout_view(request: HttpRequest) -> HttpResponse:
 
     # 4. Redirect to correct logout url.
     return redirect(url)
+
+
+@method_decorator(ratelimit(key="ip", rate="100/m", method=UNSAFE, block=True), name="post")
+class ICMSOIDCBackChannelLogoutView(OIDCBackChannelLogoutView):
+    """Custom back-channel logout view to handle clearing a users session stored in the cache."""
+
+    def logout_user(self, sub: str) -> None:
+        user = User.objects.filter(username=sub).first()
+
+        if not user:
+            logger.error("ICMSOIDCBackChannelLogoutView: Unable to log user out with sub: %s", sub)
+            return
+
+        user_sessions = []
+        for key in cache.keys(f"{KEY_PREFIX}*"):
+            session = cache.get(key)
+
+            if str(user.pk) == session.get(SESSION_KEY):
+                user_sessions.append(key)
+
+        cache.delete_many(user_sessions)
 
 
 @login_required
