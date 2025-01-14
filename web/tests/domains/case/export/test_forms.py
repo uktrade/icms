@@ -4,11 +4,13 @@ from django.template.loader import render_to_string
 from django.test import TestCase
 
 from web.domains.case.export.forms import (
+    CertificateOfFreeSaleApplication,
     CFSActiveIngredientForm,
     CFSManufacturerDetailsForm,
     EditCFSScheduleForm,
     EditCOMForm,
     EditGMPForm,
+    ExportApplicationType,
     SubmitCFSForm,
     SubmitCFSScheduleForm,
     SubmitGMPForm,
@@ -16,6 +18,7 @@ from web.domains.case.export.forms import (
 from web.forms.widgets import RadioSelectInline
 from web.models import Country, ProductLegislation
 from web.models.shared import AddressEntryType, YesNoChoices
+from web.tests.application_utils import create_export_app
 
 
 class TestGMPForms(TestCase):
@@ -156,6 +159,41 @@ def test_submit_cfs_form_cptpp_cosmetics(cfs_app_in_progress):
     form = SubmitCFSForm(data={"countries": app.countries.all()}, instance=app)
     assert not form.is_valid()
     assert "This application is not required." in form.errors["countries"][0]
+
+
+@pytest.mark.django_db
+def test_submit_empty_cfs_application(exporter_client, exporter, exporter_office):
+    app_pk = create_export_app(
+        client=exporter_client,
+        type_code=ExportApplicationType.Types.FREE_SALE.value,
+        exporter_pk=exporter.pk,
+        office_pk=exporter_office.pk,
+    )
+    app = CertificateOfFreeSaleApplication.objects.get(pk=app_pk)
+    form = SubmitCFSForm(data={}, instance=app)
+
+    assert not form.is_valid()
+    assert form.errors == {
+        "contact": ["You must enter this item"],
+        "countries": ["You must enter this item"],
+    }
+
+
+@pytest.mark.django_db
+def test_submit_empty_countries_cfs_application(
+    exporter_client, exporter, exporter_office, exporter_one_contact
+):
+    app_pk = create_export_app(
+        client=exporter_client,
+        type_code=ExportApplicationType.Types.FREE_SALE.value,
+        exporter_pk=exporter.pk,
+        office_pk=exporter_office.pk,
+    )
+    app = CertificateOfFreeSaleApplication.objects.get(pk=app_pk)
+    form = SubmitCFSForm(data={"contact": exporter_one_contact}, instance=app)
+
+    assert not form.is_valid()
+    assert form.errors == {"countries": ["You must enter this item"]}
 
 
 @pytest.mark.django_db

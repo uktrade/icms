@@ -357,13 +357,21 @@ class SubmitCFSForm(EditCFSFormBase):
     def clean(self) -> dict[str, Any]:
         cleaned_data: dict[str, Any] = super().clean()
 
+        if not cleaned_data:
+            return cleaned_data
+
         # Check that cosmetics aren't being exported to countries within the CPTPP
         # This may want to be moved to the schedule level rather than the application level
         has_cosmetics = self.instance.schedules.filter(
             legislations__is_eu_cosmetics_regulation=True
         ).exists()
 
-        cptpp_selected_list = get_selected_cptpp_countries_list(cleaned_data["countries"])
+        countries = cleaned_data.get("countries")
+
+        if not countries:
+            return cleaned_data
+
+        cptpp_selected_list = get_selected_cptpp_countries_list(countries)
 
         if has_cosmetics and cptpp_selected_list:
             self.add_error(
