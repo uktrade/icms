@@ -111,6 +111,7 @@ TEMPLATES = [
                 "web.auth.context_processors.auth",
                 "web.sites.context_processors.sites",
                 "web.ecil.context_processors.govuk_frontend_jinja_template",
+                "web.misc.context_processors.header_colour",
             ],
         },
     },

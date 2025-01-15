@@ -36,6 +36,16 @@
     {% endcompress %}
 
     {% block css %}{% endblock %}
+    {% if CHANGE_HEADER_COLOUR %}
+      {#
+      changing the colour of the header if we're not on production and depending on the site. 
+      #}
+      <style>
+        #menu-bar {
+          background: {{ HEADER_COLOUR }} !important;
+        }
+      </style>
+    {% endif %}
   </head>
 
   <body>
