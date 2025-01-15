@@ -325,3 +325,25 @@ class TestLoginRequiredSelect2AutoResponseView(AuthTestCase):
             "more": False,
             "results": [],
         }
+
+
+@override_settings(
+    APP_ENV="local",
+)
+def test_banner_colour_change(ilb_admin_client, exporter_client, importer_client):
+    response = ilb_admin_client.get(reverse("workbasket"))
+    assert "#menu-bar { background: red !important; }" in response.content.decode()
+
+    response = exporter_client.get(reverse("workbasket"))
+    assert "#menu-bar { background: grey !important; }" in response.content.decode()
+
+    response = importer_client.get(reverse("workbasket"))
+    assert "#menu-bar { background: green !important; }" in response.content.decode()
+
+
+@override_settings(
+    APP_ENV="production",
+)
+def test_banner_colour_doesnt_change(ilb_admin_client):
+    response = ilb_admin_client.get(reverse("workbasket"))
+    assert "#menu-bar { background:" not in response.content.decode()
