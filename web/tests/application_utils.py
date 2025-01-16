@@ -1,12 +1,11 @@
 import datetime as dt
-import re
 from http import HTTPStatus
 from typing import Any, TypeAlias
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import model_to_dict
 from django.test.client import Client
-from django.urls import reverse
+from django.urls import resolve, reverse
 from freezegun import freeze_time
 from pytest_django.asserts import assertRedirects
 
@@ -482,11 +481,13 @@ def create_import_app(
         post_data["agent_office"] = agent_office_pk
 
     url = reverse(view_name)
-    resp = client.post(url, post_data)
+    response = client.post(url, post_data)
+    assert response.status_code == 302
 
-    application_pk = int(re.search(r"\d+", resp.url).group(0))
+    resolver = resolve(response.url)
+    application_pk = resolver.kwargs["application_pk"]
 
-    assert resp.status_code == 302
+    assert application_pk == resolver.kwargs.get("application_pk")
 
     return application_pk
 
@@ -509,10 +510,10 @@ def create_export_app(
         post_data["agent_office"] = agent_office_pk
 
     response = client.post(url, post_data)
-
-    application_pk = int(re.search(r"\d+", response.url).group(0))
-
     assert response.status_code == 302
+
+    resolver = resolve(response.url)
+    application_pk = resolver.kwargs["application_pk"]
 
     return application_pk
 
