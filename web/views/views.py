@@ -152,7 +152,7 @@ def logout_view(request: HttpRequest) -> HttpResponse:
             url = login_start
 
         case _:
-            logger.error(f"Unknown backend: {backend}, defaulting to login_start")
+            logger.warning(f"Unknown backend: {backend}, defaulting to login_start")
             url = login_start
 
     # 3. Clear session and user
