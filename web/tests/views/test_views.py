@@ -16,7 +16,7 @@ from web.domains.case.forms_search import ImportSearchForm
 from web.domains.commodity.forms import UsageForm
 from web.domains.commodity.widgets import UsageCountryWidget
 from web.domains.contacts.widgets import ContactWidget
-from web.models import CommodityGroup, ImportApplicationType
+from web.models import CommodityGroup, ImportApplicationType, User
 from web.tests.auth import AuthTestCase
 from web.tests.helpers import get_test_client
 from web.views import views
@@ -355,21 +355,24 @@ def test_banner_colour_doesnt_change(ilb_admin_client):
 
 class TestICMSOIDCBackChannelLogoutView:
     @pytest.fixture(autouse=True)
-    def setup(self, importer_client):
-        self.client = importer_client
+    def setup(self, importer_site):
+        self.user = User.objects.create_user(
+            "test-username",
+            "test_user@example.com",  # /PS-IGNORE
+            "fake-password",
+        )
+        self.client = get_test_client(importer_site.domain)
+        self.client.force_login(self.user)
         self.url = reverse("one-login-back-channel-logout")
 
     @mock.patch.object(
         govuk_onelogin_django.views.OIDCBackChannelLogoutView, "validate_logout_token"
     )
-    def test_back_channel_logout(
-        self, mock_validate_logout_token, importer_site, importer_one_contact
-    ):
+    def test_back_channel_logout(self, mock_validate_logout_token, importer_site):
         response = self.client.get(reverse("workbasket"))
         assert response.status_code == HTTPStatus.OK
 
-        mock_validate_logout_token.return_value = importer_one_contact.username
-        # mock_back_channel_logout.validate_logout_token.return_value = importer_one_contact.username
+        mock_validate_logout_token.return_value = self.user.username
 
         # Fresh test client to mimic request coming from GOV.UK One Login
         client = get_test_client(importer_site.domain)
@@ -391,6 +394,7 @@ class TestICMSOIDCBackChannelLogoutView:
         mock_validate_logout_token.return_value = "unknown"
 
         response = self.client.post(self.url)
+
         # Response is always 200 even if there is an error
         assert response.status_code == HTTPStatus.OK
 
