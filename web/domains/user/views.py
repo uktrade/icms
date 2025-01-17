@@ -231,6 +231,11 @@ class VerifyEmailView(LoginRequiredMixin, SingleObjectMixin, RedirectView):
                 self.object.email.save()
                 self.object.processed = True
                 self.object.save()
+
+                # Reset the verified count now they have verified the email.
+                self.object.email.verified_reminder_count = 0
+                self.object.email.save()
+
                 messages.info(
                     self.request, f"Email address {self.object.email} has now been verified."
                 )
