@@ -313,7 +313,12 @@ class Command(BaseCommand):
 
 def add_email(user):
     Email.objects.create(
-        user=user, email=user.email, portal_notifications=True, is_primary=True, type=Email.WORK
+        user=user,
+        email=user.email,
+        portal_notifications=True,
+        is_primary=True,
+        type=Email.WORK,
+        is_verified=True,
     )
 
 

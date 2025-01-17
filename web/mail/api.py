@@ -62,6 +62,7 @@ def is_valid_template_id(template_id: UUID) -> bool:
 @app.task(base=SendEmailTask, name=SEND_EMAIL_TASK_NAME, queue=CELERY_MAIL_QUEUE_NAME)
 def send_email(template_id: UUID, personalisation: dict, email_address: str) -> dict:
     client = get_gov_notify_client()
+
     return client.send_email_notification(
         email_address, str(template_id), personalisation=personalisation
     )
