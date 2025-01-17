@@ -72,6 +72,11 @@ private_urls = [
             ]
         ),
     ),
+    path(
+        "endorsements/get-text/",
+        views.GetEndorsementTextView.as_view(),
+        name="get-endorsement-text",
+    ),
     path("imi/", include(imi_urls)),
 ]
 

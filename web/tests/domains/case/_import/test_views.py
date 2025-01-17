@@ -16,6 +16,7 @@ from web.models import (
     ImportApplicationType,
     SILApplication,
     Task,
+    Template,
     VariationRequest,
     WoodQuotaApplication,
 )
@@ -396,3 +397,37 @@ class TestIMICaseListView(AuthTestCase):
         imi_app = response.context["imi_list"][0]
 
         assert imi_app.reference == completed_sil_app.reference
+
+
+class TestGetEndorsementTextView(AuthTestCase):
+    url = reverse("import:get-endorsement-text")
+
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
+        self.endorsement = Template.objects.filter(template_type=Template.ENDORSEMENT).first()
+        self.url = reverse("import:get-endorsement-text") + f"?template_pk={self.endorsement.pk}"
+
+    def test_permission(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_get_only(self):
+        response = self.ilb_admin_client.post(self.url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_get_endorsement_text(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assert response.json() == {"text": self.endorsement.template_content}
+
+    def test_invalid_template_error(self):
+        url = reverse("import:get-endorsement-text") + "?template_pk=-111"
+        response = self.ilb_admin_client.get(url)
+        assert response.status_code == HTTPStatus.NOT_FOUND
+        assert response.json() == {}

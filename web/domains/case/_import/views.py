@@ -1,4 +1,5 @@
 import datetime as dt
+from http import HTTPStatus
 from typing import Any
 
 import django.forms as django_forms
@@ -9,15 +10,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import QuerySet
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.views import View
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView, TemplateView
 from django_ratelimit import UNSAFE
 from django_ratelimit.decorators import ratelimit
 from guardian.shortcuts import get_objects_for_user
+from pydantic import BaseModel, ConfigDict
 
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
@@ -37,6 +40,7 @@ from web.models import (
     SanctionsAndAdhocApplication,
     SILApplication,
     Task,
+    Template,
     WoodQuotaApplication,
 )
 from web.permissions import Perms
@@ -419,6 +423,29 @@ def delete_endorsement(
                 kwargs={"application_pk": application_pk, "case_type": "import"},
             )
         )
+
+
+class GetEndorsementTextView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    class QueryParams(BaseModel):
+        """Available query params used in this endpoint"""
+
+        model_config = ConfigDict(extra="ignore")
+        template_pk: int
+
+    http_method_names = ["get"]
+    permission_required = [Perms.sys.ilb_admin]
+
+    def get(self, request: AuthenticatedHttpRequest) -> JsonResponse:
+        params = self.QueryParams.model_validate(self.request.GET.dict())
+
+        try:
+            endorsement = Template.objects.get(
+                template_type=Template.ENDORSEMENT, pk=params.template_pk
+            )
+        except Template.DoesNotExist:
+            return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
+
+        return JsonResponse(data={"text": endorsement.template_content})
 
 
 @login_required
