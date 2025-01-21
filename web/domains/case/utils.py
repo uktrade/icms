@@ -156,11 +156,14 @@ def submit_application(app: ImpOrExp, request: AuthenticatedHttpRequest, task: T
 def redirect_after_submit(app: ImpOrExp, request: AuthenticatedHttpRequest) -> HttpResponse:
     """Called after submitting an application"""
 
+    survey_url = reverse("survey:user-feedback", kwargs={"process_pk": app.pk})
+    survey_message = f'<br/>Help us improve our service by <a class"info-box-link" href="{survey_url}">providing feedback</a>.'
+
     msg = (
         "Your application has been submitted."
-        f" The reference number assigned to this case is {app.get_reference()}."
+        f" The reference number assigned to this case is {app.get_reference()}. {survey_message}"
     )
-    messages.success(request, msg)
+    messages.success(request, msg, extra_tags="safe")
 
     return redirect(reverse("workbasket"))
 

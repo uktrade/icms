@@ -1,9 +1,16 @@
 {% macro flash_message(message) %}
+  {% set class_list = ["info-box"] %}
+  {% for tag in message.tags.split() %}
+    {{ class_list.append('info-box-' + tag) }}
+  {% endfor %}
   <div class="flash-message" style="display: block;">
-    <div role="alert" class="info-box info-box-{{message.tags}} " tabindex="0">
+    <div role="alert" class="{{ class_list|join(' ') }}" tabindex="0">
       <button class="flash-message-close icon-cross" aria-label="Close this message"></button>
-      {# Do not use the "safe" template filter here #}
-      {{message}}
+        {% if "safe" in message.extra_tags %}
+          {{ message|safe }}
+        {% else %}
+          {{ message }}
+        {% endif %}
     </div>
   </div>
 {% endmacro %}

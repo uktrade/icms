@@ -1,6 +1,6 @@
 "use strict";
 
-window.addEventListener("load", function (event) {
+window.addEventListener("DOMContentLoaded", function (event) {
   const status = document.querySelector("#id_status");
 
   // The div row containing the response field
