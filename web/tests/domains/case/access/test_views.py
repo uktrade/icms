@@ -7,7 +7,12 @@ from pytest_django.asserts import assertInHTML, assertRedirects, assertTemplateU
 
 from web.flow.models import ProcessTypes
 from web.mail.constants import EmailTypes
-from web.models import AccessRequest, ExporterAccessRequest, ImporterAccessRequest
+from web.models import (
+    AccessRequest,
+    ExporterAccessRequest,
+    FurtherInformationRequest,
+    ImporterAccessRequest,
+)
 from web.permissions import organisation_get_contacts
 from web.sites import (
     SiteName,
@@ -819,6 +824,37 @@ class TestCloseAccessRequest(AuthTestCase):
         assert messages[0] == (
             "You cannot close this Access Request because you have already started the Approval "
             "Process. To close this Access Request you must first withdraw the Approval Request."
+        )
+
+    def test_unable_to_close_access_request_with_open_fir(self):
+        # Fake a FIR
+        self.iar.further_information_requests.create(
+            request_subject="Test subject",
+            request_detail="Test detail",
+            requested_by=self.ilb_admin_user,
+            status=FurtherInformationRequest.DRAFT,
+            process_type=FurtherInformationRequest.PROCESS_TYPE,
+        )
+
+        # Go to close page and expect to see a message saying we can't close
+        response = self.ilb_admin_client.get(self.iar_url)
+        assert response.status_code == HTTPStatus.OK
+
+        assertInHTML(
+            "Further information requests must be closed or deleted before this Access Request can be closed",
+            response.content.decode(),
+        )
+
+        # Check posting to the endpoint also prevents closing the access request.
+        response = self.ilb_admin_client.post(
+            self.iar_url, data={"response": AccessRequest.APPROVED}
+        )
+        assert response.status_code == HTTPStatus.FOUND
+
+        messages = get_messages_from_response(response)
+        assert len(messages) == 1
+        assert messages[0] == (
+            "Further information requests must be closed or deleted before this Access Request can be closed"
         )
 
 

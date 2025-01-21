@@ -365,12 +365,13 @@ def _get_update_request_errors(application: ImpOrExp, case_type: str) -> PageErr
 def _get_fir_errors(application: ImpOrExp, case_type: str) -> list[PageErrors]:
     errors = []
 
-    active_firs = application.further_information_requests.filter(is_active=True).filter(
+    active_firs = application.further_information_requests.filter(
+        is_active=True,
         status__in=[
             FurtherInformationRequest.DRAFT,
             FurtherInformationRequest.OPEN,
             FurtherInformationRequest.RESPONDED,
-        ]
+        ],
     )
 
     sent_firs = active_firs.filter(
