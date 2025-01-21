@@ -5236,4 +5236,12 @@ Dear Test
 "Add the required
 CHANGE_HEADER_COLOUR
 EmailVerificationEmail
+ease_to_apply
+VERY_LOW
+class_list|join
+NAVIGATION
+otherTextArea = document.querySelector('#id_issue_details'
+showFindServiceDetail = UTILS.getShowElementFunc("div.row_id_find_service_details
 Django 5.1.5
+otherTextArea = document.querySelector("#id_issue_details
+document.querySelector("#id_find_service_details

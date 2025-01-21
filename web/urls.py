@@ -72,6 +72,7 @@ public_urls = [
     path("mailshot/", include("web.domains.mailshot.urls")),
     path("misc/", include("web.misc.urls")),
     path("user/", include("web.domains.user.urls")),
+    path("survey/", include("web.domains.survey.urls")),
     path("workbasket/", include("web.domains.workbasket.urls")),
     #
     # Health check url

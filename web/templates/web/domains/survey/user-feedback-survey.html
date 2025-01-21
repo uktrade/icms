@@ -1,0 +1,29 @@
+{% extends "layout/sidebar.html" %}
+
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% import "display/fields.html" as display %}
+
+{% block css %}
+  {{ form.media.css }}
+  {{ super() }}
+{% endblock %}
+
+{% block js %}
+  {{ super() }}
+  <script src="{{ static('web/js/pages/user-survey.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+{% block context_header %}
+  Survey
+{% endblock %}
+
+{% block main_content %}
+  {% call forms.form(method='post', csrf_input=csrf_input) -%}
+    {% for field in form %}
+        {{ fields.field(field, show_optional_indicator=False) }}
+    {% endfor %}
+
+    {{ forms.submit_button(btn_label="Submit") }}
+  {%- endcall %}
+{% endblock %}

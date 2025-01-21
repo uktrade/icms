@@ -1,4 +1,4 @@
-window.addEventListener("load", function (event) {
+window.addEventListener("DOMContentLoaded", function (event) {
     const otherCheckbox = document.querySelector('input[type="checkbox"][value="Other"]');
     const showResponse = UTILS.getShowElementFunc("div.row_id_other_archive_reason");
     showResponse(otherCheckbox.checked === true);
