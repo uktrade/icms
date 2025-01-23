@@ -157,7 +157,7 @@ from web.domains.signature.models import Signature
 from web.domains.survey.models import UserFeedbackSurvey
 from web.domains.template.models import CFSScheduleParagraph, Template, TemplateVersion
 from web.domains.user.models import Email, EmailVerification, PhoneNumber, User
-from web.ecil.models import ECILExample
+from web.ecil.models import ECILExample, ECILMultiStepExample
 from web.flow.models import Process, Task
 from web.mail.models import EmailTemplate
 from web.models.models import GlobalPermission, UniqueReference
@@ -205,6 +205,7 @@ __all__ = [
     "DFLSupplementaryReport",
     "DFLSupplementaryReportFirearm",
     "ECILExample",
+    "ECILMultiStepExample",
     "Email",
     "EmailTemplate",
     "EmailVerification",

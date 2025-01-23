@@ -42,7 +42,7 @@ def has_view_access(
         # All class based views checked here.
         case _:
             try:
-                view_url = reverse(view_name)
+                view_url = reverse(view_name, kwargs=view_kwargs)
                 view = resolve(view_url).func.view_class()
                 view.request = request
 
@@ -59,6 +59,9 @@ class MenuItem:
     """
     Base class for all menu items
     """
+
+    def __repr__(self):
+        return f"MenuItem(label={self.label})"
 
     def __init__(self, label=None):
         self.label = label
@@ -202,12 +205,28 @@ if settings.DEBUG:
     extra_menu_items = [
         MenuLink(label="Permission Test Harness", view="harness:permissions", target="_blank"),
         MenuLink(label="L10N Test Harness", view="harness:l10n", target="_blank"),
-        MenuLink(label="ECIL Test Page", view="ecil:gds_example"),
-        MenuLink(label="ECIL Test Form Page", view="ecil:gds_form_example"),
-        MenuLink(label="ECIL Test Model Form Page", view="ecil:gds_model_form_example"),
-        MenuLink(
-            label="ECIL Test Conditional Model Form Page",
-            view="ecil:gds_conditional_model_form_example",
+        MenuDropDown(
+            label="ECIL Prototype",
+            sub_menu_list=[
+                SubMenu(
+                    links=[
+                        SubMenuLink(label="ECIL Test Page", view="ecil:gds_example"),
+                        SubMenuLink(label="ECIL Test Form Page", view="ecil:gds_form_example"),
+                        SubMenuLink(
+                            label="ECIL Test Model Form Page", view="ecil:gds_model_form_example"
+                        ),
+                        SubMenuLink(
+                            label="ECIL Test Conditional Model Form Page",
+                            view="ecil:gds_conditional_model_form_example",
+                        ),
+                        SubMenuLink(
+                            label="ECIL Step Model Form Page",
+                            view="ecil:step_form",
+                            kwargs={"step": "one"},
+                        ),
+                    ]
+                ),
+            ],
         ),
     ]
 

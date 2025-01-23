@@ -1,0 +1,14 @@
+{% extends "ecil/base.html" %}
+
+{% block content %}
+    {# Show an error summary if the submit button is pressed without fully valid data #}
+    {% if error_summary_kwargs %}
+      {{ gds.govukErrorSummary(error_summary_kwargs) }}
+    {% endif %}
+
+    {{ gds.govukSummaryList(summary_list_kwargs) }}
+    <form method="post" action="">
+      {{ csrf_input }}
+      {{ gds.govukButton({ "text": "Submit", "type": "submit" }) }}
+    </form>
+{% endblock %}

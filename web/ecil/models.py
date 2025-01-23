@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
@@ -140,3 +141,36 @@ class ECILExample(models.Model):
     uuid_field = models.UUIDField(
         verbose_name="UUID field", help_text="Enter a value", default=uuid.uuid4, editable=True
     )
+
+
+class ECILMultiStepExample(models.Model):
+    class PrimaryColours(TypedTextChoices):
+        blue = ("blue", "Blue")
+        red = ("red", "Red")
+        yellow = ("yellow", "Yellow")
+
+    # editable fields
+    favourite_colour = models.CharField(
+        verbose_name="What's your favourite primary colour",
+        help_text="Pick a colour",
+        choices=PrimaryColours.choices,
+        max_length=6,
+    )
+    likes_cake = models.BooleanField(
+        verbose_name="Do you like cake?",
+        help_text="Enter a value",
+    )
+    favourite_book = models.CharField(
+        verbose_name="Favourite book", help_text="Enter a value", max_length=255
+    )
+
+    def __str__(self):
+        return (
+            f"ECILMultiStepExample(pk={self.pk}, favourite_colour={self.favourite_colour}, "
+            f"likes_cake={self.likes_cake}, favourite_book={self.favourite_book})"
+        )
+
+    # auto fields
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)

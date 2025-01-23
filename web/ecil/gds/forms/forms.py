@@ -65,6 +65,7 @@ class GDSFormMixin:
 
             error_list.append({"text": error, "href": href})
 
+        # TODO: This should use a python serializer from gds.components.serializers
         return {
             "titleText": "There is a problem",
             "errorList": error_list,

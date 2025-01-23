@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 
-from web.models import ECILExample
+from web.models import ECILExample, ECILMultiStepExample
 
 
 class TestGDSTestPageView:
@@ -140,3 +140,82 @@ class TestGDSConditionalModelFormView:
         }
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
+
+
+class TestECILMultiStepFormView:
+    @pytest.fixture(autouse=True)
+    def setup(self, ilb_admin_client, ilb_admin_user):
+        self.client = ilb_admin_client
+        self.user = ilb_admin_user
+
+    def get_url(self, step: str) -> str:
+        return reverse("ecil:step_form", kwargs={"step": step})
+
+    def test_permission(self, ilb_admin_user):
+        response = self.client.get(self.get_url("one"))
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
+
+        response = self.client.get(self.get_url("one"))
+        assert response.status_code == HTTPStatus.OK
+
+    def test_post(self):
+        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
+
+        response = self.client.post(self.get_url("one"), data={"favourite_colour": "red"})
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == self.get_url("two")
+
+        response = self.client.post(self.get_url("two"), data={"likes_cake": "True"})
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == self.get_url("three")
+
+        response = self.client.post(self.get_url("three"), data={"favourite_book": "The Bible"})
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("ecil:step_form_summary")
+
+        # Check the summary view actually saves the data
+        # This is really a test for TestECILMultiStepFormSummaryView below
+        assert ECILMultiStepExample.objects.count() == 0
+        response = self.client.post(reverse("ecil:step_form_summary"))
+        assert response.status_code == HTTPStatus.FOUND
+        assert ECILMultiStepExample.objects.count() == 1
+
+        record = ECILMultiStepExample.objects.first()
+        assert record.favourite_colour == "red"
+        assert record.likes_cake
+        assert record.favourite_book == "The Bible"
+
+
+class TestECILMultiStepFormSummaryView:
+    @pytest.fixture(autouse=True)
+    def setup(self, ilb_admin_client, ilb_admin_user):
+        self.client = ilb_admin_client
+        self.user = ilb_admin_user
+        self.url = reverse("ecil:step_form_summary")
+
+    def test_permission(self, ilb_admin_user):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    # happy path has been tested above in TestECILMultiStepFormView.
+    def test_post_errors(self):
+        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
+
+        response = self.client.post(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assert response.context["error_summary_kwargs"] == {
+            "titleText": "There is a problem",
+            "errorList": [
+                {"text": "What's your favourite primary colour: You must enter this item"},
+                {"text": "Do you like cake?: You must enter this item"},
+                {"text": "Favourite book: You must enter this item"},
+            ],
+        }
