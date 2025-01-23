@@ -1,7 +1,7 @@
 from typing import Any
 
 from web.ecil.gds import forms as gds_forms
-from web.models import ECILExample
+from web.models import ECILExample, ECILMultiStepExample
 
 
 class ExampleGDSForm(gds_forms.GDSForm):
@@ -173,3 +173,27 @@ class ExampleConditionalGDSModelForm(gds_forms.GDSModelForm):
         self.clean_radio_conditional_fields("char_choice_field", ["blue", "red", "yellow"])
 
         return cleaned_data
+
+
+class ExampleMultiStepStepOneForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ECILMultiStepExample
+        fields = ["favourite_colour"]
+
+
+class ExampleMultiStepStepTwoForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ECILMultiStepExample
+        fields = ["likes_cake"]
+
+
+class ExampleMultiStepStepThreeForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ECILMultiStepExample
+        fields = ["favourite_book"]
+
+
+class ExampleMultiStepStepSummaryForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ECILMultiStepExample
+        fields = ["favourite_colour", "likes_cake", "favourite_book"]
