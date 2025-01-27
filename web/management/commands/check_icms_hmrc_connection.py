@@ -8,7 +8,8 @@ from django.core.management.base import BaseCommand, CommandError
 from web.domains.chief.client import make_request
 
 
-# To run: make manage args="check_icms_hmrc_connection"
+# Requires web-internal
+# To run: docker compose run --rm web-internal python ./manage.py check_icms_hmrc_connection
 class Command(BaseCommand):
     help = """Test ICMS can send a request to ICMS-HMRC server."""
 
