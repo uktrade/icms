@@ -93,8 +93,27 @@ class AppChecker:
         if self.is_ilb_admin:
             return True
 
-        # NCA Case Officers can search all import applications
-        if self.app.is_import_application() and self.user.has_perm(Perms.sys.search_all_cases):
+        is_import_app = self.app.is_import_application()
+        can_search_all_cases = self.user.has_perm(Perms.sys.search_all_cases)
+
+        # TODO: ECIL-546
+        #       Split Perms.sys.search_all_cases in to the following to simplify can_view logic:
+        #         - Perms.sys.search_all_import_cases
+        #         - Perms.sys.search_all_export_cases
+        # Logic for users who can search all import applications e.g. NCA Case Officers
+        if (
+            is_import_app
+            and can_search_all_cases
+            and self.user.has_perm(Perms.page.view_import_case_search)
+        ):
+            return True
+
+        # Logic for users who can search all export applications e.g. Export Search User
+        if (
+            not is_import_app
+            and can_search_all_cases
+            and self.user.has_perm(Perms.page.view_export_case_search)
+        ):
             return True
 
         if not self.has_org_access:

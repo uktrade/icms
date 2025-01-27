@@ -126,6 +126,14 @@ def get_groups():
             # Sys permissions
             Perms.sys.search_all_cases,
         },
+        StaffUserGroups.EXPORT_SEARCH_USER.value: {
+            #
+            # Page permissions
+            Perms.page.view_export_case_search,
+            #
+            # Sys permissions
+            Perms.sys.search_all_cases,
+        },
         "ICMS Admin Site User": {
             Perms.sys.is_icms_data_admin,
             Permission.objects.get(content_type__app_label="web", codename="change_user"),

@@ -1555,6 +1555,14 @@ class TestActiveStaffUserInterface:
                 "Last Login": "",
             },
             {
+                "Email Address": "export_search_user@example.com",  # /PS-IGNORE
+                "Primary Email Address": "export_search_user@example.com",  # /PS-IGNORE
+                "First Name": "export_search_user_first_name",  # /PS-IGNORE
+                "Last Name": "export_search_user_last_name",  # /PS-IGNORE
+                "Date Joined": "20/01/2024",
+                "Last Login": "",
+            },
+            {
                 "Email Address": "import_search_user@example.com",  # /PS-IGNORE
                 "Primary Email Address": "import_search_user@example.com",  # /PS-IGNORE
                 "First Name": "import_search_user_first_name",  # /PS-IGNORE

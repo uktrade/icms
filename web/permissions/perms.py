@@ -10,6 +10,7 @@ class StaffUserGroups(StrEnum):
     SANCTIONS_CASE_OFFICER = "Sanctions Case Officer"
     IMPORT_SEARCH_USER = "Import Search User"
     CONSTABULARY_CONTACT = "Constabulary Contact"
+    EXPORT_SEARCH_USER = "Export Search User"
 
 
 class PagePermissions(PermissionTextChoice):
