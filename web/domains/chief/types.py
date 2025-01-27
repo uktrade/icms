@@ -34,7 +34,7 @@ class AddressData(BaseModel):
     line_3: str = ""
     line_4: str = ""
     line_5: str = ""
-    postcode: str
+    postcode: str = ""
 
 
 class OrganisationData(BaseModel):

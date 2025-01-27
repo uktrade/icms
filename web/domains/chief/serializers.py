@@ -354,13 +354,16 @@ def get_organisation(application: "ImportApplication") -> types.OrganisationData
     else:
         name = importer.name
 
+    # TODO: Revisit in ECIL-486 part 2
+    postcode = clean_postcode(office.postcode) if office.postcode else ""
+
     return types.OrganisationData(
         eori_number=eori_number,
         name=name,
         address=types.AddressData(
             # max address lines is 5
             **address_lines,
-            postcode=clean_postcode(office.postcode),
+            postcode=postcode,
         ),
         start_date=None,
         end_date=None,

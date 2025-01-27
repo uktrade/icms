@@ -19,8 +19,9 @@ class BaseImporterOfficeForm(forms.ModelForm):
 
 
 class ImporterOfficeEORIForm(BaseImporterOfficeForm):
+    # TODO: Revisit in ECIL-486 part 2
     # Importer postcode sent to CHIEF/CDS must be valid
-    postcode = UKPostcodeField(required=True)
+    postcode = UKPostcodeField(required=False)
 
     class Meta:
         model = Office
@@ -36,8 +37,9 @@ class ImporterOfficeEORIForm(BaseImporterOfficeForm):
 
 
 class ImporterOfficeForm(BaseImporterOfficeForm):
+    # TODO: Revisit in ECIL-486 part 2
     # Importer postcode sent to CHIEF/CDS must be valid
-    postcode = UKPostcodeField(required=True)
+    postcode = UKPostcodeField(required=False)
 
     class Meta:
         model = Office

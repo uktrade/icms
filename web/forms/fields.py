@@ -35,7 +35,8 @@ class UKPostcodeField(forms.RegexField):
     UK_POSTCODE_REGEX = r"^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$"
 
     def __init__(self, regex=UK_POSTCODE_REGEX, **kwargs):
-        kwargs.setdefault("required", True)
+        # TODO: Revisit in ECIL-486 part 2
+        # kwargs.setdefault("required", True)
         kwargs.setdefault("label", "Postcode")
         kwargs.setdefault("error_messages", {"invalid": "Please enter a valid postcode"})
 
