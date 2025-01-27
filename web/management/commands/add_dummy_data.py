@@ -447,6 +447,7 @@ class Command(BaseCommand):
         nca_case_officer = Group.objects.get(name="NCA Case Officer")
         ho_case_officer = Group.objects.get(name="Home Office Case Officer")
         san_case_officer = Group.objects.get(name="Sanctions Case Officer")
+        export_search_user = Group.objects.get(name="Export Search User")
         import_search_user = Group.objects.get(name="Import Search User")
         dev_admin_group = Group.objects.get(name="Dev Admin")
         ecil_prototype_group = Group.objects.get(name="ECIL Prototype User")
@@ -546,6 +547,22 @@ class Command(BaseCommand):
             first_name="Safiyyah",
             last_name="Thomson",
             groups=[import_search_user, ecil_prototype_group],
+        )
+
+        self.create_user(
+            username="export_search_user",
+            password=options["password"],
+            first_name="Figbo",
+            last_name="Spottyfish",
+            groups=[export_search_user, ecil_prototype_group],
+        )
+
+        self.create_user(
+            username="export_search_user_2",
+            password=options["password"],
+            first_name="Figwee",
+            last_name="Woofham",
+            groups=[export_search_user, ecil_prototype_group],
         )
 
         self.create_user(

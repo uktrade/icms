@@ -91,6 +91,8 @@ Go to http://caseworker:8008, login with the one of the test accounts:
   - con_user_2
   - import_search_user
   - import_search_user_2
+  - export_search_user
+  - export_search_user_2
 
 Go to http://import-a-licence:8080, login with the one of the test accounts:
   - importer_user

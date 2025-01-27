@@ -266,6 +266,12 @@ def san_admin_user(django_user_model):
 
 
 @pytest.fixture
+def export_search_user(django_user_model):
+    """Fixture to get an Export Search user."""
+    return django_user_model.objects.get(username="export_search_user")
+
+
+@pytest.fixture
 def import_search_user(django_user_model):
     """Fixture to get an Import Search user."""
     return django_user_model.objects.get(username="import_search_user")

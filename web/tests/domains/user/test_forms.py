@@ -11,7 +11,7 @@ from web.domains.user.forms import (
 )
 from web.models import PhoneNumber
 
-TOTAL_TEST_USERS = 20
+TOTAL_TEST_USERS = 21
 
 
 class TestUserListFilter(TestCase):

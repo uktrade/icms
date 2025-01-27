@@ -49,6 +49,7 @@ class TestPermissionsService:
         exporter_one_agent_one_contact,
         ilb_admin_user,
         nca_admin_user,
+        export_search_user,
         import_search_user,
         fa_sil_app,
         fa_sil_agent_app,
@@ -65,6 +66,7 @@ class TestPermissionsService:
         self.exporter_agent_contact = exporter_one_agent_one_contact
         self.ilb_admin = ilb_admin_user
         self.nca_admin = nca_admin_user
+        self.export_search_user = export_search_user
         self.import_search_user = import_search_user
 
         self.fa_sil_app = fa_sil_app
@@ -83,6 +85,8 @@ class TestPermissionsService:
         nca_admin_export_checker = AppChecker(self.nca_admin, self.com_app)
         import_search_import_checker = AppChecker(self.import_search_user, self.fa_sil_app)
         import_search_export_checker = AppChecker(self.import_search_user, self.com_app)
+        export_search_import_checker = AppChecker(self.export_search_user, self.fa_sil_app)
+        export_search_export_checker = AppChecker(self.export_search_user, self.com_app)
 
         #
         # Check importer, exporter and agent apps have correct access
@@ -142,7 +146,6 @@ class TestPermissionsService:
         #
         # Test Import Search User access (They can only view import applications)
         #
-
         assert not import_search_import_checker.can_edit()
         assert import_search_import_checker.can_view()
         assert not import_search_import_checker.can_vary()
@@ -150,6 +153,17 @@ class TestPermissionsService:
         assert not import_search_export_checker.can_edit()
         assert not import_search_export_checker.can_view()
         assert not import_search_export_checker.can_vary()
+
+        #
+        # Test Export Search User access (They can only view export applications)
+        #
+        assert not export_search_import_checker.can_edit()
+        assert not export_search_import_checker.can_view()
+        assert not export_search_import_checker.can_vary()
+
+        assert not export_search_export_checker.can_edit()
+        assert export_search_export_checker.can_view()
+        assert not export_search_export_checker.can_vary()
 
     def test_can_user_edit_firearm_authorities(self):
         #
