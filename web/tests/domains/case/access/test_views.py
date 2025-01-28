@@ -3,6 +3,7 @@ from http import HTTPStatus
 
 import pytest
 from django.urls import reverse
+from django.utils import timezone
 from pytest_django.asserts import assertInHTML, assertRedirects, assertTemplateUsed
 
 from web.flow.models import ProcessTypes
@@ -826,9 +827,27 @@ class TestCloseAccessRequest(AuthTestCase):
             "Process. To close this Access Request you must first withdraw the Approval Request."
         )
 
-    def test_unable_to_close_access_request_with_open_fir(self):
-        # Fake a FIR
-        self.iar.further_information_requests.create(
+    def test_close_access_request_with_open_fir(self):
+        # Create some FIRs
+        open_fir = self.iar.further_information_requests.create(
+            request_subject="Test subject",
+            request_detail="Test detail",
+            requested_by=self.ilb_admin_user,
+            status=FurtherInformationRequest.OPEN,
+            process_type=FurtherInformationRequest.PROCESS_TYPE,
+        )
+
+        responded_fir = self.iar.further_information_requests.create(
+            request_subject="Test subject",
+            request_detail="Test detail",
+            requested_by=self.ilb_admin_user,
+            response_detail="Test detail",
+            response_datetime=timezone.now(),
+            status=FurtherInformationRequest.RESPONDED,
+            process_type=FurtherInformationRequest.PROCESS_TYPE,
+        )
+
+        draft_fir = self.iar.further_information_requests.create(
             request_subject="Test subject",
             request_detail="Test detail",
             requested_by=self.ilb_admin_user,
@@ -841,21 +860,27 @@ class TestCloseAccessRequest(AuthTestCase):
         assert response.status_code == HTTPStatus.OK
 
         assertInHTML(
-            "Further information requests must be closed or deleted before this Access Request can be closed",
+            "Open Further information Requests will be closed when this Access Request is closed.",
             response.content.decode(),
         )
 
-        # Check posting to the endpoint also prevents closing the access request.
+        # Check posting to the endpoint closes the access request and open FIRs.
         response = self.ilb_admin_client.post(
-            self.iar_url, data={"response": AccessRequest.APPROVED}
+            self.iar_url, data={"response": AccessRequest.REFUSED, "response_reason": "test refuse"}
         )
         assert response.status_code == HTTPStatus.FOUND
 
-        messages = get_messages_from_response(response)
-        assert len(messages) == 1
-        assert messages[0] == (
-            "Further information requests must be closed or deleted before this Access Request can be closed"
-        )
+        assert self.iar.further_information_requests.count() == 3
+
+        # Open / Responded FIRs should be closed
+        open_fir.refresh_from_db()
+        responded_fir.refresh_from_db()
+        assert open_fir.status == FurtherInformationRequest.CLOSED
+        assert responded_fir.status == FurtherInformationRequest.CLOSED
+
+        # Draft FIRs should be deleted
+        draft_fir.refresh_from_db()
+        assert draft_fir.status == FurtherInformationRequest.DELETED
 
 
 class TestAccessRequestHistoryView(AuthTestCase):

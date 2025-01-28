@@ -375,14 +375,15 @@ def close_access_request(
             is_active=True, status=ApprovalRequest.Statuses.OPEN
         ).exists()
 
-        has_open_firs = access_request.further_information_requests.filter(
+        open_firs = access_request.further_information_requests.filter(
             is_active=True,
             status__in=[
                 FurtherInformationRequest.DRAFT,
                 FurtherInformationRequest.OPEN,
                 FurtherInformationRequest.RESPONDED,
             ],
-        ).exists()
+        )
+        has_open_firs = open_firs.exists()
 
         agent_missing = access_request.is_agent_request and not access_request.agent_link
 
@@ -395,14 +396,7 @@ def close_access_request(
                     "Approval Request.",
                 )
 
-            if has_open_firs:
-                messages.error(
-                    request,
-                    "Further information requests must be closed or deleted before this Access"
-                    " Request can be closed",
-                )
-
-            if has_open_approval_request or has_open_firs:
+            if has_open_approval_request:
                 return redirect(
                     reverse(
                         "access:close-request",
@@ -414,6 +408,20 @@ def close_access_request(
             form = forms.CloseAccessRequestForm(request.POST, instance=access_request)
 
             if form.is_valid():
+                if has_open_firs:
+                    # Close sent FIRs
+                    open_firs.filter(
+                        status__in=[
+                            FurtherInformationRequest.OPEN,
+                            FurtherInformationRequest.RESPONDED,
+                        ]
+                    ).update(status=FurtherInformationRequest.CLOSED)
+
+                    # Delete draft FIRs
+                    open_firs.filter(status=FurtherInformationRequest.DRAFT).update(
+                        status=FurtherInformationRequest.DELETED
+                    )
+
                 access_request = form.save(commit=False)
 
                 access_request.status = AccessRequest.Statuses.CLOSED

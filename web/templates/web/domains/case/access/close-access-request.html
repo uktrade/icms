@@ -8,11 +8,14 @@
     <div class="info-box info-box-info">
       You cannot close this Access Request because you have already started the Approval Process. To close this Access Request you must first withdraw the Approval Request.
     </div>
-  {% elif has_open_firs %}
-    <div class="info-box info-box-info">
-      Further information requests must be closed or deleted before this Access Request can be closed
-    </div>
   {% else %}
+
+    {% if has_open_firs %}
+      <div class="info-box info-box-warning">
+        Open Further information Requests will be closed when this Access Request is closed.
+      </div>
+    {% endif %}
+
     <div class="container setOutForm">
       {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
         {% for field in form %}
