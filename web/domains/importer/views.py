@@ -587,10 +587,11 @@ def create_office(request, pk):
         if form.is_valid():
             office = form.save()
             importer.offices.add(office)
+            messages.success(request, "Office created successfully.")
             return redirect(
                 reverse(
-                    "importer-office-edit",
-                    kwargs={"importer_pk": importer.pk, "office_pk": office.pk},
+                    "importer-edit",
+                    kwargs={"pk": importer.pk},
                 )
             )
     else:
