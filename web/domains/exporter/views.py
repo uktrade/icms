@@ -181,10 +181,11 @@ def create_office(request, pk):
         if form.is_valid():
             office = form.save()
             exporter.offices.add(office)
+            messages.success(request, "Office created successfully.")
             return redirect(
                 reverse(
-                    "exporter-office-edit",
-                    kwargs={"exporter_pk": exporter.pk, "office_pk": office.pk},
+                    "exporter-edit",
+                    kwargs={"pk": exporter.pk},
                 )
             )
     else:
