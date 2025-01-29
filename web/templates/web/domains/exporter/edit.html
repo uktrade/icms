@@ -9,11 +9,13 @@
 {% endblock %}
 
 {% block content_actions %}
-  <div class="content-actions">
-    <ul class="menu-out flow-across">
-      <li><a href="{{ parent_url }}" class="prev-link">Exporters</a></li>
-    </ul>
-  </div>
+  {% if show_content_actions %}
+    <div class="content-actions">
+      <ul class="menu-out flow-across">
+        <li><a href="{{ parent_url }}" class="prev-link">Exporters</a></li>
+      </ul>
+    </div>
+  {% endif %}
 {% endblock %}
 
 {% block context_header %}

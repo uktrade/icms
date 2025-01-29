@@ -6,6 +6,7 @@ from django.urls import reverse
 from guardian.shortcuts import remove_perm
 from pytest_django.asserts import assertRedirects
 
+from web.domains.exporter.views import _get_user_context
 from web.models import Exporter
 from web.permissions import Perms
 from web.tests.auth import AuthTestCase
@@ -556,3 +557,16 @@ class TestEditUserExporterPermissionsView(AuthTestCase):
             Perms.obj.exporter.edit.codename,
             Perms.obj.exporter.manage_contacts_and_agents.codename,
         }
+
+
+def test_get_user_context(ilb_admin_user, exporter_one_agent_one_contact):
+    assert _get_user_context(ilb_admin_user) == {
+        "base_template": "layout/sidebar.html",
+        "parent_url": reverse("exporter-list"),
+        "show_content_actions": False,
+    }
+    assert _get_user_context(exporter_one_agent_one_contact) == {
+        "base_template": "layout/no-sidebar.html",
+        "parent_url": reverse("user-exporter-list"),
+        "show_content_actions": True,
+    }
