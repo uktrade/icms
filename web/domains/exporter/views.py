@@ -393,8 +393,14 @@ def _get_user_context(user: User) -> dict[str, Any]:
     if user.has_perm(Perms.sys.exporter_admin):
         base_template = "layout/sidebar.html"
         parent_url = reverse("exporter-list")
+        show_content_actions = False
     else:
         base_template = "layout/no-sidebar.html"
         parent_url = reverse("user-exporter-list")
+        show_content_actions = True
 
-    return {"base_template": base_template, "parent_url": parent_url}
+    return {
+        "base_template": base_template,
+        "parent_url": parent_url,
+        "show_content_actions": show_content_actions,
+    }
