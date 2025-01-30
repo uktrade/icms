@@ -41,7 +41,7 @@ public_urls = [
     path("logout/", logout_view, name="logout-user"),
     #
     # New ECIL urls
-    path("ecil/", include("web.ecil.urls")),
+    path("ecil/", include("web.ecil.urls.urls")),
     #
     # staff-sso-client login urls
     path("auth/", include("authbroker_client.urls")),

@@ -14,6 +14,15 @@
   {{ gds.govukHeader({ "productName": request.site.name }) }}
 {% endblock %}
 
+{% block beforeContent %}
+  {{
+    gds.govukPhaseBanner({
+      "tag": {"text": "Alpha"},
+      "html": 'This is a new service. Your <a class="govuk-link" href="#">feedback</a> will help us improve it.'
+    })
+  }}
+{% endblock %}
+
 {% block footer %}
   {{ gds.govukFooter({
         "meta": {

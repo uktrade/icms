@@ -91,6 +91,7 @@ class Command(BaseCommand):
         self.create_con_user(
             "con_user", linked_constabularies=["Nottingham", "Lincolnshire", "Derbyshire"]
         )
+        self.create_prototype_user("prototype_user")
 
         # enable disabled application types
         ImportApplicationType.objects.exclude(
@@ -317,6 +318,11 @@ class Command(BaseCommand):
         add_group(user, "Export Search User")
 
         return user
+
+    def create_prototype_user(self, username):
+        user = self.create_user(username)
+        add_email(user)
+        add_group(user, "ECIL Prototype User")
 
 
 def add_email(user):
