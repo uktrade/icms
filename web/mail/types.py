@@ -39,7 +39,10 @@ class RecipientDetails:
         """If APP_ENV is local, dev, uat or staging and SEND_ALL_EMAILS_TO is set in django settings all emails will be sent to
         the specified email addresses.
         """
-        if settings.APP_ENV in ("local", "dev", "uat", "staging") and settings.SEND_ALL_EMAILS_TO:
+        if (
+            settings.APP_ENV in ("local", "dev", "uat", "staging", "hotfix")
+            and settings.SEND_ALL_EMAILS_TO
+        ):
             self._email_address = settings.SEND_ALL_EMAILS_TO[0]
         else:
             self._email_address = value
