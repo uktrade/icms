@@ -202,7 +202,7 @@ MAIL_TASK_RETRY_JITTER = env.mail_task_retry_jitter
 MAIL_TASK_MAX_RETRIES = env.mail_task_max_retries
 
 # Same logic here: icms/web/mail/decorators.py
-if APP_ENV in ("local", "dev", "uat", "staging"):
+if APP_ENV in ("local", "dev", "uat", "staging", "hotfix"):
     SEND_ALL_EMAILS_TO = env.send_all_emails_to
 else:
     SEND_ALL_EMAILS_TO = []
@@ -562,3 +562,8 @@ if SHOW_DEBUG_TOOLBAR:
         "INTERCEPT_REDIRECTS": False,
         "SHOW_TOOLBAR_CALLBACK": lambda x: SHOW_DEBUG_TOOLBAR,
     }
+
+if APP_ENV == "hotfix":
+    # Hotfix environment settings. Hardcode this stuff here as it's too risky to set them with environment variables.
+    ICMS_SEND_LICENCE_TO_CHIEF = False
+    ICMS_ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD = True
