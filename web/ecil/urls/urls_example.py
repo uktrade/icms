@@ -1,8 +1,8 @@
 from django.urls import include, path
 
-from . import views
+from web.ecil.views import views_example as views
 
-app_name = "ecil"
+app_name = "example"
 urlpatterns = [
     path("gds-example/", views.GDSTestPageView.as_view(), name="gds_example"),
     path("gds-form-example/", views.GDSFormView.as_view(), name="gds_form_example"),

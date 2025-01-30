@@ -200,6 +200,12 @@ class ICMSAdminLink(SubMenuLink):
         return reverse("icms_admin:index")
 
 
+# Menu drop down containing real ECIL pages
+class ECILMenuDropDown(MenuDropDown):
+    def has_access(self, request):
+        return request.user.has_perm(Perms.sys.view_ecil_prototype)
+
+
 extra_menu_items = []
 if settings.DEBUG:
     extra_menu_items = [
@@ -210,18 +216,21 @@ if settings.DEBUG:
             sub_menu_list=[
                 SubMenu(
                     links=[
-                        SubMenuLink(label="ECIL Test Page", view="ecil:gds_example"),
-                        SubMenuLink(label="ECIL Test Form Page", view="ecil:gds_form_example"),
+                        SubMenuLink(label="ECIL Test Page", view="ecil:example:gds_example"),
                         SubMenuLink(
-                            label="ECIL Test Model Form Page", view="ecil:gds_model_form_example"
+                            label="ECIL Test Form Page", view="ecil:example:gds_form_example"
+                        ),
+                        SubMenuLink(
+                            label="ECIL Test Model Form Page",
+                            view="ecil:example:gds_model_form_example",
                         ),
                         SubMenuLink(
                             label="ECIL Test Conditional Model Form Page",
-                            view="ecil:gds_conditional_model_form_example",
+                            view="ecil:example:gds_conditional_model_form_example",
                         ),
                         SubMenuLink(
                             label="ECIL Step Model Form Page",
-                            view="ecil:step_form",
+                            view="ecil:example:step_form",
                             kwargs={"step": "one"},
                         ),
                     ]
@@ -301,6 +310,18 @@ class Menu:
                 SubMenu(
                     label="Certificate",
                     links=[SubMenuLink(label="Certificate Application Templates", view="cat:list")],
+                ),
+            ],
+        ),
+        ECILMenuDropDown(
+            "ECIL",
+            sub_menu_list=[
+                SubMenu(
+                    links=[
+                        SubMenuLink(
+                            label="Exporter Start Page", view="ecil:new_user:exporter_login_start"
+                        )
+                    ]
                 ),
             ],
         ),

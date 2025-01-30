@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 import pytest
-from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 
@@ -10,22 +9,18 @@ from web.models import ECILExample, ECILMultiStepExample
 
 class TestGDSTestPageView:
     @pytest.fixture(autouse=True)
-    def setup(self, ilb_admin_client, ilb_admin_user):
-        self.url = reverse("ecil:gds_example")
-        self.client = ilb_admin_client
-        self.user = ilb_admin_user
+    def setup(self, prototype_client):
+        self.url = reverse("ecil:example:gds_example")
+        self.client = prototype_client
 
-    def test_permission(self, ilb_admin_user):
-        response = self.client.get(self.url)
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
-
-        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
 
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
     def test_get_only(self):
-        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
         response = self.client.post(self.url)
 
         assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
@@ -33,23 +28,18 @@ class TestGDSTestPageView:
 
 class TestGDSFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, ilb_admin_client, ilb_admin_user):
-        self.url = reverse("ecil:gds_form_example")
-        self.client = ilb_admin_client
-        self.user = ilb_admin_user
+    def setup(self, prototype_client):
+        self.url = reverse("ecil:example:gds_form_example")
+        self.client = prototype_client
 
-    def test_permission(self, ilb_admin_user):
-        response = self.client.get(self.url)
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
-
-        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
 
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
     def test_post(self):
-        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
-
         form_data = {
             "text_input_field": "valid test val",
             "text": "",
@@ -72,23 +62,18 @@ class TestGDSFormView:
 
 class TestGDSModelFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, ilb_admin_client, ilb_admin_user):
-        self.url = reverse("ecil:gds_model_form_example")
-        self.client = ilb_admin_client
-        self.user = ilb_admin_user
+    def setup(self, prototype_client):
+        self.url = reverse("ecil:example:gds_model_form_example")
+        self.client = prototype_client
 
-    def test_permission(self, ilb_admin_user):
-        response = self.client.get(self.url)
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
-
-        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
 
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
     def test_post(self):
-        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
-
         form_data = {
             "big_integer_field": -12345,
             "boolean_field": True,
@@ -116,22 +101,18 @@ class TestGDSModelFormView:
 
 class TestGDSConditionalModelFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, ilb_admin_client, ilb_admin_user):
-        self.url = reverse("ecil:gds_conditional_model_form_example")
-        self.client = ilb_admin_client
-        self.user = ilb_admin_user
+    def setup(self, prototype_client):
+        self.url = reverse("ecil:example:gds_conditional_model_form_example")
+        self.client = prototype_client
 
-    def test_permission(self, ilb_admin_user):
-        response = self.client.get(self.url)
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
-
-        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
 
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
     def test_post(self):
-        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
         form_data = {
             "blue": "",
             "red": "value",
@@ -144,25 +125,20 @@ class TestGDSConditionalModelFormView:
 
 class TestECILMultiStepFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, ilb_admin_client, ilb_admin_user):
-        self.client = ilb_admin_client
-        self.user = ilb_admin_user
+    def setup(self, prototype_client):
+        self.client = prototype_client
 
     def get_url(self, step: str) -> str:
-        return reverse("ecil:step_form", kwargs={"step": step})
+        return reverse("ecil:example:step_form", kwargs={"step": step})
 
-    def test_permission(self, ilb_admin_user):
-        response = self.client.get(self.get_url("one"))
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.get_url("one"))
         assert response.status_code == HTTPStatus.FORBIDDEN
-
-        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
 
         response = self.client.get(self.get_url("one"))
         assert response.status_code == HTTPStatus.OK
 
     def test_post(self):
-        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
-
         response = self.client.post(self.get_url("one"), data={"favourite_colour": "red"})
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == self.get_url("two")
@@ -173,12 +149,12 @@ class TestECILMultiStepFormView:
 
         response = self.client.post(self.get_url("three"), data={"favourite_book": "The Bible"})
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("ecil:step_form_summary")
+        assert response.url == reverse("ecil:example:step_form_summary")
 
         # Check the summary view actually saves the data
         # This is really a test for TestECILMultiStepFormSummaryView below
         assert ECILMultiStepExample.objects.count() == 0
-        response = self.client.post(reverse("ecil:step_form_summary"))
+        response = self.client.post(reverse("ecil:example:step_form_summary"))
         assert response.status_code == HTTPStatus.FOUND
         assert ECILMultiStepExample.objects.count() == 1
 
@@ -190,24 +166,20 @@ class TestECILMultiStepFormView:
 
 class TestECILMultiStepFormSummaryView:
     @pytest.fixture(autouse=True)
-    def setup(self, ilb_admin_client, ilb_admin_user):
-        self.client = ilb_admin_client
-        self.user = ilb_admin_user
-        self.url = reverse("ecil:step_form_summary")
+    def setup(self, prototype_client):
+        self.client = prototype_client
 
-    def test_permission(self, ilb_admin_user):
-        response = self.client.get(self.url)
+        self.url = reverse("ecil:example:step_form_summary")
+
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
-
-        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
 
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
     # happy path has been tested above in TestECILMultiStepFormView.
     def test_post_errors(self):
-        self.user.groups.add(Group.objects.get(name="ECIL Prototype User"))
-
         response = self.client.post(self.url)
         assert response.status_code == HTTPStatus.OK
 

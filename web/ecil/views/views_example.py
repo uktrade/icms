@@ -4,11 +4,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.urls import reverse
 from django.views.generic import FormView, ListView, TemplateView
 
+from web.ecil import forms
 from web.ecil.gds.views import FormStep, MultiStepFormSummaryView, MultiStepFormView
 from web.models import ECILMultiStepExample
 from web.permissions import Perms
-
-from . import forms
 
 
 class GDSTestPageView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
@@ -29,7 +28,7 @@ class GDSFormView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "ecil/gds_form.html"
 
     def get_success_url(self):
-        return reverse("ecil:gds_form_example")
+        return reverse("ecil:example:gds_form_example")
 
 
 class GDSModelFormView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -41,7 +40,7 @@ class GDSModelFormView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     template_name = "ecil/gds_model_form.html"
 
     def get_success_url(self):
-        return reverse("ecil:gds_model_form_example")
+        return reverse("ecil:example:gds_model_form_example")
 
 
 class GDSConditionalModelFormView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -53,7 +52,7 @@ class GDSConditionalModelFormView(LoginRequiredMixin, PermissionRequiredMixin, F
     template_name = "ecil/gds_model_form.html"
 
     def get_success_url(self):
-        return reverse("ecil:gds_conditional_model_form_example")
+        return reverse("ecil:example:gds_conditional_model_form_example")
 
 
 class ECILMultiStepFormView(LoginRequiredMixin, PermissionRequiredMixin, MultiStepFormView):
@@ -70,13 +69,13 @@ class ECILMultiStepFormView(LoginRequiredMixin, PermissionRequiredMixin, MultiSt
     template_name = "ecil/gds_step_form.html"
 
     def get_previous_step_url(self) -> str:
-        return reverse("ecil:step_form", kwargs={"step": self.previous_step})
+        return reverse("ecil:example:step_form", kwargs={"step": self.previous_step})
 
     def get_next_step_url(self) -> str:
-        return reverse("ecil:step_form", kwargs={"step": self.next_step})
+        return reverse("ecil:example:step_form", kwargs={"step": self.next_step})
 
     def get_summary_url(self) -> str:
-        return reverse("ecil:step_form_summary")
+        return reverse("ecil:example:step_form_summary")
 
 
 class ECILMultiStepFormSummaryView(
@@ -101,10 +100,10 @@ class ECILMultiStepFormSummaryView(
         return super().get_display_value(field, value)
 
     def get_edit_step_url(self, step: str) -> str:
-        return reverse("ecil:step_form", kwargs={"step": step})
+        return reverse("ecil:example:step_form", kwargs={"step": step})
 
     def get_success_url(self) -> str:
-        return reverse("ecil:multi_step_model_list")
+        return reverse("ecil:example:multi_step_model_list")
 
 
 class ECILMultiStepExampleListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):

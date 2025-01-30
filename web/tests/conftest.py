@@ -238,6 +238,12 @@ def access_request_user_client(access_request_user, importer_site) -> Client:
     return get_test_client(importer_site.domain, access_request_user)
 
 
+@pytest.fixture()
+def prototype_client(prototype_user, exporter_site) -> Client:
+    return get_test_client(exporter_site.domain, prototype_user)
+
+
+#
 #
 # User fixtures
 #
@@ -275,6 +281,12 @@ def export_search_user(django_user_model):
 def import_search_user(django_user_model):
     """Fixture to get an Import Search user."""
     return django_user_model.objects.get(username="import_search_user")
+
+
+@pytest.fixture
+def prototype_user(django_user_model):
+    """Fixture to get an Import Search user."""
+    return django_user_model.objects.get(username="prototype_user")
 
 
 @pytest.fixture
