@@ -35,6 +35,7 @@ from web.models import (
     Task,
     Template,
     User,
+    UserFeedbackSurvey,
 )
 from web.permissions import Perms
 from web.sites import SiteName
@@ -346,6 +347,30 @@ class ICMSAdminUserAdmin(UserAdmin):
     inlines = (UserEmailInline,)
 
 
+class UserFeedbackSurveyAdmin(admin.ModelAdmin):
+    ordering = ("pk",)
+
+    list_display = (
+        "pk",
+        "process",
+        "site",
+        "satisfaction",
+        "find_service",
+        "additional_support",
+        "future_contact",
+    )
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
 icms_admin_site = ICMSAdminSite(name="icms_admin")
 icms_admin_site.register(User, ICMSAdminUserAdmin)
 icms_admin_site.register(EmailTemplate, EmailTemplateAdmin)
+icms_admin_site.register(UserFeedbackSurvey, UserFeedbackSurveyAdmin)
