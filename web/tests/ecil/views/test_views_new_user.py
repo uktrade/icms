@@ -26,4 +26,40 @@ class TestExporterLoginStartView:
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
-        assert response.context["auth_login_url"] == reverse("workbasket")
+        assert response.context["auth_login_url"] == reverse("ecil:new_user:update_name")
+
+
+class TestNewUserUpdateNameView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_client, prototype_user):
+        self.user = prototype_user
+        self.url = reverse("ecil:new_user:update_name")
+        self.client = prototype_client
+
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        # Check the form instance pk is that of the prototype user
+        assert response.context["form"].instance.pk == self.user.pk
+
+    def test_post(self):
+        assert self.user.first_name == "prototype_user_first_name"
+        assert self.user.last_name == "prototype_user_last_name"
+
+        form_data = {"first_name": "John", "last_name": "Doe"}
+        response = self.client.post(self.url, data=form_data)
+
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("workbasket")
+
+        self.user.refresh_from_db()
+        assert self.user.first_name == "John"
+        assert self.user.last_name == "Doe"

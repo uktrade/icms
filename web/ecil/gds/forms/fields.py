@@ -22,7 +22,7 @@ class GDSFieldMixin:
         self,
         *args: Any,
         radio_conditional: bool = False,
-        field_kwargs: dict[str, Any] | None = None,
+        gds_field_kwargs: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
         """Mixin class for all GDS form fields
@@ -30,7 +30,7 @@ class GDSFieldMixin:
         :param radio_conditional: Set True to indicate this field is for a GovUKRadioInputField field.
         """
         self.radio_conditional = radio_conditional
-        self.field_kwargs = field_kwargs or {}
+        self.gds_field_kwargs = gds_field_kwargs or {}
 
         # All radio_conditional fields are optional
         if self.radio_conditional:
@@ -43,7 +43,7 @@ class GDSFieldMixin:
         super().__init__(*args, **kwargs)
 
     def get_overrides(self) -> dict[str, Any]:
-        return self.field_kwargs
+        return self.gds_field_kwargs
 
     def get_bound_field(self, form, field_name):
         return self.BF(form, self, field_name)
