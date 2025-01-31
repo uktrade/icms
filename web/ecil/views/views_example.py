@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.urls import reverse
 from django.views.generic import FormView, ListView, TemplateView
 
-from web.ecil import forms
+from web.ecil.forms import forms_example as forms
 from web.ecil.gds.views import FormStep, MultiStepFormSummaryView, MultiStepFormView
 from web.models import ECILMultiStepExample
 from web.permissions import Perms
