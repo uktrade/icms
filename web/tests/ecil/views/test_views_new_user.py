@@ -26,4 +26,4 @@ class TestExporterLoginStartView:
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
-        assert response.context["auth_login_url"] == reverse("workbasket")
+        assert response.context["auth_login_url"] == reverse("ecil:new_user:update_name")
