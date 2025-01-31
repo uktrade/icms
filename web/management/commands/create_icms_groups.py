@@ -141,6 +141,9 @@ def get_groups():
             Permission.objects.get(content_type__app_label="web", codename="change_emailtemplate"),
             Permission.objects.get(content_type__app_label="web", codename="view_emailtemplate"),
             Permission.objects.get(content_type__app_label="web", codename="view_email"),
+            Permission.objects.get(
+                content_type__app_label="web", codename="view_userfeedbacksurvey"
+            ),
         },
         "Dev Admin": {
             Perms.page.view_one_login_test_account_setup,
