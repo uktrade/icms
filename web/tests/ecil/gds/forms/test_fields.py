@@ -9,15 +9,32 @@ from pytest_django.asserts import assertHTMLEqual
 from web.ecil.gds import forms as gds
 
 
+def get_previous_input_label_default_kwargs():
+    """The following config was previously the default for inputs using a InputLabel serializer"""
+    return {"label": {"isPageHeading": True, "classes": "govuk-label--l"}}
+
+
+def get_previous_fieldset_default_kwargs():
+    """The following config was previously the default for inputs using a Fieldset serializer"""
+
+    return {"fieldset": {"legend": {"isPageHeading": True, "classes": "govuk-fieldset__legend--l"}}}
+
+
 class TestGovUKCharacterCountField:
     class MaxLengthForm(gds.GDSForm):
         field = gds.GovUKCharacterCountField(
-            label="Test label", help_text="Test help_text", max_length=5
+            label="Test label",
+            help_text="Test help_text",
+            max_length=5,
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
 
     class MaxWordsForm(gds.GDSForm):
         field = gds.GovUKCharacterCountField(
-            label="Test label", help_text="Test help_text", max_words=5
+            label="Test label",
+            help_text="Test help_text",
+            max_words=5,
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
 
     def test_max_length_form_valid(self):
@@ -135,6 +152,7 @@ class TestGovUKCheckboxesField:
             label="Test label",
             help_text="Test help_text",
             choices=[("one", "One"), ("two", "Two"), ("three", "Three")],
+            field_kwargs=get_previous_fieldset_default_kwargs(),
         )
 
     def test_max_length_form_valid(self):
@@ -204,6 +222,7 @@ class TestGovUKDateInputField:
         field = gds.GovUKDateInputField(
             label="Test label",
             help_text="Test help_text",
+            field_kwargs=get_previous_fieldset_default_kwargs(),
         )
 
     def test_form_valid(self):
@@ -330,6 +349,7 @@ class TestGovUKDecimalField:
             max_value=1000,
             max_digits=5,
             decimal_places=2,
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
 
     def test_form_valid(self):
@@ -385,6 +405,7 @@ class TestGovUKEmailField:
         field = gds.GovUKEmailField(
             label="Test label",
             help_text="Test help_text",
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
 
     def test_form_valid(self):
@@ -435,6 +456,7 @@ class TestGovUKFileUploadField:
         field = gds.GovUKFileUploadField(
             label="Test label",
             help_text="Test help_text",
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
 
     def test_form_valid(self):
@@ -497,6 +519,7 @@ class TestGovUKFloatField:
             help_text="Test help_text",
             min_value=0,
             max_value=1000,
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
 
     def test_form_valid(self):
@@ -549,6 +572,7 @@ class TestGovUKIntegerField:
             help_text="Test help_text",
             min_value=0,
             max_value=1000,
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
 
     def test_form_valid(self):
@@ -606,6 +630,7 @@ class TestGovUKPasswordInputField:
         field = gds.GovUKPasswordInputField(
             label="Test label",
             help_text="Test help_text",
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
 
     def test_form_valid(self):
@@ -662,6 +687,7 @@ class TestGovUKRadioInputField:
             label="Test label",
             help_text="Test help_text",
             choices=[("one", "One"), ("two", "Two"), ("three", "Three")],
+            field_kwargs=get_previous_fieldset_default_kwargs(),
         )
 
     class ConditionalForm(gds.GDSForm):
@@ -669,22 +695,26 @@ class TestGovUKRadioInputField:
             label="Conditional test label 1",
             help_text="Conditional help text 1",
             radio_conditional=True,
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
         two = gds.GovUKTextInputField(
             label="Conditional test label 2",
             help_text="Conditional help text 2",
             radio_conditional=True,
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
         three = gds.GovUKTextInputField(
             label="Conditional test label 3",
             help_text="Conditional help text 3",
             radio_conditional=True,
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
 
         field = gds.GovUKRadioInputField(
             label="Test label",
             help_text="Test help_text",
             choices=[("one", "One"), ("two", "Two"), ("three", "Three")],
+            field_kwargs=get_previous_fieldset_default_kwargs(),
         )
 
         def clean(self):
@@ -863,6 +893,7 @@ class TestGovUKSelectField:
             label="Test label",
             help_text="Test help_text",
             choices=[("one", "One"), ("two", "Two"), ("three", "Three")],
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
 
     def test_form_valid(self):
@@ -917,6 +948,7 @@ class TestGovUKSlugField:
             help_text="Test help_text",
             max_length=5,
             allow_unicode=False,
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
 
     class UnicodeForm(gds.GDSForm):
@@ -925,6 +957,7 @@ class TestGovUKSlugField:
             help_text="Test help_text",
             max_length=5,
             allow_unicode=True,
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
 
     def test_form_valid(self):
@@ -1020,7 +1053,12 @@ class TestGovUKSlugField:
 
 class TestGovUKTextareaField:
     class Form(gds.GDSForm):
-        field = gds.GovUKTextareaField(label="Test label", help_text="Test help_text", max_length=5)
+        field = gds.GovUKTextareaField(
+            label="Test label",
+            help_text="Test help_text",
+            max_length=5,
+            field_kwargs=get_previous_input_label_default_kwargs(),
+        )
 
     def test_form_valid(self):
         data = {"field": "value"}
@@ -1069,6 +1107,7 @@ class TestGovUKTextInputField:
             label="Test label",
             help_text="Test help_text",
             max_length=5,
+            field_kwargs=get_previous_input_label_default_kwargs(),
         )
 
     def test_form_valid(self):

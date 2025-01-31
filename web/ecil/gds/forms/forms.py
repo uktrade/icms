@@ -211,16 +211,26 @@ class GDSModelForm(GDSFormMixin, forms.ModelForm):
 
 
 class GDSFormfieldCallback:
-    def __init__(self, conditional_fields: list[str]) -> None:
+    def __init__(
+        self,
+        *args: Any,
+        conditional_fields: list[str] | None = None,
+        field_kwargs: dict[str, Any] | None = None,
+    ) -> None:
         """Callable class that sets conditional fields.
 
         :param conditional_fields: list of conditional fields that are used by GovUKRadioInputField.
+        :param field_kwargs: Overrides to pass to the gds template macro.
         """
 
-        self.conditional_fields = conditional_fields
+        self.conditional_fields = conditional_fields or []
+        self.field_kwargs = field_kwargs or {}
 
     def __call__(self, db_field: models.Field, **kwargs: Any) -> forms.Field:
         if db_field.name in self.conditional_fields:
             kwargs["radio_conditional"] = True
+
+        if db_field.name in self.field_kwargs.keys():
+            kwargs["field_kwargs"] = self.field_kwargs[db_field.name]
 
         return get_gds_formfield(db_field, **kwargs)

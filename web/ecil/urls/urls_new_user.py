@@ -7,4 +7,5 @@ urlpatterns = [
     path(
         "exporter-login-start/", views.ExporterLoginStartView.as_view(), name="exporter_login_start"
     ),
+    path("what-is-your-name/", views.NewUserUpdateNameView.as_view(), name="update_name"),
 ]
