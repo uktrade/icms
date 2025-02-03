@@ -516,6 +516,15 @@ class GovUKPasswordInputField(GDSFieldMixin, forms.CharField):
 
 
 class GovUKRadioInputField(GDSFieldMixin, forms.ChoiceField):
+    def __init__(
+        self,
+        *args: Any,
+        choice_hints: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> None:
+        self.choice_hints = choice_hints or {}
+        super().__init__(*args, **kwargs)
+
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
@@ -528,13 +537,7 @@ class GovUKRadioInputField(GDSFieldMixin, forms.ChoiceField):
             return context
 
         def get_serializer_kwargs(self) -> dict[str, Any]:
-            items = []
-            for i, (value, label) in enumerate(self.field.choices):
-                item = {"id": f"{self.auto_id}_{i}", "value": value, "text": label}
-                if value in self.form.gds_radio_conditional_fields:
-                    item["conditional"] = {"html": self.form.gds_radio_conditional_fields[value]}
-
-                items.append(serializers.RadioItem(**item))
+            items = self.get_items()
 
             return serializers.RadioInputKwargs(
                 name=self.name,
@@ -544,6 +547,21 @@ class GovUKRadioInputField(GDSFieldMixin, forms.ChoiceField):
                 value=self.value(),
                 errorMessage=self._get_errors(),
             ).model_dump(exclude_defaults=True)
+
+        def get_items(self) -> list[serializers.RadioItem]:
+            items = []
+            for i, (value, label) in enumerate(self.field.choices):
+
+                item = {"id": f"{self.auto_id}_{i}", "value": value, "text": label}
+                if value in self.form.gds_radio_conditional_fields:
+                    item["conditional"] = {"html": self.form.gds_radio_conditional_fields[value]}
+
+                if hint := self.field.choice_hints.get(value, None):
+                    item["hint"] = serializers.InputHint(text=hint)
+
+                items.append(serializers.RadioItem(**item))
+
+            return items
 
 
 class GovUKSelectField(GDSFieldMixin, forms.ChoiceField):

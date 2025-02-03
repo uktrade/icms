@@ -12,7 +12,7 @@ class GDSFormMixin:
     GDS_FORM = True
 
     # Extra type hints for clarity
-    fields: list[forms.Field]
+    fields: dict[str, forms.Field]
     errors: ErrorDict | None
     cleaned_data: dict[str, Any]
 

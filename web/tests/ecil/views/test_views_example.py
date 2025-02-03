@@ -54,6 +54,7 @@ class TestGDSFormView:
             "file_upload_field": SimpleUploadedFile("example.png", b"file_content"),
             "password_field": "value",
             "select_field": "published",
+            "autocomplete_select": "1",
             "textarea_field": "value",
         }
         response = self.client.post(self.url, data=form_data)

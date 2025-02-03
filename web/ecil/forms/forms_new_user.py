@@ -1,5 +1,4 @@
 from web.ecil.gds import forms as gds_forms
-from web.ecil.gds.forms import GDSFormfieldCallback
 from web.models import User
 
 
@@ -12,10 +11,10 @@ class OneLoginNewUserUpdateForm(gds_forms.GDSModelForm):
             "last_name": "Last name",  # /PS-IGNORE
         }
 
-        formfield_callback = GDSFormfieldCallback(
+        formfield_callback = gds_forms.GDSFormfieldCallback(
             gds_field_kwargs={
-                "first_name": {"classes": "govuk-!-width-one-half"},
-                "last_name": {"classes": "govuk-!-width-one-half"},
+                "first_name": {"classes": "govuk-!-width-two-thirds"},
+                "last_name": {"classes": "govuk-!-width-two-thirds"},
             }
         )
 

@@ -1,6 +1,6 @@
 {% extends "ecil/base.html" %}
 
-{% block content %}
+{% block ecil_content %}
     {# Show an error summary if the submit button is pressed without fully valid data #}
     {% if error_summary_kwargs %}
       {{ gds.govukErrorSummary(error_summary_kwargs) }}
