@@ -11,6 +11,7 @@
   "description": "ICMS",
   "private": true,
   "dependencies": {
+    "accessible-autocomplete": "^3.0.1",
     "autobind-decorator": "^2.4.0",
     "core-js": "^3.39.0",
     "govuk-frontend": "^5.7.1",
