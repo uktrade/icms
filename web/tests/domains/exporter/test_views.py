@@ -57,6 +57,12 @@ class TestExporterListView(AuthTestCase):
         response = self.importer_client.post(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
+    def test_create_exporter_visible(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        decoded_response = response.content.decode("utf-8")
+        assert '<a href="/exporter/create/">Exporter</a>' in decoded_response
+
 
 class TestExporterListUserView(AuthTestCase):
     url = reverse("user-exporter-list")
@@ -184,6 +190,12 @@ class TestEditExporterView(AuthTestCase):
         assert exporter.comments == "test"
         assert exporter.exclusive_correspondence is False
 
+    def test_create_exporter_not_visible(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        decoded_response = response.content.decode("utf-8")
+        assert '<a href="/exporter/create/">Exporter</a>' not in decoded_response
+
 
 class TestDetailExporterView(AuthTestCase):
     @pytest.fixture(autouse=True)
@@ -211,6 +223,12 @@ class TestDetailExporterView(AuthTestCase):
         response = self.ilb_admin_client.post(self.url)
 
         assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_create_exporter_not_visible(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        decoded_response = response.content.decode("utf-8")
+        assert '<a href="/exporter/create/">Exporter</a>' not in decoded_response
 
 
 class TestCreateOfficeView(AuthTestCase):
