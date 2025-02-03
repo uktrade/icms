@@ -10,6 +10,7 @@ from guardian.shortcuts import remove_perm
 from pytest_django.asserts import assertInHTML, assertRedirects
 
 from web.domains.importer import views
+from web.domains.importer.views import _get_user_context
 from web.mail.constants import EmailTypes
 from web.models import Importer, Section5Authority
 from web.permissions import Perms
@@ -1186,3 +1187,16 @@ class TestEditUserImporterPermissionsView(AuthTestCase):
             Perms.obj.importer.edit.codename,
             Perms.obj.importer.manage_contacts_and_agents.codename,
         }
+
+
+def test_get_user_context(ilb_admin_user, importer_one_agent_one_contact):
+    assert _get_user_context(ilb_admin_user) == {
+        "base_template": "layout/sidebar.html",
+        "parent_url": reverse("importer-list"),
+        "show_content_actions": False,
+    }
+    assert _get_user_context(importer_one_agent_one_contact) == {
+        "base_template": "layout/no-sidebar.html",
+        "parent_url": reverse("user-importer-list"),
+        "show_content_actions": True,
+    }
