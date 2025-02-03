@@ -135,6 +135,18 @@ class GovUKCharacterCountField(GDSFieldMixin, forms.CharField):
 
 
 class GovUKCheckboxesField(GDSFieldMixin, forms.MultipleChoiceField):
+    # Includes a divider with "or" option if defined in choices.
+    NONE_OF_THESE = "none-of-these"
+
+    def __init__(
+        self,
+        *args: Any,
+        choice_hints: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> None:
+        self.choice_hints = choice_hints or {}
+        super().__init__(*args, **kwargs)
+
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
@@ -151,14 +163,31 @@ class GovUKCheckboxesField(GDSFieldMixin, forms.MultipleChoiceField):
                 name=self.name,
                 fieldset=serializers.Fieldset(legend=serializers.FieldsetLegend(text=self.label)),
                 hint=self._get_hint(),
-                items=[
-                    serializers.CheckboxItem(id=f"{self.auto_id}_{i}", value=value, text=label)
-                    for i, (value, label) in enumerate(self.field.choices)
-                ],
+                items=self.get_items(),
                 values=self.data or self.initial or [],
                 errorMessage=self._get_errors(),
                 attributes=self.field.widget.attrs,
             ).model_dump(exclude_defaults=True)
+
+        def get_items(self) -> list[serializers.CheckboxItem | serializers.CheckboxItemDivider]:
+            items: list[serializers.CheckboxItem | serializers.CheckboxItemDivider] = []
+
+            for i, (value, label) in enumerate(self.field.choices):
+                is_divider = value == GovUKCheckboxesField.NONE_OF_THESE
+                if is_divider:
+                    items.append(serializers.CheckboxItemDivider(divider="or"))
+
+                hint = self.field.choice_hints.get(value, None)
+                item = serializers.CheckboxItem(
+                    id=f"{self.auto_id}_{i}",
+                    value=value,
+                    text=label,
+                    hint=serializers.InputHint(text=hint) if hint else None,
+                    behaviour="exclusive" if is_divider else None,
+                )
+                items.append(item)
+
+            return items
 
 
 class DateMultiWidget(forms.MultiWidget):
