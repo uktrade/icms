@@ -502,7 +502,7 @@ class RadioInputKwargs(BaseModel):
 
 class SelectItem(BaseModel):
     # Value for the option. If this is omitted, the value is taken from the text content of the option element.
-    value: str | None = None
+    value: str | int | None = None
     # Required. Text for the option item.
     text: str
     # Whether the option should be selected when the page loads. Takes precedence over the top-level value option.

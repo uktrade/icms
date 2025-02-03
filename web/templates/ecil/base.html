@@ -8,6 +8,7 @@
 
 {% block head %}
   <link rel="stylesheet" href="{{ static("govuk-frontend.min.css") }}">
+  <link rel="stylesheet" href="{{ static("css/accessible-autocomplete.min.css") }}">
 {% endblock %}
 
 {% block header %}
@@ -21,6 +22,15 @@
       "html": 'This is a new service. Your <a class="govuk-link" href="#">feedback</a> will help us improve it.'
     })
   }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="{{ ecil_content_width_class|default('govuk-grid-column-two-thirds-from-desktop') }}">
+      {# Entry point for child template content #}
+      {% block ecil_content %}{% endblock %}
+    </div>
+  </div>
 {% endblock %}
 
 {% block footer %}
@@ -46,4 +56,5 @@
 
       initAll();
   </script>
+  <script type="module" src="{{ static("js/accessible-autocomplete.min.js") }}"></script>
 {% endblock %}

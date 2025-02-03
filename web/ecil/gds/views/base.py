@@ -15,7 +15,10 @@ from .utils import (
 
 class MultiStepFormView(FormView):
     form_steps: ClassVar[dict[str, FormStep]]
-    cache_prefix: ClassVar[str]
+
+    @classmethod
+    def cache_prefix(cls):
+        return cls.__name__
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -37,7 +40,7 @@ class MultiStepFormView(FormView):
         form_step = self.form_steps[self.current_step]
 
         for f in form_step.form_cls._meta.fields:
-            session_value = get_session_form_data(self.request, self.cache_prefix, step, f)
+            session_value = get_session_form_data(self.request, self.cache_prefix(), step, f)
 
             if session_value:
                 initial[f] = session_value
@@ -45,7 +48,7 @@ class MultiStepFormView(FormView):
         return initial
 
     def form_valid(self, form: django_forms.Form | django_forms.ModelForm) -> HttpResponseRedirect:
-        save_session_form_data(self.request, self.cache_prefix, self.current_step, form)
+        save_session_form_data(self.request, self.cache_prefix(), self.current_step, form)
 
         return super().form_valid(form)
 
@@ -83,6 +86,12 @@ class MultiStepFormView(FormView):
 
         return prev_step
 
+    def get_template_names(self):
+        if template := self.form_steps[self.current_step].template_name:
+            return [template]
+
+        return super().get_template_names()
+
     def get_next_step_url(self) -> str:
         raise NotImplementedError()
 
@@ -100,7 +109,7 @@ class MultiStepFormSummaryView(FormView):
         initial = super().get_initial()
 
         for step, f in get_step_and_field_pairs(self.edit_view.form_steps):
-            initial[f] = get_session_form_data(self.request, self.edit_view.cache_prefix, step, f)
+            initial[f] = get_session_form_data(self.request, self.edit_view.cache_prefix(), step, f)
 
         return initial
 
@@ -150,7 +159,7 @@ class MultiStepFormSummaryView(FormView):
         record.save()
 
         for step, f in get_step_and_field_pairs(self.edit_view.form_steps):
-            delete_session_form_data(self.request, self.edit_view.cache_prefix, step, f)
+            delete_session_form_data(self.request, self.edit_view.cache_prefix(), step, f)
 
         return super().form_valid(form)
 

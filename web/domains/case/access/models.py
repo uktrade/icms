@@ -32,6 +32,28 @@ class AccessRequest(Process):
     )
 
     organisation_name = models.CharField(max_length=100, blank=False, null=False)
+
+    # New ECIL field
+    organisation_trading_name = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name="Trading name",
+        help_text="You only need to enter a trading name if it's different from the company name",
+    )
+
+    # New ECIL field
+    organisation_purpose = models.TextField(
+        default="",
+        verbose_name="What does the company do?",
+        help_text="Explain what the company does. For example, produces and sells cosmetics.",
+        max_length=2000,
+    )
+
+    # New ECIL field
+    # no verbose_name / help_text as it changes for import and export access requests
+    organisation_products = models.TextField(default="", max_length=2000)
+
     organisation_address = models.TextField()
     organisation_registered_number = models.CharField(
         max_length=100,
@@ -151,6 +173,7 @@ class ExporterAccessRequest(AccessRequest):
     request_type = models.CharField(
         max_length=30, choices=REQUEST_TYPES, verbose_name="Access Request Type"
     )
+    export_countries = models.ManyToManyField("web.Country", related_name="+")
 
     @property
     def is_agent_request(self):

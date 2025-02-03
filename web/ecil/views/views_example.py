@@ -65,7 +65,6 @@ class ECILMultiStepFormView(LoginRequiredMixin, PermissionRequiredMixin, MultiSt
         "two": FormStep(form_cls=forms.ExampleMultiStepStepTwoForm),
         "three": FormStep(form_cls=forms.ExampleMultiStepStepThreeForm),
     }
-    cache_prefix = "ECILMultiStepFormView"
     template_name = "ecil/gds_step_form.html"
 
     def get_previous_step_url(self) -> str:

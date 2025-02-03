@@ -106,6 +106,18 @@ class ExampleGDSForm(gds_forms.GDSForm):
         gds_field_kwargs=LABEL_HEADER,
     )
 
+    autocomplete_select = gds_forms.GovUKSelectField(
+        label="What countries do you want to export to?",
+        help_text="Start typing a country to add it.",
+        choices=[
+            (None, ""),
+            ("1", "France"),
+            ("2", "Germany"),
+            ("3", "United Kingdom"),
+        ],
+        gds_field_kwargs=LABEL_HEADER,
+    )
+
     textarea_field = gds_forms.GovUKTextareaField(
         label="Can you provide more detail?",
         help_text=(

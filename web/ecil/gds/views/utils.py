@@ -22,7 +22,13 @@ def save_session_form_data(
 
     for field, value in form.cleaned_data.items():
         # TODO: This will not store all data types
-        request.session[f"{prefix}-{step}-{field}"] = value
+        save_session_value(request, prefix, step, field, value)
+
+
+def save_session_value(
+    request: HttpRequest, prefix: str, step: str, field: str, value: Any
+) -> None:
+    request.session[f"{prefix}-{step}-{field}"] = value
 
 
 def get_session_form_data(request: HttpRequest, prefix: str, step: str, field: str) -> Any:
