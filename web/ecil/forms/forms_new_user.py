@@ -24,3 +24,23 @@ class OneLoginNewUserUpdateForm(gds_forms.GDSModelForm):
 
         for f in self.fields:
             self.fields[f].required = True
+
+
+class ExporterTriageForm(gds_forms.GDSForm):
+    applications = gds_forms.GovUKCheckboxesField(
+        label="What are you applying for?",
+        choices=[
+            ("cfs", "Certificate of Free Sale (CFS)"),
+            ("gmp", "Certificate of Good Manufacture Practice (CGMP)"),
+            ("com", "Certificate of Manufacture (CoM)"),
+            (gds_forms.GovUKCheckboxesField.NONE_OF_THESE, "Something else"),
+        ],
+        choice_hints={
+            "cfs": "Products which meet UK standards that fall under Department for Business and Trade regulation.",
+            "gmp": "Cosmetic products which meet UK good manufacturing practice standards. For use in China only.",
+            "com": "Pesticides that are solely for use in overseas markets and will not be placed on the UK market.",
+        },
+        gds_field_kwargs={
+            "fieldset": {"legend": {"isPageHeading": True, "classes": "govuk-fieldset__legend--l"}}
+        },
+    )

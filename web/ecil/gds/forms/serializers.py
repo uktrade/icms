@@ -267,6 +267,10 @@ class CheckboxItem(TextOrHTMLMixin, BaseModel):
     attributes: dict[str, Any] | None = None
 
 
+class CheckboxItemDivider(BaseModel):
+    divider: str
+
+
 # All options available here:
 # https://design-system.service.gov.uk/components/checkboxes/
 class CheckboxesFieldKwargs(BaseModel):
@@ -288,7 +292,7 @@ class CheckboxesFieldKwargs(BaseModel):
     # Required. Name attribute for all checkbox items.
     name: str
     # Required. The checkbox items within the checkboxes component.
-    items: list[CheckboxItem]
+    items: list[CheckboxItem | CheckboxItemDivider]
     # Array of values for checkboxes which should be checked when the page loads.
     # Use this as an alternative to setting the checked option on each individual item.
     values: list[str] | None = None

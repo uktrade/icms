@@ -1,0 +1,25 @@
+{% extends "ecil/base.html" %}
+
+{% block content %}
+  <h1 class="govuk-heading-l">Do you need to export any of these products?</h1>
+  <p class="govuk-body">To export any of these products, you will need to visit the correct service.</p>
+  <p class="govuk-body">An export certificate for:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>medical devices - <a href="#" class="govuk-link"target="_blank" rel="noopener noreferrer">Medical and Healthcare Products Regulatory Agency (MHRA)</a></li>
+    <li>biocides - <a href="#" class="govuk-link"target="_blank" rel="noopener noreferrer">Health and Safety Executive (HSE)</a></li>
+    <li>medicines for human use - <a href="#" class="govuk-link"target="_blank" rel="noopener noreferrer">Department of Health and Social Care (DHSC)</a></li>
+    <li>products that animals have contact with, such as veterinary medicines - <a href="#" class="govuk-link"target="_blank" rel="noopener noreferrer">Department for Environment, Food and Rural Affairs (DEFRA)</a></li>
+    <li>foods, drinks and supplements - <a href="#" class="govuk-link"target="_blank" rel="noopener noreferrer">Rural Payments Agency (RPA)</a></li>
+    <li>pesticides on free sale in the UK - <a href="#" class="govuk-link"target="_blank" rel="noopener noreferrer">Health and Safety Executive (HSE)</a></li>
+  </ul>
+  <p class="govuk-body">Visit <a href="#" class="govuk-link"target="_blank" rel="noopener noreferrer">SPIRE through Department for Business and Trade</a> if you need an export licence for:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>security items</li>
+    <li>military and civilian use firearms</li>
+    <li>police and paramilitary items</li>
+    <li>radioactive products</li>
+    <li>classified information</li>
+  </ul>
+  <p class="govuk-body">For all other export products, visit <a href="#" class="govuk-link" target="_blank" rel="noopener noreferrer">Department for Business and Trade guidance</a>.
+  <p class="govuk-body">If you are still not sure what certificate you need, contact Import Licensing Branch at <a href="mailto:{{ ilb_contact_email }}" class="govuk-link govuk-link--text-colour">{{ ilb_contact_email }}</a></p>
+{% endblock %}

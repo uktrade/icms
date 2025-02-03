@@ -1,7 +1,10 @@
 from http import HTTPStatus
 
 import pytest
+from django.conf import settings
 from django.urls import reverse
+
+from web.ecil.gds import forms as gds_forms
 
 
 class TestExporterLoginStartView:
@@ -58,8 +61,63 @@ class TestNewUserUpdateNameView:
         response = self.client.post(self.url, data=form_data)
 
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("workbasket")
+        assert response.url == reverse("ecil:new_user:exporter_triage")
 
         self.user.refresh_from_db()
         assert self.user.first_name == "John"
         assert self.user.last_name == "Doe"
+
+
+class TestNewUserExporterTriageFormView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_client, prototype_user):
+        self.user = prototype_user
+        self.url = reverse("ecil:new_user:exporter_triage")
+        self.client = prototype_client
+
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_post(self):
+        form_data = {"applications": ["cfs", "gmp", "com"]}
+        response = self.client.post(self.url, data=form_data)
+
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("workbasket")
+
+        form_data = {"applications": [gds_forms.GovUKCheckboxesField.NONE_OF_THESE]}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("ecil:new_user:something_else")
+
+
+class TestNewUserExporterTriageSomethingElseView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_client, prototype_user):
+        self.user = prototype_user
+        self.url = reverse("ecil:new_user:something_else")
+        self.client = prototype_client
+
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_post_forbidden(self):
+        response = self.client.post(self.url)
+
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assert response.context["ilb_contact_email"] == settings.ILB_CONTACT_EMAIL, reverse(
+            "ecil:new_user:update_name"
+        )
