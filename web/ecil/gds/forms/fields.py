@@ -142,9 +142,11 @@ class GovUKCheckboxesField(GDSFieldMixin, forms.MultipleChoiceField):
         self,
         *args: Any,
         choice_hints: dict[str, str] | None = None,
+        choice_classes: str | None = None,
         **kwargs: Any,
     ) -> None:
         self.choice_hints = choice_hints or {}
+        self.choice_classes = choice_classes
         super().__init__(*args, **kwargs)
 
     class BF(GDSBoundField):
@@ -178,12 +180,20 @@ class GovUKCheckboxesField(GDSFieldMixin, forms.MultipleChoiceField):
                     items.append(serializers.CheckboxItemDivider(divider="or"))
 
                 hint = self.field.choice_hints.get(value, None)
+
+                # Attributes to apply to each radio item label
+                if self.field.choice_classes and not is_divider:
+                    item_label = serializers.CheckboxItemLabel(classes=self.field.choice_classes)
+                else:
+                    item_label = None
+
                 item = serializers.CheckboxItem(
                     id=f"{self.auto_id}_{i}",
                     value=value,
                     text=label,
                     hint=serializers.InputHint(text=hint) if hint else None,
                     behaviour="exclusive" if is_divider else None,
+                    label=item_label,
                 )
                 items.append(item)
 
