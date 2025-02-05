@@ -29,17 +29,19 @@
       </li>
     </ul>
   {% endif %}
-  <h5>Create Importer</h5>
-  <ul class="menu-out">
-    <li>
-      <a href="{{ icms_url('importer-create', kwargs={'entity_type': 'individual'}) }}">
-        Main Individual Importer
-      </a>
-    </li>
-    <li>
-      <a href="{{ icms_url('importer-create', kwargs={'entity_type': 'organisation'}) }}">
-        Main Organisation Importer
-      </a>
-    </li>
-  </ul>
+  {% if show_create_links|default(False) %}
+    <h5>Create Importer</h5>
+    <ul class="menu-out">
+      <li>
+        <a href="{{ icms_url('importer-create', kwargs={'entity_type': 'individual'}) }}">
+          Main Individual Importer
+        </a>
+      </li>
+      <li>
+        <a href="{{ icms_url('importer-create', kwargs={'entity_type': 'organisation'}) }}">
+          Main Organisation Importer
+        </a>
+      </li>
+    </ul>
+  {% endif %}
 {% endblock %}

@@ -94,6 +94,14 @@ class TestImporterListAdminView(AuthTestCase):
         # We have added three to use as a pytest fixture
         assert len(page.object_list) == 4
 
+    def test_create_importer_visible(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        decoded_response = response.content.decode("utf-8")
+        assert "Create Importer" in decoded_response
+        assert "Main Individual Importer" in decoded_response
+        assert "Main Organisation Importer" in decoded_response
+
 
 class TestImporterListUserView(AuthTestCase):
     url = reverse("user-importer-list")
@@ -381,6 +389,14 @@ class TestIndividualImporterEditView(AuthTestCase):
                 response.context["form"].fields[field].help_text
                 == "Contact ILB to update this field."
             )
+
+    def test_create_importer_not_visible(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        decoded_response = response.content.decode("utf-8")
+        assert "Create Importer" not in decoded_response
+        assert "Main Individual Importer" not in decoded_response
+        assert "Main Organisation Importer" not in decoded_response
 
 
 class TestCreateSection5View(AuthTestCase):
@@ -1131,6 +1147,14 @@ class TestImporterDetailView(AuthTestCase):
         response = self.ilb_admin_client.post(self.url)
 
         assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_create_importer_not_visible(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        decoded_response = response.content.decode("utf-8")
+        assert "Create Importer" not in decoded_response
+        assert "Main Individual Importer" not in decoded_response
+        assert "Main Organisation Importer" not in decoded_response
 
 
 class TestEditUserImporterPermissionsView(AuthTestCase):
