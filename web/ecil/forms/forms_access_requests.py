@@ -1,5 +1,8 @@
+from typing import Any
+
 from web.ecil.gds import forms as gds_forms
-from web.models import ExporterAccessRequest
+from web.models import Country, ExporterAccessRequest
+from web.models.shared import YesNoChoices
 
 
 class ExporterAccessRequestTypeForm(gds_forms.GDSModelForm):
@@ -56,7 +59,7 @@ class ExporterAccessRequestCompanyDetailsForm(gds_forms.GDSModelForm):
             }
         )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         # Only way to remove the help text defined on the ExporterAccessRequest model
@@ -105,3 +108,43 @@ class ExporterAccessRequestCompanyProductsForm(gds_forms.GDSModelForm):
                 }
             }
         )
+
+
+class ExporterAccessRequestExportCountriesForm(gds_forms.GDSModelForm):
+    export_countries = gds_forms.GovUKSelectField(
+        label="What countries do you want to export to?",
+        help_text=(
+            "Start typing a country to add it. You can add up to 40 countries."
+            " You are not limited to these countries and you can change them later if you need to."
+        ),
+        choices=[],
+        gds_field_kwargs={"label": {"isPageHeading": True, "classes": "govuk-label--l"}},
+    )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        countries = [(None, "")] + list(Country.util.get_all_countries().values_list("id", "name"))
+        self.fields["export_countries"].choices = countries
+
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ExporterAccessRequest
+        fields = [
+            "export_countries",
+        ]
+
+
+class ExporterAccessRequestRemoveExportCountryForm(gds_forms.GDSForm):
+    are_you_sure = gds_forms.GovUKRadioInputField(
+        choices=YesNoChoices.choices,
+        gds_field_kwargs={
+            "fieldset": {"legend": {"isPageHeading": True, "classes": "govuk-fieldset__legend--l"}}
+        },
+        error_messages={"required": "Select yes or no"},
+    )
+
+    def __init__(self, *args: Any, country: Country, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.country = country
+        self.fields["are_you_sure"].label = f"Are you sure you want to remove {country}?"

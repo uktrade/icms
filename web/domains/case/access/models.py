@@ -173,6 +173,7 @@ class ExporterAccessRequest(AccessRequest):
     request_type = models.CharField(
         max_length=30, choices=REQUEST_TYPES, verbose_name="Access Request Type"
     )
+    export_countries = models.ManyToManyField("web.Country", related_name="+")
 
     @property
     def is_agent_request(self):
