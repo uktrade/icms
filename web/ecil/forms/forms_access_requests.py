@@ -148,3 +148,29 @@ class ExporterAccessRequestRemoveExportCountryForm(gds_forms.GDSForm):
 
         self.country = country
         self.fields["are_you_sure"].label = f"Are you sure you want to remove {country}?"
+
+
+# TODO: Revisit in ECIL-606 (Change to ModelForm)
+class ExporterAccessRequestSummaryForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ExporterAccessRequest
+        fields = [
+            "request_type",
+            "organisation_name",
+            "organisation_trading_name",
+            "organisation_registered_number",
+            "organisation_address",
+            "organisation_purpose",
+            "organisation_products",
+            "export_countries",
+        ]
+
+        labels = {
+            "request_type": "Are you an exporter or an agent?",
+            "organisation_name": "Company name",
+            "organisation_trading_name": "Trading name",
+            "organisation_registered_number": "Company number",
+            "organisation_address": "Address",
+            "organisation_products": "What type of products do you want to export?",
+            "export_countries": "What countries do you want to export to?",
+        }

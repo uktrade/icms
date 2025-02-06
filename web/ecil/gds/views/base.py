@@ -1,6 +1,7 @@
 from typing import Any, ClassVar
 
 from django import forms as django_forms
+from django.db import models as django_models
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import FormView
 
@@ -13,6 +14,7 @@ from .utils import (
 )
 
 
+# TODO: Unless refactored this can only work with Model Forms
 class MultiStepFormView(FormView):
     form_steps: ClassVar[dict[str, FormStep]]
 
@@ -124,44 +126,75 @@ class MultiStepFormSummaryView(FormView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
+
+        summary_items = self.get_summary_items(context)
+        summary_list_kwargs = self.get_summary_list_kwargs(summary_items)
+        summary_cards = self.get_summary_cards(summary_items)
+
+        return context | {
+            "summary_list_kwargs": summary_list_kwargs,
+            "summary_cards": summary_cards,
+        }
+
+    def get_summary_items(self, context: dict[str, Any]) -> dict[str, dict[str, Any]]:
         submit_form = context["form"]
-        rows = []
+        items = {}
 
         for step, field in get_step_and_field_pairs(self.edit_view.form_steps):
-            label = submit_form.fields[field].label
+            items[field] = self.get_summary_item_row(submit_form, step, field)
 
-            # TODO: Implement missing value link
-            display_value = self.get_display_value(field, submit_form[field].initial)
+        return items
 
-            rows.append(
-                {
-                    "key": {"text": label},
-                    "value": {"text": display_value},
-                    "actions": {
-                        "items": [
-                            {
-                                "href": self.get_edit_step_url(step),
-                                "text": "Change",
-                                "visuallyHiddenText": field,
-                            }
-                        ]
-                    },
-                }
-            )
-
+    def get_summary_list_kwargs(self, summary_items: dict[str, dict[str, Any]]) -> dict[str, Any]:
         # TODO: Use pydantic class for summary_list_kwargs
-        return context | {"summary_list_kwargs": {"rows": rows}}
+        return {"rows": summary_items.values()}
+
+    def get_summary_cards(self, summary_items: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+        # TODO: Use pydantic class for list of summary_list_kwargs
+        return []
+
+    def get_summary_item_row(
+        self, form: django_forms.Form | django_forms.ModelForm, step: str, field: str
+    ) -> dict[str, Any]:
+        return {
+            "key": {"text": form.fields[field].label},
+            "value": {"text": self.get_display_value(field, form[field].initial)},
+            "actions": {
+                "items": [
+                    {
+                        "href": self.get_edit_step_url(step),
+                        "text": "Change",
+                        "visuallyHiddenText": field,
+                    }
+                ]
+            },
+        }
 
     def form_valid(self, form: django_forms.Form | django_forms.ModelForm) -> HttpResponseRedirect:
+        # Create but don't save record instance
         record = form.save(commit=False)
-        # TODO: Remove from base class
-        record.created_by = self.request.user
+
+        # Allow subclass to modify record
+        record = self.form_valid_save_hook(record)
+
+        # Save the record (note subclass may have already saved it)
         record.save()
 
-        for step, f in get_step_and_field_pairs(self.edit_view.form_steps):
-            delete_session_form_data(self.request, self.edit_view.cache_prefix(), step, f)
+        # Side effect of using commit=False with model forms is m2m are not saved until
+        # the instance has been saved.
+        form.save_m2m()
+
+        self.remove_session_data()
 
         return super().form_valid(form)
+
+    def form_valid_save_hook(self, record: django_models.Model) -> django_models.Model:
+        """Override to do any additional saving to the form model instance."""
+        return record
+
+    def remove_session_data(self):
+        for step, f in get_step_and_field_pairs(self.edit_view.form_steps):
+            delete_session_form_data(self.request, self.edit_view.cache_prefix(), step, f)
 
     def get_display_value(self, field: str, value: Any) -> str:
         """Default method to display values in summary view."""

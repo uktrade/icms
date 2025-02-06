@@ -1,11 +1,5 @@
 {% extends "ecil/base.html" %}
 
-{% block beforeContent %}
-  {% if back_link_kwargs %}
-    {{ gds.govukBackLink(back_link_kwargs) }}
-  {% endif %}
-{% endblock %}
-
 {% block ecil_content %}
   <form {% if form.is_multipart %} enctype="multipart/form-data" {% endif %} method="post" action="">
     {{ csrf_input }}
@@ -25,9 +19,7 @@
   {% if export_countries %}
     {{ gds.govukTable(govuk_table_kwargs) }}
   {% endif %}
-
-  {# TODO: Link this up to summary view #}
-  {{ gds.govukButton({"text": "Continue", "name": "action", "value": "continue"})}}
+  {{ gds.govukButton({"text": "Continue", "href": summary_url})}}
 {% endblock %}
 
 {% block bodyEnd %}
