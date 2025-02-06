@@ -1,5 +1,7 @@
 from typing import Any
 
+from django.forms import ModelForm
+
 from web.ecil.gds import forms as gds_forms
 from web.models import Country, ExporterAccessRequest
 from web.models.shared import YesNoChoices
@@ -148,3 +150,19 @@ class ExporterAccessRequestRemoveExportCountryForm(gds_forms.GDSForm):
 
         self.country = country
         self.fields["are_you_sure"].label = f"Are you sure you want to remove {country}?"
+
+
+class ExporterAccessRequestSummaryForm(ModelForm):
+    class Meta:
+        model = ExporterAccessRequest
+        fields = [
+            "request_type",
+            "organisation_name",
+            "organisation_trading_name",
+            "organisation_registered_number",
+            "organisation_address",
+            "organisation_purpose",
+            "organisation_products",
+            # TODO: Work out why this isn't saving
+            "export_countries",
+        ]

@@ -2,6 +2,7 @@ from typing import Any
 
 from django import forms as django_forms
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -11,14 +12,17 @@ from django.views.generic.detail import SingleObjectMixin
 from django_ratelimit import UNSAFE
 from django_ratelimit.decorators import ratelimit
 
+from web.domains.case.services.process import create_export_access_request
 from web.ecil.forms import forms_access_requests as forms
 from web.ecil.gds.views import (
     FormStep,
+    MultiStepFormSummaryView,
     MultiStepFormView,
     get_session_form_data,
     save_session_value,
 )
-from web.models import Country
+from web.mail import emails
+from web.models import Country, ExporterAccessRequest
 from web.models.shared import YesNoChoices
 from web.permissions import Perms
 from web.sites import require_exporter
@@ -146,12 +150,16 @@ class ExporterAccessRequestMultiStepFormView(
                     "rows": rows,
                 }
 
+                context["summary_url"] = self.get_summary_url()
+
         return context
 
-    # def get_summary_url(self) -> str:
-    #     return reverse("ecil:access_request:exporter_step_form")
+    def get_summary_url(self) -> str:
+        return reverse("ecil:access_request:exporter_step_form_summary")
 
 
+@method_decorator(require_exporter(check_permission=False), name="dispatch")
+@method_decorator(ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE), name="post")
 class ExporterAccessRequestConfirmRemoveCountryFormView(
     LoginRequiredMixin, PermissionRequiredMixin, SingleObjectMixin, FormView
 ):
@@ -202,3 +210,32 @@ class ExporterAccessRequestConfirmRemoveCountryFormView(
         return reverse(
             "ecil:access_request:exporter_step_form", kwargs={"step": "export-countries"}
         )
+
+
+@method_decorator(require_exporter(check_permission=False), name="dispatch")
+@method_decorator(ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE), name="post")
+@method_decorator(transaction.atomic, name="post")
+class ExporterAccessRequestMultiStepFormSummaryView(
+    LoginRequiredMixin, PermissionRequiredMixin, MultiStepFormSummaryView
+):
+    # PermissionRequiredMixin config
+    permission_required = [Perms.sys.view_ecil_prototype]
+
+    # MultiStepFormSummaryView config
+    edit_view = ExporterAccessRequestMultiStepFormView
+    form_class = forms.ExporterAccessRequestSummaryForm
+    template_name = "ecil/gds_summary_list.html"
+    http_method_names = ["get", "post"]
+
+    def form_valid_save_hook(self, record: ExporterAccessRequest) -> ExporterAccessRequest:
+        record = create_export_access_request(self.request, record)
+        emails.send_access_requested_email(record)
+
+        return record
+
+    def get_edit_step_url(self, step: str) -> str:
+        return reverse("ecil:access_request:exporter_step_form", kwargs={"step": step})
+
+    def get_success_url(self) -> str:
+        # TODO: Add success page url
+        return reverse("workbasket")

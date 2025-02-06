@@ -1,5 +1,7 @@
 from typing import Any
 
+from django.forms import ModelForm
+
 from web.ecil.gds import forms as gds_forms
 from web.models import ECILExample, ECILMultiStepExample
 
@@ -260,14 +262,10 @@ class ExampleMultiStepStepThreeForm(gds_forms.GDSModelForm):
         )
 
 
-class ExampleMultiStepStepSummaryForm(gds_forms.GDSModelForm):
-    class Meta(gds_forms.GDSModelForm.Meta):
+# TODO: gds_forms.GDSModelForm and ModelForm validate likes_cake differently
+# TODO: Fix the BooleanField
+# The summary form is just used for validation and therefore doesn't need to be a GDSModelForm
+class ExampleMultiStepStepSummaryForm(ModelForm):
+    class Meta:
         model = ECILMultiStepExample
         fields = ["favourite_colour", "likes_cake", "favourite_book"]
-        formfield_callback = gds_forms.GDSFormfieldCallback(
-            gds_field_kwargs={
-                "favourite_colour": FIELDSET_LABEL_HEADER,
-                "likes_cake": FIELDSET_LABEL_HEADER,
-                "favourite_book": LABEL_HEADER,
-            }
-        )

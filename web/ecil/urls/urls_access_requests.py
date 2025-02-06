@@ -18,11 +18,11 @@ urlpatterns = [
                     views.ExporterAccessRequestConfirmRemoveCountryFormView.as_view(),
                     name="remove_export_country_form",
                 ),
-                # path(
-                #     "summary/",
-                #     views.ExporterAccessRequestMultiStepFormSummaryView.as_view(),
-                #     name="exporter_step_form_summary",
-                # ),
+                path(
+                    "summary/",
+                    views.ExporterAccessRequestMultiStepFormSummaryView.as_view(),
+                    name="exporter_step_form_summary",
+                ),
             ]
         ),
     ),

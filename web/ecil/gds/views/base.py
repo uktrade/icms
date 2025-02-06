@@ -1,6 +1,7 @@
 from typing import Any, ClassVar
 
 from django import forms as django_forms
+from django.db import models as django_models
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import FormView
 
@@ -13,6 +14,7 @@ from .utils import (
 )
 
 
+# TODO: Unless refactored this can only work with Model Forms
 class MultiStepFormView(FormView):
     form_steps: ClassVar[dict[str, FormStep]]
 
@@ -124,6 +126,12 @@ class MultiStepFormSummaryView(FormView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
+
+        summary_list_kwargs = self.get_summary_list_kwargs(context)
+
+        return context | {"summary_list_kwargs": summary_list_kwargs}
+
+    def get_summary_list_kwargs(self, context: dict[str, Any]) -> dict[str, Any]:
         submit_form = context["form"]
         rows = []
 
@@ -150,18 +158,24 @@ class MultiStepFormSummaryView(FormView):
             )
 
         # TODO: Use pydantic class for summary_list_kwargs
-        return context | {"summary_list_kwargs": {"rows": rows}}
+        return {"rows": rows}
 
     def form_valid(self, form: django_forms.Form | django_forms.ModelForm) -> HttpResponseRedirect:
         record = form.save(commit=False)
-        # TODO: Remove from base class
-        record.created_by = self.request.user
+        record = self.form_valid_save_hook(record)
         record.save()
 
-        for step, f in get_step_and_field_pairs(self.edit_view.form_steps):
-            delete_session_form_data(self.request, self.edit_view.cache_prefix(), step, f)
+        self.remove_session_data()
 
         return super().form_valid(form)
+
+    def form_valid_save_hook(self, record: django_models.Model) -> django_models.Model:
+        """Override to do any additional saving to the form model instance."""
+        return record
+
+    def remove_session_data(self):
+        for step, f in get_step_and_field_pairs(self.edit_view.form_steps):
+            delete_session_form_data(self.request, self.edit_view.cache_prefix(), step, f)
 
     def get_display_value(self, field: str, value: Any) -> str:
         """Default method to display values in summary view."""
