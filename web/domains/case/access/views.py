@@ -22,7 +22,11 @@ from web.domains.case.access.filters import (
     ExporterAccessRequestFilter,
     ImporterAccessRequestFilter,
 )
-from web.domains.case.services import case_progress, reference
+from web.domains.case.services import case_progress
+from web.domains.case.services.access_request import (
+    create_export_access_request,
+    create_import_access_request,
+)
 from web.flow.errors import ProcessError
 from web.flow.models import ProcessTypes
 from web.mail import emails
@@ -118,17 +122,7 @@ def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
 
             if form.is_valid():
                 access_request: ImporterAccessRequest = form.save(commit=False)
-                access_request.reference = reference.get_importer_access_request_reference(
-                    request.icms.lock_manager
-                )
-                access_request.submitted_by = request.user
-                access_request.last_updated_by = request.user
-                access_request.process_type = ImporterAccessRequest.PROCESS_TYPE
-                access_request.save()
-
-                Task.objects.create(
-                    process=access_request, task_type=Task.TaskType.PROCESS, owner=request.user
-                )
+                access_request = create_import_access_request(request, access_request)
 
                 emails.send_access_requested_email(access_request)
 
@@ -161,17 +155,8 @@ def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
 
             if form.is_valid():
                 access_request: ExporterAccessRequest = form.save(commit=False)
-                access_request.reference = reference.get_exporter_access_request_reference(
-                    request.icms.lock_manager
-                )
-                access_request.submitted_by = request.user
-                access_request.last_updated_by = request.user
-                access_request.process_type = ExporterAccessRequest.PROCESS_TYPE
-                access_request.save()
 
-                Task.objects.create(
-                    process=access_request, task_type=Task.TaskType.PROCESS, owner=request.user
-                )
+                create_export_access_request(request, access_request)
 
                 emails.send_access_requested_email(access_request)
 

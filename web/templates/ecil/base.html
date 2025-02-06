@@ -22,6 +22,9 @@
       "html": 'This is a new service. Your <a class="govuk-link" href="#">feedback</a> will help us improve it.'
     })
   }}
+  {% if back_link_kwargs %}
+    {{ gds.govukBackLink(back_link_kwargs) }}
+  {% endif %}
 {% endblock %}
 
 {% block content %}

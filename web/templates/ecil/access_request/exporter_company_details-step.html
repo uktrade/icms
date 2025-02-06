@@ -1,11 +1,5 @@
 {% extends "ecil/base.html" %}
 
-{% block beforeContent %}
-  {% if back_link_kwargs %}
-    {{ gds.govukBackLink(back_link_kwargs) }}
-  {% endif %}
-{% endblock %}
-
 {% block ecil_content %}
   <h1 class="govuk-heading-l">What are the company’s details?</h1>
   <p class="govuk-body"><a href="#" class="govuk-link" target="_blank" rel="noopener noreferrer">Find company details on Companies House</a></p>
