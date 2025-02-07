@@ -50,7 +50,7 @@ class ExporterAccessRequestCompanyDetailsForm(gds_forms.GDSModelForm):
 
         error_messages = {
             "organisation_name": {"required": "Enter company name"},
-            "organisation_address": {"required": "Enter an address, including a postcode."},
+            "organisation_address": {"required": "Enter an address, including a postcode"},
         }
 
         formfield_callback = gds_forms.GDSFormfieldCallback(
