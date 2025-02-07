@@ -161,9 +161,18 @@ class MultiStepFormSummaryView(FormView):
         return {"rows": rows}
 
     def form_valid(self, form: django_forms.Form | django_forms.ModelForm) -> HttpResponseRedirect:
+        # Create but don't save record instance
         record = form.save(commit=False)
+
+        # Allow subclass to modify record
         record = self.form_valid_save_hook(record)
+
+        # Save the record (note subclass may have already saved it)
         record.save()
+
+        # Side effect of using commit=False with model forms is m2m are not saved until
+        # the instance has been saved.
+        form.save_m2m()
 
         self.remove_session_data()
 
