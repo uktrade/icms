@@ -64,6 +64,16 @@
           </a>
         </li>
       {% endif %}
+
+      {% if process.section_ni %}
+        <li>
+          <a
+            href="{{ icms_url('import:fa-sil:add-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section_ni'}) }}">
+            NI
+          </a>
+        </li>
+      {% endif %}
+
     </ul>
   {% else %}
     <div class="info-box info-box-warning">

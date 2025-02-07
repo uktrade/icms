@@ -185,6 +185,24 @@
           <td></td>
         </tr>
       {% endfor %}
+
+      {# Section NI goods #}
+      {% for row in goods_section_ni %}
+        <tr class="result-row">
+          <td>{{ row.description }}</td>
+          <td></td>
+          <td>{{ row.quantity }}</td>
+          <td>units</td>
+          {% if not readonly_view and not variation_refused %}
+            <td>
+              {{ edit_goods_link(process, row, "section_ni") }}
+            </td>
+            <td>
+              {{ reset_data_button(process, row, "section_ni") }}
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
     </table>
 
   {% else %}

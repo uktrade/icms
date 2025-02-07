@@ -137,6 +137,13 @@ def _get_sil_section_app_config(sil_section_type: str) -> CreateSILSectionConfig
             template=None,  # type: ignore[arg-type]
         )
 
+    elif sil_section_type == "section_ni":
+        return CreateSILSectionConfig(
+            model_class=models.SILGoodsSectionNI,
+            form_class=forms.SILGoodsSectionNIForm,
+            template="web/domains/case/import/fa-sil/goods/section_ni.html",
+        )
+
     raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
 
 
@@ -169,6 +176,12 @@ def _get_sil_section_resp_prep_config(sil_section_type: str) -> ResponsePrepEdit
         return ResponsePrepEditSILSectionConfig(
             model_class=models.SILGoodsSection582Other,  # /PS-IGNORE
             form_class=forms.ResponsePrepSILGoodsSection582OtherForm,  # /PS-IGNORE
+        )
+
+    elif sil_section_type == "section_ni":
+        return ResponsePrepEditSILSectionConfig(
+            model_class=models.SILGoodsSectionNI,
+            form_class=forms.ResponsePrepSILGoodsSectionNIForm,
         )
 
     raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
@@ -211,6 +224,7 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
         is_active=True
     ).exists()
     has_section58_other_goods = application.goods_section582_others.filter(is_active=True).exists()
+    has_section_ni_goods = application.goods_section_ni.filter(is_active=True).exists()
 
     if application.section1 and not has_section1_goods:
         url = reverse(
@@ -273,6 +287,20 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
         )
         errors.add(section_errors)
 
+    if application.section_ni and not has_section_ni_goods:
+        url = reverse(
+            "import:fa-sil:add-section",
+            kwargs={"application_pk": application.pk, "sil_section_type": "section_ni"},
+        )
+        section_errors = PageErrors(page_name="Add Licence for Section NI", url=url)
+        section_errors.add(
+            FieldError(
+                field_name="Add Section NI",
+                messages=["At least one section 'NI' must be added"],
+            )
+        )
+        errors.add(section_errors)
+
     # Check "Licence For" sections match application goods lines.
     licence_for_checks = (
         (has_section1_goods, application.section1),
@@ -280,6 +308,7 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
         (has_section5_goods, application.section5),
         (has_section58_obsolete_goods, application.section58_obsolete),
         (has_section58_other_goods, application.section58_other),
+        (has_section_ni_goods, application.section_ni),
     )
     for has_goods, section in licence_for_checks:
         if has_goods and not section:

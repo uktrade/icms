@@ -205,6 +205,27 @@ def test_edit_section_5_goods(importer_client, fa_sil_app_in_progress):
     assert "Please choose a subsection" in html
 
 
+def test_add_section_ni_goods(importer_client, fa_sil_app_in_progress):
+    app = fa_sil_app_in_progress
+    app.section_ni = True
+    app.save()
+
+    add_goods_url = CaseURLS.fa_sil_add_section(app.pk, "section_ni")
+    response = importer_client.post(add_goods_url)
+    assert response.status_code == HTTPStatus.OK
+
+    assert app.goods_section_ni.count() == 0
+    data = {
+        "description": "Test Section NI Good line",
+        "quantity": 10,
+    }
+    response = importer_client.post(add_goods_url, data=data)
+    assert response.status_code == HTTPStatus.FOUND
+
+    app.refresh_from_db()
+    assert app.goods_section_ni.count() == 1
+
+
 def test_choose_goods_section(importer_client, fa_sil_app_in_progress):
     app = fa_sil_app_in_progress
     url = CaseURLS.fa_sil_choose_goods_section(app.pk)
@@ -712,6 +733,22 @@ class TestSubmitFaSIL:
         page_errors.errors[0].messages = [
             "The sections selected here do not match those selected in the goods items."
         ]
+
+    def test_section_ni_goods_error(self):
+        self.app.section_ni = True
+        self.app.save()
+
+        url = CaseURLS.fa_sil_submit(self.app.pk)
+
+        response = self.client.get(url)
+
+        errors: ApplicationErrors = response.context["errors"]
+
+        check_page_errors(errors, "Add Licence for Section NI", ["Add Section NI"])
+
+        page_errors: PageErrors = errors.get_page_errors("Add Licence for Section NI")
+        page_errors.errors[0].field_name = "Add Section NI"
+        page_errors.errors[0].messages = ["At least one section 'NI' must be added"]
 
 
 def test_fa_sil_app_submitted_has_a_licence(fa_sil_app_submitted):

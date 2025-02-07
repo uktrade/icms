@@ -54,6 +54,8 @@ class SILApplication(ImportApplication):
         verbose_name="Section 58(2) - Obsolete Calibre", default=False
     )
     section58_other = models.BooleanField(verbose_name="Section 58(2) - Other", default=False)
+    # Added as part of EU Firearms Regulation application changes
+    section_ni = models.BooleanField(verbose_name="NI", default=False)
 
     # Section for old legacy applications from v1 - Never populated in V2
     # Earlier records didn't record the section the goods apply for.
@@ -292,6 +294,13 @@ class SILLegacyGoods(SILGoodsSectionUnlimitedBase):
     )
     is_active = models.BooleanField(default=True)
     obsolete_calibre = models.CharField(max_length=200, verbose_name="Obsolete Calibre", null=True)
+
+
+class SILGoodsSectionNI(SILGoodsSectionBase):
+    import_application = models.ForeignKey(
+        "web.SILApplication", on_delete=models.CASCADE, related_name="goods_section_ni"
+    )
+    is_active = models.BooleanField(default=True)
 
 
 class SILChecklist(ChecklistBase):
