@@ -11,4 +11,10 @@
       {{ csrf_input }}
       {{ gds.govukButton({ "text": "Submit", "type": "submit" }) }}
     </form>
+
+    <p>Summary kwargs:</p>
+    <p>{{ summary_list_kwargs["rows"] }}</p>
+
+    <p>Summary cards:</p>
+    <p>{{ summary_carts }}</p>
 {% endblock %}

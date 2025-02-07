@@ -131,6 +131,7 @@ class MultiStepFormSummaryView(FormView):
 
         return context | {"summary_list_kwargs": summary_list_kwargs}
 
+    # TODO: A function to get a row item for a field might be the way to go
     def get_summary_list_kwargs(self, context: dict[str, Any]) -> dict[str, Any]:
         submit_form = context["form"]
         rows = []

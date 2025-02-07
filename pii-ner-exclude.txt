@@ -5297,3 +5297,6 @@ Section NI
 Test Section NI Goods
 Model Forms
 exporter_step_form_summary
+def get_display_value(self
+def get_summary_list_kwargs(self
+self.get_display_value(field

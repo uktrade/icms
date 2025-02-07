@@ -227,6 +227,43 @@ class ExporterAccessRequestMultiStepFormSummaryView(
     template_name = "ecil/gds_summary_list.html"
     http_method_names = ["get", "post"]
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        summary_carts = [
+            {"card": {"title": {"text": "Your Details"}}, "rows": []},
+            {"card": {"title": {"text": "Company Details"}}, "rows": []},
+            {"card": {"title": {"text": "Title"}}, "rows": []},
+            {"card": {"title": {"text": "Title"}}, "rows": []},
+            {"card": {"title": {"text": "Title"}}, "rows": []},
+        ]
+
+        summary_carts = {
+            "exporter-or-agent": {
+                "card": {"title": {"text": "Your Details"}},
+                "rows": [],
+            },
+            "company-details": {"card": {"title": {"text": "Company Details"}}, "rows": []},
+            "company-purpose": {"card": {"title": {"text": "Title"}}, "rows": []},
+            "company-products": {"card": {"title": {"text": "Title"}}, "rows": []},
+            "export-countries": {"card": {"title": {"text": "Title"}}, "rows": []},
+        }
+        context["summary_carts"] = summary_carts
+
+        return context
+
+    # def get_display_value(self, field: str, value: Any) -> str:
+    #     ...
+
+    # def get_summary_list_kwargs(self, context: dict[str, Any]) -> dict[str, Any]:
+    #     submit_form = context["form"]
+    #     rows = []
+    #
+    #     for step, form_step in self.edit_view.form_steps.items():
+    #         for field in form_step.form_cls._meta.fields:
+    #             label = submit_form.fields[field].label
+    #             display_value = self.get_display_value(field, submit_form[field].initial)
+
     def form_valid_save_hook(self, record: ExporterAccessRequest) -> ExporterAccessRequest:
         record = create_export_access_request(self.request, record)
         emails.send_access_requested_email(record)
