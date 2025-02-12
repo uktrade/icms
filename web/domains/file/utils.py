@@ -52,7 +52,12 @@ class ICMSFileField(forms.FileField):
     mark_help_text_safe = True
 
     def __init__(
-        self, *, validators: Iterable[VALIDATOR] = (), help_text: str = HELP_TEXT, **kwargs: Any
+        self,
+        *,
+        validators: Iterable[VALIDATOR] = (),
+        help_text: str = HELP_TEXT,
+        show_help_text: bool = True,
+        **kwargs: Any,
     ) -> None:
         field_help_text = render_to_string(
             template_name="forms/icms_file_field_helptext.html",
@@ -66,7 +71,7 @@ class ICMSFileField(forms.FileField):
             # order is important: validate_file_extension can delete the file
             # from S3, so has to be after the virus check
             validators=[validate_virus_check_result, validate_file_extension, *validators],
-            help_text=field_help_text,
+            help_text=field_help_text if show_help_text else None,
             **kwargs,
         )
 

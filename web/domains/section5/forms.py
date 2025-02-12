@@ -1,6 +1,7 @@
 from django import forms
 from django_select2.forms import Select2MultipleWidget
 
+from web.domains.file.utils import ICMSFileField
 from web.forms.fields import JqueryDateField
 from web.models import ClauseQuantity, Office, Section5Authority, Section5Clause
 
@@ -23,6 +24,7 @@ class Section5AuthorityForm(forms.ModelForm):
         label="End Date",
         help_text="A user will not be able to use this verified Authority on an application past this date.",
     )
+    document = ICMSFileField(show_help_text=False, required=False)
 
     class Meta:
         model = Section5Authority
