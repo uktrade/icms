@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block sidebar %}
-    {% include "partial/importer/sidebar.html" %}
+  {% include "partial/importer/sidebar.html" %}
 {% endblock %}
 
 {% block content_actions %}
@@ -32,15 +32,80 @@
 
 {% block main_content %}
   <div id="lookup_postcode">
+    {% if form.instance.pk and form.instance.files.active() %}
+      {% for document in section5.files.active() %}
+        <form method="post"
+              id="{{ document.pk }}-delete-form"
+              action={{ icms_url('importer-section5-delete-document', kwargs={
+            'section5_pk': section5.pk,
+            'document_pk': document.pk
+            }) }}
+        >
+          {{ csrf_input }}
+        </form>
+      {% endfor %}
+    {% endif %}
     {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype="multipart/form-data") -%}
 
       {% for field in form %}
-      {% with lookup = field.name == 'postcode' %}
-        {{ fields.field(field, lookup=lookup) }}
-      {% endwith %}
+        {% with lookup = field.name == 'postcode' %}
+          {{ fields.field(field, lookup=lookup) }}
+        {% endwith %}
       {% endfor %}
       <div class="row">
-        {% block section5_files %}{% endblock %}
+        {% if form.instance.pk and form.instance.files.active() %}
+          <div class="container mt-1">
+            <div class="row">
+              <div class="three columns">
+                <label class="prompt west">
+                  Documents Uploaded
+                </label>
+              </div>
+              <div class="six columns">
+                <table class="setoutList">
+                  <thead>
+                    <tr>
+                      <th scope="col">File</th>
+                      <th scope="col">Created By</th>
+                      <th scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for document in section5.files.active() %}
+                      <tr>
+                        <td>
+                          <a href="{{ icms_url('importer-section5-view-document', kwargs={'section5_pk': section5.pk, 'document_pk': document.pk}) }}">
+                            {{ document.filename }}
+                          </a>
+                          <br/>
+                          <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
+                        </td>
+                        <td>
+                          {{ document.created_by }}<br/>
+                          <span class="extra-info">{{ document.created_datetime|datetime_format }}</span>
+                        </td>
+                        <td>
+                          <button type="submit" class="link-button icon-bin button"
+                                  form="{{ document.pk }}-delete-form" onclick="">Delete
+                          </button>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="three columns"></div>
+            </div>
+          </div>
+        {% elif form.instance.pk %}
+          <div class="three columns"></div>
+          <div class="six columns">
+            <div class="info-box info-box-info">
+              There are no documents attached
+            </div>
+          </div>
+          <div class="three columns"></div>
+        {% endif %}
       </div>
       <div class="row">
         <div class="three columns">
@@ -53,25 +118,24 @@
           {{ formset.management_form }}
           {% for clause_form in formset %}
             <div class="row section5-clauses">
-            {% for field in clause_form %}
-              <div class="four columns {% if field.errors %}input-error{% endif %}">
-                {{ field }}
-                {% if field.name == "infinity" %}
-                  <span class="infinity">{{ field.label }}</span>
-                {% endif %}
-                {% if field.errors %}
-                  {% for error in field.errors %}
-                    <div class="error-message">{{error}}</div>
-                  {% endfor %}
-                {% endif %}
-              </div>
-            {% endfor %}
+              {% for field in clause_form %}
+                <div class="four columns {% if field.errors %}input-error{% endif %}">
+                  {{ field }}
+                  {% if field.name == "infinity" %}
+                    <span class="infinity">{{ field.label }}</span>
+                  {% endif %}
+                  {% if field.errors %}
+                    {% for error in field.errors %}
+                      <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                  {% endif %}
+                </div>
+              {% endfor %}
             </div>
           {% endfor %}
         </div>
         <div class="three columns"></div>
       </div>
-
       <div class="container">
         <div class="row">
           <div class="three columns"></div>
@@ -79,10 +143,10 @@
             <ul class="menu-out flow-across">
               <li>
                 <button
-                  type="submit"
-                  name="action"
-                  value="save"
-                  class="primary-button button">
+                    type="submit"
+                    name="action"
+                    value="save"
+                    class="primary-button button">
                   {% block submit_button %}Create{% endblock %}
                 </button>
               </li>

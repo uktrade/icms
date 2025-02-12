@@ -317,6 +317,7 @@ def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
         if form.is_valid() and clause_quantity_formset.is_valid():
             section5 = form.save()
+            create_file_model(form.cleaned_data["document"], request.user, section5.files)
 
             for clause_quantity_form in clause_quantity_formset:
                 clause_quantity = clause_quantity_form.save(commit=False)
