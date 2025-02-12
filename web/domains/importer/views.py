@@ -377,6 +377,7 @@ def edit_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
         if form.is_valid() and clause_quantity_formset.is_valid():
             section5 = form.save()
             clause_quantity_formset.save()
+            create_file_model(form.cleaned_data["document"], request.user, section5.files)
 
             return redirect(reverse("importer-section5-edit", kwargs={"pk": pk}))
     else:
