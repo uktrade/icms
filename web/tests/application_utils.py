@@ -599,4 +599,8 @@ def _submit_app(client: Client, view_name: str, app_pk: int) -> None:
     if response.status_code == 200:
         print(response.context["errors"])
 
-    assertRedirects(response, reverse("workbasket"), 302)
+    assertRedirects(
+        response,
+        reverse("survey:application_submitted", kwargs={"process_pk": app_pk}),
+        302,
+    )

@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from compressor.contrib.jinja2ext import CompressorExtension
 from django import forms
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models import Model
 from django.http import HttpRequest
@@ -25,6 +24,7 @@ from web.permissions import Perms
 from web.permissions.context_processors import UserObjectPerms
 from web.types import AuthenticatedHttpRequest
 from web.utils import datetime_format
+from web.utils.messages import get_messages
 
 if TYPE_CHECKING:
     from web.models import User
@@ -144,7 +144,7 @@ def environment(**options):
             "static": staticfiles_storage.url,
             "icms_url": reverse,
             "icms_link": icms_link,
-            "get_messages": messages.get_messages,
+            "get_messages": get_messages,
             "modify_query": modify_query,
             "menu": menu,
             "show_optional_label": show_optional_label,
