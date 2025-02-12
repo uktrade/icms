@@ -328,8 +328,7 @@ def submit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
             if form.is_valid() and not errors.has_errors():
                 submit_application(application, request, task)
-
-                return redirect_after_submit(application, request)
+                return redirect_after_submit(application)
 
         else:
             form = SubmitForm()
@@ -805,7 +804,7 @@ def submit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             if form.is_valid() and not errors.has_errors():
                 submit_application(application, request, task)
 
-                return redirect_after_submit(application, request)
+                return redirect_after_submit(application)
 
         else:
             form = SubmitForm()
@@ -1100,7 +1099,7 @@ def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             if form.is_valid() and not errors.has_errors():
                 submit_application(application, request, task)
 
-                return redirect_after_submit(application, request)
+                return redirect_after_submit(application)
 
         else:
             form = SubmitForm()

@@ -323,7 +323,7 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int)
                 submit_application(application, request, task)
                 add_template_data_on_submit(application)
 
-                return redirect_after_submit(application, request)
+                return redirect_after_submit(application)
 
         else:
             form = SubmitForm()

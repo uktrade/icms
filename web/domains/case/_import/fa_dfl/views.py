@@ -351,7 +351,7 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
                 # This view gets called when an applicant submits changes
                 DFLSupplementaryInfo.objects.get_or_create(import_application=application)
 
-                return redirect_after_submit(application, request)
+                return redirect_after_submit(application)
 
         else:
             form = SubmitForm()

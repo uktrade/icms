@@ -55,14 +55,18 @@ class UserFeedbackSurvey(models.Model):
         max_length=16,
         choices=EaseFindChoices,
         verbose_name="How was the process of finding the service?",
+        default="",
+        blank=True,
     )
     find_service_details = models.TextField(
-        blank=True, default="", verbose_name="Tell us why the service was not easy to find."
+        default="", blank=True, verbose_name="Tell us why the service was not easy to find."
     )
     additional_support = models.CharField(
         max_length=16,
         choices=AdditionalSupportChoices,
         verbose_name="Did you need any additional support at any point during the application?",
+        default="",
+        null=True,
     )
     service_improvements = models.TextField(
         blank=True, default="", verbose_name="How could we improve the service?"
@@ -71,8 +75,11 @@ class UserFeedbackSurvey(models.Model):
         max_length=3,
         choices=YesNoChoices,
         verbose_name="Would you be happy for us to contact you in the future to help us improve the service?",
+        blank=True,
+        default="",
     )
+    referrer_path = models.CharField(max_length=255, blank=True, default="")
     site = models.CharField(max_length=60)
-    process = models.ForeignKey("web.Process", on_delete=models.PROTECT)
+    process = models.ForeignKey("web.Process", on_delete=models.PROTECT, null=True, blank=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     created_datetime = models.DateTimeField(auto_now_add=True)

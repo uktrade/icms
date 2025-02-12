@@ -2,7 +2,6 @@ from collections.abc import Iterator
 from typing import Any, Optional, TypeAlias
 
 from django import forms
-from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -153,19 +152,10 @@ def submit_application(app: ImpOrExp, request: AuthenticatedHttpRequest, task: T
     )
 
 
-def redirect_after_submit(app: ImpOrExp, request: AuthenticatedHttpRequest) -> HttpResponse:
+def redirect_after_submit(app: ImpOrExp) -> HttpResponse:
     """Called after submitting an application"""
 
-    survey_url = reverse("survey:user-feedback", kwargs={"process_pk": app.pk})
-    survey_message = f'<br/>Help us improve our service by <a class"info-box-link" href="{survey_url}">providing feedback</a>.'
-
-    msg = (
-        "Your application has been submitted."
-        f" The reference number assigned to this case is {app.get_reference()}. {survey_message}"
-    )
-    messages.success(request, msg, extra_tags="safe")
-
-    return redirect(reverse("workbasket"))
+    return redirect(reverse("survey:application_submitted", kwargs={"process_pk": app.pk}))
 
 
 def application_history(app_reference: str, is_import: bool = True) -> None:

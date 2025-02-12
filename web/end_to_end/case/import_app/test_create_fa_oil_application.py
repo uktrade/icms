@@ -2,6 +2,7 @@ import datetime as dt
 import os
 import re
 
+from django.urls import reverse
 from playwright.sync_api import Page
 
 from web.end_to_end import conftest, types, utils
@@ -131,14 +132,9 @@ def fa_oil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     ).fill("I AGREE")
     page.get_by_role("button", name="Submit Application").click()
 
-    #
-    # Check popup appears
-    #
-    page.get_by_text(
-        "Your application has been submitted. The reference number assigned to this case "
-    ).click()
-    page.get_by_role("button", name="Close this message").click()
-
+    utils.assert_page_url(
+        page, reverse("survey:application_submitted", kwargs={"process_pk": app_id})
+    )
     return app_id
 
 
