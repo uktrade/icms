@@ -41,13 +41,14 @@
                 </td>
                 <td>
                   <form method="post"
+                        id="{{ document.pk }}-delete-form"
                         action={{ icms_url(
                           'importer-section5-delete-document',
                           kwargs={
                             'section5_pk': section5.pk,
                             'document_pk': document.pk}) }}>
                     {{ csrf_input }}
-                    <button type="submit" class="link-button icon-bin button">Delete</button>
+                    <button type="submit" class="link-button icon-bin button" form="{{ document.pk }}-delete-form">Delete</button>
                   </form>
                 </td>
               </tr>
@@ -64,13 +65,4 @@
         There are no documents attached
     </div>
   {% endif %}
-
-  <div class="container">
-    <div class="row">
-      <a class="button small-button" href="{{ icms_url('importer-section5-add-document', kwargs={'pk': section5.pk}) }}">
-        Add document
-      </a>
-    </div>
-  </div>
-
 {% endblock %}

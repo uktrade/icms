@@ -39,7 +39,9 @@
         {{ fields.field(field, lookup=lookup) }}
       {% endwith %}
       {% endfor %}
-
+      <div class="row">
+        {% block section5_files %}{% endblock %}
+      </div>
       <div class="row">
         <div class="three columns">
           <label class="prompt west">
@@ -89,7 +91,6 @@
         </div>
       </div>
     {% endcall %}
-    {% block section5_files %}{% endblock %}
   </div>
 {% endblock %}
 
