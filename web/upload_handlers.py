@@ -19,8 +19,8 @@ class S3FileUploadHandler(DjangoChunkS3FileUploadHandler):
     def file_complete(self, file_size: int) -> S3Boto3StorageFile:
         file = super().file_complete(file_size)
         file.content_type_extra = self.content_type_extra
-        """if isinstance(file, S3Boto3StorageFile):
-            self.move_file_to_permanent_storage()"""
+        if isinstance(file, S3Boto3StorageFile):
+            self.move_file_to_permanent_storage()
         return file
 
     def move_file_to_permanent_storage(self) -> None:

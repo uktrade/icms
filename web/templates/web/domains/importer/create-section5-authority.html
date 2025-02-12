@@ -53,59 +53,59 @@
         {% endwith %}
       {% endfor %}
       <div class="row">
-        {% if form.instance.pk and form.instance.files.active() %}
-          <div class="container mt-1">
-            <div class="row">
-              <div class="three columns">
-                <label class="prompt west">
-                  Documents Uploaded
-                </label>
-              </div>
-              <div class="six columns">
-                <table class="setoutList">
-                  <thead>
+      {% if form.instance.pk and form.instance.files.active() %}
+        <div class="container mt-1">
+          <div class="row">
+            <div class="three columns">
+              <label class="prompt west">
+                Documents Uploaded
+              </label>
+            </div>
+            <div class="six columns">
+              <table class="setoutList">
+                <thead>
+                  <tr>
+                    <th scope="col">File</th>
+                    <th scope="col">Created By</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for document in section5.files.active() %}
                     <tr>
-                      <th scope="col">File</th>
-                      <th scope="col">Created By</th>
-                      <th scope="col">Actions</th>
+                      <td>
+                        <a href="{{ icms_url('importer-section5-view-document', kwargs={'section5_pk': section5.pk, 'document_pk': document.pk}) }}">
+                          {{ document.filename }}
+                        </a>
+                        <br/>
+                        <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
+                      </td>
+                      <td>
+                        {{ document.created_by }}<br/>
+                        <span class="extra-info">{{ document.created_datetime|datetime_format }}</span>
+                      </td>
+                      <td>
+                        <button type="submit" class="link-button icon-bin button"
+                                form="{{ document.pk }}-delete-form" onclick="">Delete
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {% for document in section5.files.active() %}
-                      <tr>
-                        <td>
-                          <a href="{{ icms_url('importer-section5-view-document', kwargs={'section5_pk': section5.pk, 'document_pk': document.pk}) }}">
-                            {{ document.filename }}
-                          </a>
-                          <br/>
-                          <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
-                        </td>
-                        <td>
-                          {{ document.created_by }}<br/>
-                          <span class="extra-info">{{ document.created_datetime|datetime_format }}</span>
-                        </td>
-                        <td>
-                          <button type="submit" class="link-button icon-bin button"
-                                  form="{{ document.pk }}-delete-form" onclick="">Delete
-                          </button>
-                        </td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-              <div class="three columns"></div>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
+            <div class="three columns"></div>
           </div>
-        {% elif form.instance.pk %}
-          <div class="three columns"></div>
-          <div class="six columns">
-            <div class="info-box info-box-info">
-              There are no documents attached
-            </div>
+        </div>
+      {% elif form.instance.pk %}
+        <div class="three columns"></div>
+        <div class="six columns">
+          <div class="info-box info-box-info">
+            There are no documents attached
           </div>
-          <div class="three columns"></div>
-        {% endif %}
+        </div>
+        <div class="three columns"></div>
+      {% endif %}
       </div>
       <div class="row">
         <div class="three columns">
@@ -117,21 +117,21 @@
         <div class="six columns">
           {{ formset.management_form }}
           {% for clause_form in formset %}
-            <div class="row section5-clauses">
-              {% for field in clause_form %}
-                <div class="four columns {% if field.errors %}input-error{% endif %}">
-                  {{ field }}
-                  {% if field.name == "infinity" %}
-                    <span class="infinity">{{ field.label }}</span>
-                  {% endif %}
-                  {% if field.errors %}
-                    {% for error in field.errors %}
-                      <div class="error-message">{{ error }}</div>
-                    {% endfor %}
-                  {% endif %}
-                </div>
-              {% endfor %}
-            </div>
+          <div class="row section5-clauses">
+            {% for field in clause_form %}
+              <div class="four columns {% if field.errors %}input-error{% endif %}">
+                {{ field }}
+                {% if field.name == "infinity" %}
+                  <span class="infinity">{{ field.label }}</span>
+                {% endif %}
+                {% if field.errors %}
+                  {% for error in field.errors %}
+                    <div class="error-message">{{ error }}</div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
           {% endfor %}
         </div>
         <div class="three columns"></div>

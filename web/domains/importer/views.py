@@ -384,7 +384,6 @@ def edit_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
             return redirect(reverse("importer-section5-edit", kwargs={"pk": pk}))
     else:
-        messages.success(request, "Section 5 Authority successfully accessed.")
         form = Section5AuthorityForm(section5.importer, instance=section5)
         ClauseQuantityFormSet = inlineformset_factory(
             Section5Authority, ClauseQuantity, extra=0, form=ClauseQuantityForm, can_delete=False
