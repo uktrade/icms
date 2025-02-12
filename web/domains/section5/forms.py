@@ -24,7 +24,7 @@ class Section5AuthorityForm(forms.ModelForm):
         label="End Date",
         help_text="A user will not be able to use this verified Authority on an application past this date.",
     )
-    document = ICMSFileField(required=True, show_help_text=False)
+    document = ICMSFileField(show_help_text=False, required=False)
 
     class Meta:
         model = Section5Authority
