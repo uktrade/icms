@@ -518,7 +518,11 @@ def test_submit_dfl_post_valid(fa_dfl_app_in_progress, importer_client, importer
     form_data = {"confirmation": "I AGREE"}
     response = importer_client.post(submit_url, form_data)
 
-    assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
+    assertRedirects(
+        response,
+        reverse("survey:application_submitted", kwargs={"process_pk": fa_dfl_app_in_progress.pk}),
+        HTTPStatus.FOUND,
+    )
 
     # check the application is in the correct state
     application = DFLApplication.objects.get(pk=dfl_app_pk)

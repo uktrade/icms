@@ -1,0 +1,31 @@
+{% extends "layout/sidebar.html" %}
+
+{% block css %}
+<style>
+  #application-submitted-info {
+    margin-bottom: 20px;
+  }
+  #skip-button {
+    margin-left: 30px;
+  }
+</style>
+{% endblock css %}
+
+{% block context_header %}
+  Application submitted
+{% endblock context_header %}
+
+{% block main_content %}
+  <div class="govuk-grid-row">
+    <div id="application-submitted-info">
+      <p>Your application has been submitted.</p>
+      <p>Your reference number is <strong>{{ reference }}</strong>.</p>
+    </div>
+    <p>Help us improve our service. Give your feedback by taking a short survey.</p>
+    <div class="govuk-grid-column-one-half">
+      <a href="{{ icms_url('survey:provide_application_feedback', kwargs={'process_pk': process_pk}) }}"
+         class="govuk-button">Provide feedback</a>
+      <a href="{{ icms_url('workbasket') }}" class="govuk-button" id="skip-button">Skip</a>
+    </div>
+  </div>
+{% endblock main_content %}

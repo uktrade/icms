@@ -20,19 +20,19 @@ class UserFeedbackForm(forms.ModelForm):
             "future_contact",
         )
         model = UserFeedbackSurvey
-        widgets = {"issues": CheckboxSelectMultiple(choices=UserFeedbackSurvey.IssuesChoices)}
+        widgets = {
+            "issues": CheckboxSelectMultiple(choices=UserFeedbackSurvey.IssuesChoices),
+        }
 
     def clean(self) -> dict[str, Any]:
-        data = super().clean()
+        cleaned_data = super().clean()
+        if cleaned_data["satisfaction"] != UserFeedbackSurvey.SatisfactionLevel.VERY_SATISFIED:
+            if not cleaned_data.get("issues"):
+                self.add_error("issues", "Select at least one issue.")
 
-        if data.get("find_service") in (
-            UserFeedbackSurvey.EaseFindChoices.DIFFICULT,
-            UserFeedbackSurvey.EaseFindChoices.VERY_DIFFICULT,
-        ) and not data.get("find_service_details"):
-            self.add_error("find_service_details", "Enter why the service was difficult to find.")
-
-        if UserFeedbackSurvey.IssuesChoices.OTHER in data.get("issues", []) and not data.get(
-            "issue_details"
-        ):
+        if UserFeedbackSurvey.IssuesChoices.OTHER in cleaned_data.get(
+            "issues", []
+        ) and not cleaned_data.get("issue_details"):
             self.add_error("issue_details", "Enter details of the issue you had.")
-        return data
+
+        return cleaned_data

@@ -358,6 +358,7 @@ class UserFeedbackSurveyAdmin(admin.ModelAdmin):
         "find_service",
         "additional_support",
         "future_contact",
+        "referrer_path",
     )
 
     def has_add_permission(self, request, obj=None):
