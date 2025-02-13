@@ -7,7 +7,7 @@ boto3==1.35.20
 botocore==1.35.20
 celery[redis]==5.4.0
 certvalidator~=0.11 # endesive sub-dependency
-cryptography==43.0.1
+cryptography==44.0.1
 dbt-copilot-python==0.2.2
 dj-database-url==2.3.0
 django-celery-results==2.5.1

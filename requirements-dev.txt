@@ -95,7 +95,7 @@ click-repl==0.3.0
     # via celery
 coverage==7.6.1
     # via pytest-cov
-cryptography==43.0.1
+cryptography==44.0.1
     # via
     #   -r requirements/requirements-base.in
     #   authlib
