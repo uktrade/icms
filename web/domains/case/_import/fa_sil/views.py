@@ -127,14 +127,7 @@ def choose_goods_section(request: AuthenticatedHttpRequest, *, application_pk: i
 
     has_goods = any(
         getattr(application, s)
-        for s in (
-            "section1",
-            "section2",
-            "section5",
-            "section58_obsolete",
-            "section58_other",
-            "section_ni",
-        )
+        for s in ("section1", "section2", "section5", "section58_obsolete", "section58_other")
     )
 
     context = {
