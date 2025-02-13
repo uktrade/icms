@@ -115,6 +115,7 @@ class CloudFoundryEnvironment(BaseSettings):
 
     # Age in seconds
     django_session_cookie_age: int = 60 * 30
+    django_session_save_every_request: bool = False
 
     # Bypass chief
     allow_bypass_chief_never_enable_in_prod: bool = False
