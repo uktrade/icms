@@ -163,6 +163,16 @@ class ExporterAccessRequestSummaryForm(ModelForm):
             "organisation_address",
             "organisation_purpose",
             "organisation_products",
-            # TODO: Work out why this isn't saving
             "export_countries",
         ]
+
+        # TODO: Work out best way to avoid duplication here.
+        labels = {
+            "request_type": "Are you an exporter or an agent?",
+            "organisation_name": "Company name",
+            "organisation_trading_name": "Trading name",
+            "organisation_registered_number": "Company number",
+            "organisation_address": "Address",
+            "organisation_products": "What type of products do you want to export?",
+            "export_countries": "What countries do you want to export to?",
+        }

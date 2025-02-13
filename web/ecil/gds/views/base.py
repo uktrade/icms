@@ -131,35 +131,35 @@ class MultiStepFormSummaryView(FormView):
 
         return context | {"summary_list_kwargs": summary_list_kwargs}
 
-    # TODO: A function to get a row item for a field might be the way to go
     def get_summary_list_kwargs(self, context: dict[str, Any]) -> dict[str, Any]:
         submit_form = context["form"]
         rows = []
 
         for step, field in get_step_and_field_pairs(self.edit_view.form_steps):
-            label = submit_form.fields[field].label
-
-            # TODO: Implement missing value link
-            display_value = self.get_display_value(field, submit_form[field].initial)
-
-            rows.append(
-                {
-                    "key": {"text": label},
-                    "value": {"text": display_value},
-                    "actions": {
-                        "items": [
-                            {
-                                "href": self.get_edit_step_url(step),
-                                "text": "Change",
-                                "visuallyHiddenText": field,
-                            }
-                        ]
-                    },
-                }
-            )
+            rows.append(self.get_summary_item_row(submit_form, field, step))
 
         # TODO: Use pydantic class for summary_list_kwargs
         return {"rows": rows}
+
+    # TODO: Add types
+    def get_summary_item_row(self, form, step, field):
+        label = form.fields[field].label
+
+        display_value = self.get_display_value(field, form[field].initial)
+
+        return {
+            "key": {"text": label},
+            "value": {"text": display_value},
+            "actions": {
+                "items": [
+                    {
+                        "href": self.get_edit_step_url(step),
+                        "text": "Change",
+                        "visuallyHiddenText": field,
+                    }
+                ]
+            },
+        }
 
     def form_valid(self, form: django_forms.Form | django_forms.ModelForm) -> HttpResponseRedirect:
         # Create but don't save record instance

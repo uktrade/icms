@@ -1,20 +1,19 @@
 {% extends "ecil/base.html" %}
 
 {% block ecil_content %}
-    {# Show an error summary if the submit button is pressed without fully valid data #}
-    {% if error_summary_kwargs %}
-      {{ gds.govukErrorSummary(error_summary_kwargs) }}
-    {% endif %}
+  {# Show an error summary if the submit button is pressed without fully valid data #}
+  {% if error_summary_kwargs %}
+    {{ gds.govukErrorSummary(error_summary_kwargs) }}
+  {% endif %}
 
+  {# Iterate over the summary_cards #}
+  {% for summary_list_kwargs in summary_cards %}
     {{ gds.govukSummaryList(summary_list_kwargs) }}
-    <form method="post" action="">
-      {{ csrf_input }}
-      {{ gds.govukButton({ "text": "Submit", "type": "submit" }) }}
-    </form>
+  {% endfor %}
 
-    <p>Summary kwargs:</p>
-    <p>{{ summary_list_kwargs["rows"] }}</p>
-
-    <p>Summary cards:</p>
-    <p>{{ summary_carts }}</p>
+  {# Form to save the access request #}
+  <form method="post" action="">
+    {{ csrf_input }}
+    {{ gds.govukButton({ "text": "Submit", "type": "submit" }) }}
+  </form>
 {% endblock %}

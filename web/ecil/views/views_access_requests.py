@@ -11,6 +11,7 @@ from django.views.generic import FormView
 from django.views.generic.detail import SingleObjectMixin
 from django_ratelimit import UNSAFE
 from django_ratelimit.decorators import ratelimit
+from jinja2.filters import do_mark_safe
 
 from web.domains.case.services.process import create_export_access_request
 from web.ecil.forms import forms_access_requests as forms
@@ -227,42 +228,75 @@ class ExporterAccessRequestMultiStepFormSummaryView(
     template_name = "ecil/gds_summary_list.html"
     http_method_names = ["get", "post"]
 
+    # Ignore this method as we are using summary cards
+    def get_summary_list_kwargs(self, context: dict[str, Any]) -> dict[str, Any]:
+        return {}
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        summary_carts = [
-            {"card": {"title": {"text": "Your Details"}}, "rows": []},
-            {"card": {"title": {"text": "Company Details"}}, "rows": []},
-            {"card": {"title": {"text": "Title"}}, "rows": []},
-            {"card": {"title": {"text": "Title"}}, "rows": []},
-            {"card": {"title": {"text": "Title"}}, "rows": []},
+        submit_form = context["form"]
+        summary_cards = [
+            {
+                "card": {"title": {"text": "Your Details"}},
+                "rows": [
+                    self.get_summary_item_row(submit_form, "exporter-or-agent", "request_type"),
+                ],
+            },
+            {
+                "card": {"title": {"text": "Company Details"}},
+                "rows": [
+                    self.get_summary_item_row(submit_form, "company-details", "organisation_name"),
+                    self.get_summary_item_row(
+                        submit_form, "company-details", "organisation_trading_name"
+                    ),
+                    self.get_summary_item_row(
+                        submit_form, "company-details", "organisation_registered_number"
+                    ),
+                    self.get_summary_item_row(
+                        submit_form, "company-details", "organisation_address"
+                    ),
+                ],
+            },
+            {
+                "card": {"title": {"text": "Export Details"}},
+                "rows": [
+                    self.get_summary_item_row(
+                        submit_form, "company-purpose", "organisation_purpose"
+                    ),
+                    self.get_summary_item_row(
+                        submit_form, "company-products", "organisation_products"
+                    ),
+                    self.get_summary_item_row(submit_form, "export-countries", "export_countries"),
+                ],
+            },
         ]
 
-        summary_carts = {
-            "exporter-or-agent": {
-                "card": {"title": {"text": "Your Details"}},
-                "rows": [],
-            },
-            "company-details": {"card": {"title": {"text": "Company Details"}}, "rows": []},
-            "company-purpose": {"card": {"title": {"text": "Title"}}, "rows": []},
-            "company-products": {"card": {"title": {"text": "Title"}}, "rows": []},
-            "export-countries": {"card": {"title": {"text": "Title"}}, "rows": []},
-        }
-        context["summary_carts"] = summary_carts
+        context["summary_cards"] = summary_cards
 
         return context
 
-    # def get_display_value(self, field: str, value: Any) -> str:
-    #     ...
+    def get_display_value(self, field: str, value: Any) -> str:
+        # TODO: A lot of this logic should be determined using the field type.
+        # e.g text fields should use br to split the lines.
+        match field:
+            case "export_countries":
+                countries = Country.objects.filter(pk__in=value)
 
-    # def get_summary_list_kwargs(self, context: dict[str, Any]) -> dict[str, Any]:
-    #     submit_form = context["form"]
-    #     rows = []
-    #
-    #     for step, form_step in self.edit_view.form_steps.items():
-    #         for field in form_step.form_cls._meta.fields:
-    #             label = submit_form.fields[field].label
-    #             display_value = self.get_display_value(field, submit_form[field].initial)
+                if countries.exists():
+                    return do_mark_safe("<br>".join(countries.values_list("name", flat=True)))
+
+                return value
+
+            case "organisation_address" | "organisation_purpose" | "organisation_products":
+                lines = value.splitlines()
+                return do_mark_safe("<br>".join(lines))
+
+            case "request_type":
+                choices = dict(forms.ExporterAccessRequestTypeForm().fields["request_type"].choices)
+                return choices[value]
+
+        return super().get_display_value(field, value)
 
     def form_valid_save_hook(self, record: ExporterAccessRequest) -> ExporterAccessRequest:
         record = create_export_access_request(self.request, record)
