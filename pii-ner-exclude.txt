@@ -5284,14 +5284,3 @@ Health and Social Care
 Food and Rural Affairs
 noreferrer">Rural Payments Agency
 static("js
-EU Firearms Regulation
-"Add GB Country
-https://uktrade.atlassian.net/browse/ECIL-601
-Add Licence for Section Movements
-Add Section Movements
-Licence For Movements
-Northern Ireland</h3
-Test Section Movements
-Northern Ireland Good
-Section NI
-Test Section NI Goods

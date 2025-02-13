@@ -3226,17 +3226,5 @@
     "hmrc_code": "EH",
     "overseas_region": 1
   }
-},
-{
-  "model": "web.country",
-  "pk": 273,
-  "fields": {
-    "name": "Great Britain",
-    "is_active": true,
-    "type": "SOVEREIGN_TERRITORY",
-    "commission_code": "6",
-    "hmrc_code": "GB",
-    "overseas_region": 5
-  }
 }
 ]
