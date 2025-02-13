@@ -184,6 +184,12 @@ class CaseURLS:
         return reverse("case:manage", kwargs=kwargs)
 
     @staticmethod
+    def edit_import_licence(application_pk: int) -> str:
+        """ILB view to edit an import licence."""
+
+        return reverse("import:edit-licence", kwargs={"application_pk": application_pk})
+
+    @staticmethod
     def add_fir(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
