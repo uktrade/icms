@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0054_accessrequest_organisation_products_and_more"),
+        ("web", "0055_silapplication_section_ni_silgoodssectionni"),
     ]
 
     operations = [
