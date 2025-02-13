@@ -4,6 +4,7 @@ from django import forms
 from django.utils import timezone
 from guardian.shortcuts import get_objects_for_user
 
+from web.domains.case.shared import ImpExpStatus
 from web.domains.template.context import CoverLetterTemplateContext
 from web.domains.template.utils import find_invalid_placeholders
 from web.forms.fields import JqueryDateField
@@ -199,6 +200,12 @@ class LicenceDateForm(forms.ModelForm):
         model = ImportApplicationLicence
         fields = ("licence_start_date", "licence_end_date")
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.is_variation_request():
+            self.fields["licence_start_date"].disabled = True
+
     def clean(self):
         data = super().clean()
         start_date = data.get("licence_start_date")
@@ -209,7 +216,8 @@ class LicenceDateForm(forms.ModelForm):
 
         today = timezone.now().date()
 
-        if start_date < today:
+        # Only check start_date when it's not a variation request
+        if not self.is_variation_request() and start_date < today:
             self.add_error("licence_start_date", "Date must be in the future.")
 
         if end_date < today:
@@ -217,6 +225,9 @@ class LicenceDateForm(forms.ModelForm):
 
         if end_date <= start_date:
             self.add_error("licence_end_date", "End Date must be after Start Date.")
+
+    def is_variation_request(self):
+        return self.instance.import_application.status == ImpExpStatus.VARIATION_REQUESTED
 
 
 class LicenceDateAndPaperLicenceForm(LicenceDateForm):

@@ -204,7 +204,7 @@ class TestPrepareResponseView(AuthTestCase):
     def _setup_app_with_variation_request(
         self, app: ImpOrExp, client: Client, ilb_admin_user: User, case_type: str
     ) -> HttpResponse:
-        document_pack.pack_draft_create(app)
+        document_pack.pack_draft_create(app, variation_request=True)
         add_variation_request_to_app(app, ilb_admin_user, status=VariationRequest.Statuses.OPEN)
         app.status = ImpExpStatus.VARIATION_REQUESTED
         app.save()

@@ -8,8 +8,9 @@ from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertRedirects
 
-from web.domains.case.services import case_progress
+from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
+from web.forms.fields import JQUERY_DATE_FORMAT
 from web.models import (
     Country,
     ICMSHMRCChiefRequest,
@@ -21,7 +22,7 @@ from web.models import (
     WoodQuotaApplication,
 )
 from web.tests.auth import AuthTestCase
-from web.tests.helpers import SearchURLS
+from web.tests.helpers import CaseURLS, SearchURLS, add_variation_request_to_app
 
 from . import factory
 
@@ -431,3 +432,63 @@ class TestGetEndorsementTextView(AuthTestCase):
         response = self.ilb_admin_client.get(url)
         assert response.status_code == HTTPStatus.NOT_FOUND
         assert response.json() == {}
+
+
+class TestILBEditImportLicence(AuthTestCase):
+    def test_submitted_app(self, fa_dfl_app_submitted):
+        app = fa_dfl_app_submitted
+        self.ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+        # Create all three errors with all past end dates and set the wrong way around
+        past_start_date = dt.date(dt.date.today().year - 1, 1, 1)
+        past_end_date = dt.date(dt.date.today().year - 1, 1, 2)
+
+        form_data = {
+            "licence_start_date": past_end_date.strftime(JQUERY_DATE_FORMAT),
+            "licence_end_date": past_start_date.strftime(JQUERY_DATE_FORMAT),
+            "issue_paper_licence_only": False,
+        }
+        response = self.ilb_admin_client.post(CaseURLS.edit_import_licence(app.pk), form_data)
+
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+
+        assert len(form.errors) == 2
+        assert form.errors["licence_start_date"][0] == "Date must be in the future."
+        assert form.errors["licence_end_date"][0] == "Date must be in the future."
+        assert form.errors["licence_end_date"][1] == "End Date must be after Start Date."
+
+    def test_variation_request(self, completed_dfl_app):
+        #
+        # Setup
+        app = completed_dfl_app
+
+        pack = document_pack.pack_draft_create(app, variation_request=True)
+        add_variation_request_to_app(
+            app, self.ilb_admin_user, status=VariationRequest.Statuses.OPEN
+        )
+        app.status = ImpExpStatus.VARIATION_REQUESTED
+        app.save()
+
+        Task.objects.create(process=app, task_type=Task.TaskType.PROCESS, previous=None)
+        self.ilb_admin_client.post(CaseURLS.take_ownership(app.pk, case_type="import"))
+
+        #
+        # Test
+        start_date = pack.licence_start_date
+        future_end_date = dt.date(dt.date.today().year + 1, 1, 1)
+
+        form_data = {
+            "licence_start_date": start_date.strftime(JQUERY_DATE_FORMAT),
+            "licence_end_date": future_end_date.strftime(JQUERY_DATE_FORMAT),
+            "issue_paper_licence_only": False,
+        }
+        response = self.ilb_admin_client.post(CaseURLS.edit_import_licence(app.pk), form_data)
+
+        #
+        # Assert
+        assert response.status_code == HTTPStatus.FOUND
+        app.refresh_from_db()
+        pack.refresh_from_db()
+        assert pack.licence_start_date == start_date
+        assert pack.licence_end_date == future_end_date
