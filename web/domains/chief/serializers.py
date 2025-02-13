@@ -234,6 +234,9 @@ def fa_sil_serializer(
             _get_section_58_other_goods(application.goods_section582_others.filter(is_active=True))
         )
 
+    if application.section_ni:
+        goods.extend(_get_section_ni_goods(application.goods_section_ni.filter(is_active=True)))
+
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
 
     licence_data = types.FirearmLicenceData(
@@ -321,6 +324,18 @@ def _get_section_58_other_goods(goods_qs):
     return [
         types.FirearmGoodsData(
             description=f"{g.description} to which Section 58(2) of the Firearms Act 1968, as amended, applies.",
+            quantity=g.quantity,
+            controlled_by=types.ControlledByEnum.QUANTITY,
+            unit=types.QuantityCodeEnum.NUMBER,
+        )
+        for g in goods_qs
+    ]
+
+
+def _get_section_ni_goods(goods_qs):
+    return [
+        types.FirearmGoodsData(
+            description=g.description,
             quantity=g.quantity,
             controlled_by=types.ControlledByEnum.QUANTITY,
             unit=types.QuantityCodeEnum.NUMBER,

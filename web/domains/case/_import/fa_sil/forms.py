@@ -37,6 +37,7 @@ class FirearmSILFormBase(forms.ModelForm):
             "section5",
             "section58_obsolete",
             "section58_other",
+            "section_ni",
             "other_description",
             "origin_country",
             "consignment_country",
@@ -103,7 +104,14 @@ class SubmitFaSILForm(FirearmSILFormBase):
         cleaned_data = super().clean()
 
         # At least one section should be selected
-        licence_for = ["section1", "section2", "section5", "section58_obsolete", "section58_other"]
+        licence_for = [
+            "section1",
+            "section2",
+            "section5",
+            "section58_obsolete",
+            "section58_other",
+            "section_ni",
+        ]
         sections = (cleaned_data.get(section) for section in licence_for)
 
         if not any(sections):
@@ -112,6 +120,7 @@ class SubmitFaSILForm(FirearmSILFormBase):
             self.add_error("section5", "You must select at least one 'section'")
             self.add_error("section58_obsolete", "You must select at least one 'section'")
             self.add_error("section58_other", "You must select at least one 'section'")
+            self.add_error("section_ni", "You must select at least one 'section'")
 
         if cleaned_data.get("section58_other") and not cleaned_data.get("other_description"):
             self.add_error("other_description", "You must enter this item")
@@ -405,6 +414,14 @@ class SILGoodsSection582OtherForm(forms.ModelForm):  # /PS-IGNORE
             self.add_error("bore_details", "You must enter this item")
 
 
+class SILGoodsSectionNIForm(forms.ModelForm):
+    class Meta:
+        model = models.SILGoodsSectionNI
+        fields = ("description", "quantity")
+        widgets = {"description": forms.Textarea({"rows": 3})}
+        help_texts = {"description": ""}
+
+
 class SILChecklistForm(ChecklistBaseForm):
     class Meta:
         model = models.SILChecklist
@@ -485,6 +502,12 @@ class ResponsePrepSILGoodsSection582ObsoleteForm(ResponsePrepBaseForm):  # /PS-I
 class ResponsePrepSILGoodsSection582OtherForm(ResponsePrepBaseForm):  # /PS-IGNORE
     class Meta:
         model = models.SILGoodsSection582Other  # /PS-IGNORE
+        fields = ("description", "quantity")
+
+
+class ResponsePrepSILGoodsSectionNIForm(ResponsePrepBaseForm):
+    class Meta:
+        model = models.SILGoodsSectionNI
         fields = ("description", "quantity")
 
 
