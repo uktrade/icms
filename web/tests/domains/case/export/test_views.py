@@ -182,7 +182,10 @@ class TestFlow(AuthTestCase):
 
         # declaration of truth
         response = self.exporter_client.post(url_submit, data={"confirmation": "I AGREE"})
-        assertRedirects(response, "/workbasket/")
+        assertRedirects(
+            response,
+            reverse("survey:application_submitted", kwargs={"process_pk": com_app_in_progress.pk}),
+        )
 
         appl.refresh_from_db()
         assert appl.status == "SUBMITTED"
@@ -256,7 +259,11 @@ class TestSubmitCom(AuthTestCase):
 
     def test_submit_ok(self):
         response = self.exporter_client.post(self.url, data={"confirmation": "I AGREE"})
-        assertRedirects(response, "/workbasket/", fetch_redirect_response=False)
+        assertRedirects(
+            response,
+            reverse("survey:application_submitted", kwargs={"process_pk": self.appl.pk}),
+            fetch_redirect_response=False,
+        )
 
     def test_submit_no_auth(self):
         response = self.importer_client.post(self.url, data={"confirmation": "I AGREE"})

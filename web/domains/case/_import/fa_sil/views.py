@@ -374,7 +374,7 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
                     import_application=application
                 )
 
-                return redirect_after_submit(application, request)
+                return redirect_after_submit(application)
 
         else:
             form = SubmitForm()

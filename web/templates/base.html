@@ -117,6 +117,12 @@
           <div class="footer-link">
             <a href="{{ icms_url('cookie-consent') }}">Cookies</a>
           </div>
+          {% if request.resolver_match.app_name != "survey" %}
+            {# we don't want to show the feedback link when they're in the feedback app #}
+            <div class="footer-link">
+              <a href="{{ icms_url('survey:provide_generic_feedback') }}?referrer_path={{ request.get_full_path()|urlencode }}">Provide feedback</a>
+            </div>
+          {% endif %}
       {% endblock %}
     </footer>
 
