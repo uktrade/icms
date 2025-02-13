@@ -9,6 +9,7 @@ GoodsModel = Union[
     models.SILGoodsSection582Obsolete,  # /PS-IGNORE
     models.SILGoodsSection582Other,  # /PS-IGNORE
     models.SILLegacyGoods,
+    models.SILGoodsSectionNI,
 ]
 GoodsModelT = type[GoodsModel]
 
@@ -18,6 +19,7 @@ GoodsForm = Union[
     forms.SILGoodsSection5Form,
     forms.SILGoodsSection582ObsoleteForm,  # /PS-IGNORE
     forms.SILGoodsSection582OtherForm,  # /PS-IGNORE
+    forms.SILGoodsSectionNIForm,
 ]
 GoodsFormT = type[GoodsForm]
 
@@ -27,6 +29,7 @@ ResponsePrepGoodsForm = Union[
     forms.ResponsePrepSILGoodsSection5Form,
     forms.ResponsePrepSILGoodsSection582ObsoleteForm,  # /PS-IGNORE
     forms.ResponsePrepSILGoodsSection582OtherForm,  # /PS-IGNORE
+    forms.ResponsePrepSILGoodsSectionNIForm,
 ]
 
 ResponsePrepGoodsFormT = type[ResponsePrepGoodsForm]
