@@ -324,6 +324,9 @@ def _get_fa_sil_goods(application: SILApplication) -> Iterable[tuple[str, int | 
 
         yield description, g.quantity
 
+    for g in application.goods_section_ni.filter(is_active=True):
+        yield g.description, g.quantity
+
 
 def _get_description(desc: str, section: str) -> str:
     return f"{desc} to which Section {section} of the Firearms Act 1968, as amended, applies."
