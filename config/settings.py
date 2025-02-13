@@ -321,6 +321,11 @@ SESSION_CACHE_ALIAS = "default"
 
 # Age in seconds
 SESSION_COOKIE_AGE = env.django_session_cookie_age
+# Set to true to enable a "rolling session" where the expiry updates every time a request is made.
+# This is not suitable for public users as we need the same expiry as GOV.UK One Login
+# https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/managing-your-users-sessions/
+# Having a rolling session is desirable for ILB users.
+SESSION_SAVE_EVERY_REQUEST = env.django_session_save_every_request
 
 # Secure cookies only
 SESSION_COOKIE_SECURE = True

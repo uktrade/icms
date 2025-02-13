@@ -95,6 +95,7 @@ class DBTPlatformEnvironment(BaseSettings):
 
     # Age in seconds
     django_session_cookie_age: int = 60 * 60
+    django_session_save_every_request: bool = False
 
     # Bypass chief
     allow_bypass_chief_never_enable_in_prod: bool = False
