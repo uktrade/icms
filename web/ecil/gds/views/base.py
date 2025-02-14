@@ -1,7 +1,6 @@
 from typing import Any, ClassVar
 
 from django import forms as django_forms
-from django.db import models as django_models
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import FormView
 
@@ -27,7 +26,7 @@ class MultiStepFormView(FormView):
 
         if self.steps.index(self.current_step) > 0:
             url = self.get_previous_step_url()
-            # TODO: Use pydantic class for back_link_kwargs
+            # TODO: This should use a python serializer from gds.components.serializers
             context["back_link_kwargs"] = {"text": "Back", "href": url}
 
         return context
@@ -146,11 +145,11 @@ class MultiStepFormSummaryView(FormView):
         return items
 
     def get_summary_list_kwargs(self, summary_items: dict[str, dict[str, Any]]) -> dict[str, Any]:
-        # TODO: Use pydantic class for summary_list_kwargs
+        # TODO: This should use a python serializer from gds.components.serializers
         return {"rows": summary_items.values()}
 
     def get_summary_cards(self, summary_items: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
-        # TODO: Use pydantic class for list of summary_list_kwargs
+        # TODO: This should use a python serializer from gds.components.serializers
         return []
 
     def get_summary_item_row(
@@ -172,13 +171,13 @@ class MultiStepFormSummaryView(FormView):
 
     def form_valid(self, form: django_forms.Form | django_forms.ModelForm) -> HttpResponseRedirect:
         # Create but don't save record instance
-        record = form.save(commit=False)
+        self.new_object = form.save(commit=False)
 
         # Allow subclass to modify record
-        record = self.form_valid_save_hook(record)
+        self.form_valid_save_hook()
 
         # Save the record (note subclass may have already saved it)
-        record.save()
+        self.new_object.save()
 
         # Side effect of using commit=False with model forms is m2m are not saved until
         # the instance has been saved.
@@ -188,9 +187,9 @@ class MultiStepFormSummaryView(FormView):
 
         return super().form_valid(form)
 
-    def form_valid_save_hook(self, record: django_models.Model) -> django_models.Model:
+    def form_valid_save_hook(self) -> None:
         """Override to do any additional saving to the form model instance."""
-        return record
+        pass
 
     def remove_session_data(self):
         for step, f in get_step_and_field_pairs(self.edit_view.form_steps):

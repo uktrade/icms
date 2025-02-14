@@ -133,7 +133,11 @@ class ExporterAccessRequestExportCountriesForm(gds_forms.GDSModelForm):
     def clean(self) -> None:
         cleaned_data = super().clean()
 
-        if cleaned_data.get("export_countries") and len(self.selected_countries) >= 40:
+        if (
+            self.selected_countries
+            and cleaned_data.get("export_countries")
+            and len(self.selected_countries) >= 40
+        ):
             self.add_error("export_countries", "You can only add up to 40 countries or territories")
 
         return cleaned_data
