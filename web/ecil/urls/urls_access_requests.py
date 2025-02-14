@@ -26,4 +26,16 @@ urlpatterns = [
             ]
         ),
     ),
+    path(
+        "<int:access_request_pk>/",
+        include(
+            [
+                path(
+                    "submitted/",
+                    views.AccessRequestSubmittedDetailView.as_view(),
+                    name="submitted_detail",
+                ),
+            ]
+        ),
+    ),
 ]

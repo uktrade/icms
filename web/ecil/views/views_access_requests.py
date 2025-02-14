@@ -1,18 +1,25 @@
 from typing import Any
 
 from django import forms as django_forms
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    UserPassesTestMixin,
+)
 from django.db import transaction
+from django.db.models import QuerySet
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView
-from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.detail import DetailView, SingleObjectMixin
 from django_ratelimit import UNSAFE
 from django_ratelimit.decorators import ratelimit
 from jinja2.filters import do_mark_safe
 
+from web.domains.case.access.models import AccessRequest, ImporterAccessRequest
+from web.domains.case.services import case_progress
 from web.domains.case.services.access_request import create_export_access_request
 from web.ecil.forms import forms_access_requests as forms
 from web.ecil.gds.views import (
@@ -22,6 +29,7 @@ from web.ecil.gds.views import (
     get_session_form_data,
     save_session_value,
 )
+from web.flow.errors import ProcessError
 from web.mail import emails
 from web.models import Country, ExporterAccessRequest
 from web.models.shared import YesNoChoices
@@ -154,7 +162,7 @@ class ExporterAccessRequestMultiStepFormView(
                         ]
                     )
 
-                # TODO: Use pydantic class for govuk_table_kwargs
+                # TODO: This should use a python serializer from gds.components.serializers
                 context["govuk_table_kwargs"] = {
                     "caption": caption,
                     "captionClasses": "govuk-table__caption--m",
@@ -285,15 +293,79 @@ class ExporterAccessRequestMultiStepFormSummaryView(
 
         return super().get_display_value(field, value)
 
-    def form_valid_save_hook(self, record: ExporterAccessRequest) -> ExporterAccessRequest:
-        record = create_export_access_request(self.request, record)
-        emails.send_access_requested_email(record)
+    def form_valid_save_hook(self):
+        create_export_access_request(self.request, self.new_object)
 
-        return record
+        self.new_object.refresh_from_db()
+
+        emails.send_access_requested_email(self.new_object)
 
     def get_edit_step_url(self, step: str) -> str:
         return reverse("ecil:access_request:exporter_step_form", kwargs={"step": step})
 
     def get_success_url(self) -> str:
         # TODO: Add success page url
-        return reverse("workbasket")
+        return reverse(
+            "ecil:access_request:submitted_detail", kwargs={"access_request_pk": self.new_object.pk}
+        )
+
+
+class AccessRequestProcessingMixin(UserPassesTestMixin):
+    def test_func(self) -> bool:
+        access_request: ImporterAccessRequest | ExporterAccessRequest = self.get_object()
+
+        try:
+            case_progress.access_request_in_processing(access_request)
+        except ProcessError:
+            return False
+
+        return True
+
+
+class AccessRequestSubmittedDetailView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    AccessRequestProcessingMixin,
+    DetailView,
+):
+    # PermissionRequiredMixin config
+    permission_required = [Perms.sys.view_ecil_prototype]
+
+    # DetailView
+    model = AccessRequest
+    pk_url_kwarg = "access_request_pk"
+    template_name = "ecil/access_request/submitted_detail.html"
+    object: ImporterAccessRequest | ExporterAccessRequest
+
+    def get_queryset(self) -> QuerySet[AccessRequest]:
+        """Filter access requests linked to the request user"""
+        return self.model.objects.filter(submitted_by=self.request.user)
+
+    def get_object(
+        self, queryset: QuerySet[AccessRequest] | None = None
+    ) -> ImporterAccessRequest | ExporterAccessRequest:
+        """Downcast AccessRequest to either ImporterAccessRequest or ExporterAccessRequest"""
+        object: AccessRequest = super().get_object(queryset)
+
+        return object.get_specific_model()
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        if isinstance(self.object, ExporterAccessRequest):
+            context["access_request_url"] = reverse(
+                "ecil:access_request:exporter_step_form", kwargs={"step": "exporter-or-agent"}
+            )
+            context["access_request_type"] = "export"
+        else:
+            # TODO: Revisit when implementing Importer Access Request.
+            context["access_request_url"] = "#"
+            context["access_request_type"] = "import"
+
+        # TODO: This should use a python serializer from gds.components.serializers
+        context["panel_kwargs"] = {
+            "titleText": "Access request submitted",
+            "html": f"Your reference number is <strong>{self.object.reference}</strong>",
+        }
+
+        return context

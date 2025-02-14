@@ -1,0 +1,21 @@
+{% extends "ecil/base.html" %}
+
+{% block ecil_content %}
+  {{ gds.govukPanel(panel_kwargs) }}
+
+  <h1 class="govuk-heading-l">What happens next</h1>
+  <p class="govuk-body">You will receive an email with details of your access request.</p>
+  <p class="govuk-body">Import licensing Branch (ILB) will be in touch with an outcome. This is usually within 1 working day.</p>
+  {% if access_request_type == "export" %}
+    <p class="govuk-body">If you are an agent, the exporter you are acting on behalf of will be contacted to approve your access.</p>
+  {% elif access_request_type == "import" %}
+    <p class="govuk-body">If you are an agent, the importer you are acting on behalf of will be contacted to approve your access.</p>
+  {% endif %}
+  <h1 class="govuk-heading-m">Get in touch</h1>
+  <p class="govuk-body">
+    If you need to contact someone about your access request, email
+    <a href="mailto:{{ ilb_contact_email }}" class="govuk-link govuk-link--text-colour">{{ ilb_contact_email }}</a>.
+  </p>
+  <p class="govuk-body"><a href="{{ access_request_url }}" class="govuk-link govuk-link--no-visited-state">Submit another access request</a></p>
+{% endblock %}
+

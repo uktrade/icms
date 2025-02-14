@@ -1,6 +1,3 @@
-from typing import Any
-
-from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db.models import QuerySet
 from django.http import HttpResponseRedirect
@@ -84,9 +81,3 @@ class NewUserExporterTriageSomethingElseView(
     # TemplateView
     http_method_names = ["get"]
     template_name = "ecil/new_user/exporter_triage_something_else.html"
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        return context | {
-            "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
-        }

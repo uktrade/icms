@@ -159,6 +159,7 @@ def environment(**options):
             "gtm_enabled": settings.GTM_ENABLED,
             "get_gtm_container_id": get_gtm_container_id,
             "app_env": settings.APP_ENV,
+            "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
         }
     )
     env.filters["nl2br"] = nl2br

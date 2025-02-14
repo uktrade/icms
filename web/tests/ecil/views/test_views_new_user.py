@@ -1,8 +1,8 @@
 from http import HTTPStatus
 
 import pytest
-from django.conf import settings
 from django.urls import reverse
+from pytest_django.asserts import assertTemplateUsed
 
 from web.ecil.gds import forms as gds_forms
 
@@ -117,7 +117,4 @@ class TestNewUserExporterTriageSomethingElseView:
     def test_get(self):
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
-
-        assert response.context["ilb_contact_email"] == settings.ILB_CONTACT_EMAIL, reverse(
-            "ecil:new_user:update_name"
-        )
+        assertTemplateUsed(response, "ecil/new_user/exporter_triage_something_else.html")
