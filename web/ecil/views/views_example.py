@@ -89,10 +89,8 @@ class ECILMultiStepFormSummaryView(
     template_name = "ecil/gds_summary_list.html"
     http_method_names = ["get", "post"]
 
-    def form_valid_save_hook(self, record: ECILMultiStepExample) -> ECILMultiStepExample:
-        record.created_by = self.request.user
-
-        return record
+    def form_valid_save_hook(self) -> None:
+        self.new_object.created_by = self.request.user
 
     def get_display_value(self, field: str, value: Any) -> str:
         m = ECILMultiStepExample(**{field: value})
