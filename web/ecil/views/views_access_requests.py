@@ -63,6 +63,14 @@ class ExporterAccessRequestMultiStepFormView(
 
         return initial
 
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+
+        if self.current_step == "export-countries":
+            kwargs["selected_countries"] = self._get_saved_countries()
+
+        return kwargs
+
     def form_valid(self, form: django_forms.Form | django_forms.ModelForm) -> HttpResponseRedirect:
         if self.current_step == "export-countries":
             return self.export_countries_form_valid(form)
@@ -83,9 +91,7 @@ class ExporterAccessRequestMultiStepFormView(
         cleaned_data = form.cleaned_data
         new_country = cleaned_data["export_countries"]
 
-        saved_countries = get_session_form_data(
-            self.request, self.cache_prefix(), self.current_step, "export_countries"
-        )
+        saved_countries = self._get_saved_countries()
 
         if saved_countries:
             saved_countries.append(new_country)
@@ -111,6 +117,11 @@ class ExporterAccessRequestMultiStepFormView(
                     "ecil:access_request:exporter_step_form", kwargs={"step": self.current_step}
                 )
             )
+
+    def _get_saved_countries(self) -> list[str]:
+        return get_session_form_data(
+            self.request, self.cache_prefix(), self.current_step, "export_countries"
+        )
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
