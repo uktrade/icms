@@ -7,19 +7,25 @@
 
     {# TODO: Use preventDoubleClick on all submit buttons #}
     {{ gds.govukButton({
-      "text": "Add country",
+      "text": "Add country or territory ",
       "name": "action",
       "value": "add-country",
       "classes": "govuk-button--secondary govuk-!-display-block",
       "type": "submit"
       })
     }}
+    {% if not export_countries %}
+      {# If there are no export countries show a fake continue button to submit the main form #}
+      {# This ensures the error message is shown to populate the form #}
+      {{ gds.govukButton({"text": "Continue"})}}
+    {% endif %}
   </form>
 
+  {# When export countries have been selected show a real button to the summary page. #}
   {% if export_countries %}
     {{ gds.govukTable(govuk_table_kwargs) }}
+    {{ gds.govukButton({"text": "Continue", "href": summary_url})}}
   {% endif %}
-  {{ gds.govukButton({"text": "Continue", "href": summary_url})}}
 {% endblock %}
 
 {% block bodyEnd %}

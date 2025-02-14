@@ -10,6 +10,10 @@ class OneLoginNewUserUpdateForm(gds_forms.GDSModelForm):
             "first_name": "First name",  # /PS-IGNORE
             "last_name": "Last name",  # /PS-IGNORE
         }
+        error_messages = {
+            "first_name": {"required": "Enter your first name"},  # /PS-IGNORE
+            "last_name": {"required": "Enter your last name"},  # /PS-IGNORE
+        }
 
         formfield_callback = gds_forms.GDSFormfieldCallback(
             gds_field_kwargs={
@@ -29,6 +33,9 @@ class ExporterTriageForm(gds_forms.GDSForm):
     applications = gds_forms.GovUKCheckboxesField(
         label="What are you applying for?",
         help_text="Select all that apply",
+        error_messages={
+            "required": "Select if you are applying for an export certificate or something else",
+        },
         choices=[
             ("cfs", "Certificate of Free Sale (CFS)"),
             ("gmp", "Certificate of Good Manufacture Practice (CGMP)"),

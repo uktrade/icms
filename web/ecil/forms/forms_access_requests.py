@@ -112,20 +112,31 @@ class ExporterAccessRequestCompanyProductsForm(gds_forms.GDSModelForm):
 
 class ExporterAccessRequestExportCountriesForm(gds_forms.GDSModelForm):
     export_countries = gds_forms.GovUKSelectField(
-        label="What countries do you want to export to?",
+        label="Where do you want to export products to?",
         help_text=(
-            "Start typing a country to add it. You can add up to 40 countries."
-            " You are not limited to these countries and you can change them later if you need to."
+            "Enter a country or territory and select from the results."
+            " You can add up to 40 countries or territories."
+            " You can change these later if you need to."
         ),
         choices=[],
         gds_field_kwargs={"label": {"isPageHeading": True, "classes": "govuk-label--l"}},
+        error_messages={"required": "Select a country or territory you want to export to"},
     )
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, selected_countries: list[str], **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+        self.selected_countries = selected_countries
 
         countries = [(None, "")] + list(Country.util.get_all_countries().values_list("id", "name"))
         self.fields["export_countries"].choices = countries
+
+    def clean(self) -> None:
+        cleaned_data = super().clean()
+
+        if cleaned_data.get("export_countries") and len(self.selected_countries) >= 40:
+            self.add_error("export_countries", "You can only add up to 40 countries or territories")
+
+        return cleaned_data
 
     class Meta(gds_forms.GDSModelForm.Meta):
         model = ExporterAccessRequest
@@ -172,5 +183,5 @@ class ExporterAccessRequestSummaryForm(gds_forms.GDSModelForm):
             "organisation_registered_number": "Company number",
             "organisation_address": "Address",
             "organisation_products": "What type of products do you want to export?",
-            "export_countries": "What countries do you want to export to?",
+            "export_countries": "Where do you want to export products to?",
         }
