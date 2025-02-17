@@ -7,8 +7,8 @@ from django.core.validators import RegexValidator
 from jinja2.filters import do_mark_safe
 
 from web.domains.file.utils import ICMSFileField
+from web.ecil.gds import component_serializers as serializers
 
-from . import serializers
 from .validators import MaxWordsValidator
 
 
@@ -50,22 +50,22 @@ class GDSFieldMixin:
 
 
 class GDSBoundField(forms.BoundField):
-    def _get_label(self) -> serializers.InputLabel:
-        return serializers.InputLabel(text=str(self.label))
+    def _get_label(self) -> serializers.common.InputLabel:
+        return serializers.common.InputLabel(text=str(self.label))
 
-    def _get_hint(self) -> serializers.InputHint | None:
+    def _get_hint(self) -> serializers.common.InputHint | None:
         if not self.help_text:
             return None
 
-        return serializers.InputHint(
+        return serializers.common.InputHint(
             text=self.help_text,
         )
 
-    def _get_errors(self) -> serializers.ErrorMessage | None:
+    def _get_errors(self) -> serializers.error_message.ErrorMessageKwargs | None:
         if not self.errors:
             return None
 
-        return serializers.ErrorMessage(text=" ".join(self.errors))
+        return serializers.error_message.ErrorMessageKwargs(text=" ".join(self.errors))
 
     def get_input_kwargs(self) -> dict[str, Any]:
         """Return input kwargs for this field.
@@ -113,14 +113,14 @@ class GovUKCharacterCountField(GDSFieldMixin, forms.CharField):
             context = super().get_context()
 
             input_kwargs = self.get_input_kwargs()
-            serializer = serializers.CharacterCountKwargs(**input_kwargs)
+            serializer = serializers.character_count.CharacterCountKwargs(**input_kwargs)
 
             context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
         def get_serializer_kwargs(self):
-            return serializers.CharacterCountKwargs(
+            return serializers.character_count.CharacterCountKwargs(
                 id=self.auto_id,
                 name=self.name,
                 label=self._get_label(),
@@ -154,16 +154,18 @@ class GovUKCheckboxesField(GDSFieldMixin, forms.MultipleChoiceField):
             context = super().get_context()
 
             input_kwargs = self.get_input_kwargs()
-            serializer = serializers.CheckboxesFieldKwargs(**input_kwargs)
+            serializer = serializers.checkboxes.CheckboxesKwargs(**input_kwargs)
 
             context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
         def get_serializer_kwargs(self) -> dict[str, Any]:
-            return serializers.CheckboxesFieldKwargs(
+            return serializers.checkboxes.CheckboxesKwargs(
                 name=self.name,
-                fieldset=serializers.Fieldset(legend=serializers.FieldsetLegend(text=self.label)),
+                fieldset=serializers.fieldset.FieldsetKwargs(
+                    legend=serializers.fieldset.FieldsetLegend(text=self.label)
+                ),
                 hint=self._get_hint(),
                 items=self.get_items(),
                 values=self.data or self.initial or [],
@@ -171,27 +173,33 @@ class GovUKCheckboxesField(GDSFieldMixin, forms.MultipleChoiceField):
                 attributes=self.field.widget.attrs,
             ).model_dump(exclude_defaults=True)
 
-        def get_items(self) -> list[serializers.CheckboxItem | serializers.CheckboxItemDivider]:
-            items: list[serializers.CheckboxItem | serializers.CheckboxItemDivider] = []
+        def get_items(
+            self,
+        ) -> list[serializers.checkboxes.CheckboxItem | serializers.checkboxes.CheckboxItemDivider]:
+            items: list[
+                serializers.checkboxes.CheckboxItem | serializers.checkboxes.CheckboxItemDivider
+            ] = []
 
             for i, (value, label) in enumerate(self.field.choices):
                 is_divider = value == GovUKCheckboxesField.NONE_OF_THESE
                 if is_divider:
-                    items.append(serializers.CheckboxItemDivider(divider="or"))
+                    items.append(serializers.checkboxes.CheckboxItemDivider(divider="or"))
 
                 hint = self.field.choice_hints.get(value, None)
 
                 # Attributes to apply to each radio item label
                 if self.field.choice_classes and not is_divider:
-                    item_label = serializers.CheckboxItemLabel(classes=self.field.choice_classes)
+                    item_label = serializers.checkboxes.CheckboxItemLabel(
+                        classes=self.field.choice_classes
+                    )
                 else:
                     item_label = None
 
-                item = serializers.CheckboxItem(
+                item = serializers.checkboxes.CheckboxItem(
                     id=f"{self.auto_id}_{i}",
                     value=value,
                     text=label,
-                    hint=serializers.InputHint(text=hint) if hint else None,
+                    hint=serializers.common.InputHint(text=hint) if hint else None,
                     behaviour="exclusive" if is_divider else None,
                     label=item_label,
                 )
@@ -255,7 +263,7 @@ class GovUKDateInputField(GDSFieldMixin, forms.MultiValueField):
             context = super().get_context()
 
             input_kwargs = self.get_input_kwargs()
-            serializer = serializers.DateInputKwargs(**input_kwargs)
+            serializer = serializers.date_input.DateInputKwargs(**input_kwargs)
 
             context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
@@ -266,18 +274,20 @@ class GovUKDateInputField(GDSFieldMixin, forms.MultiValueField):
             if not isinstance(value, list):
                 value = self.field.widget.decompress(value)
 
-            return serializers.DateInputKwargs(
+            return serializers.date_input.DateInputKwargs(
                 id=self.auto_id,
-                fieldset=serializers.Fieldset(legend=serializers.FieldsetLegend(text=self.label)),
+                fieldset=serializers.fieldset.FieldsetKwargs(
+                    legend=serializers.fieldset.FieldsetLegend(text=self.label)
+                ),
                 hint=self._get_hint(),
                 items=[
-                    serializers.DateItem(
+                    serializers.date_input.DateItem(
                         label="Day", name=f"{self.name}_0", value=value[0], id=f"{self.auto_id}_0"
                     ),
-                    serializers.DateItem(
+                    serializers.date_input.DateItem(
                         label="Month", name=f"{self.name}_1", value=value[1], id=f"{self.auto_id}_1"
                     ),
-                    serializers.DateItem(
+                    serializers.date_input.DateItem(
                         label="Year", name=f"{self.name}_2", value=value[2], id=f"{self.auto_id}_2"
                     ),
                 ],
@@ -362,7 +372,7 @@ class GovUKDecimalField(GDSFieldMixin, forms.DecimalField):
             context = super().get_context()
 
             input_kwargs = self.get_input_kwargs()
-            serializer = serializers.TextInputKwargs(**input_kwargs)
+            serializer = serializers.text_input.TextInputKwargs(**input_kwargs)
 
             context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
@@ -374,7 +384,7 @@ class GovUKDecimalField(GDSFieldMixin, forms.DecimalField):
                 "step": str(Decimal(1).scaleb(-self.field.decimal_places)).lower(),
             }
 
-            return serializers.TextInputKwargs(
+            return serializers.text_input.TextInputKwargs(
                 id=self.auto_id,
                 name=self.name,
                 type="number",
@@ -392,14 +402,14 @@ class GovUKEmailField(GDSFieldMixin, forms.EmailField):
             context = super().get_context()
             input_kwargs = self.get_input_kwargs()
 
-            serializer = serializers.TextInputKwargs(**input_kwargs)
+            serializer = serializers.text_input.TextInputKwargs(**input_kwargs)
 
             context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
         def get_serializer_kwargs(self) -> dict[str, Any]:
-            return serializers.TextInputKwargs(
+            return serializers.text_input.TextInputKwargs(
                 id=self.auto_id,
                 name=self.name,
                 type="email",
@@ -417,7 +427,7 @@ class GovUKFileUploadField(GDSFieldMixin, ICMSFileField):
             context = super().get_context()
 
             input_kwargs = self.get_input_kwargs()
-            serializer = serializers.TextInputKwargs(**input_kwargs)
+            serializer = serializers.text_input.TextInputKwargs(**input_kwargs)
 
             gds_kwargs = serializer.model_dump(exclude_defaults=True)
 
@@ -430,7 +440,7 @@ class GovUKFileUploadField(GDSFieldMixin, ICMSFileField):
             return context
 
         def get_serializer_kwargs(self) -> dict[str, Any]:
-            return serializers.FileUploadKwargs(
+            return serializers.file_upload.FileUploadKwargs(
                 id=self.auto_id,
                 name=self.name,
                 label=self._get_label(),
@@ -445,14 +455,14 @@ class GovUKFloatField(GDSFieldMixin, forms.FloatField):
             context = super().get_context()
 
             input_kwargs = self.get_input_kwargs()
-            serializer = serializers.TextInputKwargs(**input_kwargs)
+            serializer = serializers.text_input.TextInputKwargs(**input_kwargs)
 
             context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
         def get_serializer_kwargs(self) -> dict[str, Any]:
-            return serializers.TextInputKwargs(
+            return serializers.text_input.TextInputKwargs(
                 id=self.auto_id,
                 name=self.name,
                 type="number",
@@ -472,14 +482,14 @@ class GovUKIntegerField(GDSFieldMixin, forms.IntegerField):
             context = super().get_context()
 
             input_kwargs = self.get_input_kwargs()
-            serializer = serializers.TextInputKwargs(**input_kwargs)
+            serializer = serializers.text_input.TextInputKwargs(**input_kwargs)
 
             context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
         def get_serializer_kwargs(self) -> dict[str, Any]:
-            return serializers.TextInputKwargs(
+            return serializers.text_input.TextInputKwargs(
                 id=self.auto_id,
                 name=self.name,
                 type="number",
@@ -497,14 +507,14 @@ class GovUKPasswordInputField(GDSFieldMixin, forms.CharField):
             context = super().get_context()
 
             input_kwargs = self.get_input_kwargs()
-            serializer = serializers.PasswordInputKwargs(**input_kwargs)
+            serializer = serializers.password_input.PasswordInputKwargs(**input_kwargs)
 
             context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
         def get_serializer_kwargs(self) -> dict[str, Any]:
-            return serializers.PasswordInputKwargs(
+            return serializers.password_input.PasswordInputKwargs(
                 id=self.auto_id,
                 name=self.name,
                 label=self._get_label(),
@@ -530,7 +540,7 @@ class GovUKRadioInputField(GDSFieldMixin, forms.ChoiceField):
             context = super().get_context()
 
             input_kwargs = self.get_input_kwargs()
-            serializer = serializers.RadioInputKwargs(**input_kwargs)
+            serializer = serializers.radios.RadiosKwargs(**input_kwargs)
 
             context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
@@ -539,16 +549,18 @@ class GovUKRadioInputField(GDSFieldMixin, forms.ChoiceField):
         def get_serializer_kwargs(self) -> dict[str, Any]:
             items = self.get_items()
 
-            return serializers.RadioInputKwargs(
+            return serializers.radios.RadiosKwargs(
                 name=self.name,
-                fieldset=serializers.Fieldset(legend=serializers.FieldsetLegend(text=self.label)),
+                fieldset=serializers.fieldset.FieldsetKwargs(
+                    legend=serializers.fieldset.FieldsetLegend(text=self.label)
+                ),
                 hint=self._get_hint(),
                 items=items,
                 value=self.value(),
                 errorMessage=self._get_errors(),
             ).model_dump(exclude_defaults=True)
 
-        def get_items(self) -> list[serializers.RadioItem]:
+        def get_items(self) -> list[serializers.radios.RadioItem]:
             items = []
             for i, (value, label) in enumerate(self.field.choices):
 
@@ -557,9 +569,9 @@ class GovUKRadioInputField(GDSFieldMixin, forms.ChoiceField):
                     item["conditional"] = {"html": self.form.gds_radio_conditional_fields[value]}
 
                 if hint := self.field.choice_hints.get(value, None):
-                    item["hint"] = serializers.InputHint(text=hint)
+                    item["hint"] = serializers.common.InputHint(text=hint)
 
-                items.append(serializers.RadioItem(**item))
+                items.append(serializers.radios.RadioItem(**item))
 
             return items
 
@@ -570,20 +582,20 @@ class GovUKSelectField(GDSFieldMixin, forms.ChoiceField):
             context = super().get_context()
 
             input_kwargs = self.get_input_kwargs()
-            serializer = serializers.SelectFieldKwargs(**input_kwargs)
+            serializer = serializers.select.SelectKwargs(**input_kwargs)
 
             context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
         def get_serializer_kwargs(self) -> dict[str, Any]:
-            return serializers.SelectFieldKwargs(
+            return serializers.select.SelectKwargs(
                 id=self.auto_id,
                 name=self.name,
                 label=self._get_label(),
                 hint=self._get_hint(),
                 items=[
-                    serializers.SelectItem(value=value, text=label)
+                    serializers.select.SelectItem(value=value, text=label)
                     for value, label in self.field.choices
                 ],
                 value=self.value(),
@@ -598,14 +610,14 @@ class GovUKSlugField(GDSFieldMixin, forms.SlugField):
             context = super().get_context()
 
             input_kwargs = self.get_input_kwargs()
-            serializer = serializers.TextInputKwargs(**input_kwargs)
+            serializer = serializers.text_input.TextInputKwargs(**input_kwargs)
 
             context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
         def get_serializer_kwargs(self) -> dict[str, Any]:
-            return serializers.TextInputKwargs(
+            return serializers.text_input.TextInputKwargs(
                 id=self.auto_id,
                 name=self.name,
                 label=self._get_label(),
@@ -622,14 +634,14 @@ class GovUKTextareaField(GDSFieldMixin, forms.CharField):
             context = super().get_context()
 
             input_kwargs = self.get_input_kwargs()
-            serializer = serializers.TextareaFieldKwargs(**input_kwargs)
+            serializer = serializers.textarea.TextareaKwargs(**input_kwargs)
 
             context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
         def get_serializer_kwargs(self) -> dict[str, Any]:
-            return serializers.TextareaFieldKwargs(
+            return serializers.textarea.TextareaKwargs(
                 id=self.auto_id,
                 name=self.name,
                 label=self._get_label(),
@@ -647,14 +659,14 @@ class GovUKTextInputField(GDSFieldMixin, forms.CharField):
             context = super().get_context()
 
             input_kwargs = self.get_input_kwargs()
-            serializer = serializers.TextInputKwargs(**input_kwargs)
+            serializer = serializers.text_input.TextInputKwargs(**input_kwargs)
 
             context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
 
             return context
 
         def get_serializer_kwargs(self) -> dict[str, Any]:
-            return serializers.TextInputKwargs(
+            return serializers.text_input.TextInputKwargs(
                 id=self.auto_id,
                 name=self.name,
                 label=self._get_label(),
