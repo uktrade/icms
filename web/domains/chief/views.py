@@ -2,23 +2,14 @@ import http
 import json
 from typing import Any
 
-import mohawk
-import mohawk.exc
-import pydantic
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.core import exceptions
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect
-from django.utils import timezone
-from django.utils.crypto import constant_time_compare
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, TemplateView, View
-from mohawk.util import parse_authorization_header, prepare_header_val
 
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
@@ -33,102 +24,13 @@ from web.models import (
 )
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
-from web.utils.sentry import capture_exception, capture_message
+from web.utils.api.auth import HawkAuthMixin
+from web.utils.sentry import capture_message
 
 from . import client, types, utils
 
-HAWK_ALGO = "sha256"
-HAWK_RESPONSE_HEADER = "Server-Authorization"
 
-
-def get_credentials_map(access_id: str) -> dict[str, Any]:
-    if not constant_time_compare(access_id, settings.HAWK_AUTH_ID):
-        raise mohawk.exc.HawkFail(f"Invalid Hawk ID {access_id}")
-
-    return {
-        "id": settings.HAWK_AUTH_ID,
-        "key": settings.HAWK_AUTH_KEY,
-        "algorithm": HAWK_ALGO,
-    }
-
-
-def validate_request(request: HttpRequest) -> mohawk.Receiver:
-    """Raise Django's BadRequest if the request has invalid credentials."""
-
-    try:
-        auth_token = request.headers.get("HAWK_AUTHENTICATION")
-
-        if not auth_token:
-            raise KeyError
-    except KeyError as err:
-        raise exceptions.BadRequest from err
-
-    # ICMS-HMRC creates the payload hash before encoding the json, therefore decode it here to get the same hash.
-    content = request.body.decode()
-
-    try:
-        return mohawk.Receiver(
-            get_credentials_map,
-            auth_token,
-            request.build_absolute_uri(),
-            request.method,
-            content=content,
-            content_type=request.content_type,
-            seen_nonce=utils.seen_nonce,
-        )
-    except mohawk.exc.HawkFail as err:
-        raise exceptions.BadRequest from err
-
-
-# Hawk view (no CSRF)
-@method_decorator(csrf_exempt, name="dispatch")
-class HawkViewBase(View):
-    def dispatch(self, *args: Any, **kwargs: Any) -> JsonResponse:
-        try:
-            # Validate sender request
-            hawk_receiver = validate_request(self.request)
-
-            # Create response
-            response = super().dispatch(*args, **kwargs)
-
-        except (pydantic.ValidationError, exceptions.BadRequest):
-            capture_exception()
-
-            return JsonResponse({}, status=http.HTTPStatus.BAD_REQUEST)
-
-        except Exception:
-            capture_exception()
-
-            return JsonResponse({}, status=http.HTTPStatus.UNPROCESSABLE_ENTITY)
-
-        # Create and set the response header
-        hawk_response_header = self._get_hawk_response_header(hawk_receiver, response)
-        response.headers[HAWK_RESPONSE_HEADER] = hawk_response_header
-
-        # return the response
-        return response
-
-    def _get_hawk_response_header(
-        self, hawk_receiver: mohawk.Receiver, response: JsonResponse
-    ) -> str:
-        sender_nonce = hawk_receiver.parsed_header.get("nonce")
-
-        hawk_response_header = hawk_receiver.respond(
-            content=response.content, content_type=response.headers["Content-type"]
-        )
-
-        # Add the original sender nonce and ts to get around this bug
-        # https://github.com/kumar303/mohawk/issues/50
-        if not parse_authorization_header(hawk_response_header).get("nonce"):
-            sender_nonce = prepare_header_val(sender_nonce)
-            ts = prepare_header_val(str(timezone.now().timestamp()))
-
-            hawk_response_header = f'{hawk_response_header}, nonce="{sender_nonce}", ts="{ts}"'
-
-        return hawk_response_header
-
-
-class LicenseDataCallback(HawkViewBase):
+class LicenseDataCallback(HawkAuthMixin, View):
     """View used by ICMS-HMRC to send licence data back to ICMS."""
 
     # View Config
@@ -169,7 +71,7 @@ class LicenseDataCallback(HawkViewBase):
         return chief_req
 
 
-class UsageDataCallbackView(HawkViewBase):
+class UsageDataCallbackView(HawkAuthMixin, View):
     """View used by ICMS-HMRC to send usage data back to ICMS."""
 
     # View Config
@@ -387,7 +289,7 @@ class CheckChiefProgressView(
         return JsonResponse(data={"msg": msg, "reload_workbasket": reload_workbasket})
 
 
-class CheckICMSConnectionView(HawkViewBase):
+class CheckICMSConnectionView(HawkAuthMixin, View):
     """View used by ICMS-HMRC to test connection to ICMS"""
 
     http_method_names = ["post"]
