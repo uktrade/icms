@@ -5,7 +5,7 @@ from web.models import Country, ExporterAccessRequest
 from web.models.shared import YesNoChoices
 
 
-class ExporterAccessRequestTypeForm(gds_forms.GDSModelForm):
+class ExporterAccessRequestTypeForm(gds_forms.GDSForm):
     # Use a custom field as the choice labels are wrong on the model
     request_type = gds_forms.GovUKRadioInputField(
         label="Are you an exporter or an agent?",
@@ -25,10 +25,6 @@ class ExporterAccessRequestTypeForm(gds_forms.GDSModelForm):
             "fieldset": {"legend": {"isPageHeading": True, "classes": "govuk-fieldset__legend--l"}}
         },
     )
-
-    class Meta(gds_forms.GDSModelForm.Meta):
-        model = ExporterAccessRequest
-        fields = ["request_type"]
 
 
 class ExporterAccessRequestCompanyDetailsForm(gds_forms.GDSModelForm):
@@ -64,6 +60,34 @@ class ExporterAccessRequestCompanyDetailsForm(gds_forms.GDSModelForm):
 
         # Only way to remove the help text defined on the ExporterAccessRequest model
         self.fields["organisation_registered_number"].help_text = None
+
+
+class ExporterAccessRequestAgentCompanyDetailsForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ExporterAccessRequest
+        fields = [
+            "agent_name",
+            "agent_trading_name",
+            "agent_address",
+        ]
+
+        labels = {
+            "agent_name": "Company name",
+            "agent_trading_name": "Trading name (Optional)",
+            "agent_address": "Address",
+        }
+
+        error_messages = {
+            "agent_name": {"required": "Enter company name"},
+            "agent_address": {"required": "Enter an address, including a postcode"},
+        }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        # Set agent fields as requied
+        for f in ["agent_name", "agent_address"]:
+            self.fields[f].required = True
 
 
 class ExporterAccessRequestCompanyPurposeForm(gds_forms.GDSModelForm):
@@ -189,3 +213,41 @@ class ExporterAccessRequestSummaryForm(gds_forms.GDSModelForm):
             "organisation_products": "What type of products do you want to export?",
             "export_countries": "Where do you want to export products to?",
         }
+
+
+class ExporterAccessRequestAgentSummaryForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ExporterAccessRequest
+        fields = [
+            "request_type",
+            "organisation_name",
+            "organisation_trading_name",
+            "organisation_registered_number",
+            "organisation_address",
+            "organisation_purpose",
+            "organisation_products",
+            "export_countries",
+            "agent_name",
+            "agent_trading_name",
+            "agent_address",
+        ]
+
+        labels = {
+            "request_type": "Are you an exporter or an agent?",
+            "organisation_name": "Company name",
+            "organisation_trading_name": "Trading name",
+            "organisation_registered_number": "Company number",
+            "organisation_address": "Address",
+            "organisation_products": "What type of products do you want to export?",
+            "export_countries": "Where do you want to export products to?",
+            "agent_name": "Company name",
+            "agent_trading_name": "Trading name",
+            "agent_address": "Address",
+        }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        # Set agent fields as requied
+        for f in ["agent_name", "agent_address"]:
+            self.fields[f].required = True
