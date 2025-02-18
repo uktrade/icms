@@ -5,7 +5,7 @@ import requests
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from web.domains.chief.client import make_request
+from web.utils.api.auth import make_hawk_request
 
 
 # Requires web-internal
@@ -19,7 +19,7 @@ class Command(BaseCommand):
         url = urljoin(settings.ICMS_HMRC_DOMAIN, "mail/check-icms-hmrc-connection/")
 
         data = {"foo": "bar"}
-        hawk_sender, response = make_request(
+        hawk_sender, response = make_hawk_request(
             "POST", url, data=json.dumps(data), headers={"Content-Type": "application/json"}
         )
 

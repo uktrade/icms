@@ -1,17 +1,16 @@
 import json
 import logging
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
-import mohawk
 import requests
 from django.conf import settings
 from django.utils import timezone
 
 from web.domains.case.shared import ImpExpStatus
-from web.domains.chief.utils import seen_nonce
 from web.flow.models import ProcessTypes
 from web.models import ICMSHMRCChiefRequest, Task
+from web.utils.api.auth import make_hawk_request
 from web.utils.sentry import capture_exception
 
 from . import serializers, types
@@ -20,8 +19,6 @@ if TYPE_CHECKING:
     from web.models import ImportApplication
 
 logger = logging.getLogger(__name__)
-
-HTTPMethod = Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
 
 
 def send_application_to_chief(
@@ -121,57 +118,12 @@ def get_serializer(
             raise NotImplementedError(f"Unsupported process_type: {process_type}")
 
 
-def make_hawk_sender(method: HTTPMethod, url: str, **kwargs: Any) -> mohawk.Sender:
-    creds = {
-        "id": settings.HAWK_AUTH_ID,
-        "key": settings.HAWK_AUTH_KEY,
-        "algorithm": "sha256",
-    }
-
-    return mohawk.Sender(creds, url, method, **kwargs)
-
-
-def make_request(
-    method: HTTPMethod, url: str, **kwargs: Any
-) -> tuple[mohawk.Sender, requests.Response]:
-    # Requests allows calling with a dict which is converted to a JSON body,
-    # but we need the final body and type to create the Hawk signature, which
-    # is then added as an auth header to the request.
-    request = requests.Request(method, url, **kwargs)
-    prepped = request.prepare()
-
-    if prepped.body:
-        kwargs = {
-            "content": prepped.body,
-            "content_type": prepped.headers["Content-type"],
-        }
-    else:
-        kwargs = {
-            "content": "",
-            # We have to have a default content_type value for hawk to work
-            "content_type": prepped.headers.get("Content-type", "text/plain"),
-        }
-
-    # Use prepped.url to ensure stuff like query params are included when comparing generated MACs
-    hawk_sender = make_hawk_sender(
-        method, prepped.url, seen_nonce=seen_nonce, **kwargs  # type:ignore[arg-type]
-    )
-
-    prepped.headers["Authorization"] = hawk_sender.request_header
-    prepped.headers["Hawk-Authentication"] = hawk_sender.request_header
-
-    session = requests.Session()
-    response = session.send(prepped)
-
-    return hawk_sender, response
-
-
 def request_license(data: types.LicenceDataPayload) -> requests.Response:
     """Send data as JSON to icms-hmrc's CHIEF end-point, signed by Hawk auth."""
 
     url = urljoin(settings.ICMS_HMRC_DOMAIN, settings.ICMS_HMRC_UPDATE_LICENCE_ENDPOINT)
 
-    hawk_sender, response = make_request(
+    hawk_sender, response = make_hawk_request(
         "POST", url, data=data.model_dump_json(), headers={"Content-Type": "application/json"}
     )
 

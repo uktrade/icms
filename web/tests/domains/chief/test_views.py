@@ -17,6 +17,7 @@ from web.domains.chief import views as chief_views
 from web.domains.chief.client import HTTPMethod, make_hawk_sender
 from web.models import ImportApplicationLicence, Task
 from web.tests.helpers import CaseURLS
+from web.utils.api import auth as api_auth
 from web.utils.sentry import capture_exception
 
 from .conftest import (
@@ -134,7 +135,7 @@ class TestLicenseDataCallbackView:
             ', mac="DeWHy4d9kbLGhDlkyw2Nh3PJ7SDOdZDa267KH4ZaNMY="'  # /PS-IGNORE
         )
 
-        self.monkeypatch.setattr(chief_views, "mohawk", mohawk_mock)
+        self.monkeypatch.setattr(api_auth, "mohawk", mohawk_mock)
 
         # Current draft licence
         self.licence = self.app.licences.get(status=ImportApplicationLicence.Status.DRAFT)
@@ -196,7 +197,7 @@ class TestLicenseDataCallbackView:
     def test_error_codes(self):
         # Test invalid payload
         mock_sentry = create_autospec(capture_exception)
-        self.monkeypatch.setattr(chief_views, "capture_exception", mock_sentry)
+        self.monkeypatch.setattr(api_auth, "capture_exception", mock_sentry)
         payload = {"invalid": "data"}
 
         response = self.client.post(
@@ -229,9 +230,9 @@ class TestLicenseDataCallbackView:
         # An authentication error
         mock_sentry.reset_mock()
         mock_validate_request = create_autospec(
-            chief_views.validate_request, side_effect=exceptions.BadRequest
+            api_auth.validate_request, side_effect=exceptions.BadRequest
         )
-        self.monkeypatch.setattr(chief_views, "validate_request", mock_validate_request)
+        self.monkeypatch.setattr(api_auth, "validate_request", mock_validate_request)
         response = self.client.post(
             self.url, data={}, content_type=JSON_TYPE, HTTP_HAWK_AUTHENTICATION="foo"
         )
@@ -508,7 +509,7 @@ class TestUsageDataCallbackView:
             ', mac="DeWHy4d9kbLGhDlkyw2Nh3PJ7SDOdZDa267KH4ZaNMY="'  # /PS-IGNORE
         )
 
-        self.monkeypatch.setattr(chief_views, "mohawk", mohawk_mock)
+        self.monkeypatch.setattr(api_auth, "mohawk", mohawk_mock)
 
     def test_post_updates_chief_usage_status(self):
         assert not self.complete_app.chief_usage_status
