@@ -322,9 +322,7 @@ class Menu:
                             label="Exporter Start Page", view="ecil:new_user:exporter_login_start"
                         ),
                         SubMenuLink(
-                            label="Exporter Access Request",
-                            view="ecil:access_request:exporter_step_form",
-                            kwargs={"step": "exporter-or-agent"},
+                            label="Exporter Access Request", view="ecil:access_request:new"
                         ),
                     ]
                 ),

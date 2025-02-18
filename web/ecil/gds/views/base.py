@@ -97,6 +97,9 @@ class MultiStepFormView(FormView):
 
         return super().get_template_names()
 
+    def get_current_step_url(self) -> str:
+        raise NotImplementedError()
+
     def get_next_step_url(self) -> str:
         raise NotImplementedError()
 

@@ -65,7 +65,17 @@ class AccessRequest(Process):
     request_reason = models.TextField(
         verbose_name="What are you importing and where are you importing it from?"
     )
+
     agent_name = models.CharField(max_length=100, blank=True, null=True)
+    # New ECIL field
+    agent_trading_name = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name="Trading name",
+        help_text="You only need to enter a trading name if it's different from the company name",
+    )
+
     agent_address = models.TextField(blank=True, default="")
 
     submit_datetime = models.DateTimeField(auto_now_add=True)

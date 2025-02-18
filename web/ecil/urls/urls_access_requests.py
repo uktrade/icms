@@ -9,9 +9,19 @@ urlpatterns = [
         include(
             [
                 path(
+                    "exporter-or-agent/",
+                    views.ExporterAccessRequestTypeFormView.as_view(),
+                    name="new",
+                ),
+                path(
                     "step/<str:step>/",
                     views.ExporterAccessRequestMultiStepFormView.as_view(),
                     name="exporter_step_form",
+                ),
+                path(
+                    "agent-step/<str:step>/",
+                    views.ExporterAccessRequestAgentMultiStepFormView.as_view(),
+                    name="exporter_agent_step_form",
                 ),
                 path(
                     "remove-export-country/<int:country_pk>/",
@@ -22,6 +32,11 @@ urlpatterns = [
                     "summary/",
                     views.ExporterAccessRequestMultiStepFormSummaryView.as_view(),
                     name="exporter_step_form_summary",
+                ),
+                path(
+                    "agent-summary/",
+                    views.ExporterAccessRequestAgentMultiStepFormSummaryView.as_view(),
+                    name="exporter_agent_step_form_summary",
                 ),
             ]
         ),

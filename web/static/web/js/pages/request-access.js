@@ -7,19 +7,15 @@ $(document).ready(function() {
 
 
     function hide_agent_inputs() {
-      console.log('hiding')
-      console.log(agent_name)
         agent_name.hide()
         agent_address.hide()
     }
     function show_agent_inputs() {
-      console.log('showing')
         agent_name.show()
         agent_address.show()
     }
 
     function toggle_agent(request_type) {
-      console.log(request_type)
       if (request_type == 'AGENT_IMPORTER_ACCESS' || request_type == 'AGENT_EXPORTER_ACCESS') {
         show_agent_inputs()
       } else {
