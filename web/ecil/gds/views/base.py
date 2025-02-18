@@ -3,6 +3,9 @@ from typing import Any, ClassVar
 from django import forms as django_forms
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import FormView
+from markupsafe import Markup
+
+from web.ecil.gds import component_serializers as serializers
 
 from .types import FormStep
 from .utils import (
@@ -26,8 +29,9 @@ class MultiStepFormView(FormView):
 
         if self.steps.index(self.current_step) > 0:
             url = self.get_previous_step_url()
-            # TODO: This should use a python serializer from gds.components.serializers
-            context["back_link_kwargs"] = {"text": "Back", "href": url}
+            context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
+                text="Back", href=url
+            ).model_dump(exclude_defaults=True)
 
         return context
 
@@ -135,7 +139,7 @@ class MultiStepFormSummaryView(FormView):
             "summary_cards": summary_cards,
         }
 
-    def get_summary_items(self, context: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    def get_summary_items(self, context: dict[str, Any]) -> dict[str, serializers.summary_list.Row]:
         submit_form = context["form"]
         items = {}
 
@@ -144,30 +148,41 @@ class MultiStepFormSummaryView(FormView):
 
         return items
 
-    def get_summary_list_kwargs(self, summary_items: dict[str, dict[str, Any]]) -> dict[str, Any]:
-        # TODO: This should use a python serializer from gds.components.serializers
-        return {"rows": summary_items.values()}
+    def get_summary_list_kwargs(
+        self, summary_items: dict[str, serializers.summary_list.Row]
+    ) -> dict[str, Any]:
+        return serializers.summary_list.SummaryListKwargs(
+            rows=list(summary_items.values()),
+        ).model_dump(exclude_defaults=True)
 
-    def get_summary_cards(self, summary_items: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
-        # TODO: This should use a python serializer from gds.components.serializers
+    def get_summary_cards(
+        self, summary_items: dict[str, serializers.summary_list.Row]
+    ) -> list[dict[str, Any]]:
         return []
 
     def get_summary_item_row(
         self, form: django_forms.Form | django_forms.ModelForm, step: str, field: str
-    ) -> dict[str, Any]:
-        return {
-            "key": {"text": form.fields[field].label},
-            "value": {"text": self.get_display_value(field, form[field].initial)},
-            "actions": {
-                "items": [
-                    {
-                        "href": self.get_edit_step_url(step),
-                        "text": "Change",
-                        "visuallyHiddenText": field,
-                    }
+    ) -> serializers.summary_list.Row:
+
+        value = self.get_display_value(field, form[field].initial)
+        if isinstance(value, Markup):
+            row_value_kwargs: dict[str, str | Markup] = {"html": value}
+        else:
+            row_value_kwargs = {"text": value}
+
+        return serializers.summary_list.Row(
+            key=serializers.summary_list.RowKey(text=form.fields[field].label),
+            value=serializers.summary_list.RowValue(**row_value_kwargs),
+            actions=serializers.summary_list.RowActions(
+                items=[
+                    serializers.summary_list.RowActionItem(
+                        href=self.get_edit_step_url(step),
+                        text="Change",
+                        visuallyHiddenText=field,
+                    )
                 ]
-            },
-        }
+            ),
+        )
 
     def form_valid(self, form: django_forms.Form | django_forms.ModelForm) -> HttpResponseRedirect:
         # Create but don't save record instance
@@ -218,11 +233,11 @@ class MultiStepFormSummaryView(FormView):
             field = form.fields[field_name]
             field_error = f"{field.label}: {','.join(error)}"
 
-            error_list.append({"text": field_error})
+            error_list.append(serializers.error_summary.Error(text=field_error))
 
-        # TODO: This should use a python serializer from gds.components.serializers
-        context["error_summary_kwargs"] = {
-            "titleText": "There is a problem",
-            "errorList": error_list,
-        }
+        context["error_summary_kwargs"] = serializers.error_summary.ErrorSummaryKwargs(
+            titleText="There is a problem",
+            errorList=error_list,
+        ).model_dump(exclude_defaults=True)
+
         return self.render_to_response(context)

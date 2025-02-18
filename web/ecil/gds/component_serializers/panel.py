@@ -30,7 +30,7 @@ class PanelKwargs(TextOrHTMLMixin, BaseModel):
     # Using a call block enables you to call a macro with all the text inside the tag.
     # This is helpful if you want to pass a lot of content into a macro.
     # To use it, you will need to wrap the entire panel component in a call block.
-    caller: Any
+    caller: Any | None = None
     # Classes to add to the panel container.
     classes: str | None = None
     # HTML attributes (for example data attributes) to add to the panel container.

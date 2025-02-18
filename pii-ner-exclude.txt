@@ -5328,3 +5328,4 @@ Classes
 colspan integer Specify
 rowspan integer Specify
 Warning
+Pydantic

@@ -53,7 +53,7 @@ class TableKwargs(BaseModel):
     # Required. The rows within the table component.
     rows: list[list[RowItem]]
     # Can be used to add a row of table header cells (<th>) at the top of the table component.
-    head: list[list[HeadItem]]
+    head: list[list[HeadItem]] | None = None
     # Caption text.
     caption: str | None = None
     # Classes for caption text size. Classes should correspond to the available typography heading classes.

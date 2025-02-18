@@ -77,7 +77,7 @@ class CardTitle(TextOrHTMLMixin, BaseModel):
     # If html is provided, the text option will be ignored.
     html: str | None = None
     # Heading level, from 1 to 6. Default is 2.
-    headingLevel: int
+    headingLevel: int | None = None
     # Classes to add to the title wrapper.
     classes: str | None = None
 
