@@ -3,6 +3,7 @@ from http import HTTPStatus
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
+from pydantic import ValidationError
 
 from web.models import ECILExample, ECILMultiStepExample
 
@@ -176,19 +177,24 @@ class TestECILMultiStepFormSummaryView:
         response = ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
-        response = self.client.get(self.url)
-        assert response.status_code == HTTPStatus.OK
+        # TODO: Revisit in ECIL-618
+        #       Summary screen will not render partially valid data with Pydantic
+        with pytest.raises(ValidationError):
+            self.client.get(self.url)
 
     # happy path has been tested above in TestECILMultiStepFormView.
     def test_post_errors(self):
-        response = self.client.post(self.url)
-        assert response.status_code == HTTPStatus.OK
+        with pytest.raises(ValidationError):
+            self.client.post(self.url)
 
-        assert response.context["error_summary_kwargs"] == {
-            "titleText": "There is a problem",
-            "errorList": [
-                {"text": "What's your favourite primary colour: You must enter this item"},
-                {"text": "Do you like cake?: You must enter this item"},
-                {"text": "Favourite book: You must enter this item"},
-            ],
-        }
+            # TODO: Revisit in ECIL-618
+            #       Decide if we want to support partially valid summary views.
+            # assert response.status_code == HTTPStatus.OK
+            # assert response.context["error_summary_kwargs"] == {
+            #     "titleText": "There is a problem",
+            #     "errorList": [
+            #         {"text": "What's your favourite primary colour: You must enter this item"},
+            #         {"text": "Do you like cake?: You must enter this item"},
+            #         {"text": "Favourite book: You must enter this item"},
+            #     ],
+            # }

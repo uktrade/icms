@@ -22,6 +22,7 @@ from web.domains.case.access.models import AccessRequest, ImporterAccessRequest
 from web.domains.case.services import case_progress
 from web.domains.case.services.access_request import create_export_access_request
 from web.ecil.forms import forms_access_requests as forms
+from web.ecil.gds import component_serializers as serializers
 from web.ecil.gds.views import (
     FormStep,
     MultiStepFormSummaryView,
@@ -116,15 +117,9 @@ class ExporterAccessRequestMultiStepFormView(
             new_session_countries,
         )
 
-        # TODO: Refactor (remove) this when doing summary view.
-        if self.request.POST.get("action") == "continue":
-            return HttpResponseRedirect(self.get_success_url())
-        else:
-            return redirect(
-                reverse(
-                    "ecil:access_request:exporter_step_form", kwargs={"step": self.current_step}
-                )
-            )
+        return redirect(
+            reverse("ecil:access_request:exporter_step_form", kwargs={"step": self.current_step})
+        )
 
     def _get_saved_countries(self) -> list[str]:
         return get_session_form_data(
@@ -157,18 +152,19 @@ class ExporterAccessRequestMultiStepFormView(
 
                     rows.append(
                         [
-                            {"text": name},
-                            {"html": link, "classes": "govuk-!-text-align-right"},
+                            serializers.table.RowItem(text=name),
+                            serializers.table.RowItem(
+                                html=link, classes="govuk-!-text-align-right"
+                            ),
                         ]
                     )
 
-                # TODO: This should use a python serializer from gds.components.serializers
-                context["govuk_table_kwargs"] = {
-                    "caption": caption,
-                    "captionClasses": "govuk-table__caption--m",
-                    "firstCellIsHeader": False,
-                    "rows": rows,
-                }
+                context["govuk_table_kwargs"] = serializers.table.TableKwargs(
+                    caption=caption,
+                    captionClasses="govuk-table__caption--m",
+                    firstCellIsHeader=False,
+                    rows=rows,
+                ).model_dump(exclude_defaults=True)
 
                 context["summary_url"] = self.get_summary_url()
 
@@ -247,7 +243,9 @@ class ExporterAccessRequestMultiStepFormSummaryView(
     template_name = "ecil/gds_summary_list.html"
     http_method_names = ["get", "post"]
 
-    def get_summary_cards(self, summary_items: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+    def get_summary_cards(
+        self, summary_items: dict[str, serializers.summary_list.Row]
+    ) -> list[dict[str, Any]]:
         card_config = [
             ("Your Details", ["request_type"]),
             (
@@ -266,10 +264,12 @@ class ExporterAccessRequestMultiStepFormSummaryView(
         ]
 
         return [
-            {
-                "card": {"title": {"text": card_title}},
-                "rows": [summary_items[field] for field in fields],
-            }
+            serializers.summary_list.SummaryListKwargs(
+                card=serializers.summary_list.Card(
+                    title=serializers.summary_list.CardTitle(text=card_title)
+                ),
+                rows=[summary_items[field] for field in fields],
+            ).model_dump(exclude_defaults=True)
             for card_title, fields in card_config
         ]
 
@@ -281,7 +281,7 @@ class ExporterAccessRequestMultiStepFormSummaryView(
                 if countries.exists():
                     return do_mark_safe("<br>".join(countries.values_list("name", flat=True)))
 
-                return value
+                return str(value)
 
             case "organisation_address" | "organisation_purpose" | "organisation_products":
                 lines = value.splitlines()
@@ -304,7 +304,6 @@ class ExporterAccessRequestMultiStepFormSummaryView(
         return reverse("ecil:access_request:exporter_step_form", kwargs={"step": step})
 
     def get_success_url(self) -> str:
-        # TODO: Add success page url
         return reverse(
             "ecil:access_request:submitted_detail", kwargs={"access_request_pk": self.new_object.pk}
         )
@@ -362,10 +361,9 @@ class AccessRequestSubmittedDetailView(
             context["access_request_url"] = "#"
             context["access_request_type"] = "import"
 
-        # TODO: This should use a python serializer from gds.components.serializers
-        context["panel_kwargs"] = {
-            "titleText": "Access request submitted",
-            "html": f"Your reference number is <strong>{self.object.reference}</strong>",
-        }
+        context["panel_kwargs"] = serializers.panel.PanelKwargs(
+            titleText="Access request submitted",
+            html=f"Your reference number is <strong>{self.object.reference}</strong>",
+        ).model_dump(exclude_defaults=True)
 
         return context

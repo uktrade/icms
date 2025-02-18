@@ -4,6 +4,8 @@ from django import forms
 from django.db import models
 from django.forms.utils import ErrorDict
 
+from web.ecil.gds import component_serializers as serializers
+
 from . import fields as gds_fields
 
 
@@ -63,13 +65,11 @@ class GDSFormMixin:
                 case _:
                     href = f"#id_{field_name}"
 
-            error_list.append({"text": error, "href": href})
+            error_list.append(serializers.error_summary.Error(text=", ".join(error), href=href))
 
-        # TODO: This should use a python serializer from gds.components.serializers
-        return {
-            "titleText": "There is a problem",
-            "errorList": error_list,
-        }
+        return serializers.error_summary.ErrorSummaryKwargs(
+            titleText="There is a problem", errorList=error_list
+        ).model_dump(exclude_defaults=True)
 
 
 class GDSForm(GDSFormMixin, forms.Form): ...  # noqa: E701

@@ -48,13 +48,13 @@ class TestGDSFormErrorSummary:
         assert form.error_summary_kwargs == {
             "errorList": [
                 # Error href is the id of the field
-                {"href": "#id_text_input_field", "text": ["You must enter this item"]},
+                {"href": "#id_text_input_field", "text": "You must enter this item"},
                 # Error href is the id of the first date field
-                {"href": "#id_date_input_field_0", "text": ["Enter the day, month and year"]},
+                {"href": "#id_date_input_field_0", "text": "Enter the day, month and year"},
                 # Error href is the id of the first checkbox field
-                {"href": "#id_checkbox_field_0", "text": ["You must enter this item"]},
+                {"href": "#id_checkbox_field_0", "text": "You must enter this item"},
                 # Error href is the id of the first radio field
-                {"href": "#id_radio_input_field_0", "text": ["You must enter this item"]},
+                {"href": "#id_radio_input_field_0", "text": "You must enter this item"},
             ],
             "titleText": "There is a problem",
         }

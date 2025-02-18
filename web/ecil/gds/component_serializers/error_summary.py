@@ -18,7 +18,7 @@ class Error(TextOrHTMLMixin, BaseModel):
 
 # All options available here:
 # https://design-system.service.gov.uk/components/error-summary/
-class ErrorSummaryKwargs(TextOrHTMLMixin, BaseModel):
+class ErrorSummaryKwargs(BaseModel):
     # Required. If titleHtml is set, this is not required.
     # Text to use for the heading of the error summary block.
     # If titleHtml is provided, titleText will be ignored.
