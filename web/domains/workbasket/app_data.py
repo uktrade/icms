@@ -303,7 +303,12 @@ def _get_importer_queryset(user: User) -> list[QuerySet]:
         .filter(
             is_active=True,
             status=ApprovalRequest.Statuses.OPEN,
-            access_request__importeraccessrequest__link__in=main_importers,
+            # Only show approval requests for orgs the user can manage
+            access_request__importeraccessrequest__link__in=get_objects_for_user(
+                user,
+                Perms.obj.importer.manage_contacts_and_agents,
+                main_importers,
+            ),
         )
     )
 
@@ -381,7 +386,12 @@ def _get_exporter_queryset(user: User) -> list[QuerySet]:
         .filter(
             is_active=True,
             status=ApprovalRequest.Statuses.OPEN,
-            access_request__exporteraccessrequest__link__in=main_exporters,
+            # Only show approval requests for orgs the user can manage
+            access_request__exporteraccessrequest__link__in=get_objects_for_user(
+                user,
+                Perms.obj.exporter.manage_contacts_and_agents,
+                main_exporters,
+            ),
         )
     )
 

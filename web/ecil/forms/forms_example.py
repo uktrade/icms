@@ -221,7 +221,7 @@ class ExampleConditionalGDSModelForm(gds_forms.GDSModelForm):
         model = ECILExample
         fields = ["blue", "red", "yellow", "char_choice_field"]
         formfield_callback = gds_forms.GDSFormfieldCallback(
-            conditional_fields=["blue", "green", "red"],
+            conditional_fields=["blue", "red", "yellow"],
             gds_field_kwargs={"char_choice_field": FIELDSET_LABEL_HEADER},
         )
 
