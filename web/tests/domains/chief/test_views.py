@@ -14,8 +14,8 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client, types
 from web.domains.chief import views as chief_views
-from web.domains.chief.client import HTTPMethod, make_hawk_sender
 from web.models import ImportApplicationLicence, Task
+from web.tests.api_auth import JSON_TYPE, make_testing_hawk_sender
 from web.tests.helpers import CaseURLS
 from web.utils.api import auth as api_auth
 from web.utils.sentry import capture_exception
@@ -26,17 +26,6 @@ from .conftest import (
     check_licence_approve_correct,
     check_licence_reject_correct,
 )
-
-JSON_TYPE = "application/json"
-# This has to match the request, because it is used to calculate the request's
-# Hawk MAC digest.
-SERVER_NAME = "caseworker"
-
-
-def make_testing_hawk_sender(method: HTTPMethod, url: str, **kwargs):
-    url = f"http://{SERVER_NAME}{url}"
-
-    return make_hawk_sender(method, url, **kwargs)
 
 
 class TestLicenseDataCallbackAuthentication:
