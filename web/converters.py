@@ -91,3 +91,16 @@ class ChiefStatusConverter:
             raise ValueError
 
         return value
+
+
+class DataWorkspaceVersionConverter:
+    regex = "v0"
+
+    def to_python(self, value):
+        return value
+
+    def to_url(self, value):
+        if value not in ["v0"]:
+            raise ValueError
+
+        return value
