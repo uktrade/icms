@@ -2213,6 +2213,47 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
         exporter_user_expected_rows = {}
         check_expected_rows(self.exporter_client, exporter_user_expected_rows)
 
+    def test_access_request_approval_not_shown_without_manage_permission(self):
+        add_approval_request(self.iar, self.ilb_admin_user)
+        add_approval_request(self.ear, self.ilb_admin_user)
+
+        ar_user_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request": ["View"]}},
+            "iar/1": {"Submitted": {"Access Request": ["View"]}},
+        }
+        check_expected_rows(self.ar_user_client, ar_user_expected_rows)
+
+        ilb_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request\nApproval Requested": ["Manage"]}},
+            "iar/1": {"Submitted": {"Access Request\nApproval Requested": ["Manage"]}},
+        }
+        check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+
+        san_expected_rows = {
+            "iar/1": {"Submitted": {"Access Request\nApproval Requested": ["Manage"]}},
+        }
+        check_expected_rows(self.san_admin_client, san_expected_rows)
+
+        importer_user_expected_rows = {"iar/1": {"Open": {"Approval Request": ["Take Ownership"]}}}
+        check_expected_rows(self.importer_client, importer_user_expected_rows)
+
+        exporter_user_expected_rows = {
+            "ear/1": {"Open": {"Approval Request": ["Take Ownership"]}},
+        }
+        check_expected_rows(self.exporter_client, exporter_user_expected_rows)
+
+        # Removing the manage permission should remove the approval request from the workbasket
+        remove_perm(
+            Perms.obj.importer.manage_contacts_and_agents, self.importer_user, self.importer
+        )
+        check_expected_rows(self.importer_client, {})
+
+        # Removing the manage permission should remove the approval request from the workbasket
+        remove_perm(
+            Perms.obj.exporter.manage_contacts_and_agents, self.exporter_user, self.exporter
+        )
+        check_expected_rows(self.exporter_client, {})
+
     def test_access_request_complete_approved(self):
         self.iar.status = AccessRequest.Statuses.CLOSED
         self.iar.response = AccessRequest.APPROVED
@@ -2328,10 +2369,13 @@ class TestNewUserWelcomeMessageWorkbasket(AuthTestCase):
 
 
 def check_expected_rows(
-    client: Client, expected_rows: dict[str, dict[str, dict[str, list[str]]]]
+    client: Client, expected_rows: dict[str, dict[str, dict[str, list[str]]]], debug: bool = False
 ) -> None:
     url = reverse("workbasket")
     response = client.get(url)
+
+    if debug:
+        print(response.context["rows"])
 
     rows: list[WorkbasketRow] = response.context["rows"]
 
