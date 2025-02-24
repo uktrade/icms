@@ -17,15 +17,15 @@
     {{ application_field(acc_req.link|default('Not Linked', True), "Linked Exporter") }}
     {# ECIL field #}
     {% if acc_req.organisation_purpose %}
-      {{ application_field(acc_req.organisation_purpose, "What does the company do") }}
+      {{ application_field(acc_req.organisation_purpose, "What does the company do?") }}
     {% endif %}
     {# ECIL field #}
     {% if acc_req.organisation_products %}
-      {{ application_field(acc_req.organisation_products, "What type of products do you want to export") }}
+      {{ application_field(acc_req.organisation_products, "What type of products do you want to export?") }}
     {% endif %}
     {# ECIL field #}
     {% if export_countries %}
-      {{ application_field(export_countries, "Where do you want to export products to") }}
+      {{ application_field(export_countries, "Where do you want to export products to?") }}
     {% endif %}
 
   {% else %}
