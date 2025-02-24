@@ -6,11 +6,28 @@
   {{ application_field(acc_req.submit_datetime|datetime_format if acc_req.submit_datetime else "", "Request date") }}
   {% if acc_req.process_type == "ExporterAccessRequest" %}
     {{ application_field(acc_req.organisation_name, "Exporter Name") }}
+    {# ECIL field #}
+    {% if acc_req.organisation_trading_name %}
+      {{ application_field(acc_req.organisation_trading_name, "Exporter Trading name") }}
+    {% endif %}
     {{ application_field(acc_req.organisation_address, "Exporter Address") }}
     {% if acc_req.organisation_registered_number %}
       {{ application_field(acc_req.organisation_registered_number, "Registered Number") }}
     {% endif %}
     {{ application_field(acc_req.link|default('Not Linked', True), "Linked Exporter") }}
+    {# ECIL field #}
+    {% if acc_req.organisation_purpose %}
+      {{ application_field(acc_req.organisation_purpose, "What does the company do") }}
+    {% endif %}
+    {# ECIL field #}
+    {% if acc_req.organisation_products %}
+      {{ application_field(acc_req.organisation_products, "What type of products do you want to export") }}
+    {% endif %}
+    {# ECIL field #}
+    {% if export_countries %}
+      {{ application_field(export_countries, "Where do you want to export products to") }}
+    {% endif %}
+
   {% else %}
     {{ application_field(acc_req.organisation_name, "Importer Name") }}
     {{ application_field(acc_req.organisation_address, "Importer Address") }}
@@ -26,6 +43,10 @@
 
   {% if acc_req.is_agent_request %}
     {{ application_field(acc_req.agent_name, "Agent Name") }}
+    {# ECIL field #}
+    {% if acc_req.agent_trading_name %}
+      {{ application_field(acc_req.agent_trading_name, "Agent Trading Name") }}
+    {% endif %}
     {{ application_field(acc_req.agent_address, "Agent Address") }}
     {{ application_field(acc_req.agent_link|default('Not Linked', True), "Linked Agent") }}
   {% endif %}

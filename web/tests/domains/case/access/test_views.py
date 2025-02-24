@@ -10,6 +10,7 @@ from web.flow.models import ProcessTypes
 from web.mail.constants import EmailTypes
 from web.models import (
     AccessRequest,
+    Country,
     ExporterAccessRequest,
     FurtherInformationRequest,
     ImporterAccessRequest,
@@ -344,6 +345,23 @@ class TestLinkAccessRequest(AuthTestCase):
             "You cannot re-link this Access Request because you have already started the Approval"
             " Process. You must first Withdraw / Restart the Approval Request."
         )
+
+    def test_ecil_fields_set(self):
+        self.ear.organisation_trading_name = "Test organisation_trading_name"
+        self.ear.organisation_purpose = "Test organisation_purpose"
+        self.ear.organisation_products = "Test organisation_products"
+        self.ear.save()
+        self.ear.export_countries.add(Country.objects.get(name="Finland"))
+        self.ear.export_countries.add(Country.objects.get(name="Germany"))
+
+        response = self.ilb_admin_client.get(self.ear_url)
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["export_countries"] == "Finland\n\nGermany"
+
+        html = response.content.decode("utf-8")
+        assertInHTML("Test organisation_trading_name", html)
+        assertInHTML("Test organisation_purpose", html)
+        assertInHTML("Test organisation_products", html)
 
 
 class TestLinkOrgAgentAccessRequestUpdateView(AuthTestCase):

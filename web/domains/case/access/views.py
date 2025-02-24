@@ -265,6 +265,14 @@ def link_access_request(
         else:
             agent_form = None
 
+        # ECIL Field to show on access requests.
+        export_countries = ""
+        if access_request.PROCESS_TYPE == ProcessTypes.EAR:
+            if access_request.export_countries.exists():
+                export_countries = "\n\n".join(
+                    access_request.export_countries.order_by("name").values_list("name", flat=True)
+                )
+
         context = {
             "case_type": "access",
             "process": access_request,
@@ -278,6 +286,7 @@ def link_access_request(
             "agent_form": agent_form,
             "org": org,
             "create_org_url": reverse("importer-list" if entity == "importer" else "exporter-list"),
+            "export_countries": export_countries,
         }
 
     return render(

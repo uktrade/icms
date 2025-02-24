@@ -3,7 +3,7 @@ from http import HTTPStatus
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
-from pydantic import ValidationError
+from pytest_django.asserts import assertInHTML
 
 from web.models import ECILExample, ECILMultiStepExample
 
@@ -179,22 +179,22 @@ class TestECILMultiStepFormSummaryView:
 
         # TODO: Revisit in ECIL-618
         #       Summary screen will not render partially valid data with Pydantic
-        with pytest.raises(ValidationError):
-            self.client.get(self.url)
+        response = self.client.get(self.url)
+        html = response.content.decode("utf-8")
+        assertInHTML("No value entered (Fix in ECIL-618)", html, 3)
 
     # happy path has been tested above in TestECILMultiStepFormView.
     def test_post_errors(self):
-        with pytest.raises(ValidationError):
-            self.client.post(self.url)
+        response = self.client.post(self.url)
+        assert response.status_code == HTTPStatus.OK
 
-            # TODO: Revisit in ECIL-618
-            #       Decide if we want to support partially valid summary views.
-            # assert response.status_code == HTTPStatus.OK
-            # assert response.context["error_summary_kwargs"] == {
-            #     "titleText": "There is a problem",
-            #     "errorList": [
-            #         {"text": "What's your favourite primary colour: You must enter this item"},
-            #         {"text": "Do you like cake?: You must enter this item"},
-            #         {"text": "Favourite book: You must enter this item"},
-            #     ],
-            # }
+        form = response.context["form"]
+        assert form.errors == {
+            "favourite_book": ["You must enter this item"],
+            "favourite_colour": ["You must enter this item"],
+            "likes_cake": ["You must enter this item"],
+        }
+
+        # TODO: Revisit in ECIL-618
+        html = response.content.decode("utf-8")
+        assertInHTML("No value entered (Fix in ECIL-618)", html, 3)

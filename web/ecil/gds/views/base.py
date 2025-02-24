@@ -168,6 +168,11 @@ class MultiStepFormSummaryView(FormView):
     ) -> serializers.summary_list.Row:
 
         value = self.get_display_value(field, form[field].initial)
+
+        # TODO: Revisit in ECIL-618 to fix missing & optional fields
+        if value is None or value == "":
+            value = "No value entered (Fix in ECIL-618)"
+
         if isinstance(value, Markup):
             row_value_kwargs: dict[str, str | Markup] = {"html": value}
         else:

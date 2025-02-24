@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 import pytest
 from django.urls import reverse
-from pydantic import ValidationError
+from pytest_django.asserts import assertInHTML
 
 from web.models import Country, ExporterAccessRequest
 from web.models.shared import YesNoChoices
@@ -248,41 +248,63 @@ class TestExporterAccessRequestMultiStepFormSummaryView:
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         # TODO: Revisit in ECIL-618
-        #       Summary screen will not render partially valid data with Pydantic
-        with pytest.raises(ValidationError):
-            self.client.get(self.url)
+        response = self.client.get(self.url)
+        html = response.content.decode("utf-8")
+        assertInHTML("No value entered (Fix in ECIL-618)", html, 7)
 
     # happy path has been tested above in TestExporterAccessRequestMultiStepFormView.
     def test_post_errors(self):
-        with pytest.raises(ValidationError):
-            self.client.post(self.url)
+        response = self.client.post(self.url)
+        assert response.status_code == HTTPStatus.OK
 
-            # TODO: Revisit in ECIL-618
-            #       Decide if we want to support partially valid summary views.
+        form = response.context["form"]
+        assert form.errors == {
+            "export_countries": ["You must enter this item"],
+            "organisation_address": ["You must enter this item"],
+            "organisation_name": ["You must enter this item"],
+            "organisation_products": ["You must enter this item"],
+            "organisation_purpose": ["You must enter this item"],
+        }
+
+        # TODO: Revisit in ECIL-618
+        html = response.content.decode("utf-8")
+        assertInHTML("No value entered (Fix in ECIL-618)", html, 7)
 
 
 class TestExporterAccessRequestAgentMultiStepFormSummaryView:
     @pytest.fixture(autouse=True)
     def setup(self, prototype_client):
         self.client = prototype_client
-        self.url = reverse("ecil:access_request:exporter_step_form_summary")
+        self.url = reverse("ecil:access_request:exporter_agent_step_form_summary")
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         # TODO: Revisit in ECIL-618
-        #       Summary screen will not render partially valid data with Pydantic
-        with pytest.raises(ValidationError):
-            self.client.get(self.url)
+        response = self.client.get(self.url)
+        html = response.content.decode("utf-8")
+        assertInHTML("No value entered (Fix in ECIL-618)", html, 10)
 
     # happy path has been tested above in TestExporterAccessRequestAgentMultiStepFormView.
     def test_post_errors(self):
-        with pytest.raises(ValidationError):
-            self.client.post(self.url)
+        response = self.client.post(self.url)
+        assert response.status_code == HTTPStatus.OK
 
-            # TODO: Revisit in ECIL-618
-            #       Decide if we want to support partially valid summary views.
+        form = response.context["form"]
+        assert form.errors == {
+            "agent_address": ["You must enter this item"],
+            "agent_name": ["You must enter this item"],
+            "export_countries": ["You must enter this item"],
+            "organisation_address": ["You must enter this item"],
+            "organisation_name": ["You must enter this item"],
+            "organisation_products": ["You must enter this item"],
+            "organisation_purpose": ["You must enter this item"],
+        }
+
+        # TODO: Revisit in ECIL-618
+        html = response.content.decode("utf-8")
+        assertInHTML("No value entered (Fix in ECIL-618)", html, 10)
 
 
 class TestExporterAccessRequestConfirmRemoveCountryFormView:

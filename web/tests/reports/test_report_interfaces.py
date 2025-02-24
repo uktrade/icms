@@ -486,9 +486,23 @@ class TestImporterAccessRequestInterface:
     def test_get_data_header(self):
         interface = ImporterAccessRequestInterface(self.report_schedule)
         data = interface.get_data()
+
+        request_date = datetime_format(timezone.now(), "%d/%m/%Y", False)
         assert data == {
             "header": EXPECTED_IMPORT_ACCESS_REQUEST_HEADER,
-            "results": [],
+            # The header test now has a results row (due to nulls being changed to "")
+            "results": [
+                {
+                    "Agent Address": "",
+                    "Agent Name": "",
+                    "Importer Address": "1 Main Street",
+                    "Importer Name": "Import Ltd",
+                    "Request Date": request_date,
+                    "Request Type": "Importer Access Request",
+                    "Response": "",
+                    "Response Reason": "",
+                },
+            ],
             "errors": [],
         }
 
@@ -553,9 +567,23 @@ class TestExporterAccessRequestInterface:
     def test_get_data_header(self, exporter_access_request):
         interface = ExporterAccessRequestInterface(self.report_schedule)
         data = interface.get_data()
+
+        request_date = datetime_format(timezone.now(), "%d/%m/%Y", False)
         assert data == {
             "header": EXPECTED_EXPORT_ACCESS_REQUEST_HEADER,
-            "results": [],
+            # The header test now has a results row (due to nulls being changed to "")
+            "results": [
+                {
+                    "Agent Address": "",
+                    "Agent Name": "",
+                    "Exporter Address": "2 Main Street",
+                    "Exporter Name": "Export Ltd",
+                    "Request Date": request_date,
+                    "Request Type": "Exporter Access Request",
+                    "Response": "",
+                    "Response Reason": "",
+                },
+            ],
             "errors": [],
         }
 
