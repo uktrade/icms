@@ -35,6 +35,7 @@ def seen_nonce(access_id: str, nonce: str, timestamp: str) -> bool:
     return not value_was_stored
 
 
+# TODO ECIL-620: Split chief and data workspace hawk authetication
 def get_credentials_map(
     access_id: str, id: str | None = None, key: str | None = None
 ) -> dict[str, Any]:
@@ -81,7 +82,7 @@ def make_hawk_sender(method: HTTPMethod, url: str, **kwargs: Any) -> mohawk.Send
     creds = {
         "id": settings.HAWK_AUTH_ID,
         "key": settings.HAWK_AUTH_KEY,
-        "algorithm": "sha256",
+        "algorithm": HAWK_ALGO,
     }
 
     return mohawk.Sender(creds, url, method, **kwargs)
@@ -125,13 +126,13 @@ def make_hawk_request(
 # Hawk view (no CSRF)
 @method_decorator(csrf_exempt, name="dispatch")
 class HawkAuthMixin:
-    def dispatch(self, *args: Any, **kwargs: Any) -> JsonResponse:
+    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         try:
             # Validate sender request
-            hawk_receiver = validate_request(self.request)
+            hawk_receiver = validate_request(request)
 
             # Create response
-            response = super().dispatch(*args, **kwargs)
+            response = super().dispatch(request, *args, **kwargs)  # type:ignore[misc]
 
         except (pydantic.ValidationError, exceptions.BadRequest):
             capture_exception()

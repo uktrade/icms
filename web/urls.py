@@ -30,6 +30,7 @@ register_converter_if_required(converters.SILSectionTypeConverter, "silsectionty
 register_converter_if_required(converters.EntityTypeConverter, "entitytype")
 register_converter_if_required(converters.OrgTypeConverter, "orgtype")
 register_converter_if_required(converters.ChiefStatusConverter, "chiefstatus")
+register_converter_if_required(converters.DataWorkspaceVersionConverter, "dwversion")
 
 
 # The following urls are served by all deployed instances of ICMS
@@ -120,18 +121,22 @@ public_urls = [
 
 # The following urls should only be served on the private application
 private_urls = [
-    path("constabulary/", include("web.domains.constabulary.urls")),
-    path("signature/", include("web.domains.signature.urls")),
-    path("template/", include("web.domains.template.urls")),
-    path("commodity/", include("web.domains.commodity.urls")),
     path("chief/", include("web.domains.chief.urls", namespace="chief")),
-    path("sanction-emails/", include("web.domains.sanction_email.urls")),
-    path("section5/", include("web.domains.section5.urls")),
+    path("commodity/", include("web.domains.commodity.urls")),
+    path("constabulary/", include("web.domains.constabulary.urls")),
+    path("country/", include("web.domains.country.urls")),
     path("firearms/", include("web.domains.firearms.urls")),
     path("product-legislation/", include("web.domains.legislation.urls")),
-    path("country/", include("web.domains.country.urls")),
     path("reports/", include("web.reports.urls")),
+    path("sanction-emails/", include("web.domains.sanction_email.urls")),
+    path("section5/", include("web.domains.section5.urls")),
+    path("signature/", include("web.domains.signature.urls")),
+    path("template/", include("web.domains.template.urls")),
 ]
+
+#  TODO ECIL-620: Keep data workspace API out of production until separating auth from CHIEF
+if settings.APP_ENV != "production":
+    private_urls.append(path("data-workspace/", include("web.data_workspace.urls")))
 
 if settings.INCLUDE_PRIVATE_URLS:
     urlpatterns = public_urls + private_urls
