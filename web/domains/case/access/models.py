@@ -25,19 +25,17 @@ class AccessRequest(Process):
         CLOSED = ("CLOSED", "Closed")
         FIR_REQUESTED = ("FIR_REQUESTED", "Processing (FIR)")
 
-    reference = models.CharField(max_length=100, blank=False, null=False, unique=True)
+    reference = models.CharField(max_length=100, unique=True)
 
-    status = models.CharField(
-        max_length=30, choices=Statuses.choices, blank=False, null=False, default=Statuses.SUBMITTED
-    )
+    status = models.CharField(max_length=30, choices=Statuses.choices, default=Statuses.SUBMITTED)
 
-    organisation_name = models.CharField(max_length=100, blank=False, null=False)
+    organisation_name = models.CharField(max_length=100)
 
     # New ECIL field
     organisation_trading_name = models.CharField(
         max_length=100,
         blank=True,
-        null=True,
+        default="",
         verbose_name="Trading name",
         help_text="You only need to enter a trading name if it's different from the company name",
     )
@@ -66,12 +64,12 @@ class AccessRequest(Process):
         verbose_name="What are you importing and where are you importing it from?"
     )
 
-    agent_name = models.CharField(max_length=100, blank=True, null=True)
+    agent_name = models.CharField(max_length=100, blank=True, default="")
     # New ECIL field
     agent_trading_name = models.CharField(
         max_length=100,
         blank=True,
-        null=True,
+        default="",
         verbose_name="Trading name",
         help_text="You only need to enter a trading name if it's different from the company name",
     )
@@ -82,11 +80,9 @@ class AccessRequest(Process):
     submitted_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
-        blank=False,
-        null=False,
         related_name="submitted_access_requests",
     )
-    last_update_datetime = models.DateTimeField(auto_now=True, blank=False, null=False)
+    last_update_datetime = models.DateTimeField(auto_now=True)
     last_updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
@@ -102,7 +98,7 @@ class AccessRequest(Process):
         null=True,
         related_name="closed_access_requests",
     )
-    response = models.CharField(max_length=20, choices=RESPONSES, blank=False, null=True)
+    response = models.CharField(max_length=20, choices=RESPONSES, default="")
     response_reason = models.TextField(blank=True, default="")
 
     further_information_requests = models.ManyToManyField("web.FurtherInformationRequest")

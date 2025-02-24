@@ -308,6 +308,10 @@ class ExporterAccessRequestMultiStepFormSummaryViewBase(
     http_method_names = ["get", "post"]
 
     def get_display_value(self, field: str, value: Any) -> str:
+        # TODO: Revisit in ECIL-618 to fix missing & optional fields
+        if value is None or value == "":
+            return super().get_display_value(field, value)
+
         match field:
             case "export_countries":
                 countries = Country.objects.filter(pk__in=value)
