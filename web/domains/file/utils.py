@@ -52,15 +52,23 @@ class ICMSFileField(forms.FileField):
     mark_help_text_safe = True
 
     def __init__(
-        self, *, validators: Iterable[VALIDATOR] = (), help_text: str = HELP_TEXT, **kwargs: Any
+        self,
+        *,
+        validators: Iterable[VALIDATOR] = (),
+        help_text: str = HELP_TEXT,
+        show_default_help_text: bool = True,
+        **kwargs: Any,
     ) -> None:
-        field_help_text = render_to_string(
-            template_name="forms/icms_file_field_helptext.html",
-            context={
-                "help_text": help_text,
-                "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
-            },
-        )
+        if show_default_help_text:
+            field_help_text = render_to_string(
+                template_name="forms/icms_file_field_helptext.html",
+                context={
+                    "help_text": help_text,
+                    "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+                },
+            )
+        else:
+            field_help_text = help_text
 
         super().__init__(
             # order is important: validate_file_extension can delete the file
@@ -123,6 +131,28 @@ def validate_file_extension(file: S3Boto3StorageFile) -> None:
             "Invalid file extension. Only these extensions are allowed: "
             + ", ".join(FILE_EXTENSION_ALLOW_LIST)
         )
+
+
+class MultipleFileInput(forms.FileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(ICMSFileField):
+    """The below is taken from https://docs.djangoproject.com/en/5.1/topics/http/file-uploads/#uploading-multiple-files
+    as the recommended way to handle multiple file uploads"""
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        kwargs.setdefault("help_text", "You can select multiple files to upload at once")
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
 
 
 def create_file_model(
