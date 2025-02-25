@@ -307,6 +307,10 @@ class ExporterAccessRequestMultiStepFormSummaryViewBase(
     template_name = "ecil/gds_summary_list.html"
     http_method_names = ["get", "post"]
 
+    extra_context = {
+        "submit_btn_label": "Submit access request",
+    }
+
     def get_display_value(self, field: str, value: Any) -> str:
         # TODO: Revisit in ECIL-618 to fix missing & optional fields
         if value is None or value == "":
