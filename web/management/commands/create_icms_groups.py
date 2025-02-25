@@ -48,7 +48,10 @@ def get_groups():
             Perms.sys.edit_firearm_authorities,
             Perms.sys.edit_section_5_firearm_authorities,
             Perms.sys.commodity_admin,
+            # TODO: Remove in ECIL-624
             Perms.sys.search_all_cases,
+            Perms.sys.search_export_cases,
+            Perms.sys.search_import_cases,
             Perms.sys.access_reports,
         ],
         #
@@ -80,14 +83,18 @@ def get_groups():
             Perms.page.view_report_firearms_licences,
             Perms.page.view_report_supplementary_firearms,
             # Sys permissions
+            # TODO: Remove in ECIL-624
             Perms.sys.search_all_cases,
+            Perms.sys.search_import_cases,
             Perms.sys.access_reports,
         ],
         StaffUserGroups.HOME_OFFICE_CASE_OFFICER.value: {
             # Page permissions
             Perms.page.view_import_case_search,
             # Sys permissions
+            # TODO: Remove in ECIL-624
             Perms.sys.search_all_cases,
+            Perms.sys.search_import_cases,
             Perms.sys.importer_regulator,
             Perms.sys.edit_section_5_firearm_authorities,
         },
@@ -102,7 +109,9 @@ def get_groups():
             Perms.sys.importer_admin,
             Perms.sys.commodity_admin,
             Perms.sys.manage_sanction_contacts,
+            # TODO: Remove in ECIL-624
             Perms.sys.search_all_cases,
+            Perms.sys.search_import_cases,
             Perms.sys.access_reports,
             Perms.page.view_report_import_licences,
             Perms.page.view_report_firearms_licences,
@@ -124,7 +133,9 @@ def get_groups():
             Perms.page.view_import_case_search,
             #
             # Sys permissions
+            # TODO: Remove in ECIL-624
             Perms.sys.search_all_cases,
+            Perms.sys.search_import_cases,
         },
         StaffUserGroups.EXPORT_SEARCH_USER.value: {
             #
@@ -132,7 +143,9 @@ def get_groups():
             Perms.page.view_export_case_search,
             #
             # Sys permissions
+            # TODO: Remove in ECIL-624
             Perms.sys.search_all_cases,
+            Perms.sys.search_export_cases,
         },
         "ICMS Admin Site User": {
             Perms.sys.is_icms_data_admin,
