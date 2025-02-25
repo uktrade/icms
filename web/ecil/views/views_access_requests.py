@@ -375,7 +375,7 @@ class ExporterAccessRequestMultiStepFormSummaryView(
 
         start_card = [
             gds_sl.SummaryListKwargs(
-                card=gds_sl.Card(title=gds_sl.CardTitle(text="Your Details")),
+                card=gds_sl.Card(title=gds_sl.CardTitle(text="Your details")),
                 rows=[
                     gds_sl.Row(
                         key=gds_sl.RowKey(text="Are you an exporter or an agent?"),
@@ -435,7 +435,7 @@ class ExporterAccessRequestAgentMultiStepFormSummaryView(
                 ],
             ),
             (
-                "Exporter Company Details",
+                "Exporter company details",
                 [
                     "organisation_name",
                     "organisation_trading_name",
@@ -444,14 +444,14 @@ class ExporterAccessRequestAgentMultiStepFormSummaryView(
                 ],
             ),
             (
-                "Exporter Details",
+                "Exporter details",
                 ["organisation_purpose", "organisation_products", "export_countries"],
             ),
         ]
 
         start_card = [
             gds_sl.SummaryListKwargs(
-                card=gds_sl.Card(title=gds_sl.CardTitle(text="Your Details")),
+                card=gds_sl.Card(title=gds_sl.CardTitle(text="Your details")),
                 rows=[
                     gds_sl.Row(
                         key=gds_sl.RowKey(text="Are you an exporter or an agent?"),
