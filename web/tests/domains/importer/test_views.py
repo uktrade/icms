@@ -4,6 +4,7 @@ from urllib.parse import urljoin
 
 import freezegun
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from django.utils import timezone
 from guardian.shortcuts import remove_perm
@@ -431,6 +432,11 @@ class TestCreateSection5View(AuthTestCase):
             "end_date": "02-Dec-2020",
             "clausequantity_set-TOTAL_FORMS": 0,
             "clausequantity_set-INITIAL_FORMS": 0,
+            "documents": [
+                SimpleUploadedFile("myimage.png", b"file_content"),
+                SimpleUploadedFile("myimage2.png", b"file_content"),
+                SimpleUploadedFile("myimage3.png", b"file_content"),
+            ],
         }
         response = self.ilb_admin_client.post(self.url, data=data)
         assert response.status_code == HTTPStatus.FOUND
@@ -438,6 +444,9 @@ class TestCreateSection5View(AuthTestCase):
         section5 = Section5Authority.objects.get()
         assert self.importer_office == section5.linked_offices.first()
         assert response["Location"] == reverse("importer-section5-edit", kwargs={"pk": section5.pk})
+        assert section5.files.count() == 3
+        uploaded_files = section5.files.all()
+        assert {f.path for f in uploaded_files} == {"myimage.png", "myimage2.png", "myimage3.png"}
 
 
 class TestEditSection5View(AuthTestCase):
@@ -464,6 +473,25 @@ class TestEditSection5View(AuthTestCase):
         section5 = response.context["section5"]
         assert self.importer == importer
         assert self.section5 == section5
+
+    def test_edit(self):
+        assert not self.section5.files.exists()
+        response = self.ilb_admin_client.post(
+            self.url,
+            data={
+                "linked_offices": self.importer_office.pk,
+                "reference": "11",
+                "postcode": "ox51dw",  # /PS-IGNORE
+                "address": "1 Some road Town County NEW",
+                "start_date": "01-Dec-2020",
+                "end_date": "02-Dec-2020",
+                "clausequantity_set-TOTAL_FORMS": 0,
+                "clausequantity_set-INITIAL_FORMS": 0,
+            },
+        )
+        assert response.status_code == HTTPStatus.FOUND
+        self.section5.refresh_from_db()
+        assert self.section5.address == "1 Some road Town County NEW"
 
 
 class TestViewSection5View(AuthTestCase):

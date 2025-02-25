@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block sidebar %}
-    {% include "partial/importer/sidebar.html" %}
+  {% include "partial/importer/sidebar.html" %}
 {% endblock %}
 
 {% block content_actions %}
@@ -39,7 +39,6 @@
         {{ fields.field(field, lookup=lookup) }}
       {% endwith %}
       {% endfor %}
-
       <div class="row">
         <div class="three columns">
           <label class="prompt west">
@@ -51,29 +50,28 @@
           {{ formset.management_form }}
           {% for clause_form in formset %}
             <div class="row section5-clauses">
-            {% for field in clause_form %}
-              <div class="four columns {% if field.errors %}input-error{% endif %}">
-                {{ field }}
-                {% if field.name == "infinity" %}
-                  <span class="infinity">{{ field.label }}</span>
-                {% endif %}
-                {% if field.errors %}
-                  {% for error in field.errors %}
-                    <div class="error-message">{{error}}</div>
-                  {% endfor %}
-                {% endif %}
-              </div>
-            {% endfor %}
+              {% for field in clause_form %}
+                <div class="four columns {% if field.errors %}input-error{% endif %}">
+                  {{ field }}
+                  {% if field.name == "infinity" %}
+                    <span class="infinity">{{ field.label }}</span>
+                  {% endif %}
+                  {% if field.errors %}
+                    {% for error in field.errors %}
+                      <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                  {% endif %}
+                </div>
+              {% endfor %}
             </div>
           {% endfor %}
         </div>
         <div class="three columns"></div>
       </div>
-
       <div class="container">
         <div class="row">
           <div class="three columns"></div>
-          <div class="eight columns">
+          <div class="six columns">
             <ul class="menu-out flow-across">
               <li>
                 <button
@@ -86,6 +84,7 @@
               </li>
             </ul>
           </div>
+        <div class="three columns"></div>
         </div>
       </div>
     {% endcall %}

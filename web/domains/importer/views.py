@@ -309,7 +309,7 @@ def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
     if request.method == "POST":
-        form = Section5AuthorityForm(importer, request.POST, request.FILES)
+        form = Section5AuthorityForm(importer, request.POST, request.FILES, can_upload_files=True)
         ClauseQuantityFormSet = inlineformset_factory(
             Section5Authority, ClauseQuantity, extra=0, form=ClauseQuantityForm, can_delete=False
         )
@@ -317,6 +317,9 @@ def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
         if form.is_valid() and clause_quantity_formset.is_valid():
             section5 = form.save()
+            if uploaded_files := form.cleaned_data["documents"]:
+                for file in uploaded_files:
+                    create_file_model(file, request.user, section5.files)
 
             for clause_quantity_form in clause_quantity_formset:
                 clause_quantity = clause_quantity_form.save(commit=False)
@@ -327,7 +330,7 @@ def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
             return redirect(reverse("importer-section5-edit", kwargs={"pk": section5.pk}))
     else:
-        form = Section5AuthorityForm(importer)
+        form = Section5AuthorityForm(importer, can_upload_files=True)
 
         # Create a formset to specify quantity for each section5 clauses
         initial = (
@@ -371,16 +374,20 @@ def edit_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
         clause_quantity_formset = ClauseQuantityFormSet(request.POST, instance=section5)
 
         form = Section5AuthorityForm(
-            section5.importer, request.POST, request.FILES, instance=section5
+            section5.importer,
+            request.POST,
+            request.FILES,
+            instance=section5,
+            can_upload_files=False,
         )
 
         if form.is_valid() and clause_quantity_formset.is_valid():
-            section5 = form.save()
+            form.save()
             clause_quantity_formset.save()
 
             return redirect(reverse("importer-section5-edit", kwargs={"pk": pk}))
     else:
-        form = Section5AuthorityForm(section5.importer, instance=section5)
+        form = Section5AuthorityForm(section5.importer, instance=section5, can_upload_files=False)
         ClauseQuantityFormSet = inlineformset_factory(
             Section5Authority, ClauseQuantity, extra=0, form=ClauseQuantityForm, can_delete=False
         )

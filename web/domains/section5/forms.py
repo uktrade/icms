@@ -1,6 +1,7 @@
 from django import forms
 from django_select2.forms import Select2MultipleWidget
 
+from web.domains.file.utils import MultipleFileField
 from web.forms.fields import JqueryDateField
 from web.models import ClauseQuantity, Office, Section5Authority, Section5Clause
 
@@ -40,8 +41,13 @@ class Section5AuthorityForm(forms.ModelForm):
             "further_details": forms.Textarea({"rows": 3}),
         }
 
-    def __init__(self, importer, *args, **kwargs):
+    def __init__(self, importer, *args, can_upload_files=False, **kwargs):
         super().__init__(*args, **kwargs)
+        if can_upload_files:
+            # Add file field
+            self.fields["documents"] = MultipleFileField(
+                show_default_help_text=False, required=False
+            )
         self.importer = importer
         self.fields["linked_offices"].queryset = self.importer.offices.filter(is_active=True)
 
