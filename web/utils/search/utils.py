@@ -25,7 +25,8 @@ def get_order_by_datetime(case_type: str) -> Any:
 def get_user_import_applications(user: User) -> models.QuerySet[ImportApplication]:
     """Returns Import Applications the user has access to."""
 
-    if user.has_perm(Perms.sys.search_all_cases):
+    # TODO: ECIL-624 Remove search_all_cases
+    if user.has_perm(Perms.sys.search_all_cases) or user.has_perm(Perms.sys.search_import_cases):
         return ImportApplication.objects.all()
 
     perms_to_check = [
@@ -59,7 +60,8 @@ def get_user_import_applications(user: User) -> models.QuerySet[ImportApplicatio
 def get_user_export_applications(user: User) -> models.QuerySet[ExportApplication]:
     """Returns Export Applications the user has access to."""
 
-    if user.has_perm(Perms.sys.search_all_cases):
+    # TODO: ECIL-624 Remove search_all_cases
+    if user.has_perm(Perms.sys.search_all_cases) or user.has_perm(Perms.sys.search_export_cases):
         return ExportApplication.objects.all()
 
     perms_to_check = [

@@ -96,6 +96,15 @@ class AppChecker:
         is_import_app = self.app.is_import_application()
         can_search_all_cases = self.user.has_perm(Perms.sys.search_all_cases)
 
+        # TODO: ECIL-624 Use this logic when search_all_cases has been removed.
+        # # Logic for users who can search all import applications e.g. NCA Case Officers
+        # if is_import_app and self.user.has_perm(Perms.sys.search_import_cases):
+        #     return True
+        #
+        # # Logic for users who can search all export applications e.g. Export Search User
+        # if not is_import_app and self.user.has_perm(Perms.sys.search_export_cases):
+        #     return True
+
         # TODO: ECIL-546
         #       Split Perms.sys.search_all_cases in to the following to simplify can_view logic:
         #         - Perms.sys.search_all_import_cases
