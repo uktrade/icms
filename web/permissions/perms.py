@@ -94,8 +94,6 @@ class SysPerms(PermissionTextChoice):
         "web.edit_section_5_firearm_authorities",
         "Can edit Importer Verified Section 5 Firearm Authorities",
     )
-    # TODO: ECIL-624 Remove search_all_cases
-    search_all_cases = ("web.search_all_cases", "Can search across all cases.")
     search_import_cases = ("web.search_import_cases", "Can search across all import cases.")
     search_export_cases = ("web.search_export_cases", "Can search across all export cases.")
     is_icms_data_admin = "web.is_icms_data_admin", "Can maintain data in the ICMS admin site."
