@@ -22,3 +22,24 @@ class UserSerializer(BaseModel):
 
 class Users(BaseModel):
     users: list[UserSerializer]
+
+
+class UserFeedbackSurveySerializer(BaseModel):
+    id: int
+    satisfaction: str
+    issues: list[str]
+    issue_details: str
+    find_service: str
+    find_service_details: str
+    additional_support: str
+    service_improvements: str
+    future_contact: str
+    referrer_path: str
+    site: str
+    process_id: int | None
+    created_by_id: int
+    created_datetime: dt.datetime
+
+
+class UserFeebackSurveys(BaseModel):
+    surveys: list[UserFeedbackSurveySerializer]

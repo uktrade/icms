@@ -4,11 +4,15 @@ from http import HTTPStatus
 import pytest
 from django.urls import reverse
 
+from web.models import UserFeedbackSurvey
 from web.tests.api_auth import JSON_TYPE, make_testing_hawk_sender
 
 
 def at_example(prefix: str) -> str:
     return f"{prefix}@example.com"  # /PS-IGNORE
+
+
+DT_STRING = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
 class TestUserDataView:
@@ -37,8 +41,7 @@ class TestUserDataView:
         )
         assert response.status_code == HTTPStatus.OK
 
-        result = response.json()
-        users = result["users"]
+        users = response.json()
         email = at_example("access_request_user")
 
         assert len(users) == 22
@@ -111,4 +114,69 @@ class TestUserDataView:
             "exporter_ids": [],
             "importer_ids": [],
             "group_names": ["ECIL Prototype User"],
+        }
+
+
+class TestUserFeedbackSurveyDataView:
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, cfs_app_submitted, exporter_one_contact):
+        self.client = cw_client
+        self.url = reverse("data-workspace:user-survey-data", kwargs={"version": "v0"})
+        self.app = cfs_app_submitted
+        self.user = exporter_one_contact
+        self.survey = UserFeedbackSurvey.objects.create(
+            satisfaction=UserFeedbackSurvey.SatisfactionLevel.SATISFIED,
+            issues=[
+                UserFeedbackSurvey.IssuesChoices.LACKS_FEATURE,
+                UserFeedbackSurvey.IssuesChoices.OTHER,
+            ],
+            issue_details="some other issue",
+            find_service=UserFeedbackSurvey.EaseFindChoices.EASY,
+            find_service_details="",
+            service_improvements="test",
+            future_contact="yes",
+            referrer_path="/submit",
+            site="exporter",
+            process_id=self.app.pk,
+            created_by=self.user,
+        )
+
+    def test_authentication_failure(self):
+        content = json.dumps({})
+        response = self.client.post(
+            self.url,
+            content,
+            content_type=JSON_TYPE,
+        )
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    def test_authetication(self):
+        content = json.dumps({})
+        sender = make_testing_hawk_sender("POST", self.url, content=content, content_type=JSON_TYPE)
+        response = self.client.post(
+            self.url,
+            content,
+            content_type=JSON_TYPE,
+            HTTP_HAWK_AUTHENTICATION=sender.request_header,
+        )
+        assert response.status_code == HTTPStatus.OK
+
+        result = response.json()
+
+        assert len(result) == 1
+        assert result[0] == {
+            "id": self.survey.id,
+            "satisfaction": self.survey.satisfaction,
+            "issues": self.survey.issues,
+            "issue_details": "some other issue",
+            "find_service": self.survey.find_service,
+            "find_service_details": "",
+            "service_improvements": "test",
+            "additional_support": "",
+            "future_contact": "yes",
+            "referrer_path": "/submit",
+            "site": "exporter",
+            "process_id": self.app.pk,
+            "created_by_id": self.user.pk,
+            "created_datetime": self.survey.created_datetime.strftime(DT_STRING),
         }
