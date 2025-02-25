@@ -8,4 +8,9 @@ app_name = "data-workspace"
 
 urlpatterns = [
     path("<dwversion:version>/users/", views.UserDataView.as_view(), name="user-data"),
+    path(
+        "<dwversion:version>/user-surveys/",
+        views.UserFeedbackSurveyDataView.as_view(),
+        name="user-survey-data",
+    ),
 ]

@@ -8,7 +8,12 @@ from django.db.models import F, FilteredRelation, OuterRef, Q, QuerySet, Value
 from django.http import Http404, HttpRequest, JsonResponse
 from django.views.generic import ListView
 
-from web.models import ExporterUserObjectPermission, ImporterUserObjectPermission, User
+from web.models import (
+    ExporterUserObjectPermission,
+    ImporterUserObjectPermission,
+    User,
+    UserFeedbackSurvey,
+)
 from web.utils.api.auth import HawkAuthMixin
 
 from . import serializers
@@ -19,6 +24,7 @@ VERSION = 0
 class DataViewBase(HawkAuthMixin, ListView):
     http_method_names = ["post"]
     qs_serializer: ClassVar[type[pydantic.BaseModel]]
+    list_field: str
     data_serializer: ClassVar[type[pydantic.BaseModel]]
     min_version: int = 0
     max_version: int = VERSION
@@ -31,10 +37,8 @@ class DataViewBase(HawkAuthMixin, ListView):
                 f"This endpoint is only available from v{self.min_version} to v{self.max_version}"
             )
 
-        qs = self.get_queryset()
-        qs_serializer = self.get_qs_serializer()
-        data = qs_serializer(users=list(qs))
-        return JsonResponse(data.model_dump(mode="json"), status=http.HTTPStatus.OK, safe=False)
+        data = self.get_data()
+        return JsonResponse(data, status=http.HTTPStatus.OK, safe=False)
 
     def get_qs_serializer(self) -> type[pydantic.BaseModel]:
         """Returns the queryset serilaizer. Allows override of the queryset serializer for specific versions"""
@@ -43,6 +47,13 @@ class DataViewBase(HawkAuthMixin, ListView):
     def get_data_serializer(self) -> type[pydantic.BaseModel]:
         """Returns the data serializer. Allows override of the data serializer for specific versions"""
         return self.data_serializer
+
+    def get_data(self) -> list[dict[str, Any]]:
+        """Fetches the queryset and return a json dump of the data"""
+        qs_serializer = self.get_qs_serializer()
+        queryset = self.get_queryset()
+        data = qs_serializer(**{self.list_field: list(queryset)}).model_dump(mode="json")
+        return data[self.list_field]
 
     def get_queryset_annotations(self) -> dict[str, Any]:
         """Returns a dict of annotations to be used in get_queryset"""
@@ -72,6 +83,7 @@ class UserDataView(DataViewBase):
     model = User
     qs_serializer = serializers.Users
     data_serializer = serializers.UserSerializer
+    list_field = "users"
 
     def get_queryset_annotations(self) -> dict[str, Any]:
         return {
@@ -96,3 +108,10 @@ class UserDataView(DataViewBase):
 
     def get_queryset_filters(self) -> dict[str, Any]:
         return {"pk__gt": 0}
+
+
+class UserFeedbackSurveyDataView(DataViewBase):
+    model = UserFeedbackSurvey
+    qs_serializer = serializers.UserFeebackSurveys
+    data_serializer = serializers.UserFeedbackSurveySerializer
+    list_field = "surveys"
