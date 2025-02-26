@@ -8,6 +8,7 @@ from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import DocumentPack
 from web.domains.workbasket.base import WorkbasketAction
+from web.flow.models import ProcessTypes
 from web.models import Task, User
 from web.permissions import Perms
 from web.utils import datetime_format
@@ -439,6 +440,36 @@ class ShowWelcomeMessageAction:
         ]
 
 
+# ECIL Prototype action
+class EditECILApplicationAction(Action):
+    def show_link(self) -> bool:
+        show_link = False
+
+        apps_with_prototype = [ProcessTypes.CFS]
+
+        if (
+            self.application.process_type in apps_with_prototype
+            and self.status == ImpExpStatus.IN_PROGRESS
+            and self.app_checker.can_edit()
+            and self.user.has_perm(Perms.sys.view_ecil_prototype)
+        ):
+            show_link = True
+
+        return show_link
+
+    def get_workbasket_actions(self) -> list[WorkbasketAction]:
+        return [
+            WorkbasketAction(
+                is_post=False,
+                name="Resume",
+                # TODO: Add URL to first ECIL CFS view when created.
+                # TODO: Later change URL to "check your answers" view when created.
+                url="#",
+                section_label="ECIL Prototype",
+            )
+        ]
+
+
 APPLICANT_ACTIONS: list[ActionT] = [
     EditApplicationAction,
     CancelApplicationAction,
@@ -452,4 +483,5 @@ APPLICANT_ACTIONS: list[ActionT] = [
     ViewIssuedDocumentsAction,
     ClearIssuedDocumentsAction,
     ProvideFirearmsReportAction,
+    EditECILApplicationAction,
 ]

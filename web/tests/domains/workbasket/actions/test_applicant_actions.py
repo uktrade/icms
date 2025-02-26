@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth.models import Group
 from django.utils import timezone
 
 from web.domains.case.services import document_pack
@@ -7,6 +8,7 @@ from web.domains.workbasket.actions import ActionConfig
 from web.domains.workbasket.actions.applicant_actions import (
     ClearApplicationAction,
     ClearIssuedDocumentsAction,
+    EditECILApplicationAction,
     ShowWelcomeMessageAction,
     SubmitVariationUpdateAction,
     ViewApplicationAction,
@@ -222,3 +224,32 @@ class TestApplicantActions:
         wb_action = action.get_workbasket_actions()[1]
         assert wb_action.name == "Clear From Workbasket"
         assert wb_action.section_label == "Welcome & Introduction"
+
+
+def test_edit_ecil_application_action(cfs_app_in_progress, exporter_one_contact):
+    cfs_app_in_progress.active_tasks = [Task.TaskType.PREPARE]
+
+    # test exporter contact can't see it initially
+    config = ActionConfig(
+        user=exporter_one_contact, case_type="export", application=cfs_app_in_progress
+    )
+    action = EditECILApplicationAction.from_config(config)
+
+    assert not action.show_link()
+
+    # Give the exporter_one_contact the correct prototype permission
+    group = Group.objects.get(name="ECIL Prototype User")
+    exporter_one_contact.groups.add(group)
+
+    # Only way to clear permission checking cache in same test.
+    exporter_one_contact = User.objects.get(pk=exporter_one_contact.pk)
+
+    config = ActionConfig(
+        user=exporter_one_contact, case_type="export", application=cfs_app_in_progress
+    )
+    action = EditECILApplicationAction.from_config(config)
+    assert action.show_link()
+
+    wb_action = action.get_workbasket_actions()[0]
+    assert wb_action.name == "Resume"
+    assert wb_action.section_label == "ECIL Prototype"
