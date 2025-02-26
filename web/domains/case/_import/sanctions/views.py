@@ -325,7 +325,7 @@ def delete_goods(
 
 
 class SanctionsSupportingDocumentsDetailView(
-    case_progress.InProgressApplicationStatusTaskMixin, DetailView
+    LoginRequiredMixin, case_progress.InProgressApplicationStatusTaskMixin, DetailView
 ):
     http_method_names = ["get"]
     template_name = "web/domains/case/import/sanctions/supporting-documents-list.html"
