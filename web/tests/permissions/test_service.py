@@ -350,6 +350,7 @@ class TestPermissionsService:
             "E1_main_contact",
             "E1_secondary_contact",
             "E2_main_contact",
+            "prototype_user",
         ]
 
         ilb_admin_users = get_users_with_permission(Perms.sys.ilb_admin).values_list(
@@ -514,12 +515,12 @@ class TestPermissionsService:
         assert importer_contacts.count() == 0
 
         exporter_contacts = organisation_get_contacts(self.exporter)
-        assert exporter_contacts.count() == 2
+        assert exporter_contacts.count() == 3
 
         exporter_contacts = organisation_get_contacts(
             self.exporter, perms=[Perms.obj.exporter.manage_contacts_and_agents.codename]
         )
-        assert exporter_contacts.count() == 2
+        assert exporter_contacts.count() == 3
 
         remove_perm(
             Perms.obj.exporter.manage_contacts_and_agents, self.exporter_contact, self.exporter
@@ -528,7 +529,7 @@ class TestPermissionsService:
         exporter_contacts = organisation_get_contacts(
             self.exporter, perms=[Perms.obj.exporter.manage_contacts_and_agents.codename]
         )
-        assert exporter_contacts.count() == 1
+        assert exporter_contacts.count() == 2
 
     def test_organisation_remove_contact(self):
         #

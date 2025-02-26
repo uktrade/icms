@@ -6,6 +6,7 @@ from pytest_django.asserts import assertRedirects
 
 from web.mail.constants import EmailTypes
 from web.models import ApprovalRequest
+from web.permissions import organisation_remove_contact
 from web.sites import (
     SiteName,
     get_caseworker_site_domain,
@@ -18,6 +19,12 @@ from web.tests.helpers import (
     check_gov_notify_email_was_sent,
     get_linked_access_request,
 )
+
+
+@pytest.fixture(autouse=True)
+def remove_prototype_user(prototype_user, exporter):
+    # Linking the prototype user to an exporter breaks several of these tests.
+    organisation_remove_contact(exporter, prototype_user)
 
 
 class TestManageAccessApprovalView(AuthTestCase):

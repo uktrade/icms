@@ -27,6 +27,7 @@ from web.permissions import (
     ExporterObjectPermissions,
     ImporterObjectPermissions,
     constabulary_add_contact,
+    organisation_add_contact,
 )
 from web.sites import SiteName
 from web.tests.organisations import TEST_EXPORTERS, TEST_IMPORTERS
@@ -323,6 +324,9 @@ class Command(BaseCommand):
         user = self.create_user(username)
         add_email(user)
         add_group(user, "ECIL Prototype User")
+
+        exporter_one = Exporter.objects.get(name="Test Exporter 1")
+        organisation_add_contact(exporter_one, user, assign_manage=True)
 
 
 def add_email(user):

@@ -81,6 +81,13 @@ class ExportApplication(ExportApplicationABC, ApplicationBase):
             models.Index(fields=["-submit_datetime"], name="EA_submit_datetime_idx"),
         ]
 
+    applicant_reference = models.CharField(
+        max_length=100,
+        default="",
+        verbose_name="Name the application",
+        help_text="Give the application a reference name so you can refer back to it when needed",
+    )
+
     application_type = models.ForeignKey(
         "web.ExportApplicationType", on_delete=models.PROTECT, blank=False, null=False
     )

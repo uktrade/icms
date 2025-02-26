@@ -458,13 +458,14 @@ class EditECILApplicationAction(Action):
         return show_link
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
+        kwargs = {"application_pk": self.application.pk}
+
         return [
             WorkbasketAction(
                 is_post=False,
                 name="Resume",
-                # TODO: Add URL to first ECIL CFS view when created.
                 # TODO: Later change URL to "check your answers" view when created.
-                url="#",
+                url=reverse("ecil:export-cfs:application-reference", kwargs=kwargs),
                 section_label="ECIL Prototype",
             )
         ]

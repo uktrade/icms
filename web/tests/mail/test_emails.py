@@ -48,6 +48,7 @@ from web.models import (
     VariationRequest,
     WithdrawApplication,
 )
+from web.permissions import organisation_remove_contact
 from web.sites import (
     SiteName,
     get_caseworker_site_domain,
@@ -60,6 +61,12 @@ from web.tests.helpers import (
     add_variation_request_to_app,
     get_linked_access_request,
 )
+
+
+@pytest.fixture(autouse=True)
+def remove_prototype_user(prototype_user, exporter):
+    # Linking the prototype user to an exporter breaks several of these tests.
+    organisation_remove_contact(exporter, prototype_user)
 
 
 def default_personalisation() -> dict:
