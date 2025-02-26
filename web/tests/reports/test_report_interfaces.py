@@ -19,7 +19,7 @@ from web.models import (
     UpdateRequest,
     VariationRequest,
 )
-from web.permissions import organisation_add_contact
+from web.permissions import organisation_add_contact, organisation_remove_contact
 from web.reports.constants import UserDateFilterType
 from web.reports.interfaces import (
     AccessRequestTotalsInterface,
@@ -1396,10 +1396,21 @@ class TestActiveUserInterface:
         assert data["errors"] == []
 
     @freeze_time("2024-02-11 12:00:00")
-    def test_get_data(self, importer, ilb_admin_two, importer_client, importer_one_contact):
+    def test_get_data(
+        self,
+        importer,
+        exporter,
+        ilb_admin_two,
+        importer_client,
+        importer_one_contact,
+        prototype_user,
+    ):
         importer_client.force_login(importer_one_contact)
         # Makes an admin user an importer to make sure they are excluded from the report
         organisation_add_contact(importer, ilb_admin_two)
+
+        # Not required in test
+        organisation_remove_contact(exporter, prototype_user)
 
         user_email = importer_one_contact.emails.get(is_primary=True)
         user_email.email = "I1_main_contact_alt_email@example.com"  # /PS-IGNORE

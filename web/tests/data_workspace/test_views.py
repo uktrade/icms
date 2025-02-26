@@ -111,9 +111,9 @@ class TestUserDataView:
             "organisation": "prototype_user_org",
             "date_joined": "2024-01-20T00:00:00Z",  # /PS-IGNORE
             "last_login": None,
-            "exporter_ids": [],
+            "exporter_ids": [1],
             "importer_ids": [],
-            "group_names": ["ECIL Prototype User"],
+            "group_names": ["ECIL Prototype User", "Exporter User"],
         }
 
 
