@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth.models import Group
+from django.urls import reverse
 from django.utils import timezone
 
 from web.domains.case.services import document_pack
@@ -253,3 +254,6 @@ def test_edit_ecil_application_action(cfs_app_in_progress, exporter_one_contact)
     wb_action = action.get_workbasket_actions()[0]
     assert wb_action.name == "Resume"
     assert wb_action.section_label == "ECIL Prototype"
+    assert wb_action.url == reverse(
+        "ecil:export-cfs:application-reference", kwargs={"application_pk": cfs_app_in_progress.pk}
+    )

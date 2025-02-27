@@ -1,9 +1,0 @@
-{% extends "ecil/base.html" %}
-
-{% block ecil_content %}
-  <form {% if form.is_multipart %} enctype="multipart/form-data" {% endif %} method="post" action="">
-    {{ csrf_input }}
-    {{ form }}
-    {{ gds.govukButton({ "text": "Submit", "type": "submit" }) }}
-  </form>
-{% endblock %}

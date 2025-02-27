@@ -1,0 +1,12 @@
+{% extends "ecil/gds_form.html" %}
+
+{% block bodyEnd %}
+  {{ super() }}
+  <script type="module" nonce="{{ request.csp_nonce }}">
+    accessibleAutocomplete.enhanceSelectElement({
+      defaultValue: '',
+      selectElement: document.querySelector('#id_autocomplete_select'),
+      menuClasses: "govuk-body",
+    })
+  </script>
+{% endblock %}

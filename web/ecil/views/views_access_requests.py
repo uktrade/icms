@@ -62,7 +62,7 @@ class ExporterAccessRequestTypeFormView(LoginRequiredMixin, PermissionRequiredMi
 
     # FormView config
     form_class = forms.ExporterAccessRequestTypeForm
-    template_name = "ecil/access_request/exporter_or_agent.html"
+    template_name = "ecil/gds_form.html"
 
     def form_valid(self, form: forms.ExporterAccessRequestTypeForm) -> HttpResponseRedirect:
 
@@ -196,18 +196,17 @@ class ExporterAccessRequestMultiStepFormView(ExporterAccessRequestMultiStepFormV
     form_steps = {
         "company-details": FormStep(
             form_cls=forms.ExporterAccessRequestCompanyDetailsForm,
-            # TODO: Rename templates with -step.html suffix
-            template_name="ecil/access_request/exporter_company_details-step.html",
+            template_name="ecil/access_request/exporter_company_details_step.html",
         ),
         "company-purpose": FormStep(form_cls=forms.ExporterAccessRequestCompanyPurposeForm),
         "company-products": FormStep(form_cls=forms.ExporterAccessRequestCompanyProductsForm),
         "export-countries": FormStep(
             form_cls=forms.ExporterAccessRequestExportCountriesForm,
-            template_name="ecil/access_request/exporter_countries-step.html",
+            template_name="ecil/access_request/exporter_countries_step.html",
         ),
     }
 
-    template_name = "ecil/access_request/exporter_step_form.html"
+    template_name = "ecil/gds_form.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -258,11 +257,11 @@ class ExporterAccessRequestAgentMultiStepFormView(ExporterAccessRequestMultiStep
         "company-products": FormStep(form_cls=forms.ExporterAccessRequestCompanyProductsForm),
         "export-countries": FormStep(
             form_cls=forms.ExporterAccessRequestExportCountriesForm,
-            template_name="ecil/access_request/exporter_countries-step.html",
+            template_name="ecil/access_request/exporter_countries_step.html",
         ),
     }
 
-    template_name = "ecil/access_request/exporter_step_form.html"
+    template_name = "ecil/gds_form.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -510,7 +509,7 @@ class ExporterAccessRequestConfirmRemoveCountryFormView(
 
     # FormView config
     form_class = forms.ExporterAccessRequestRemoveExportCountryForm
-    template_name = "ecil/access_request/exporter_remove_export_country_form.html"
+    template_name = "ecil/gds_form.html"
     http_method_names = ["get", "post"]
 
     def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:

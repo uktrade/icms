@@ -25,7 +25,7 @@ class TestCFSApplicationReferenceUpdateView:
     def test_get(self):
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
-        assertTemplateUsed(response, "ecil/cfs/application/applicant_reference.html")
+        assertTemplateUsed(response, "ecil/gds_form.html")
 
         assert response.context["back_link_kwargs"] == {
             "text": "Back",

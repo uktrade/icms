@@ -58,7 +58,7 @@ class NewUserExporterTriageFormView(LoginRequiredMixin, PermissionRequiredMixin,
     permission_required = [Perms.sys.view_ecil_prototype]
 
     form_class = forms.ExporterTriageForm
-    template_name = "ecil/new_user/exporter_triage_form.html"
+    template_name = "ecil/gds_form.html"
 
     def form_valid(self, form: forms.ExporterTriageForm) -> HttpResponseRedirect:
         applications = form.cleaned_data["applications"]
