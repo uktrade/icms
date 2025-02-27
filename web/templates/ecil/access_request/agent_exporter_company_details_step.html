@@ -1,11 +1,6 @@
-{% extends "ecil/base.html" %}
+{% extends "ecil/gds_form.html" %}
 
-{% block ecil_content %}
+{% block ecil_content_before_form %}
   <h1 class="govuk-heading-l">What are the exporter company's details?</h1>
   <p class="govuk-body">These are the details of the company you are applying on behalf of</p>
-  <form {% if form.is_multipart %} enctype="multipart/form-data" {% endif %} method="post" action="">
-    {{ csrf_input }}
-    {{ form }}
-    {{ gds.govukButton({ "text": "Continue", "type": "submit" }) }}
-  </form>
 {% endblock %}

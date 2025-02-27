@@ -1,20 +1,10 @@
 {% extends "ecil/base.html" %}
 
 {% block ecil_content %}
+  {% block ecil_content_before_form %} {% endblock %}
   <form {% if form.is_multipart %} enctype="multipart/form-data" {% endif %} method="post" action="">
     {{ csrf_input }}
     {{ form }}
-    {{ gds.govukButton({ "text": "Submit", "type": "submit" }) }}
+    {{ gds.govukButton({ "text": submit_btn_label|default("Continue"), "type": "submit" }) }}
   </form>
-{% endblock %}
-
-{% block bodyEnd %}
-  {{ super() }}
-  <script type="module" nonce="{{ request.csp_nonce }}">
-    accessibleAutocomplete.enhanceSelectElement({
-      defaultValue: '',
-      selectElement: document.querySelector('#id_autocomplete_select'),
-      menuClasses: "govuk-body",
-    })
-  </script>
 {% endblock %}

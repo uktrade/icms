@@ -16,7 +16,7 @@ class GDSTestPageView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView)
 
     # TemplateView config
     http_method_names = ["get"]
-    template_name = "ecil/gds_test_page.html"
+    template_name = "ecil/example/test_page.html"
 
 
 class GDSFormView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -25,7 +25,7 @@ class GDSFormView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
     # FormView config
     form_class = forms.ExampleGDSForm
-    template_name = "ecil/gds_form.html"
+    template_name = "ecil/example/form.html"
 
     def get_success_url(self):
         return reverse("ecil:example:gds_form_example")
@@ -37,7 +37,7 @@ class GDSModelFormView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
     # FormView config
     form_class = forms.ExampleGDSModelForm
-    template_name = "ecil/gds_model_form.html"
+    template_name = "ecil/gds_form.html"
 
     def get_success_url(self):
         return reverse("ecil:example:gds_model_form_example")
@@ -49,7 +49,7 @@ class GDSConditionalModelFormView(LoginRequiredMixin, PermissionRequiredMixin, F
 
     # FormView config
     form_class = forms.ExampleConditionalGDSModelForm
-    template_name = "ecil/gds_model_form.html"
+    template_name = "ecil/gds_form.html"
 
     def get_success_url(self):
         return reverse("ecil:example:gds_conditional_model_form_example")
@@ -65,7 +65,7 @@ class ECILMultiStepFormView(LoginRequiredMixin, PermissionRequiredMixin, MultiSt
         "two": FormStep(form_cls=forms.ExampleMultiStepStepTwoForm),
         "three": FormStep(form_cls=forms.ExampleMultiStepStepThreeForm),
     }
-    template_name = "ecil/gds_step_form.html"
+    template_name = "ecil/gds_form.html"
 
     def get_previous_step_url(self) -> str:
         return reverse("ecil:example:step_form", kwargs={"step": self.previous_step})
@@ -114,4 +114,4 @@ class ECILMultiStepExampleListView(LoginRequiredMixin, PermissionRequiredMixin, 
 
     # ListView config
     model = ECILMultiStepExample
-    template_name = "ecil/list.html"
+    template_name = "ecil/example/list.html"
