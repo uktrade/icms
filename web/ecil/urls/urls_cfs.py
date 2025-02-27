@@ -13,6 +13,11 @@ urlpatterns = [
                     views.CFSApplicationReferenceUpdateView.as_view(),
                     name="application-reference",
                 ),
+                path(
+                    "contact/",
+                    views.CFSApplicationContactUpdateView.as_view(),
+                    name="application-contact",
+                ),
             ]
         ),
     ),
