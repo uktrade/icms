@@ -29,7 +29,7 @@ class RadioItem(TextOrHTMLMixin, BaseModel):
     # Specific ID attribute for the radio item. If omitted, then idPrefix string will be applied.
     id: str | None = None
     # Required. Value for the radio input.
-    value: str
+    value: str | int
     # Subset of options for the label used by each radio item within the radios component.
     label: RadioItemLabel | None = None
     # Can be used to add a hint to each radio item within the radios component.
@@ -45,6 +45,10 @@ class RadioItem(TextOrHTMLMixin, BaseModel):
     disabled: bool | None = None
     # HTML attributes (for example data attributes) to add to the radio input tag.
     attributes: dict[str, Any] | None = None
+
+
+class RadioItemDivider(BaseModel):
+    divider: str
 
 
 # All options available here:
@@ -65,9 +69,9 @@ class RadiosKwargs(BaseModel):
     # Required. Name attribute for the radio items.
     name: str
     # Required. The radio items within the radios component.
-    items: list[RadioItem]
+    items: list[RadioItem | RadioItemDivider]
     # The value for the radio which should be checked when the page loads. Use this as an alternative to setting the checked option on each individual item.
-    value: str | None = None
+    value: str | int | None = None
     # Classes to add to the radio container.
     classes: str | None = None
     # HTML attributes (for example data attributes) to add to the radio input tag.

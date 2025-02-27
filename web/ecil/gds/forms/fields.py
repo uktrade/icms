@@ -526,13 +526,18 @@ class GovUKPasswordInputField(GDSFieldMixin, forms.CharField):
 
 
 class GovUKRadioInputField(GDSFieldMixin, forms.ChoiceField):
+    # Includes a divider with "or" option if defined in choices.
+    NONE_OF_THESE = "none-of-these"
+
     def __init__(
         self,
         *args: Any,
         choice_hints: dict[str, str] | None = None,
+        choice_classes: str | None = None,
         **kwargs: Any,
     ) -> None:
         self.choice_hints = choice_hints or {}
+        self.choice_classes = choice_classes
         super().__init__(*args, **kwargs)
 
     class BF(GDSBoundField):
@@ -560,18 +565,42 @@ class GovUKRadioInputField(GDSFieldMixin, forms.ChoiceField):
                 errorMessage=self._get_errors(),
             ).model_dump(exclude_defaults=True)
 
-        def get_items(self) -> list[serializers.radios.RadioItem]:
-            items = []
+        def get_items(
+            self,
+        ) -> list[serializers.radios.RadioItem | serializers.radios.RadioItemDivider]:
+            items: list[serializers.radios.RadioItem | serializers.radios.RadioItemDivider] = []
+
             for i, (value, label) in enumerate(self.field.choices):
+                is_divider = value == GovUKRadioInputField.NONE_OF_THESE
+                if is_divider:
+                    items.append(serializers.radios.RadioItemDivider(divider="or"))
 
-                item = {"id": f"{self.auto_id}_{i}", "value": value, "text": label}
+                hint = self.field.choice_hints.get(value, None)
+
+                # Attributes to apply to each radio item label
+                if self.field.choice_classes and not is_divider:
+                    item_label = serializers.radios.RadioItemLabel(
+                        classes=self.field.choice_classes
+                    )
+                else:
+                    item_label = None
+
                 if value in self.form.gds_radio_conditional_fields:
-                    item["conditional"] = {"html": self.form.gds_radio_conditional_fields[value]}
+                    conditional = serializers.radios.RadioItemConditional(
+                        html=self.form.gds_radio_conditional_fields[value]
+                    )
+                else:
+                    conditional = None
 
-                if hint := self.field.choice_hints.get(value, None):
-                    item["hint"] = serializers.common.InputHint(text=hint)
-
-                items.append(serializers.radios.RadioItem(**item))
+                item = serializers.radios.RadioItem(
+                    id=f"{self.auto_id}_{i}",
+                    value=value,
+                    text=label,
+                    hint=serializers.common.InputHint(text=hint) if hint else None,
+                    conditional=conditional,
+                    label=item_label,
+                )
+                items.append(item)
 
             return items
 
