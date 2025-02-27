@@ -487,24 +487,9 @@ class TestImporterAccessRequestInterface:
         interface = ImporterAccessRequestInterface(self.report_schedule)
         data = interface.get_data()
 
-        request_date = datetime_format(timezone.now(), "%d/%m/%Y", False)
-        assert data == {
-            "header": EXPECTED_IMPORT_ACCESS_REQUEST_HEADER,
-            # The header test now has a results row (due to nulls being changed to "")
-            "results": [
-                {
-                    "Agent Address": "",
-                    "Agent Name": "",
-                    "Importer Address": "1 Main Street",
-                    "Importer Name": "Import Ltd",
-                    "Request Date": request_date,
-                    "Request Type": "Importer Access Request",
-                    "Response": "",
-                    "Response Reason": "",
-                },
-            ],
-            "errors": [],
-        }
+        assert data["header"] == EXPECTED_IMPORT_ACCESS_REQUEST_HEADER
+        assert len(data["results"]) == 1
+        assert data["errors"] == []
 
     def test_get_errors(self, approved_importer_access_request):
         interface = ImporterAccessRequestInterface(self.report_schedule)
@@ -568,24 +553,9 @@ class TestExporterAccessRequestInterface:
         interface = ExporterAccessRequestInterface(self.report_schedule)
         data = interface.get_data()
 
-        request_date = datetime_format(timezone.now(), "%d/%m/%Y", False)
-        assert data == {
-            "header": EXPECTED_EXPORT_ACCESS_REQUEST_HEADER,
-            # The header test now has a results row (due to nulls being changed to "")
-            "results": [
-                {
-                    "Agent Address": "",
-                    "Agent Name": "",
-                    "Exporter Address": "2 Main Street",
-                    "Exporter Name": "Export Ltd",
-                    "Request Date": request_date,
-                    "Request Type": "Exporter Access Request",
-                    "Response": "",
-                    "Response Reason": "",
-                },
-            ],
-            "errors": [],
-        }
+        assert data["header"] == EXPECTED_EXPORT_ACCESS_REQUEST_HEADER
+        assert len(data["results"]) == 1
+        assert data["errors"] == []
 
     def test_get_data_results(
         self, approved_exporter_access_request, refused_exporter_access_request

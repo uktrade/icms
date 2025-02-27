@@ -532,7 +532,9 @@ class ExporterAccessRequestConfirmRemoveCountryFormView(
 
         return kwargs
 
-    def form_valid(self, form):
+    def form_valid(
+        self, form: forms.ExporterAccessRequestRemoveExportCountryForm
+    ) -> HttpResponseRedirect:
         referrer_view = self.request.session.get("referrer_view")
 
         if referrer_view == "ecil:access_request:exporter_agent_step_form":
@@ -555,9 +557,11 @@ class ExporterAccessRequestConfirmRemoveCountryFormView(
 
         return super().form_valid(form)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context["back_link_kwargs"] = {"text": "Back", "href": self.get_success_url()}
+        context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
+            text="Back", href=self.get_success_url()
+        ).model_dump(exclude_defaults=True)
 
         return context
 

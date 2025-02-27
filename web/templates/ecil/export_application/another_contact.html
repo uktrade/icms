@@ -1,0 +1,8 @@
+{% extends "ecil/base.html" %}
+
+{% block ecil_content %}
+  {{ gds.govukNotificationBanner(notification_banner_kwargs) }}
+  <p class="govuk-body">To add someone else as the main contact for the application, they will need to create a new access request for the exporter. </p>
+  <h2 class="govuk-heading-m">Get in touch</h2>
+  <p class="govuk-body">If you have any questions get in touch with Import Licensing Branch (ILB) at <a href="mailto:{{ ilb_contact_email }}" class="govuk-link govuk-link--text-colour">{{ ilb_contact_email }}</a></p>
+{% endblock %}
