@@ -124,7 +124,11 @@ def request_license(data: types.LicenceDataPayload) -> requests.Response:
     url = urljoin(settings.ICMS_HMRC_DOMAIN, settings.ICMS_HMRC_UPDATE_LICENCE_ENDPOINT)
 
     hawk_sender, response = make_hawk_request(
-        "POST", url, data=data.model_dump_json(), headers={"Content-Type": "application/json"}
+        "POST",
+        url,
+        "hmrc",
+        data=data.model_dump_json(),
+        headers={"Content-Type": "application/json"},
     )
 
     # log the response in case `raise_for_status` throws an error

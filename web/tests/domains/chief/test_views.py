@@ -68,7 +68,9 @@ class TestLicenseDataCallbackAuthentication:
         )
 
         content = payload.model_dump_json().encode("UTF-8")
-        sender = make_testing_hawk_sender("POST", self.url, content=content, content_type=JSON_TYPE)
+        sender = make_testing_hawk_sender(
+            "POST", self.url, api_type="hmrc", content=content, content_type=JSON_TYPE
+        )
 
         response = self.client.post(
             self.url,
@@ -90,6 +92,28 @@ class TestLicenseDataCallbackAuthentication:
     def test_auth_invalid(self):
         url = reverse("chief:license-data-callback")
         response = self.client.post(url, HTTP_HAWK_AUTHENTICATION="Hawk foo")
+
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert response.headers.get("Content-Type") == "application/json"
+
+    def test_data_workspace_auth_invalid(self):
+        payload = types.ChiefLicenceReplyResponseData(
+            run_number=1,
+            accepted=[types.AcceptedLicence(id=str(self.chief_req.icms_hmrc_id))],
+            rejected=[],
+        )
+
+        content = payload.model_dump_json().encode("UTF-8")
+        sender = make_testing_hawk_sender(
+            "POST", self.url, api_type="data_workspace", content=content, content_type=JSON_TYPE
+        )
+
+        response = self.client.post(
+            self.url,
+            payload.model_dump_json(),
+            content_type=JSON_TYPE,
+            HTTP_HAWK_AUTHENTICATION=sender.request_header,
+        )
 
         assert response.status_code == HTTPStatus.BAD_REQUEST
         assert response.headers.get("Content-Type") == "application/json"

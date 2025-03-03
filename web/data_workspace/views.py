@@ -14,14 +14,14 @@ from web.models import (
     User,
     UserFeedbackSurvey,
 )
-from web.utils.api.auth import HawkAuthMixin
+from web.utils.api.auth import HawkDataWorkspaceMixin
 
 from . import serializers
 
 VERSION = 0
 
 
-class MetadataView(HawkAuthMixin, View):
+class MetadataView(HawkDataWorkspaceMixin, View):
     http_method_names = ["post"]
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
@@ -31,7 +31,7 @@ class MetadataView(HawkAuthMixin, View):
         return JsonResponse(data["metadata"], status=http.HTTPStatus.OK, safe=False)
 
 
-class DataViewBase(HawkAuthMixin, ListView):
+class DataViewBase(HawkDataWorkspaceMixin, ListView):
     http_method_names = ["post"]
     qs_serializer: ClassVar[type[serializers.BaseSerializer]]
     list_field: str

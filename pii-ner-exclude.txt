@@ -5345,3 +5345,6 @@ HTTP_REFERER
 ArrayInteger
 Test Dept
 Test Job
+ICMS_HAWK_ICMS_HMRC_API_ID='icms
+{api_type
+{api_type}
