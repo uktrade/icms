@@ -12,7 +12,165 @@ def at_example(prefix: str) -> str:
     return f"{prefix}@example.com"  # /PS-IGNORE
 
 
-DT_STRING = "%Y-%m-%dT%H:%M:%S.%fZ"
+DT_STRING = "%Y-%m-%d %H:%M:%S.%f"
+
+
+class TestMetaDataView:
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client):
+        self.client = cw_client
+        self.url = reverse("data-workspace:metadata")
+
+    def test_metadata(self):
+        content = json.dumps({})
+        sender = make_testing_hawk_sender("POST", self.url, content=content, content_type=JSON_TYPE)
+        response = self.client.post(
+            self.url,
+            content,
+            content_type=JSON_TYPE,
+            HTTP_HAWK_AUTHENTICATION=sender.request_header,
+        )
+        assert response.status_code == HTTPStatus.OK
+
+        metadata = response.json()
+        assert metadata == [
+            {
+                "endpoint": "/data-workspace/v0/users/",
+                "fields": [
+                    {
+                        "name": "id",
+                        "primary_key": True,
+                        "type": "Integer",
+                    },
+                    {
+                        "name": "title",
+                        "nullable": True,
+                        "type": "String",
+                    },
+                    {
+                        "name": "first_name",
+                        "type": "String",
+                    },
+                    {
+                        "name": "last_name",
+                        "type": "String",
+                    },
+                    {
+                        "name": "email",
+                        "type": "String",
+                    },
+                    {
+                        "name": "primary_email_address",
+                        "nullable": True,
+                        "type": "String",
+                    },
+                    {
+                        "name": "organisation",
+                        "nullable": True,
+                        "type": "String",
+                    },
+                    {
+                        "name": "department",
+                        "nullable": True,
+                        "type": "String",
+                    },
+                    {
+                        "name": "job_title",
+                        "nullable": True,
+                        "type": "String",
+                    },
+                    {
+                        "name": "date_joined",
+                        "nullable": True,
+                        "type": "Datetime",
+                    },
+                    {
+                        "name": "last_login",
+                        "nullable": True,
+                        "type": "Datetime",
+                    },
+                    {
+                        "name": "exporter_ids",
+                        "type": "ArrayInteger",
+                    },
+                    {
+                        "name": "importer_ids",
+                        "type": "ArrayInteger",
+                    },
+                    {
+                        "name": "group_names",
+                        "type": "ArrayString",
+                    },
+                ],
+                "indexes": [],
+                "table_name": "icms_user",
+            },
+            {
+                "endpoint": "/data-workspace/v0/user-surveys/",
+                "fields": [
+                    {
+                        "name": "id",
+                        "primary_key": True,
+                        "type": "Integer",
+                    },
+                    {
+                        "name": "satisfaction",
+                        "type": "String",
+                    },
+                    {
+                        "name": "issues",
+                        "type": "ArrayString",
+                    },
+                    {
+                        "name": "issue_details",
+                        "type": "String",
+                    },
+                    {
+                        "name": "find_service",
+                        "type": "String",
+                    },
+                    {
+                        "name": "find_service_details",
+                        "type": "String",
+                    },
+                    {
+                        "name": "additional_support",
+                        "type": "String",
+                    },
+                    {
+                        "name": "service_improvements",
+                        "type": "String",
+                    },
+                    {
+                        "name": "future_contact",
+                        "type": "String",
+                    },
+                    {
+                        "name": "referrer_path",
+                        "type": "String",
+                    },
+                    {
+                        "name": "site",
+                        "type": "String",
+                    },
+                    {
+                        "name": "process_id",
+                        "nullable": True,
+                        "type": "Integer",
+                    },
+                    {
+                        "name": "created_by_id",
+                        "type": "Integer",
+                    },
+                    {
+                        "name": "created_datetime",
+                        "type": "Datetime",
+                    },
+                ],
+                "indexes": [],
+                "table_name": "icms_userfeedbacksurvey",
+            },
+        ]
 
 
 class TestUserDataView:
@@ -55,11 +213,11 @@ class TestUserDataView:
             "department": "access_request_user_dep",
             "job_title": "access_request_user_job_title",
             "organisation": "access_request_user_org",
-            "date_joined": "2024-01-20T00:00:00Z",  # /PS-IGNORE
+            "date_joined": "2024-01-20 00:00:00.000000",
             "last_login": None,
             "exporter_ids": [],
             "importer_ids": [],
-            "group_names": [None],
+            "group_names": [],
         }
 
         email = at_example("I1_main_contact")
@@ -73,7 +231,7 @@ class TestUserDataView:
             "organisation": "I1_main_contact_org",
             "department": "I1_main_contact_dep",
             "job_title": "I1_main_contact_job_title",
-            "date_joined": "2024-01-20T00:00:00Z",
+            "date_joined": "2024-01-20 00:00:00.000000",
             "last_login": None,
             "exporter_ids": [],
             "importer_ids": [1],
@@ -91,29 +249,11 @@ class TestUserDataView:
             "organisation": "E1_inactive_contact_org",
             "department": "E1_inactive_contact_dep",
             "job_title": "E1_inactive_contact_job_title",
-            "date_joined": "2024-01-20T00:00:00Z",
+            "date_joined": "2024-01-20 00:00:00.000000",
             "last_login": None,
             "exporter_ids": [1],
             "importer_ids": [],
             "group_names": ["Exporter User"],
-        }
-
-        email = at_example("prototype_user")
-        assert users[-1] == {
-            "id": 22,
-            "title": None,
-            "first_name": "prototype_user_first_name",
-            "last_name": "prototype_user_last_name",
-            "email": email,
-            "primary_email_address": email,
-            "department": "prototype_user_dep",
-            "job_title": "prototype_user_job_title",
-            "organisation": "prototype_user_org",
-            "date_joined": "2024-01-20T00:00:00Z",  # /PS-IGNORE
-            "last_login": None,
-            "exporter_ids": [1],
-            "importer_ids": [],
-            "group_names": ["ECIL Prototype User", "Exporter User"],
         }
 
 

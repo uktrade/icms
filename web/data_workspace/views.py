@@ -2,11 +2,11 @@ import http
 from typing import Any, ClassVar
 
 import pydantic
-from django.contrib.postgres.aggregates import ArrayAgg
+from django.contrib.auth.models import Group
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import F, FilteredRelation, OuterRef, Q, QuerySet, Value
+from django.db.models import F, FilteredRelation, OuterRef, Q, QuerySet
 from django.http import Http404, HttpRequest, JsonResponse
-from django.views.generic import ListView
+from django.views.generic import ListView, View
 
 from web.models import (
     ExporterUserObjectPermission,
@@ -21,13 +21,24 @@ from . import serializers
 VERSION = 0
 
 
+class MetadataView(HawkAuthMixin, View):
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
+        data = serializers.MetadataListSerializer(
+            metadata=[serializer.get_metadata() for serializer in serializers.DATA_SERIALIZERS]
+        ).model_dump(mode="json", exclude_defaults=True)
+        return JsonResponse(data["metadata"], status=http.HTTPStatus.OK, safe=False)
+
+
 class DataViewBase(HawkAuthMixin, ListView):
     http_method_names = ["post"]
-    qs_serializer: ClassVar[type[pydantic.BaseModel]]
+    qs_serializer: ClassVar[type[serializers.BaseSerializer]]
     list_field: str
-    data_serializer: ClassVar[type[pydantic.BaseModel]]
+    data_serializer: ClassVar[type[serializers.BaseSerializer]]
     min_version: int = 0
     max_version: int = VERSION
+    order_by: str = "pk"
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         version = self.kwargs["version"]
@@ -74,6 +85,7 @@ class DataViewBase(HawkAuthMixin, ListView):
         return (
             qs.filter(**self.get_queryset_filters())
             .annotate(**self.get_queryset_annotations())
+            .order_by(self.order_by)
             .values(*self.get_queryset_values())
         )
 
@@ -87,10 +99,10 @@ class UserDataView(DataViewBase):
 
     def get_queryset_annotations(self) -> dict[str, Any]:
         return {
-            "group_names": ArrayAgg(
-                "groups__name",
-                distinct=True,
-                default=Value([]),
+            "group_names": ArraySubquery(
+                Group.objects.filter(user__pk=OuterRef("pk"))
+                .values_list("name", flat=True)
+                .distinct()
             ),
             "exporter_ids": ArraySubquery(
                 ExporterUserObjectPermission.objects.filter(user__pk=OuterRef("pk"))
@@ -112,6 +124,6 @@ class UserDataView(DataViewBase):
 
 class UserFeedbackSurveyDataView(DataViewBase):
     model = UserFeedbackSurvey
-    qs_serializer = serializers.UserFeebackSurveys
+    qs_serializer = serializers.UserFeedbackSurveys
     data_serializer = serializers.UserFeedbackSurveySerializer
     list_field = "surveys"
