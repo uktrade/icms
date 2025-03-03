@@ -100,7 +100,9 @@ class TestCFSApplicationContactUpdateView:
         response = self.client.post(self.url, data=form_data)
 
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("workbasket")
+        assert response.url == reverse(
+            "ecil:export-application:countries", kwargs={"application_pk": self.app.pk}
+        )
 
         self.app.refresh_from_db()
         assert self.app.contact == self.user

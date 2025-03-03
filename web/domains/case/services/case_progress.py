@@ -3,7 +3,10 @@ from django.db.models import QuerySet
 
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
-from web.domains.case.views.mixins import ApplicationTaskMixin
+from web.domains.case.views.mixins import (
+    ApplicationAndTaskRelatedObjectMixin,
+    ApplicationTaskMixin,
+)
 from web.flow import errors
 from web.models import AccessRequest, ApprovalRequest, Process, Task
 
@@ -101,6 +104,40 @@ class InProgressApplicationStatusTaskMixin(ApplicationTaskMixin):
         )
 
         self.object = application
+
+        try:
+            check_expected_status(application, self.current_status)
+        except errors.ProcessStatusError as e:
+            # Special case where a case officer creates an update request and then releases ownership.
+            # Release ownership will change the status to SUBMITTED and therefore the
+            # check_expected_status call will raise an exception.
+            if not (
+                application.status == ST.SUBMITTED
+                and not application.case_owner
+                and application.current_update_requests().exists()
+            ):
+                raise e
+
+        return application
+
+    def has_object_permission(self) -> bool:
+        """Mandatory user object permission checking for the loaded `self.application` record."""
+        raise NotImplementedError("has_object_permission must be implemented.")
+
+
+class InProgressApplicationRelatedObjectStatusTaskMixin(ApplicationAndTaskRelatedObjectMixin):
+    """Mixin to check the application is in progress when updating a related object.
+
+    This is equivalent to case_progress.application_in_progress()
+    """
+
+    current_status = [ST.IN_PROGRESS, ST.PROCESSING, ST.VARIATION_REQUESTED]
+    current_task_type = TT.PREPARE
+
+    def get_application(self) -> ImpOrExp:
+        application: ImpOrExp = Process.objects.get(
+            pk=self.kwargs["application_pk"]  # type: ignore[attr-defined]
+        ).get_specific_model()
 
         try:
             check_expected_status(application, self.current_status)
