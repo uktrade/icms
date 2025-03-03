@@ -24,13 +24,13 @@ from web.models import (
 )
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
-from web.utils.api.auth import HawkAuthMixin
+from web.utils.api.auth import HawkHMRCMixin
 from web.utils.sentry import capture_message
 
 from . import client, types, utils
 
 
-class LicenseDataCallback(HawkAuthMixin, View):
+class LicenseDataCallback(HawkHMRCMixin, View):
     """View used by ICMS-HMRC to send licence data back to ICMS."""
 
     # View Config
@@ -71,7 +71,7 @@ class LicenseDataCallback(HawkAuthMixin, View):
         return chief_req
 
 
-class UsageDataCallbackView(HawkAuthMixin, View):
+class UsageDataCallbackView(HawkHMRCMixin, View):
     """View used by ICMS-HMRC to send usage data back to ICMS."""
 
     # View Config
@@ -289,7 +289,7 @@ class CheckChiefProgressView(
         return JsonResponse(data={"msg": msg, "reload_workbasket": reload_workbasket})
 
 
-class CheckICMSConnectionView(HawkAuthMixin, View):
+class CheckICMSConnectionView(HawkHMRCMixin, View):
     """View used by ICMS-HMRC to test connection to ICMS"""
 
     http_method_names = ["post"]

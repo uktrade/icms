@@ -1,5 +1,6 @@
 import json
 from http import HTTPStatus
+from typing import Any
 
 import pytest
 from django.urls import reverse
@@ -15,15 +16,34 @@ def at_example(prefix: str) -> str:
 DT_STRING = "%Y-%m-%d %H:%M:%S.%f"
 
 
-class TestMetaDataView:
-    @pytest.fixture(autouse=True)
-    def _setup(self, cw_client):
-        self.client = cw_client
-        self.url = reverse("data-workspace:metadata")
-
-    def test_metadata(self):
+class BaseTestDataView:
+    def test_authentication_failure(self):
         content = json.dumps({})
-        sender = make_testing_hawk_sender("POST", self.url, content=content, content_type=JSON_TYPE)
+        response = self.client.post(
+            self.url,
+            content,
+            content_type=JSON_TYPE,
+        )
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    def test_authentication_failure_hmrc_creds(self):
+        content = json.dumps({})
+        sender = make_testing_hawk_sender(
+            "POST", self.url, api_type="hmrc", content=content, content_type=JSON_TYPE
+        )
+        response = self.client.post(
+            self.url,
+            content,
+            content_type=JSON_TYPE,
+            HTTP_HAWK_AUTHENTICATION=sender.request_header,
+        )
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+
+    def test_authetication(self):
+        content = json.dumps({})
+        sender = make_testing_hawk_sender(
+            "POST", self.url, api_type="data_workspace", content=content, content_type=JSON_TYPE
+        )
         response = self.client.post(
             self.url,
             content,
@@ -31,9 +51,21 @@ class TestMetaDataView:
             HTTP_HAWK_AUTHENTICATION=sender.request_header,
         )
         assert response.status_code == HTTPStatus.OK
+        result = response.json()
+        self.check_result(result)
 
-        metadata = response.json()
-        assert metadata == [
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert True
+
+
+class TestMetaDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client):
+        self.client = cw_client
+        self.url = reverse("data-workspace:metadata")
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result == [
             {
                 "endpoint": "/data-workspace/v0/users/",
                 "fields": [
@@ -173,33 +205,14 @@ class TestMetaDataView:
         ]
 
 
-class TestUserDataView:
+class TestUserDataView(BaseTestDataView):
     @pytest.fixture(autouse=True)
     def _setup(self, cw_client):
         self.client = cw_client
         self.url = reverse("data-workspace:user-data", kwargs={"version": "v0"})
 
-    def test_authentication_failure(self):
-        content = json.dumps({})
-        response = self.client.post(
-            self.url,
-            content,
-            content_type=JSON_TYPE,
-        )
-        assert response.status_code == HTTPStatus.BAD_REQUEST
-
-    def test_authetication(self):
-        content = json.dumps({})
-        sender = make_testing_hawk_sender("POST", self.url, content=content, content_type=JSON_TYPE)
-        response = self.client.post(
-            self.url,
-            content,
-            content_type=JSON_TYPE,
-            HTTP_HAWK_AUTHENTICATION=sender.request_header,
-        )
-        assert response.status_code == HTTPStatus.OK
-
-        users = response.json()
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        users = result
         email = at_example("access_request_user")
 
         assert len(users) == 22
@@ -257,7 +270,7 @@ class TestUserDataView:
         }
 
 
-class TestUserFeedbackSurveyDataView:
+class TestUserFeedbackSurveyDataView(BaseTestDataView):
     @pytest.fixture(autouse=True)
     def _setup(self, cw_client, cfs_app_submitted, exporter_one_contact):
         self.client = cw_client
@@ -281,28 +294,7 @@ class TestUserFeedbackSurveyDataView:
             created_by=self.user,
         )
 
-    def test_authentication_failure(self):
-        content = json.dumps({})
-        response = self.client.post(
-            self.url,
-            content,
-            content_type=JSON_TYPE,
-        )
-        assert response.status_code == HTTPStatus.BAD_REQUEST
-
-    def test_authetication(self):
-        content = json.dumps({})
-        sender = make_testing_hawk_sender("POST", self.url, content=content, content_type=JSON_TYPE)
-        response = self.client.post(
-            self.url,
-            content,
-            content_type=JSON_TYPE,
-            HTTP_HAWK_AUTHENTICATION=sender.request_header,
-        )
-        assert response.status_code == HTTPStatus.OK
-
-        result = response.json()
-
+    def check_result(self, result: list[dict[str, Any]]) -> None:
         assert len(result) == 1
         assert result[0] == {
             "id": self.survey.id,
