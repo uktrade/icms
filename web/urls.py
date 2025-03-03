@@ -125,6 +125,7 @@ private_urls = [
     path("commodity/", include("web.domains.commodity.urls")),
     path("constabulary/", include("web.domains.constabulary.urls")),
     path("country/", include("web.domains.country.urls")),
+    path("data-workspace/", include("web.data_workspace.urls")),
     path("firearms/", include("web.domains.firearms.urls")),
     path("product-legislation/", include("web.domains.legislation.urls")),
     path("reports/", include("web.reports.urls")),
@@ -133,10 +134,6 @@ private_urls = [
     path("signature/", include("web.domains.signature.urls")),
     path("template/", include("web.domains.template.urls")),
 ]
-
-#  TODO ECIL-620: Keep data workspace API out of production until separating auth from CHIEF
-if settings.APP_ENV != "production":
-    private_urls.append(path("data-workspace/", include("web.data_workspace.urls")))
 
 if settings.INCLUDE_PRIVATE_URLS:
     urlpatterns = public_urls + private_urls
