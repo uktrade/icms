@@ -1,6 +1,12 @@
-from typing import Any
+from typing import Any, TypeAlias
 
 from pydantic import BaseModel
+
+from web.models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
+    CertificateOfManufactureApplication,
+)
 
 
 class CGSFrontendJinjaTemplateContext(BaseModel):
@@ -21,3 +27,10 @@ class CGSFrontendJinjaTemplateContext(BaseModel):
     containerClasses: str | None = None
     mainClasses: str | None = None
     mainLang: str | None = None
+
+
+EXPORT_APPLICATION: TypeAlias = (
+    CertificateOfFreeSaleApplication
+    | CertificateOfGoodManufacturingPracticeApplication
+    | CertificateOfManufactureApplication
+)

@@ -95,5 +95,6 @@ class CFSApplicationContactUpdateView(CFSInProgressUpdateViewBase):
         return redirect(self.get_success_url())
 
     def get_success_url(self) -> str:
-        # TODO: Add sucess url to next step.
-        return reverse("workbasket")
+        return reverse(
+            "ecil:export-application:countries", kwargs={"application_pk": self.application.pk}
+        )

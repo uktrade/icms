@@ -153,10 +153,17 @@ class ApplicationAndTaskRelatedObjectMixin:
     # The next task type to set
     next_task_type: ClassVar[str | None] = None
 
-    def set_application_and_task(self) -> None:
-        self.application = Process.objects.get(
+    def get_application(self) -> ImpOrExp:
+        application = Process.objects.get(
             pk=self.kwargs["application_pk"]  # type: ignore[attr-defined]
         ).get_specific_model()
+
+        case_progress.check_expected_status(application, self.current_status)
+
+        return application
+
+    def set_application_and_task(self) -> None:
+        self.application = self.get_application()
 
         if self.current_task_type:
             self.task = case_progress.get_expected_task(
@@ -164,8 +171,6 @@ class ApplicationAndTaskRelatedObjectMixin:
                 self.current_task_type,
                 select_for_update=self.request.method == "POST",  # type: ignore[attr-defined]
             )
-
-        case_progress.check_expected_status(self.application, self.current_status)
 
         if not self.has_object_permission():
             raise PermissionDenied
