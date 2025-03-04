@@ -1,6 +1,7 @@
 from typing import Any
 
-from pydantic import BaseModel
+from django.forms.models import ModelChoiceIteratorValue
+from pydantic import BaseModel, ConfigDict
 
 from .common import FormGroup, InputHint, TextOrHTMLMixin
 from .error_message import ErrorMessageKwargs
@@ -20,6 +21,8 @@ class RadioItemConditional(BaseModel):
 
 
 class RadioItem(TextOrHTMLMixin, BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     # Required. If html is set, this is not required. Text to use within each radio item label.
     # If html is provided, the text option will be ignored.
     text: str | None = None
@@ -29,7 +32,7 @@ class RadioItem(TextOrHTMLMixin, BaseModel):
     # Specific ID attribute for the radio item. If omitted, then idPrefix string will be applied.
     id: str | None = None
     # Required. Value for the radio input.
-    value: str | int
+    value: str | int | ModelChoiceIteratorValue
     # Subset of options for the label used by each radio item within the radios component.
     label: RadioItemLabel | None = None
     # Can be used to add a hint to each radio item within the radios component.

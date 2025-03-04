@@ -88,7 +88,6 @@ class CFSApplicationContactUpdateView(CFSInProgressUpdateViewBase):
 
             return redirect(reverse("ecil:export-application:another-contact"))
 
-        # TODO: Revisit in ECIL-636 (better ForeignKey field support)
         self.application.contact = contact
         self.application.save()
 

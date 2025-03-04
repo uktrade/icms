@@ -1,6 +1,7 @@
 from typing import Any
 
-from pydantic import BaseModel
+from django.forms.models import ModelChoiceIteratorValue
+from pydantic import BaseModel, ConfigDict
 
 from .common import FormGroup, InputHint, TextOrHTMLMixin
 from .error_message import ErrorMessageKwargs
@@ -19,6 +20,8 @@ class CheckboxItemConditional(BaseModel):
 
 
 class CheckboxItem(TextOrHTMLMixin, BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     # If html is set, this is not required. Text to use within each checkbox item label.
     # If html is provided, the text option will be ignored.
     text: str | None = None
@@ -31,7 +34,7 @@ class CheckboxItem(TextOrHTMLMixin, BaseModel):
     # Specific name for the checkbox item. If omitted, then component global name string will be applied.
     name: str | None = None
     # Required. Value for the checkbox input.
-    value: str
+    value: str | int | ModelChoiceIteratorValue
     # Subset of options for the label used by each checkbox item within the checkboxes component.
     label: CheckboxItemLabel | None = None
     # Can be used to add a hint to each checkbox item within the checkboxes component.
@@ -57,6 +60,8 @@ class CheckboxItemDivider(BaseModel):
 # All options available here:
 # https://design-system.service.gov.uk/components/checkboxes/
 class CheckboxesKwargs(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     # One or more element IDs to add to the input aria-describedby attribute without a fieldset,
     # used to provide additional descriptive information for screenreader users.
     describedBy: str | None = None
@@ -78,7 +83,7 @@ class CheckboxesKwargs(BaseModel):
     items: list[CheckboxItem | CheckboxItemDivider]
     # Array of values for checkboxes which should be checked when the page loads.
     # Use this as an alternative to setting the checked option on each individual item.
-    values: list[str] | None = None
+    values: list[str | int | ModelChoiceIteratorValue] | None = None
     # Classes to add to the checkboxes container.
     classes: str | None = None
     # HTML attributes (for example data attributes) to add to the anchor tag.

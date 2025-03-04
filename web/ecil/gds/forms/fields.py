@@ -134,7 +134,7 @@ class GovUKCharacterCountField(GDSFieldMixin, forms.CharField):
             ).model_dump(exclude_defaults=True)
 
 
-class GovUKCheckboxesField(GDSFieldMixin, forms.MultipleChoiceField):
+class GovUKCheckboxesFieldBase(GDSFieldMixin):
     # Includes a divider with "or" option if defined in choices.
     NONE_OF_THESE = "none-of-these"
 
@@ -206,6 +206,19 @@ class GovUKCheckboxesField(GDSFieldMixin, forms.MultipleChoiceField):
                 items.append(item)
 
             return items
+
+
+class GovUKCheckboxesField(GovUKCheckboxesFieldBase, forms.MultipleChoiceField):
+    pass
+
+
+class GovUKCheckboxesModelField(GovUKCheckboxesFieldBase, forms.ModelMultipleChoiceField):
+    """Checkboxes input field where the choices are derived from a queryset.
+
+    This field is suitable for ForeignKey fields but not ManyToMany fields.
+    """
+
+    pass
 
 
 class DateMultiWidget(forms.MultiWidget):
@@ -525,7 +538,7 @@ class GovUKPasswordInputField(GDSFieldMixin, forms.CharField):
             ).model_dump(exclude_defaults=True)
 
 
-class GovUKRadioInputField(GDSFieldMixin, forms.ChoiceField):
+class GovUKRadioInputFieldBase(GDSFieldMixin):
     # Includes a divider with "or" option if defined in choices.
     NONE_OF_THESE = "none-of-these"
 
@@ -605,7 +618,20 @@ class GovUKRadioInputField(GDSFieldMixin, forms.ChoiceField):
             return items
 
 
-class GovUKSelectField(GDSFieldMixin, forms.ChoiceField):
+class GovUKRadioInputField(GovUKRadioInputFieldBase, forms.ChoiceField):
+    pass
+
+
+class GovUKRadioInputModelField(GovUKRadioInputFieldBase, forms.ModelChoiceField):
+    """Radio input field where the choices are derived from a queryset.
+
+    This field is suitable for ForeignKey fields but not ManyToMany fields.
+    """
+
+    pass
+
+
+class GovUKSelectFieldBase(GDSFieldMixin):
     class BF(GDSBoundField):
         def get_context(self) -> dict[str, Any]:
             context = super().get_context()
@@ -631,6 +657,19 @@ class GovUKSelectField(GDSFieldMixin, forms.ChoiceField):
                 errorMessage=self._get_errors(),
                 attributes=self.field.widget.attrs,
             ).model_dump(exclude_defaults=True)
+
+
+class GovUKSelectField(GovUKSelectFieldBase, forms.ChoiceField):
+    pass
+
+
+class GovUKSelectModelField(GovUKSelectFieldBase, forms.ModelChoiceField):
+    """Select field where the choices are derived from a queryset.
+
+    This field is suitable for ForeignKey fields but not ManyToMany fields.
+    """
+
+    pass
 
 
 class GovUKSlugField(GDSFieldMixin, forms.SlugField):
