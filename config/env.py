@@ -108,6 +108,8 @@ class DBTPlatformEnvironment(BaseSettings):
     icms_hmrc_update_licence_endpoint: str
     hawk_auth_id: str
     hawk_auth_key: str
+    hawk_icms_hmrc_api_key: str
+    hawk_data_workspace_api_key: str
 
     workbasket_per_page: int = 100
     set_inactive_app_types_active: bool = False

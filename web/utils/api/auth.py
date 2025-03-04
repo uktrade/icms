@@ -1,5 +1,5 @@
 import http
-from typing import Any, Literal
+from typing import Any, ClassVar, Literal
 
 import mohawk
 import mohawk.exc
@@ -18,8 +18,8 @@ from mohawk.util import parse_authorization_header, prepare_header_val
 from web.utils.sentry import capture_exception
 
 HTTPMethod = Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
+APIType = Literal["hmrc", "data_workspace"]
 
-HAWK_ALGO = "sha256"
 HAWK_RESPONSE_HEADER = "Server-Authorization"
 HAWK_NONCE_EXPIRY = 60  # seconds
 NONCE_CACHE_PREFIX = "hawk-nonce"
@@ -35,22 +35,30 @@ def seen_nonce(access_id: str, nonce: str, timestamp: str) -> bool:
     return not value_was_stored
 
 
-# TODO ECIL-620: Split chief and data workspace hawk authetication
-def get_credentials_map(
-    access_id: str, id: str | None = None, key: str | None = None
-) -> dict[str, Any]:
-    hawk_auth_id = settings.HAWK_AUTH_ID
+def get_credentials_map(access_id: str) -> dict[str, Any]:
+    try:
+        credentials = settings.HAWK_CREDENTIALS[access_id]
+    except KeyError as exc:
+        raise mohawk.exc.HawkFail(f"No Hawk ID of {access_id}") from exc
+
+    return credentials
+
+
+def get_hmrc_credentials(access_id: str) -> dict[str, Any]:
+    hawk_auth_id = settings.HAWK_ICMS_HMRC_API_ID
     if not constant_time_compare(access_id, hawk_auth_id):
         raise mohawk.exc.HawkFail(f"Invalid Hawk ID {access_id}")
-
-    return {
-        "id": hawk_auth_id,
-        "key": settings.HAWK_AUTH_KEY,
-        "algorithm": HAWK_ALGO,
-    }
+    return get_credentials_map(access_id)
 
 
-def validate_request(request: HttpRequest) -> mohawk.Receiver:
+def get_data_workspace_credentials(access_id: str) -> dict[str, Any]:
+    hawk_auth_id = settings.HAWK_DATA_WORKSPACE_API_ID
+    if not constant_time_compare(access_id, hawk_auth_id):
+        raise mohawk.exc.HawkFail(f"Invalid Hawk ID {access_id}")
+    return get_credentials_map(access_id)
+
+
+def validate_request(request: HttpRequest, api_type: APIType) -> mohawk.Receiver:
     """Raise Django's BadRequest if the request has invalid credentials."""
 
     try:
@@ -61,12 +69,20 @@ def validate_request(request: HttpRequest) -> mohawk.Receiver:
     except KeyError as err:
         raise exceptions.BadRequest from err
 
+    match api_type:
+        case "hmrc":
+            credentials_func = get_hmrc_credentials
+        case "data_workspace":
+            credentials_func = get_data_workspace_credentials
+        case _:
+            raise ValueError(f'Unknown api type "{api_type}"')
+
     # ICMS-HMRC creates the payload hash before encoding the json, therefore decode it here to get the same hash.
     content = request.body.decode()
 
     try:
         return mohawk.Receiver(
-            get_credentials_map,
+            credentials_func,
             auth_token,
             request.build_absolute_uri(),
             request.method,
@@ -78,18 +94,24 @@ def validate_request(request: HttpRequest) -> mohawk.Receiver:
         raise exceptions.BadRequest from err
 
 
-def make_hawk_sender(method: HTTPMethod, url: str, **kwargs: Any) -> mohawk.Sender:
-    creds = {
-        "id": settings.HAWK_AUTH_ID,
-        "key": settings.HAWK_AUTH_KEY,
-        "algorithm": HAWK_ALGO,
-    }
+def make_hawk_sender(
+    method: HTTPMethod, url: str, api_type: APIType, **kwargs: Any
+) -> mohawk.Sender:
+    match api_type:
+        case "hmrc":
+            api_id = settings.HAWK_ICMS_HMRC_API_ID
+        case "data_workspace":
+            api_id = settings.HAWK_DATA_WORKSPACE_API_ID
+        case _:
+            raise ValueError('Incorrect api_type "{api_type}" for hawk request')
+
+    creds = settings.HAWK_CREDENTIALS[api_id]
 
     return mohawk.Sender(creds, url, method, **kwargs)
 
 
 def make_hawk_request(
-    method: HTTPMethod, url: str, **kwargs: Any
+    method: HTTPMethod, url: str, api_type: APIType, **kwargs: Any
 ) -> tuple[mohawk.Sender, requests.Response]:
     # Requests allows calling with a dict which is converted to a JSON body,
     # but we need the final body and type to create the Hawk signature, which
@@ -111,7 +133,11 @@ def make_hawk_request(
 
     # Use prepped.url to ensure stuff like query params are included when comparing generated MACs
     hawk_sender = make_hawk_sender(
-        method, prepped.url, seen_nonce=seen_nonce, **kwargs  # type:ignore[arg-type]
+        method,
+        prepped.url,  # type:ignore[arg-type]
+        api_type=api_type,
+        seen_nonce=seen_nonce,
+        **kwargs,
     )
 
     prepped.headers["Authorization"] = hawk_sender.request_header
@@ -126,10 +152,12 @@ def make_hawk_request(
 # Hawk view (no CSRF)
 @method_decorator(csrf_exempt, name="dispatch")
 class HawkAuthMixin:
+    hawk_api_type: ClassVar[APIType]
+
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         try:
             # Validate sender request
-            hawk_receiver = validate_request(request)
+            hawk_receiver = validate_request(request, self.hawk_api_type)
 
             # Create response
             response = super().dispatch(request, *args, **kwargs)  # type:ignore[misc]
@@ -169,3 +197,11 @@ class HawkAuthMixin:
             hawk_response_header = f'{hawk_response_header}, nonce="{sender_nonce}", ts="{ts}"'
 
         return hawk_response_header
+
+
+class HawkHMRCMixin(HawkAuthMixin):
+    hawk_api_type = "hmrc"
+
+
+class HawkDataWorkspaceMixin(HawkAuthMixin):
+    hawk_api_type = "data_workspace"
