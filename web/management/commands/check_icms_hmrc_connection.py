@@ -20,7 +20,11 @@ class Command(BaseCommand):
 
         data = {"foo": "bar"}
         hawk_sender, response = make_hawk_request(
-            "POST", url, data=json.dumps(data), headers={"Content-Type": "application/json"}
+            "POST",
+            url,
+            "hmrc",
+            data=json.dumps(data),
+            headers={"Content-Type": "application/json"},
         )
 
         try:

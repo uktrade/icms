@@ -380,6 +380,23 @@ ICMS_HMRC_UPDATE_LICENCE_ENDPOINT = env.icms_hmrc_update_licence_endpoint
 HAWK_AUTH_ID = env.hawk_auth_id
 HAWK_AUTH_KEY = env.hawk_auth_key
 
+HAWK_ALGORITHM = "sha256"
+HAWK_ICMS_HMRC_API_ID = "icms-api"
+HAWK_DATA_WORKSPACE_API_ID = "icms-data-workspace-api"
+
+HAWK_CREDENTIALS = {
+    HAWK_ICMS_HMRC_API_ID: {
+        "id": HAWK_ICMS_HMRC_API_ID,
+        "key": env.hawk_icms_hmrc_api_key,
+        "algorithm": HAWK_ALGORITHM,
+    },
+    HAWK_DATA_WORKSPACE_API_ID: {
+        "id": HAWK_DATA_WORKSPACE_API_ID,
+        "key": env.hawk_data_workspace_api_key,
+        "algorithm": HAWK_ALGORITHM,
+    },
+}
+
 # CHIEF spec: quantityIssued n(11).n(3) decimal field with up to n digits before the decimal point and
 # up to m digits after.
 # This validation would normally be done in the model e.g. models.DecimalField(max_digits=14, decimal_places=3)

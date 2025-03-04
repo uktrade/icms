@@ -89,12 +89,6 @@ class BaseSerializer(BaseModel):
     def url() -> str:
         raise NotImplementedError("Url must be defined on the serilaizer class")
 
-    class Config:
-        json_encoders = {
-            dt.datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S.%f"),
-            dt.date: lambda v: v.strftime("%Y-%m-%d"),
-        }
-
 
 class UserSerializer(BaseSerializer):
     id: int
