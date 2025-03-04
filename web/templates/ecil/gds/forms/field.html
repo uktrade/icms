@@ -8,6 +8,8 @@
   {{ gds.govukCharacterCount(gds_kwargs) }}
 {% elif fieldClass == "GovUKCheckboxesField" %}
   {{ gds.govukCheckboxes(gds_kwargs) }}
+{% elif fieldClass == "GovUKCheckboxesModelField" %}
+  {{ gds.govukCheckboxes(gds_kwargs) }}
 {% elif fieldClass == "GovUKDateInputField" %}
   {{ gds.govukDateInput(gds_kwargs) }}
 {% elif fieldClass == "GovUKDecimalField" %}
@@ -24,7 +26,11 @@
   {{ gds.govukPasswordInput(gds_kwargs) }}
 {% elif fieldClass == "GovUKRadioInputField" %}
   {{ gds.govukRadios(gds_kwargs) }}
+{% elif fieldClass == "GovUKRadioInputModelField" %}
+  {{ gds.govukRadios(gds_kwargs) }}
 {% elif fieldClass == "GovUKSelectField" %}
+  {{ gds.govukSelect(gds_kwargs) }}
+{% elif fieldClass == "GovUKSelectModelField" %}
   {{ gds.govukSelect(gds_kwargs) }}
 {% elif fieldClass == "GovUKSlugField" %}
   {{ gds.govukInput(gds_kwargs) }}

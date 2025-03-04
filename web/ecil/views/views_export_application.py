@@ -164,7 +164,6 @@ class ExportApplicationExportCountriesUpdateView(ExportApplicationInProgressView
     def form_valid(self, form: forms.ExportApplicationExportCountriesForm) -> HttpResponseRedirect:
         country = form.cleaned_data["countries"]
 
-        # TODO: Revisit in ECIL-636 (better ForeignKey field support)
         self.application.countries.add(country)
         self.application.save()
 

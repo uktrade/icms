@@ -7,6 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from pytest_django.asserts import assertHTMLEqual
 
 from web.ecil.gds import forms as gds
+from web.models import Country
 
 
 def get_previous_input_label_default_kwargs():
@@ -155,7 +156,7 @@ class TestGovUKCheckboxesField:
             gds_field_kwargs=get_previous_fieldset_default_kwargs(),
         )
 
-    def test_max_length_form_valid(self):
+    def test_form_valid(self):
         data = {"field": ["one", "three"]}
         form = self.Form(data=data)
 
@@ -206,6 +207,76 @@ class TestGovUKCheckboxesField:
                       <label class="govuk-label govuk-checkboxes__label" for="id_field_2">
                         Three
                       </label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+        """
+        actual_html = form.as_div()
+
+        assertHTMLEqual(expected_html, actual_html)
+
+
+class TestGovUKCheckboxesModelField:
+    class Form(gds.GDSForm):
+        field = gds.GovUKCheckboxesModelField(
+            label="Test label",
+            help_text="Test help_text",
+            queryset=Country.objects.filter(name__in=["Finland", "Germany", "United Kingdom"]),
+        )
+
+    @pytest.fixture(autouse=True)
+    def setup(self, db):
+        self.valid_country = Country.objects.get(name="Germany")
+
+    def test_form_valid(self):
+        data = {"field": [self.valid_country.pk]}
+        form = self.Form(data=data)
+
+        assert form.is_valid()
+        assert form.cleaned_data["field"].count() == 1
+        assert form.cleaned_data["field"].first() == self.valid_country
+
+    def test_form_invalid(self):
+        invalid_country = Country.objects.get(name="France")
+        data = {"field": [invalid_country.pk]}
+        form = self.Form(data=data)
+
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert form.errors["field"] == [
+            f"Select a valid choice. {invalid_country.pk} is not one of the available choices."
+        ]
+
+    def test_template(self):
+        data = {"field": [self.valid_country.pk]}
+        form = self.Form(data=data)
+
+        finland = Country.objects.get(
+            name="Finland",
+        )
+        germany = Country.objects.get(name="Germany")
+        uk = Country.objects.get(name="United Kingdom")
+
+        expected_html = f"""
+            <div>
+              <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset" aria-describedby="field-hint">
+                  <legend class="govuk-fieldset__legend">Test label</legend>
+                  <div id="field-hint" class="govuk-hint">Test help_text</div>
+                  <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input" id="id_field_0" name="field" type="checkbox" value="{finland.pk}">
+                      <label class="govuk-label govuk-checkboxes__label" for="id_field_0">Finland</label>
+                    </div>
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input" id="id_field_1" name="field" type="checkbox" value="{germany.pk}" checked>
+                      <label class="govuk-label govuk-checkboxes__label" for="id_field_1">Germany</label>
+                    </div>
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input" id="id_field_2" name="field" type="checkbox" value="{uk.pk}">
+                      <label class="govuk-label govuk-checkboxes__label" for="id_field_2">United Kingdom</label>
                     </div>
                   </div>
                 </fieldset>
@@ -887,6 +958,74 @@ class TestGovUKRadioInputField:
         assertHTMLEqual(expected_html, actual_html)
 
 
+class TestGovUKRadioInputModelField:
+    class Form(gds.GDSForm):
+        field = gds.GovUKRadioInputModelField(
+            label="Test label",
+            help_text="Test help_text",
+            queryset=Country.objects.filter(name__in=["Finland", "Germany", "United Kingdom"]),
+            empty_label=None,
+        )
+
+    @pytest.fixture(autouse=True)
+    def setup(self, db):
+        self.valid_country = Country.objects.get(name="Germany")
+
+    def test_form_valid(self):
+        data = {"field": self.valid_country.pk}
+        form = self.Form(data=data)
+
+        assert form.is_valid()
+        assert form.cleaned_data["field"] == self.valid_country
+
+    def test_form_invalid(self):
+        invalid_country = Country.objects.get(name="France")
+        data = {"field": invalid_country.pk}
+        form = self.Form(data=data)
+
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert form.errors["field"] == [
+            "Select a valid choice. That choice is not one of the available choices."
+        ]
+
+    def test_template(self):
+        data = {"field": self.valid_country.pk}
+        form = self.Form(data=data)
+
+        finland = Country.objects.get(name="Finland")
+        germany = Country.objects.get(name="Germany")
+        uk = Country.objects.get(name="United Kingdom")
+
+        expected_html = f"""
+            <div>
+              <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset" aria-describedby="field-hint">
+                  <legend class="govuk-fieldset__legend">Test label</legend>
+                  <div id="field-hint" class="govuk-hint">Test help_text</div>
+                  <div class="govuk-radios" data-module="govuk-radios">
+                    <div class="govuk-radios__item">
+                      <input class="govuk-radios__input" id="id_field_0" name="field" type="radio" value="{finland.pk}">
+                      <label class="govuk-label govuk-radios__label" for="id_field_0">Finland</label>
+                    </div>
+                    <div class="govuk-radios__item">
+                      <input class="govuk-radios__input" id="id_field_1" name="field" type="radio" value="{germany.pk}" checked>
+                      <label class="govuk-label govuk-radios__label" for="id_field_1">Germany</label>
+                    </div>
+                    <div class="govuk-radios__item">
+                      <input class="govuk-radios__input" id="id_field_2" name="field" type="radio" value="{uk.pk}">
+                      <label class="govuk-label govuk-radios__label" for="id_field_2">United Kingdom</label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+        """
+        actual_html = form.as_div()
+
+        assertHTMLEqual(expected_html, actual_html)
+
+
 class TestGovUKSelectField:
     class Form(gds.GDSForm):
         field = gds.GovUKSelectField(
@@ -932,6 +1071,66 @@ class TestGovUKSelectField:
                   <option value="one" selected>One</option>
                   <option value="two">Two</option>
                   <option value="three">Three</option>
+                </select>
+              </div>
+            </div>
+        """
+        actual_html = form.as_div()
+
+        assertHTMLEqual(expected_html, actual_html)
+
+
+class TestGovUKSelectModelField:
+    class Form(gds.GDSForm):
+        field = gds.GovUKSelectModelField(
+            label="Test label",
+            help_text="Test help_text",
+            queryset=Country.objects.filter(name__in=["Finland", "Germany", "United Kingdom"]),
+            gds_field_kwargs=get_previous_input_label_default_kwargs(),
+        )
+
+    @pytest.fixture(autouse=True)
+    def setup(self, db):
+        self.valid_country = Country.objects.get(name="Germany")
+
+    def test_form_valid(self):
+        data = {"field": self.valid_country.pk}
+        form = self.Form(data=data)
+
+        assert form.is_valid()
+        assert form.cleaned_data["field"] == self.valid_country
+
+    def test_form_invalid(self):
+        invalid_country = Country.objects.get(name="France")
+        data = {"field": invalid_country.pk}
+        form = self.Form(data=data)
+
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert form.errors["field"] == [
+            "Select a valid choice. That choice is not one of the available choices."
+        ]
+
+    def test_template(self):
+        data = {"field": self.valid_country.pk}
+        form = self.Form(data=data)
+
+        finland = Country.objects.get(name="Finland")
+        germany = Country.objects.get(name="Germany")
+        uk = Country.objects.get(name="United Kingdom")
+
+        expected_html = f"""
+            <div>
+              <div class="govuk-form-group">
+                <h1 class="govuk-label-wrapper">
+                  <label class="govuk-label govuk-label--l" for="id_field">Test label</label>
+                </h1>
+                <div id="id_field-hint" class="govuk-hint">Test help_text</div>
+                <select class="govuk-select" id="id_field" name="field" aria-describedby="id_field-hint">
+                  <option value="">---------</option>
+                  <option value="{finland.pk}">Finland</option>
+                  <option value="{germany.pk}" selected>Germany</option>
+                  <option value="{uk.pk}">United Kingdom</option>
                 </select>
               </div>
             </div>

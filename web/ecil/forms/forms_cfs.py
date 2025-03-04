@@ -20,9 +20,7 @@ class CFSApplicationReferenceForm(gds_forms.GDSModelForm):
         )
 
 
-# TODO: Revisit in ECIL-636 (This should be a model form)
 class CFSApplicationContactForm(gds_forms.GDSForm):
-    # TODO: Revisit in ECIL-636 (better ForeignKey field support)
     contact = gds_forms.GovUKRadioInputField(
         label="Who is the main contact for your application?",
         help_text="This would normally be the person who created the application",

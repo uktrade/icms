@@ -6,9 +6,10 @@ from web.models import Country
 from web.models.shared import YesNoChoices
 
 
-# TODO: Revisit in ECIL-636 (This should be a model form)
 class ExportApplicationExportCountriesForm(gds_forms.GDSForm):
-    # TODO: Revisit in ECIL-636 (better ManyToManyField field support)
+    # Can't use a ModelForm here as "countries" is a ManyToMany model field.
+    # There are no GDS components that can render a select multiple form field.
+    # Therefore, it's cleaner to create a GDSForm and save the data in the view.
     countries = gds_forms.GovUKSelectField(
         label="Where do you want to export products to?",
         help_text=(

@@ -5,7 +5,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from pytest_django.asserts import assertInHTML
 
-from web.models import ECILExample, ECILMultiStepExample
+from web.models import Commodity, ECILExample, ECILMultiStepExample
 
 
 class TestGDSTestPageView:
@@ -62,7 +62,7 @@ class TestGDSFormView:
         assert response.status_code == HTTPStatus.FOUND
 
 
-class TestGDSModelFormView:
+class TestGDSModelFormCreateView:
     @pytest.fixture(autouse=True)
     def setup(self, prototype_client):
         self.url = reverse("ecil:example:gds_model_form_example")
@@ -76,6 +76,11 @@ class TestGDSModelFormView:
         assert response.status_code == HTTPStatus.OK
 
     def test_post(self):
+
+        assert ECILExample.objects.count() == 0
+
+        valid_commodity = Commodity.objects.filter(commodity_code__startswith="500500").first()
+
         form_data = {
             "big_integer_field": -12345,
             "boolean_field": True,
@@ -96,9 +101,19 @@ class TestGDSModelFormView:
             "slug_field": "slugs",
             "small_integer_field": -1,
             "text_field": "Some text",
+            "foreign_key_field": valid_commodity.pk,
         }
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
+
+        assert ECILExample.objects.count() == 1
+        assert response.url == reverse("ecil:example:ecil_example_list")
+
+        # Check the list view shows the new record
+        response = self.client.get(response.url)
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["object_list"].count() == 1
+        assert response.context["object_list"].first() == ECILExample.objects.first()
 
 
 class TestGDSConditionalModelFormView:
@@ -164,6 +179,13 @@ class TestECILMultiStepFormView:
         assert record.favourite_colour == "red"
         assert record.likes_cake
         assert record.favourite_book == "The Bible"
+
+        # Test the summary redirects to list view and display record
+        assert response.url == reverse("ecil:example:multi_step_model_list")
+        response = self.client.get(response.url)
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["object_list"].count() == 1
+        assert response.context["object_list"].first() == ECILMultiStepExample.objects.first()
 
 
 class TestECILMultiStepFormSummaryView:

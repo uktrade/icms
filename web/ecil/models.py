@@ -142,6 +142,31 @@ class ECILExample(models.Model):
         verbose_name="UUID field", help_text="Enter a value", default=uuid.uuid4, editable=True
     )
 
+    def __str__(self):
+        fields = [
+            "big_integer_field",
+            "boolean_field",
+            "optional_boolean_field",
+            "char_field",
+            "char_choice_field",
+            "optional_char_field",
+            "date_field",
+            "decimal_field",
+            "email_field",
+            "float_field",
+            "integer_field",
+            "positive_big_integer_field",
+            "positive_integer_field",
+            "positive_small_integer_field",
+            "slug_field",
+            "small_integer_field",
+            "text_field",
+            "foreign_key_field",
+        ]
+        model_repr = ", ".join(f"{f}={getattr(self, f)}" for f in fields)
+
+        return f"ECILExample(pk={self.pk}, {model_repr})"
+
 
 class ECILMultiStepExample(models.Model):
     class PrimaryColours(TypedTextChoices):

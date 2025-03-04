@@ -1,5 +1,9 @@
+import datetime as dt
 from typing import Any
 
+from django.utils import timezone
+
+from web.domains.commodity.models import Commodity
 from web.ecil.gds import forms as gds_forms
 from web.models import ECILExample, ECILMultiStepExample
 
@@ -136,6 +140,26 @@ class ExampleGDSForm(gds_forms.GDSForm):
 
 
 class ExampleGDSModelForm(gds_forms.GDSModelForm):
+    foreign_key_field = gds_forms.GovUKSelectModelField(
+        label="Foreign key field",
+        help_text="Choose a commodity code from the list.",
+        queryset=Commodity.objects.none(),
+        error_messages={"required": "Select a commodity code"},
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["foreign_key_field"].queryset = Commodity.objects.filter(
+            commodity_code__startswith="500500"
+        )
+
+        # hardcode unsupported fields so save works.
+        self.instance.datetime_field = timezone.now()
+        self.instance.duration_field = dt.timedelta(days=1, hours=2)
+        self.instance.ip_address_field = "127.0.0.1"
+        self.instance.json_field = {}
+        self.instance.time_field = timezone.now().time()
+
     class Meta(gds_forms.GDSModelForm.Meta):
         model = ECILExample
         fields = [
@@ -161,7 +185,7 @@ class ExampleGDSModelForm(gds_forms.GDSModelForm):
             # Currently unsupported (Defaulting to Django default field)
             # "datetime_field",
             # "duration_field",
-            # "foreign_key_field",
+            "foreign_key_field",
             # "ip_address_field",
             # "json_field",
             # "many_to_many_field",

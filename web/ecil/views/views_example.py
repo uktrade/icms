@@ -2,11 +2,12 @@ from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse
-from django.views.generic import FormView, ListView, TemplateView
+from django.views.generic import CreateView, FormView, ListView, TemplateView
 
 from web.ecil.forms import forms_example as forms
+from web.ecil.gds import component_serializers as serializers
 from web.ecil.gds.views import FormStep, MultiStepFormSummaryView, MultiStepFormView
-from web.models import ECILMultiStepExample
+from web.models import ECILExample, ECILMultiStepExample
 from web.permissions import Perms
 
 
@@ -31,16 +32,34 @@ class GDSFormView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         return reverse("ecil:example:gds_form_example")
 
 
-class GDSModelFormView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
+class GDSModelFormCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     # PermissionRequiredMixin config
     permission_required = [Perms.sys.view_ecil_prototype]
 
-    # FormView config
+    # UpdateView config
+    model = ECILExample
     form_class = forms.ExampleGDSModelForm
     template_name = "ecil/gds_form.html"
 
     def get_success_url(self):
-        return reverse("ecil:example:gds_model_form_example")
+        return reverse("ecil:example:ecil_example_list")
+
+
+class ECILExampleListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    # PermissionRequiredMixin config
+    permission_required = [Perms.sys.view_ecil_prototype]
+
+    # ListView config
+    model = ECILExample
+    template_name = "ecil/example/list.html"
+
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
+            text="Back", href=reverse("ecil:example:gds_model_form_example")
+        ).model_dump(exclude_defaults=True)
+
+        return context
 
 
 class GDSConditionalModelFormView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
@@ -115,3 +134,11 @@ class ECILMultiStepExampleListView(LoginRequiredMixin, PermissionRequiredMixin, 
     # ListView config
     model = ECILMultiStepExample
     template_name = "ecil/example/list.html"
+
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
+            text="Back", href=reverse("ecil:example:step_form", kwargs={"step": "one"})
+        ).model_dump(exclude_defaults=True)
+
+        return context

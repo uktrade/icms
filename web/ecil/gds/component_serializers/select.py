@@ -1,14 +1,17 @@
 from typing import Any
 
-from pydantic import BaseModel
+from django.forms.models import ModelChoiceIteratorValue
+from pydantic import BaseModel, ConfigDict
 
 from .common import FormGroup, InputHint, InputLabel
 from .error_message import ErrorMessageKwargs
 
 
 class SelectItem(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     # Value for the option. If this is omitted, the value is taken from the text content of the option element.
-    value: str | int | None = None
+    value: str | int | None | ModelChoiceIteratorValue = None
     # Required. Text for the option item.
     text: str
     # Whether the option should be selected when the page loads. Takes precedence over the top-level value option.
@@ -22,6 +25,8 @@ class SelectItem(BaseModel):
 # All options available here:
 # https://design-system.service.gov.uk/components/select/
 class SelectKwargs(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     # Required. ID for each select box.
     id: str
     # Required. Name property for the select.
@@ -30,7 +35,7 @@ class SelectKwargs(BaseModel):
     items: list[SelectItem]
     # Value for the option which should be selected.
     # Use this as an alternative to setting the selected option on each individual item.
-    value: str | None = None
+    value: str | int | None | ModelChoiceIteratorValue = None
     # If true, select box will be disabled. Use the disabled option on each individual item to only
     # disable certain options.
     disabled: bool | None = None
