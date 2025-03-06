@@ -16,6 +16,7 @@ from web.domains.case.services import case_progress
 from web.ecil.forms import forms_export_application as forms
 from web.ecil.gds import component_serializers as serializers
 from web.ecil.types import EXPORT_APPLICATION
+from web.flow.models import ProcessTypes
 from web.models import Country, User
 from web.models.shared import YesNoChoices
 from web.permissions import AppChecker, Perms
@@ -157,7 +158,16 @@ class ExportApplicationExportCountriesUpdateView(ExportApplicationInProgressView
                 rows=rows,
             ).model_dump(exclude_defaults=True)
 
-            context["next_url"] = reverse("workbasket")
+            match self.application.process_type:
+                case ProcessTypes.CFS:
+                    next_url = reverse(
+                        "ecil:export-cfs:schedule-create",
+                        kwargs={"application_pk": self.application.pk},
+                    )
+                case _:
+                    next_url = reverse("workbasket")
+
+            context["next_url"] = next_url
 
         return context
 

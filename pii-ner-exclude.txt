@@ -5355,3 +5355,6 @@ Checkboxes
 ICMS_HAWK_ICMS_HMRC_API_ID='icms
 {api_type
 {api_type}
+know:</p
+Material Safety Data Sheet
+{{ gds.govukButton(create_schedule_btn_kwargs

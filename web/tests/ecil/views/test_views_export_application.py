@@ -82,7 +82,9 @@ class TestExportApplicationExportCountriesUpdateView:
 
         # Check extra context set now we've added a country
         context = response.context
-        assert context["next_url"] == reverse("workbasket")
+        assert context["next_url"] == reverse(
+            "ecil:export-cfs:schedule-create", kwargs={"application_pk": self.app.pk}
+        )
         assert context["export_countries"]
 
         assert context["govuk_table_kwargs"] == {

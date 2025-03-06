@@ -1,0 +1,20 @@
+{% extends "ecil/base.html" %}
+
+{% block ecil_content %}
+  <h1 class="govuk-heading-l">Create a product schedule</h1>
+  <p class="govuk-body">A product schedule contains all the information needed about the products you want to export.</p>
+  <p class="govuk-body">You can add products to a schedule one at a time or in bulk.</p>
+  <p class="govuk-body">Any products included in kits need to be listed individually.</p>
+  <h2 class="govuk-heading-m">Before you start</h2>
+  <p class="govuk-body">Your answers must apply to every product on the schedule. You will need to create a new schedule if any product has different details.</p>
+  <p class="govuk-body">You will need to know:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>product names spelled correctly</li>
+    <li>product manufacturer details</li>
+    <li>the legislation that applies to your product - ask your technical team or check your product Material Safety Data Sheet (MSDS) if you are not sure</li>
+  </ul>
+  <form method="post" action="">
+    {{ csrf_input }}
+    {{ gds.govukButton(create_schedule_btn_kwargs) }}
+  </form>
+{% endblock %}
