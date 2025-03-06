@@ -18,6 +18,7 @@ urlpatterns = [
                     views.CFSApplicationContactUpdateView.as_view(),
                     name="application-contact",
                 ),
+                path("schedule/", views.CFSScheduleCreateView.as_view(), name="schedule-create"),
             ]
         ),
     ),
