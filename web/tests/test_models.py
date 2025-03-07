@@ -32,19 +32,3 @@ class TestUser:
             User.objects.create_user(
                 username="tester", email="email@example.com"  # /PS-IGNORE
             ).save()
-
-
-class TestAccessRequest:
-    pass
-
-
-class TestAccessRequestProcess:
-    pass
-
-
-class TestOutboudEmail:
-    pass
-
-
-class TestEmailAttachment:
-    pass
