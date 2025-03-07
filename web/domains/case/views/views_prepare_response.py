@@ -133,6 +133,7 @@ def prepare_response(
     elif application.process_type == SILApplication.PROCESS_TYPE:
         return _prepare_fa_sil_response(request, application.silapplication, context)
 
+    # TODO: Extend with NuclearMaterialApplication
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         return _prepare_sanctions_and_adhoc_response(
             request, application.sanctionsandadhocapplication, context

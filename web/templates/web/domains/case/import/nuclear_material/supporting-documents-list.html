@@ -1,0 +1,62 @@
+{% extends "web/domains/case/applicant-base.html" %}
+{% block main_content %}
+  <div class="info-box info-box-info">
+    You must save your information then select another section to move through the application.
+    <br>Please provide all information and documents relevant to the consideration of your application, including, as a minimum:
+    <ul>
+      <li>A short summary of the submitted documents, outlining what they are (e.g., sales contracts, invoices, shipping documentation).</li>
+      <li>When did you agree the purchase of these goods, with whom, and what is their value?</li>
+      <li>Where are the goods located now?</li>
+      <li>What will the goods be used for after they enter the UK?</li>
+      <li>What will be the UK port of entry for these goods?</li>
+    </ul>
+    <br>Please note that you may need to respond to additional questions after your application is submitted.
+  </div>
+  <h4>Supporting Documents</h4>
+  {% if supporting_documents %}
+    <table class="setoutList">
+      <thead>
+      <tr>
+        <th>Document type</th>
+        <th>Uploaded by</th>
+        <th>File (size)</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for file in supporting_documents %}
+        <tr>
+          <td>Supporting documents</td>
+          <td>
+            {{ file.created_by.full_name }}<br>
+            {{ file.created_datetime|datetime_format('%d-%b-%Y %H:%M') }}
+          </td>
+          <td>
+            <a href="{{ icms_url('import:nuclear:view-supporting-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
+              {{ file.filename }}</a> {{ file.human_readable_file_size() }}</td>
+          <td>
+            <form method="post"
+                  action="{{ icms_url('import:nuclear:delete-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
+              {{ csrf_input }}
+              <button
+                type="submit"
+                class="link-button icon-bin button tooltipstered"
+                aria-label="Delete"
+                data-confirm="Are you sure you want to delete this record?">Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="info-box info-box-info">
+      There are no supporting documents attached
+    </div>
+  {% endif %}
+
+  <a class="button small-button" href="{{ icms_url('import:nuclear:add-document', kwargs={'application_pk': process.pk}) }}">
+    Add Supporting Document
+  </a>
+{% endblock main_content %}

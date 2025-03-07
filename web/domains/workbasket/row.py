@@ -44,6 +44,7 @@ def get_workbasket_row_func(process_type: str) -> GetWorkbasketRow:
             | ProcessTypes.SPS
             | ProcessTypes.TEXTILES
             | ProcessTypes.WOOD
+            | ProcessTypes.NUCLEAR
         ):
             return _get_case_wb_row
         #

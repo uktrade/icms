@@ -1,0 +1,21 @@
+{% extends "web/domains/case/applicant-base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% import "display/fields.html" as display %}
+
+
+{% block form_content %}
+  {% include "partial/case/save-info-box.html" %}
+  {% include "partial/case/application-contact-details.html" %}
+
+  <h4>Nuclear Materials Import Licence</h4>
+  {{ fields.field(form.applicant_reference) }}
+  {{ fields.field(form.origin_country) }}
+  {{ fields.field(form.consignment_country) }}
+  {{ fields.field(form.exporter_name) }}
+  {{ fields.field(form.exporter_address) }}
+{% endblock form_content %}
+
+{% block task_actions %}
+  <input type="submit" name="save" class="primary-button button" value="Save"/>
+{% endblock task_actions %}

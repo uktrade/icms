@@ -55,6 +55,10 @@ from web.domains.case._import.models import (
     ImportApplicationLicence,
     ImportApplicationType,
 )
+from web.domains.case._import.nuclear_material.models import (
+    NuclearMaterialApplication,
+    NuclearMaterialApplicationGoods,
+)
 from web.domains.case._import.sanctions.models import (
     SanctionsAndAdhocApplication,
     SanctionsAndAdhocApplicationGoods,
@@ -240,6 +244,8 @@ __all__ = [
     "ImporterGroupObjectPermission",
     "ImporterUserObjectPermission",
     "Mailshot",
+    "NuclearMaterialApplication",
+    "NuclearMaterialApplicationGoods",
     "OILSupplementaryInfo",
     "OILSupplementaryReport",
     "OILSupplementaryReportFirearm",

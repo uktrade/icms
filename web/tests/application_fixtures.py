@@ -19,6 +19,7 @@ from web.models import (
     File,
     ImportApplicationType,
     Importer,
+    NuclearMaterialApplication,
     Office,
     OILSupplementaryInfo,
     OpenIndividualLicenceApplication,
@@ -42,6 +43,7 @@ IMPORT_APPS: TypeAlias = (
     | SILApplication
     | DFLApplication
     | OpenIndividualLicenceApplication
+    | NuclearMaterialApplication
 )
 
 
