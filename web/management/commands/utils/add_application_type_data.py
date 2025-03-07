@@ -253,6 +253,32 @@ def add_import_application_type_data():
         declaration_template=sps_dec,
     )
 
+    ImportApplicationType.objects.create(
+        is_active=False,
+        type="NMIL",
+        sub_type="NMIL",
+        name="Nuclear Materials Import Licence Application",
+        licence_type_code="ADHOC",  # TODO: Check this value is correct
+        sigl_flag=False,
+        chief_flag=True,
+        chief_licence_prefix="GBSAN",  # TODO: Confirm with HMRC the licence prefix
+        paper_licence_flag=False,
+        electronic_licence_flag=True,
+        cover_letter_flag=False,
+        cover_letter_schedule_flag=False,
+        category_flag=True,
+        quantity_unlimited_flag=False,
+        unit_list_csv="KGS,G,MCG,ML,L",
+        exp_cert_upload_flag=False,
+        supporting_docs_upload_flag=True,
+        multiple_commodities_flag=True,
+        guidance_file_url="/docs/ApplyingForSanctionsLicence.pdf",  # TODO: Update to actual value
+        usage_auto_category_desc_flag=False,
+        case_checklist_flag=True,
+        importer_printable=False,
+        declaration_template=gen_dec,
+    )
+
 
 def add_import_application_type_endorsements():
     # OIL

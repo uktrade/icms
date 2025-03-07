@@ -88,5 +88,45 @@
             "short_description": "Barrels",
             "hmrc_code": 30
         }
+    },
+    {
+        "model": "web.unit",
+        "pk": 10,
+        "fields": {
+            "unit_type": "G",
+            "description": "grams",
+            "short_description": "g",
+            "hmrc_code": 21
+        }
+    },
+    {
+        "model": "web.unit",
+        "pk": 10,
+        "fields": {
+            "unit_type": "MCG",
+            "description": "micrograms",
+            "short_description": "mcg",
+            "hmrc_code": 21
+        }
+    },
+    {
+        "model": "web.unit",
+        "pk": 10,
+        "fields": {
+            "unit_type": "ML",
+            "description": "millilitres",
+            "short_description": "ml",
+            "hmrc_code": 74
+        }
+    },
+    {
+        "model": "web.unit",
+        "pk": 10,
+        "fields": {
+            "unit_type": "L",
+            "description": "litres",
+            "short_description": "l",
+            "hmrc_code": 76
+        }
     }
 ]

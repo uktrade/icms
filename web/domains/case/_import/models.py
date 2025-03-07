@@ -17,6 +17,7 @@ class ImportApplicationType(models.Model):
     class Types(TypedTextChoices):
         DEROGATION = ("SAN", "Derogation from Sanctions Import Ban")
         FIREARMS = ("FA", "Firearms and Ammunition")  # has subtypes
+        NMIL = ("NMIL", "Nuclear Materials Import Licence Application")
         OPT = ("OPT", "Outward Processing Trade")
         SANCTION_ADHOC = ("ADHOC", "Sanctions and Adhoc Licence Application")
         SPS = ("SPS", "Prior Surveillance")
