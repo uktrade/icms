@@ -5363,3 +5363,14 @@ Nuclear Materials Import Licence Application
 MCG
 ML
 Django 5.1.7
+Nuclear Materials Import Licence Application - Edit
+Nuclear Materials Import Licence Application - Goods
+Nuclear Materials Import Licence Application - Add Goods
+Nuclear Materials Import Licence Application - Edit Goods
+Nuclear Materials Import Licence Application - Supporting Documents
+Nuclear Materials Import Licence Application - Submit Application
+NuclearMaterialApplication
+Nuclear Materials Import Licence
+process.process_type == "NuclearMaterialApplication
+Materials Import Licence Application
+assert goods.quantity_amount
