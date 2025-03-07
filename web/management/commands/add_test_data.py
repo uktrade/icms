@@ -100,6 +100,8 @@ class Command(BaseCommand):
                 ImportApplicationType.Types.OPT,
                 ImportApplicationType.Types.SPS,
                 ImportApplicationType.Types.TEXTILES,
+                # TODO: Re-enable this when we are ready
+                ImportApplicationType.Types.NMIL,
             ]
         ).update(is_active=True)
         ExportApplicationType.objects.update(is_active=True)
