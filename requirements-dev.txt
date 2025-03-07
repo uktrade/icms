@@ -235,7 +235,7 @@ isort==5.13.2
     # via -r requirements/requirements-dev.in
 jedi==0.19.1
     # via ipython
-jinja2==3.1.5
+jinja2==3.1.6
     # via
     #   -r requirements/requirements-base.in
     #   govuk-frontend-jinja
