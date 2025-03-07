@@ -8,14 +8,11 @@ class Command(BaseCommand):
     via django migrations due to the test data using fixtures that a populated only once the migrations have run"""
 
     def handle(self, *args, **options):
-        try:
-            ImportApplicationType.objects.get(type="NMIL")
+        if ImportApplicationType.objects.filter(type="NMIL").exists():
             self.stdout.write(
                 "Nuclear Materials Import Licence Application already exists in data. Exiting command."
             )
             return
-        except ImportApplicationType.DoesNotExist:
-            pass
 
         self.add_units()
         gen_dec = Template.objects.get(template_code=Template.Codes.IMA_GEN_DECLARATION)
