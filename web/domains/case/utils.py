@@ -18,6 +18,7 @@ from web.models import (
     DFLApplication,
     ExportApplication,
     ImportApplication,
+    NuclearMaterialApplication,
     OpenIndividualLicenceApplication,
     SanctionsAndAdhocApplication,
     SILApplication,
@@ -222,6 +223,9 @@ def case_documents_metadata(application: ApplicationsWithCaseEmail) -> CaseDocum
         case SanctionsAndAdhocApplication():
             file_metadata = get_sanctions_file_data(application)
 
+        case NuclearMaterialApplication():
+            file_metadata = get_nuclear_file_data(application)
+
         case CertificateOfFreeSaleApplication():
             # CFS uses case emails however it has no linked files.
             return {}
@@ -371,6 +375,20 @@ def get_sanctions_file_data(app: SanctionsAndAdhocApplication) -> FileMetadata:
                 "file_type": "Supporting Documents",
                 "url": reverse(
                     "import:sanctions:view-supporting-document",
+                    kwargs={"application_pk": app.pk, "document_pk": f.pk},
+                ),
+            },
+        )
+
+
+def get_nuclear_file_data(app: NuclearMaterialApplication) -> FileMetadata:
+    for f in app.supporting_documents.all():
+        yield (
+            f.pk,
+            {
+                "file_type": "Supporting Documents",
+                "url": reverse(
+                    "import:nuclear:view-supporting-document",
                     kwargs={"application_pk": app.pk, "document_pk": f.pk},
                 ),
             },

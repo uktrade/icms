@@ -149,6 +149,7 @@ def get_country_and_geo_code(country: Country) -> str:
     return f"{country.name} {country.hmrc_code} {country.commission_code}"
 
 
+# TODO: Extend with NuclearMaterialApplicationGoods
 def get_sanctions_goods_line(goods: SanctionsAndAdhocApplicationGoods) -> list[str]:
     goods_line = _split_text_field_newlines(goods.goods_description)
     last_line = goods_line.pop()
@@ -160,6 +161,7 @@ def get_sanctions_goods_line(goods: SanctionsAndAdhocApplicationGoods) -> list[s
     return goods_line
 
 
+# TODO: Extend with NuclearMaterialApplication
 def get_sanctions_licence_context(
     application: SanctionsAndAdhocApplication,
     licence: ImportApplicationLicence,

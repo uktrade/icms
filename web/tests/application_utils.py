@@ -15,23 +15,26 @@ from web.models import (
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     CFSSchedule,
+    Commodity,
     Constabulary,
     Country,
     DFLApplication,
     ExportApplicationType,
     Exporter,
     Importer,
+    NuclearMaterialApplication,
     Office,
     OpenIndividualLicenceApplication,
     ProductLegislation,
     SanctionsAndAdhocApplication,
     Section5Clause,
     SILApplication,
+    Unit,
     Usage,
     User,
     WoodQuotaApplication,
 )
-from web.utils.commodity import get_usage_commodities
+from web.utils.commodity import get_active_commodities, get_usage_commodities
 
 IMPORT_APPS: TypeAlias = (
     WoodQuotaApplication
@@ -39,6 +42,7 @@ IMPORT_APPS: TypeAlias = (
     | SILApplication
     | DFLApplication
     | OpenIndividualLicenceApplication
+    | NuclearMaterialApplication
 )
 
 
@@ -289,6 +293,88 @@ def create_in_progress_sanctions_app(
     )
 
     return sanctions_app
+
+
+def create_in_progress_nuclear_app(
+    importer_client: Client,
+    importer: Importer,
+    office: Office,
+    importer_contact: User,
+    agent: Importer | None = None,
+    agent_office: Office | None = None,
+) -> NuclearMaterialApplication:
+    app_pk = create_import_app(
+        client=importer_client,
+        view_name="import:create-nuclear",
+        importer_pk=importer.pk,
+        office_pk=office.pk,
+        agent_pk=agent.pk if agent else None,
+        agent_office_pk=agent_office.pk if agent_office else None,
+    )
+    # Save a valid set of data.
+    origin_country = Country.util.get_all_countries().get(name="Belarus")
+    consignment_country = Country.util.get_all_countries().first()
+
+    form_data = {
+        "contact": importer_contact.pk,
+        "applicant_reference": "applicant_reference value",
+        "origin_country": origin_country.pk,
+        "consignment_country": consignment_country.pk,
+        "nature_of_business": "Test nature of business",
+        "consignor_name": "Test consignor name",
+        "consignor_address": "Test consignor address",
+        "end_user_name": "Test end user name",
+        "end_user_address": "Test end user address",
+        "intended_use_of_shipment": "Test intended use of shipment",
+        "dates_of_shipment": "Test dates of shipment",
+        "security_team_contact_information": "Test security team contact information",
+        "licence_type": NuclearMaterialApplication.LicenceType.SINGLE,
+    }
+
+    save_app_data(
+        client=importer_client,
+        view_name="import:nuclear:edit",
+        app_pk=app_pk,
+        form_data=form_data,
+    )
+
+    commodities = get_active_commodities(
+        Commodity.objects.filter(commoditygroup__group_code__in=["2612", "2844"])
+    )
+
+    # Add a goods to the application
+    add_goods_url = reverse("import:nuclear:add-goods", kwargs={"application_pk": app_pk})
+
+    resp = importer_client.post(
+        add_goods_url,
+        {
+            "commodity": commodities.first().pk,
+            "goods_description": "Test Goods",
+            "quantity_amount": 1000,
+            "quantity_unit": Unit.objects.get(hmrc_code="23").pk,
+        },
+    )
+    assert resp.status_code == 302
+
+    resp = importer_client.post(
+        add_goods_url,
+        {
+            "commodity": commodities.last().pk,
+            "goods_description": "More Commoditites",
+            "quantity_amount": 56.78,
+            "quantity_unit": Unit.objects.get(hmrc_code="21").pk,
+        },
+    )
+    assert resp.status_code == 302
+
+    add_app_file(
+        client=importer_client,
+        view_name="import:nuclear:add-document",
+        app_pk=app_pk,
+        post_data={},
+    )
+
+    return NuclearMaterialApplication.objects.get(pk=app_pk)
 
 
 def create_in_progress_com_app(

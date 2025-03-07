@@ -110,6 +110,7 @@ def get_opt_applications(search_ids: list[int]) -> "QuerySet[OutwardProcessingTr
     return applications
 
 
+# TODO: Extend with NuclearMaterialApplication
 def get_sanctionadhoc_applications(
     search_ids: list[int],
 ) -> "QuerySet[SanctionsAndAdhocApplication]":
@@ -269,6 +270,7 @@ def get_commodity_details(rec: ImportApplication) -> types.CommodityDetails:
             commodity_codes=commodity_codes,
         )
 
+    # TODO: Extend with NuclearMaterialApplication
     elif app_pt == ProcessTypes.SANCTIONS:
         sanction_app: SanctionsAndAdhocApplication = rec
 

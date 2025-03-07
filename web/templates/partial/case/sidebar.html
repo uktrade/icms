@@ -4,6 +4,7 @@
   {% if process.current_update_requests() %}
     {{ icms_link(request, icms_url('case:respond-update-request', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'Application Updates') }}
   {% endif %}
+
   {{ icms_link(request, icms_url(process.get_edit_view_name(), kwargs={'application_pk': process.pk}), process.get_application_details_link()) }}
 
   {% if process.process_type == "OpenIndividualLicenceApplication" %}
@@ -23,6 +24,11 @@
   {% elif process.process_type == "SanctionsAndAdhocApplication" %}
     {{ icms_link(request, icms_url('import:sanctions:list-goods', kwargs={'application_pk': process.pk}), 'Goods') }}
     {{ icms_link(request, icms_url('import:sanctions:list-documents', kwargs={'application_pk': process.pk}), 'Supporting Documents') }}
+
+  {% elif process.process_type == "NuclearMaterialApplication" %}
+    {{ icms_link(request, icms_url('import:nuclear:list-goods', kwargs={'application_pk': process.pk}), 'Goods') }}
+    {{ icms_link(request, icms_url('import:nuclear:list-documents', kwargs={'application_pk': process.pk}), 'Supporting Documents') }}
   {% endif %}
+
   {{ icms_link(request, icms_url(process.get_submit_view_name(), kwargs={'application_pk': process.pk}), 'Submit') }}
 </ul>

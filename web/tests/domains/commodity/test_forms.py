@@ -133,7 +133,7 @@ class TestCommodityGroupFilter(TestCase):
 
     def test_group_name_filter(self):
         results = self.run_filter({"group_name": "Active"})
-        assert results.count() == 2
+        assert results.count() == 3
 
     def test_group_description_filter(self):
         results = self.run_filter({"group_description": "active"})
@@ -146,11 +146,11 @@ class TestCommodityGroupFilter(TestCase):
 
     def test_filter_order(self):
         results = self.run_filter({"group_name": "active"})
-        assert results.count() == 2
+        assert results.count() == 3
         first = results.first()
         last = results.last()
         assert first.group_code == "12z"
-        assert last.group_code == "13"
+        assert last.group_code == "2844"
 
 
 class TestCommodityGroupForm(TestCase):

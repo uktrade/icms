@@ -20,6 +20,7 @@ from web.models import (
     ExporterAccessRequest,
     GMPFile,
     ImporterAccessRequest,
+    NuclearMaterialApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     OutwardProcessingTradeFile,
@@ -88,6 +89,9 @@ def view_case(
 
         case SanctionsAndAdhocApplication():
             return _view_sanctions_and_adhoc(request, app)
+
+        case NuclearMaterialApplication():
+            return _view_nuclear(request, app)
 
         case WoodQuotaApplication():
             return _view_wood_quota(request, app)
@@ -163,6 +167,20 @@ def _view_sanctions_and_adhoc(
     }
 
     return render(request, "web/domains/case/import/sanctions/view.html", context)
+
+
+def _view_nuclear(
+    request: AuthenticatedHttpRequest, application: NuclearMaterialApplication
+) -> HttpResponse:
+    goods = application.nuclear_goods.all()
+    context = {
+        "process": application,
+        "page_title": get_case_page_title("import", application, "View"),
+        "goods": goods,
+        "supporting_documents": application.supporting_documents.filter(is_active=True),
+    }
+
+    return render(request, "web/domains/case/import/nuclear_material/view.html", context)
 
 
 def _view_wood_quota(

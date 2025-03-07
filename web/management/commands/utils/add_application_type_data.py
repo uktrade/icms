@@ -255,7 +255,7 @@ def add_import_application_type_data():
 
     ImportApplicationType.objects.create(
         # Fields used by ICMS
-        is_active=False,
+        is_active=True,
         type=ImportApplicationType.Types.NMIL,
         sub_type=None,
         name="Nuclear Materials Import Licence Application",

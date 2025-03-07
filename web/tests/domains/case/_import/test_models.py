@@ -5,6 +5,7 @@ from django.urls import reverse
 from web.models import (
     DFLApplication,
     ImportApplicationType,
+    NuclearMaterialApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     PriorSurveillanceApplication,
@@ -27,6 +28,7 @@ from web.models import (
         SILApplication,
         TextilesApplication,
         WoodQuotaApplication,
+        NuclearMaterialApplication,
     ],
 )
 @pytest.mark.django_db

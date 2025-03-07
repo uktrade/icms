@@ -23,6 +23,7 @@ if TYPE_CHECKING:
         SILGoodsSection5,
     )
 
+    # TODO: Extend with NuclearMaterialApplication
     CHIEF_APPLICATIONS = (
         SILApplication
         | DFLApplication
