@@ -5373,3 +5373,4 @@ NuclearMaterialApplication
 Nuclear Materials Import Licence
 process.process_type == "NuclearMaterialApplication
 Materials Import Licence Application
+assert goods.quantity_amount

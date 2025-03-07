@@ -53,6 +53,7 @@ from web.models import (
     Importer,
     ImporterAccessRequest,
     Mailshot,
+    NuclearMaterialApplication,
     Office,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
@@ -86,6 +87,7 @@ from .application_utils import (
     create_in_progress_com_app,
     create_in_progress_fa_sil_app,
     create_in_progress_gmp_app,
+    create_in_progress_nuclear_app,
     create_in_progress_sanctions_app,
     submit_app,
 )
@@ -857,6 +859,18 @@ def sanctions_app_processing(
 
     case_progress.check_expected_status(app, [ImpExpStatus.PROCESSING])
     case_progress.check_expected_task(app, Task.TaskType.AUTHORISE)
+
+    return app
+
+
+@pytest.fixture()
+def nuclear_app_in_progress(
+    importer_client, importer, office, importer_one_contact
+) -> NuclearMaterialApplication:
+    app = create_in_progress_nuclear_app(importer_client, importer, office, importer_one_contact)
+
+    case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
+    case_progress.check_expected_task(app, Task.TaskType.PREPARE)
 
     return app
 
