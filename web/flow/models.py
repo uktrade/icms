@@ -15,6 +15,7 @@ class ProcessTypes(TypedTextChoices):
         "Firearms and Ammunition (Open Individual Import Licence)",
     )
     FA_SIL = ("SILApplication", "Firearms and Ammunition (Specific Individual Import Licence)")
+    NUCLEAR = ("NuclearMaterialApplication", "Nuclear Materials Import Licence")
     OPT = ("OutwardProcessingTradeApplication", "Outward Processing Trade")
     SANCTIONS = ("SanctionsAndAdhocApplication", "Sanctions and Adhoc Licence Application")
     SPS = ("PriorSurveillanceApplication", "Prior Surveillance")
@@ -81,6 +82,8 @@ class Process(models.Model):
                 return "Sanctions and Adhoc"
             case pt.OPT:
                 return "Outward Processing Trade"
+            case pt.NUCLEAR:
+                return "Nuclear Materials Import Licence"
             # Export
             case pt.CFS:
                 return "CFS Application"
@@ -132,6 +135,9 @@ class Process(models.Model):
 
         elif pt == ProcessTypes.SPS:
             return self.importapplication.priorsurveillanceapplication
+
+        elif pt == ProcessTypes.NUCLEAR:
+            return self.importapplication.nuclearmaterialapplication
 
         # Export applications
         elif pt == ProcessTypes.COM:

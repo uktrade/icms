@@ -53,3 +53,4 @@ def load_app_test_data():
     # TODO: Revisit in ECIL-601 (all ecil_xxx commands and fixture data should be data migrations)
     call_command("ECIL_657_add_dfl_country_groups")
     call_command("ECIL_647_add_nuclear_material_app")
+    call_command("ECIL_652_add_nuclear_commodities")

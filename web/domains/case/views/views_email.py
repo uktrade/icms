@@ -375,6 +375,7 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
             file_qs=files,
         )
 
+    # TODO: Extend with NuclearMaterialApplication
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         choices = [
             (c.email, f"{c.name} ({c.email})") for c in SanctionEmail.objects.filter(is_active=True)
@@ -417,6 +418,7 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
         raise ValueError(f"CaseEmail for application not supported {application.process_type}")
 
 
+# TODO: Refactor this to use a match statement and get_specific_model()
 def _get_case_email_application(application: ImpOrExp) -> ApplicationsWithCaseEmail:
     # import applications
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
@@ -428,6 +430,7 @@ def _get_case_email_application(application: ImpOrExp) -> ApplicationsWithCaseEm
     elif application.process_type == SILApplication.PROCESS_TYPE:
         return application.silapplication
 
+    # TODO: Extend with NuclearMaterialApplication
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         return application.sanctionsandadhocapplication
 

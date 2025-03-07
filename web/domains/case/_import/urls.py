@@ -52,8 +52,10 @@ public_urls = [
     path("create/firearms/oil/", views.create_firearms_oil, name="create-fa-oil"),
     path("create/firearms/sil/", views.create_firearms_sil, name="create-fa-sil"),
     path("create/wood/quota/", views.create_wood_quota, name="create-wood-quota"),
+    path("create/nuclear/", views.create_nuclear_material, name="create-nuclear"),
     # Application urls
     path("sanctions/", include("web.domains.case._import.sanctions.urls")),
+    path("nuclear/", include("web.domains.case._import.nuclear_material.urls")),
     path("firearms/", include(firearms_urls)),
     path("wood/", include("web.domains.case._import.wood.urls")),
     path("legacy/", include("web.domains.case._import.legacy.urls")),

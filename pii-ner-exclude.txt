@@ -5404,3 +5404,33 @@ KAC
 KG
 Acesulfame Potassium
 StrEnum
+Nuclear Materials Import Licence Application - Edit
+Nuclear Materials Import Licence Application - Goods
+Nuclear Materials Import Licence Application - Add Goods
+Nuclear Materials Import Licence Application - Edit Goods
+Nuclear Materials Import Licence Application - Supporting Documents
+Nuclear Materials Import Licence Application - Submit Application
+NuclearMaterialApplication
+Nuclear Materials Import Licence
+process.process_type == "NuclearMaterialApplication
+Materials Import Licence Application
+assert goods.quantity_amount
+Consignor Company Name
+Single or Open Licence
+"Add CommodityGroup and
+CommodityType
+Chapter 26 - Ores
+CHEMICALS
+Chapter 28 - Inorganic
+2844103000
+Revisit in ECIL-601
+{{ fields.field(form.end_user_name
+{{ fields.field(form.dates_of_shipment
+{{ application_field(process.consignor_name
+Consignor Company Address
+End User Company Name
+{{ application_field(process.security_team_contact_information
+Nature of Business
+Goods Description (Including
+UN
+{{ application_field(process.end_user_address

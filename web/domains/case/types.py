@@ -68,6 +68,7 @@ ApplicationsWithChecklist = Union[
     TextilesApplication,
 ]
 
+# TODO: Extend with NuclearMaterialApplication
 ApplicationsWithCaseEmail = Union[
     OpenIndividualLicenceApplication,
     DFLApplication,

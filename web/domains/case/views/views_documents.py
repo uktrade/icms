@@ -101,6 +101,7 @@ class DownloadLinkFormViewBase(FormView):
         return super().form_invalid(form)
 
 
+# TODO: Extend with NuclearMaterialApplication
 class DownloadCaseEmailDocumentsFormView(DownloadLinkFormViewBase):
     """View to see supporting documents relating to an application with case emails.
 
