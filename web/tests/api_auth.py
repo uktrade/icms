@@ -6,7 +6,9 @@ JSON_TYPE = "application/json"
 SERVER_NAME = "caseworker"
 
 
-def make_testing_hawk_sender(method: HTTPMethod, url: str, api_type: APIType = "hmrc", **kwargs):
+def make_testing_hawk_sender(
+    method: HTTPMethod, url: str, api_type: APIType = "hmrc", hash_content: bool = True, **kwargs
+):
     url = f"http://{SERVER_NAME}{url}"
 
-    return make_hawk_sender(method, url, api_type=api_type, **kwargs)
+    return make_hawk_sender(method, url, api_type=api_type, hash_content=hash_content, **kwargs)

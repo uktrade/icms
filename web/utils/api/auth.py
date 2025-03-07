@@ -91,11 +91,13 @@ def validate_request(request: HttpRequest, api_type: APIType) -> mohawk.Receiver
             seen_nonce=seen_nonce,
         )
     except mohawk.exc.HawkFail as err:
+        print("\n\n", request.method, "\n\n")
+        print("\n\n", request.content_type, "\n\n")
         raise exceptions.BadRequest from err
 
 
 def make_hawk_sender(
-    method: HTTPMethod, url: str, api_type: APIType, **kwargs: Any
+    method: HTTPMethod, url: str, api_type: APIType, hash_content: bool = True, **kwargs: Any
 ) -> mohawk.Sender:
     match api_type:
         case "hmrc":
@@ -107,7 +109,7 @@ def make_hawk_sender(
 
     creds = settings.HAWK_CREDENTIALS[api_id]
 
-    return mohawk.Sender(creds, url, method, **kwargs)
+    return mohawk.Sender(creds, url, method, always_hash_content=hash_content, **kwargs)
 
 
 def make_hawk_request(
