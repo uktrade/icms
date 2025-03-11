@@ -96,7 +96,7 @@ def test_gbpr_is_valid_org_eori_number():
         licence_reference="",
         start_date=today,
         end_date=today,
-        organisation=_get_organisation(today, "GBPR"),
+        organisation=_get_organisation(today, "GB123412341234"),
         country_group="Country Group",
         country_code="Country Code",
         restrictions="Some restrictions",
@@ -125,7 +125,7 @@ def test_gbpr_is_valid_org_eori_number():
             "start_date": today_str,
             "end_date": today_str,
             "organisation": {
-                "eori_number": "GBPR",
+                "eori_number": "GB123412341234",
                 "name": "Org name",
                 "address": {
                     "line_1": "line_1",

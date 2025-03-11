@@ -127,7 +127,7 @@ class ImporterAccessRequest(AccessRequest):
         blank=True,
         default="",
         verbose_name="EORI Number",
-        help_text="EORI number should include the GB prefix for organisation or GBPR for individual",
+        help_text="EORI number should include the GB prefix",
     )
 
     link = models.ForeignKey(

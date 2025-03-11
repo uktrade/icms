@@ -96,7 +96,7 @@ IMPORTER_THREE = TestImporter(
 
 IMPORTER_INDIVIDUAL = TestImporter(
     importer_name="",
-    eori_number="GBPR",
+    eori_number="GB123412341234",
     offices=[
         Office(
             address_1="1 Individual Road",

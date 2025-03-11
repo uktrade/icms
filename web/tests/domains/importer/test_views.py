@@ -224,9 +224,19 @@ class TestIndividualImporterCreateView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
-    def test_importer_created(self):
+    def test_importer_created_with_eori_12(self):
         data = {
-            "eori_number": "GBPR",
+            "eori_number": "GB123456789012",
+            "user": self.importer_user.pk,
+        }
+        response = self.ilb_admin_client.post(self.url, data)
+        importer = Importer.objects.get(user=self.importer_user)
+        assertRedirects(response, reverse("importer-list") + f"?name={importer.name}")
+        assert "Importer created successfully." in get_messages_from_response(response)
+
+    def test_importer_created_with_eori_15(self):
+        data = {
+            "eori_number": "GB123456789012345",
             "user": self.importer_user.pk,
         }
         response = self.ilb_admin_client.post(self.url, data)
@@ -267,7 +277,6 @@ class TestAdminIndividualImporterEditView(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup):
         self.importer.type = self.importer.INDIVIDUAL
-        self.importer.eori_number = "GBPR"
         self.importer.save()
 
         self.url = reverse("importer-edit", kwargs={"pk": self.importer.id})
@@ -316,6 +325,28 @@ class TestAdminIndividualImporterEditView(AuthTestCase):
         exp_msg = "An EORI number is required to progress an application from this importer, please provide one as soon as possible."
         messages = get_messages_from_response(response)
         assert exp_msg in messages
+
+    def test_edit_no_eori(self):
+        self.importer.eori_number = None
+        self.importer.save()
+
+        assert self.importer.eori_number is None
+
+        data = {
+            "user": self.importer_user.pk,
+            "eori_number": "GBPR",
+            "comments": "",
+        }
+        response = self.ilb_admin_client.post(self.url, data)
+        assert response.status_code == HTTPStatus.OK
+
+        self.importer.refresh_from_db()
+        assert self.importer.eori_number is None
+
+        response = self.ilb_admin_client.post(self.url, data | {"eori_number": "GB123456789123456"})
+
+        self.importer.refresh_from_db()
+        assert self.importer.eori_number == "GB123456789123456"
 
 
 class TestAdminOrganisationImporterEditView(AuthTestCase):

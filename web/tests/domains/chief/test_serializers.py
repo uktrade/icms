@@ -100,7 +100,7 @@ class TestImporterData:
         self.app.importer = importer_individual
         self.app.importer_office = importer_individual.offices.first()
         expected = OrganisationData(
-            eori_number="GBPR",
+            eori_number="GB123412341234",
             name="individual_importer_user_first_name individual_importer_user_last_name",
             address=AddressData(
                 line_1="1 Individual Road",
