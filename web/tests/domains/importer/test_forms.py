@@ -45,15 +45,31 @@ def test_required_fields_importer_individual_form():
 def test_type_importer_individual_form(importer_one_contact):
     """Assert individual importer type is set on save."""
 
-    data = {"user": importer_one_contact.pk}
+    data = {"user": importer_one_contact.pk, "eori_number": "GB123456789012"}
     form = ImporterIndividualForm(data)
 
     assert form.is_valid(), form.errors
     importer = form.save()
 
     assert importer.type == "INDIVIDUAL"
-    # This value should always get saved
-    assert importer.eori_number == ImporterIndividualForm.EORI_INDIVIDUAL
+    assert importer.eori_number == "GB123456789012"
+
+
+@pytest.mark.parametrize(
+    "eori,err",
+    [
+        ("", "You must enter this item"),
+        ("GBPR", "Must start with 'GB' followed by 12 or 15 numbers"),
+        ("GB12345678901", "Must start with 'GB' followed by 12 or 15 numbers"),
+        ("GB1234567890123", "Must start with 'GB' followed by 12 or 15 numbers"),
+        ("AB1234567890123", "'AB1234567890123' doesn't start with GB"),
+    ],
+)
+def test_individual_importer_eori_validation(importer_one_contact, eori, err):
+    data = {"user": importer_one_contact.pk, "eori_number": eori}
+    form = ImporterIndividualForm(data)
+    assert form.is_valid() is False
+    assert form.errors["eori_number"] == [err]
 
 
 def test_required_fields_importer_organisation_form():
