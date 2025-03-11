@@ -16,6 +16,8 @@ class CountryGroupName(TypedTextChoices):
     # Import Applications
     #
     FA_DFL_IC = "FA_DFL_IC", "Firearms and Ammunition (Deactivated) Issuing Countries"
+    FA_DFL_COC = "FA_DFL_COC", "Firearms and Ammunition (DFL) COCs"
+    FA_DFL_COO = "FA_DFL_COO", "Firearms and Ammunition (DFL) COOs"
     FA_OIL_COC = "FA_OIL_COC", "Firearms and Ammunition (OIL) COCs"
     FA_OIL_COO = "FA_OIL_COO", "Firearms and Ammunition (OIL) COOs"
     FA_SIL_COC = "FA_SIL_COC", "Firearms and Ammunition (SIL) COCs"
