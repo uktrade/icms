@@ -45,9 +45,8 @@ def test_create_in_progress_fa_dfl_application(
     )
 
     # Save a valid set of data.
-    dfl_countries = Country.util.get_all_countries()
-    origin_country = dfl_countries[0]
-    consignment_country = dfl_countries[1]
+    origin_country = Country.app.get_fa_dfl_coo_countries()[0]
+    consignment_country = Country.app.get_fa_dfl_coc_countries()[1]
     constabulary = Constabulary.objects.get(name="Derbyshire")
     form_data = {
         "contact": importer_one_contact.pk,
@@ -172,9 +171,8 @@ def test_edit_dfl_post_valid(fa_dfl_app_in_progress, importer_client, importer_o
     dfl_app_pk = fa_dfl_app_in_progress.pk
     url = CaseURLS.fa_dfl_edit(dfl_app_pk)
 
-    dfl_countries = Country.util.get_all_countries()
-    origin_country = dfl_countries[0]
-    consignment_country = dfl_countries[1]
+    origin_country = Country.app.get_fa_dfl_coo_countries()[0]
+    consignment_country = Country.app.get_fa_dfl_coc_countries()[1]
     constabulary = Constabulary.objects.first()
 
     form_data = {
@@ -433,9 +431,8 @@ def test_submit_dfl_post_invalid(importer_client, importer_one_contact, importer
     )
 
     # Test the know bought from check
-    dfl_countries = Country.util.get_all_countries()
-    origin_country = dfl_countries[0]
-    consignment_country = dfl_countries[1]
+    origin_country = Country.app.get_fa_dfl_coo_countries()[0]
+    consignment_country = Country.app.get_fa_dfl_coc_countries()[1]
     constabulary = Constabulary.objects.first()
 
     form_data = {
@@ -478,9 +475,8 @@ def test_submit_dfl_post_valid(fa_dfl_app_in_progress, importer_client, importer
     know_bought_from_url = CaseURLS.fa_manage_import_contacts(dfl_app_pk)
     submit_url = CaseURLS.fa_dfl_submit(dfl_app_pk)
 
-    dfl_countries = Country.util.get_all_countries()
-    origin_country = dfl_countries[0]
-    consignment_country = dfl_countries[1]
+    origin_country = Country.app.get_fa_dfl_coo_countries()[0]
+    consignment_country = Country.app.get_fa_dfl_coc_countries()[1]
     constabulary = Constabulary.objects.first()
 
     form_data = {

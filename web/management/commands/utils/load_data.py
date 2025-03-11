@@ -50,3 +50,5 @@ def load_app_test_data():
     update_database_email_templates()
     archive_database_email_templates()
     add_gov_notify_templates()
+    # TODO: Revisit in ECIL-601 (all ecil_xxx commands and fixture data should be data migrations)
+    call_command("ECIL_657_add_dfl_country_groups")

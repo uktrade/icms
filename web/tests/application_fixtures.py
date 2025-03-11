@@ -153,9 +153,8 @@ class FirearmsDFLAppFixture(ImportAppFixtureBase):
     def in_progress(self) -> DFLApplication:
         dfl_app = self._create_app(DFLApplication, IA_TYPES.FIREARMS, IA_SUB_TYPES.DFL)
 
-        dfl_countries = Country.util.get_all_countries()
-        origin_country = dfl_countries[0]
-        consignment_country = dfl_countries[1]
+        origin_country = Country.app.get_fa_dfl_coo_countries()[0]
+        consignment_country = Country.app.get_fa_dfl_coc_countries()[1]
         constabulary = Constabulary.objects.get(name="Derbyshire")
         dfl_app.applicant_reference = "applicant_reference value"
         dfl_app.deactivated_firearm = True

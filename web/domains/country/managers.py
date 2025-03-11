@@ -63,6 +63,22 @@ class ApplicationCountryManager(CountryMangerBase):
 
         return self._get_country_group_countries(CountryGroupName.FA_DFL_IC)
 
+    def get_fa_dfl_coc_countries(self) -> QuerySet["Country"]:
+        """Get FA-DFL consignment countries.
+
+        DB Field: DFLApplication.consignment_country
+        """
+
+        return self._get_country_group_countries(CountryGroupName.FA_DFL_COC)
+
+    def get_fa_dfl_coo_countries(self) -> QuerySet["Country"]:
+        """Get FA-DFL origin countries.
+
+        DB Field: DFLApplication.origin_country
+        """
+
+        return self._get_country_group_countries(CountryGroupName.FA_DFL_COO)
+
     def get_fa_oil_coc_countries(self) -> QuerySet["Country"]:
         """Get FA-OIL consignment countries.
 

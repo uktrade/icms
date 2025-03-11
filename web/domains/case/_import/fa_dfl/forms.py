@@ -49,10 +49,8 @@ class FirearmDFLFormBase(forms.ModelForm):
         self.fields["proof_checked"].required = True
         self.fields["contact"].queryset = application_contacts(self.instance)
 
-        countries = Country.util.get_all_countries()
-
-        self.fields["origin_country"].queryset = countries
-        self.fields["consignment_country"].queryset = countries
+        self.fields["consignment_country"].queryset = Country.app.get_fa_dfl_coc_countries()
+        self.fields["origin_country"].queryset = Country.app.get_fa_dfl_coo_countries()
 
 
 class EditFaDFLForm(OptionalFormMixin, FirearmDFLFormBase):
