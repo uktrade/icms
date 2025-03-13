@@ -5369,3 +5369,38 @@ Nuclear Materials Import Licence Application
 MCG
 ML
 Django 5.1.7
+"Add all CDS
+CIF
+"Metric Carat
+Cental
+Lb Troy
+Gramme
+Kilogramme
+Number
+100 square metres
+100 feet
+Centimetre
+Decimetre
+Metre
+Dekametre
+36 gallons
+Millilitre
+Centilitre
+Dekalitre
+Hectolitre
+1000 litre
+Gram
+KOH
+NaOH
+100 kilogram
+Kilogram of choline chloride
+Kilogram of methyl
+CCT
+Tonnes
+1000 cubic metres
+Euro
+Kilogram Raw Sugar
+KAC
+KG
+Acesulfame Potassium
+StrEnum
