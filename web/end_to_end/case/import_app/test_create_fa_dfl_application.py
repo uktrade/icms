@@ -1,6 +1,5 @@
 import os
 
-from django.urls import reverse
 from playwright.sync_api import Page
 
 from web.end_to_end import conftest, types, utils
@@ -102,10 +101,7 @@ def fa_dfl_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     ).fill("I AGREE")
 
     page.get_by_role("button", name="Submit Application").click()
-    utils.assert_page_url(
-        page,
-        reverse("survey:application_submitted", kwargs={"process_pk": dfl_id}),
-    )
+    utils.assert_page_url(page, f"/survey/application-submitted/{dfl_id}")
 
     return dfl_id
 
