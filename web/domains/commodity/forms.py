@@ -131,7 +131,10 @@ class CommodityGroupFilter(FilterSet):
         field_name="commodities__commodity_code", lookup_expr="icontains", label="Commodity Code"
     )
     unit = ModelChoiceFilter(
-        queryset=Unit.objects.all(),
+        queryset=Unit.objects.exclude(
+            # Exclude a few of the new types that we will probably never need
+            unit_type__in=["Length", "Various"]
+        ).order_by("hmrc_code"),
         empty_label="Any",
     )
     application_type = ModelChoiceFilter(

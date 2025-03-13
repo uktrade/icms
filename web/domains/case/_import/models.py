@@ -33,31 +33,11 @@ class ImportApplicationType(models.Model):
     type = models.CharField(max_length=70, blank=False, null=False, choices=Types.choices)
     sub_type = models.CharField(max_length=70, blank=True, null=True, choices=SubTypes.choices)
     name = models.CharField(max_length=100)
-    licence_type_code = models.CharField(max_length=20, blank=False, null=False)
     sigl_flag = models.BooleanField(blank=False, null=False)
     chief_flag = models.BooleanField()
-    chief_licence_prefix = models.CharField(max_length=10, blank=True, null=True)
     paper_licence_flag = models.BooleanField(blank=False, null=False)
     electronic_licence_flag = models.BooleanField(blank=False, null=False)
     cover_letter_flag = models.BooleanField(blank=False, null=False)
-    cover_letter_schedule_flag = models.BooleanField(blank=False, null=False)
-    category_flag = models.BooleanField(blank=False, null=False)
-    sigl_category_prefix = models.CharField(max_length=100, blank=True, null=True)
-    chief_category_prefix = models.CharField(max_length=10, blank=True, null=True)
-    default_licence_length_months = models.IntegerField(blank=True, null=True)
-    default_commodity_desc = models.CharField(max_length=200, blank=True, null=True)
-    quantity_unlimited_flag = models.BooleanField(blank=False, null=False)
-    unit_list_csv = models.CharField(max_length=200, blank=True, null=True)
-    exp_cert_upload_flag = models.BooleanField(blank=False, null=False)
-    supporting_docs_upload_flag = models.BooleanField(blank=False, null=False)
-    multiple_commodities_flag = models.BooleanField(blank=False, null=False)
-    guidance_file_url = models.CharField(max_length=4000, blank=True, null=True)
-    licence_category_description = models.CharField(max_length=1000, blank=True, null=True)
-
-    usage_auto_category_desc_flag = models.BooleanField(blank=False, null=False)
-    case_checklist_flag = models.BooleanField(blank=False, null=False)
-    importer_printable = models.BooleanField(blank=False, null=False)
-
     declaration_template = models.ForeignKey(
         "web.Template",
         on_delete=models.PROTECT,
@@ -68,6 +48,43 @@ class ImportApplicationType(models.Model):
     endorsements = models.ManyToManyField(
         "web.Template", related_name="endorsement_application_types"
     )
+
+    # Field not used by ICMS - Will be deleted in future
+    licence_type_code = models.CharField(max_length=20, blank=False, null=False)
+    # Field not used by ICMS - Will be deleted in future
+    chief_licence_prefix = models.CharField(max_length=10, blank=True, null=True)
+    # Field not used by ICMS - Will be deleted in future
+    cover_letter_schedule_flag = models.BooleanField(blank=False, null=False)
+    # Field not used by ICMS - Will be deleted in future
+    category_flag = models.BooleanField(blank=False, null=False)
+    # Field not used by ICMS - Will be deleted in future
+    sigl_category_prefix = models.CharField(max_length=100, blank=True, null=True)
+    # Field not used by ICMS - Will be deleted in future
+    chief_category_prefix = models.CharField(max_length=10, blank=True, null=True)
+    # Field not used by ICMS - Will be deleted in future
+    default_licence_length_months = models.IntegerField(blank=True, null=True)
+    # Field not used by ICMS - Will be deleted in future
+    default_commodity_desc = models.CharField(max_length=200, blank=True, null=True)
+    # Field not used by ICMS - Will be deleted in future
+    quantity_unlimited_flag = models.BooleanField(blank=False, null=False)
+    # Field not used by ICMS - Will be deleted in future
+    unit_list_csv = models.CharField(max_length=200, blank=True, null=True)
+    # Field not used by ICMS - Will be deleted in future
+    exp_cert_upload_flag = models.BooleanField(blank=False, null=False)
+    # Field not used by ICMS - Will be deleted in future
+    supporting_docs_upload_flag = models.BooleanField(blank=False, null=False)
+    # Field not used by ICMS - Will be deleted in future
+    multiple_commodities_flag = models.BooleanField(blank=False, null=False)
+    # Field not used by ICMS - Will be deleted in future
+    guidance_file_url = models.CharField(max_length=4000, blank=True, null=True)
+    # Field not used by ICMS - Will be deleted in future
+    licence_category_description = models.CharField(max_length=1000, blank=True, null=True)
+    # Field not used by ICMS - Will be deleted in future
+    usage_auto_category_desc_flag = models.BooleanField(blank=False, null=False)
+    # Field not used by ICMS - Will be deleted in future
+    case_checklist_flag = models.BooleanField(blank=False, null=False)
+    # Used in a report but shouldn't be used - Will be deleted in future
+    importer_printable = models.BooleanField(blank=False, null=False)
 
     def __str__(self) -> str:
         return self.name

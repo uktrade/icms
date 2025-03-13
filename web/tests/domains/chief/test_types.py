@@ -31,7 +31,7 @@ def test_fa_dfl_licence_data_can_serialise_using_enum_json_encoder():
                 description="Goods description",
                 quantity=12345,
                 controlled_by=types.ControlledByEnum.QUANTITY,
-                unit=types.QuantityCodeEnum.NUMBER,
+                unit=types.QuantityCodeEnum.UNIT_NUMBER,
             ),
         ],
     )
@@ -105,7 +105,7 @@ def test_gbpr_is_valid_org_eori_number():
                 description="Goods description",
                 quantity=12345,
                 controlled_by=types.ControlledByEnum.QUANTITY,
-                unit=types.QuantityCodeEnum.NUMBER,
+                unit=types.QuantityCodeEnum.UNIT_NUMBER,
             ),
         ],
     )

@@ -9,10 +9,12 @@ class Unit(models.Model):
     The codes are defined here: https://www.gov.uk/government/publications/uk-trade-tariff-quantity-codes/uk-trade-tariff-quantity-codes
     """
 
-    unit_type = models.CharField(max_length=20)
     description = models.CharField(max_length=100)
+    hmrc_code = models.CharField(max_length=4)
+    unit_type = models.CharField(max_length=20)
+
+    # Field not used by ICMS - Will be deleted in future
     short_description = models.CharField(max_length=30)
-    hmrc_code = models.IntegerField()
 
     def __str__(self):
         return self.description

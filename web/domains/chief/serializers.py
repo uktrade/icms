@@ -263,7 +263,7 @@ def _get_section_goods(goods_qs, section):
                 if g.unlimited_quantity
                 else types.ControlledByEnum.QUANTITY
             ),
-            unit=types.QuantityCodeEnum.NUMBER,
+            unit=types.QuantityCodeEnum.UNIT_NUMBER,
         )
         for g in goods_qs
     ]
@@ -284,7 +284,7 @@ def _get_section_5_goods(goods_qs: "QuerySet[SILGoodsSection5]") -> list[types.F
             kwargs = {
                 "quantity": g.quantity,
                 "controlled_by": types.ControlledByEnum.QUANTITY,
-                "unit": types.QuantityCodeEnum.NUMBER,
+                "unit": types.QuantityCodeEnum.UNIT_NUMBER,
             }
 
         goods.append(types.FirearmGoodsData(description=description, **kwargs))
@@ -310,7 +310,7 @@ def _get_section_58_obsolete_goods(
                 description=description,
                 quantity=g.quantity,
                 controlled_by=types.ControlledByEnum.QUANTITY,
-                unit=types.QuantityCodeEnum.NUMBER,
+                unit=types.QuantityCodeEnum.UNIT_NUMBER,
             )
         )
 
@@ -323,7 +323,7 @@ def _get_section_58_other_goods(goods_qs):
             description=f"{g.description} to which Section 58(2) of the Firearms Act 1968, as amended, applies.",
             quantity=g.quantity,
             controlled_by=types.ControlledByEnum.QUANTITY,
-            unit=types.QuantityCodeEnum.NUMBER,
+            unit=types.QuantityCodeEnum.UNIT_NUMBER,
         )
         for g in goods_qs
     ]
