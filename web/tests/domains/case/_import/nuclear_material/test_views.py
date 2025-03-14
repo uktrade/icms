@@ -27,7 +27,11 @@ from web.models import (
 from web.sites import SiteName, get_caseworker_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
-from web.tests.helpers import check_gov_notify_email_was_sent, check_page_errors
+from web.tests.helpers import (
+    CaseURLS,
+    check_gov_notify_email_was_sent,
+    check_page_errors,
+)
 from web.utils.validation import ApplicationErrors, PageErrors
 
 
@@ -516,95 +520,86 @@ class TestSubmitNuclearMaterial:
         )
 
 
-# TODO: Reenable these tests
-# class TestEditNuclearLicenceGoods:
-#     @pytest.fixture(autouse=True)
-#     def setup(self, ilb_admin_client, sanctions_app_submitted):
-#         self.app = sanctions_app_submitted
-#         self.client = ilb_admin_client
-#
-#         self.client.post(CaseURLS.take_ownership(self.app.pk, "import"))
-#         self.app.refresh_from_db()
-#
-#         self.app.decision = self.app.APPROVE
-#         self.app.save()
-#
-#         self.url = CaseURLS.prepare_response(self.app.pk, "import")
-#
-#     def test_edit_licence_goods(self):
-#         goods: NuclearMaterialApplicationGoods = self.app.nuclear_goods.first()
-#
-#         assert goods.goods_description == "Test Goods"
-#         assert goods.quantity_amount == 1000
-#
-#         assert goods.goods_description_original == "Test Goods"
-#         assert goods.quantity_amount_original == 1000
-#
-#         resp = self.client.get(self.url)
-#         assert (
-#             "<td>Test Goods</td><td>1000.000</td><td>pieces</td><td>10500.00</td>"
-#             in resp.content.decode()
-#         )
-#
-#         self.client.post(
-#             reverse(
-#                 "import:nuclear:edit-goods-licence",
-#                 kwargs={"application_pk": self.app.pk, "goods_pk": goods.pk},
-#             ),
-#             data={
-#                 "goods_description": "New Description",
-#                 "quantity_amount": 99.000,
-#             },
-#         )
-#
-#         goods.refresh_from_db()
-#
-#         assert goods.goods_description == "New Description"
-#         assert goods.quantity_amount == 99
-#
-#         assert goods.goods_description_original == "Test Goods"
-#         assert goods.quantity_amount_original == 1000
-#
-#         resp = self.client.get(self.url)
-#         assert (
-#             "<td>New Description</td><td>99.000</td><td>pieces</td><td>55.00</td>"
-#             in resp.content.decode()
-#         )
-#
-#     def test_reset_licence_goods(self):
-#         goods: NuclearMaterialApplicationGoods = self.app.nuclear_goods.first()
-#
-#         assert goods.goods_description_original == "Test Goods"
-#         assert goods.quantity_amount_original == 1000
-#
-#         goods.goods_description = "Override"
-#         goods.quantity_amount = 50
-#
-#         goods.save()
-#         goods.refresh_from_db()
-#
-#         resp = self.client.get(self.url)
-#         assert (
-#             "<td>Override</td><td>50.000</td><td>pieces</td><td>20.00</td>" in resp.content.decode()
-#         )
-#
-#         self.client.post(
-#             reverse(
-#                 "import:nuclear:reset-goods-licence",
-#                 kwargs={"application_pk": self.app.pk, "goods_pk": goods.pk},
-#             ),
-#         )
-#
-#         goods.refresh_from_db()
-#
-#         assert goods.goods_description == "Test Goods"
-#         assert goods.quantity_amount == 1000
-#
-#         assert goods.goods_description_original == "Test Goods"
-#         assert goods.quantity_amount_original == 1000
-#
-#         resp = self.client.get(self.url)
-#         assert (
-#             "<td>Test Goods</td><td>1000.000</td><td>pieces</td><td>10500.00</td>"
-#             in resp.content.decode()
-#         )
+class TestEditNuclearLicenceGoods:
+    @pytest.fixture(autouse=True)
+    def setup(self, ilb_admin_client, nuclear_app_submitted):
+        self.app = nuclear_app_submitted
+        self.client = ilb_admin_client
+
+        self.client.post(CaseURLS.take_ownership(self.app.pk, "import"))
+        self.app.refresh_from_db()
+
+        self.app.decision = self.app.APPROVE
+        self.app.save()
+
+        self.url = CaseURLS.prepare_response(self.app.pk, "import")
+
+    def test_edit_licence_goods(self):
+        goods: NuclearMaterialApplicationGoods = self.app.nuclear_goods.first()
+
+        assert goods.goods_description == "Test Goods"
+        assert goods.quantity_amount == 1000
+
+        assert goods.goods_description_original == "Test Goods"
+        assert goods.quantity_amount_original == 1000
+
+        resp = self.client.get(self.url)
+
+        assert "<td>Test Goods</td><td>1000.000</td><td>Kilogramme</td>" in resp.content.decode()
+
+        response = self.client.post(
+            reverse(
+                "import:nuclear:edit-goods-licence",
+                kwargs={"application_pk": self.app.pk, "goods_pk": goods.pk},
+            ),
+            data={
+                "goods_description": "New Description",
+                "quantity_amount": 99.000,
+                "quantity_unit": goods.quantity_unit.pk,
+            },
+        )
+        assert response.status_code == 302
+
+        goods.refresh_from_db()
+
+        assert goods.goods_description == "New Description"
+        assert goods.quantity_amount == 99
+
+        assert goods.goods_description_original == "Test Goods"
+        assert goods.quantity_amount_original == 1000
+
+        resp = self.client.get(self.url)
+        assert "<td>New Description</td><td>99.000</td><td>Kilogramme</td>" in resp.content.decode()
+
+    def test_reset_licence_goods(self):
+        goods: NuclearMaterialApplicationGoods = self.app.nuclear_goods.first()
+
+        assert goods.goods_description_original == "Test Goods"
+        assert goods.quantity_amount_original == 1000
+
+        goods.goods_description = "Override"
+        goods.quantity_amount = 50
+
+        goods.save()
+        goods.refresh_from_db()
+
+        resp = self.client.get(self.url)
+        assert "<td>Override</td><td>50.000</td><td>Kilogramme</td>" in resp.content.decode()
+
+        self.client.post(
+            reverse(
+                "import:nuclear:reset-goods-licence",
+                kwargs={"application_pk": self.app.pk, "goods_pk": goods.pk},
+            ),
+        )
+
+        goods.refresh_from_db()
+
+        assert goods.goods_description == "Test Goods"
+        assert goods.quantity_amount == 1000
+
+        assert goods.goods_description_original == "Test Goods"
+        assert goods.quantity_amount_original == 1000
+
+        resp = self.client.get(self.url)
+        assert "<td>Test Goods</td><td>1000.000</td><td>Kilogramme</td>" in resp.content.decode()

@@ -44,9 +44,11 @@
   {% if process.process_type == "OpenIndividualLicenceApplication" %}
     {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Constabulary Emails') }}
 
-  {# TODO: Extend with NuclearMaterialApplication #}
   {% elif process.process_type == "SanctionsAndAdhocApplication" %}
     {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Sanction Emails') }}
+
+  {% elif process.process_type == "NuclearMaterialApplication" %}
+    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'NMIL Emails') }}
 
   {% elif process.process_type == "DFLApplication" %}
     {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Constabulary Emails') }}

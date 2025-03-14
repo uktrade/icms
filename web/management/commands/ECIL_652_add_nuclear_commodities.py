@@ -26,7 +26,8 @@ class Command(BaseCommand):
             Commodity.objects.get_or_create(
                 commodity_code=commodity,
                 commodity_type=commodity_type,
-                defaults={"validity_start_date": dt.date.today()},
+                # Default to start of the year just to play nicely with some tests.
+                defaults={"validity_start_date": dt.date(2024, 1, 1)},
             )
 
         group, created = CommodityGroup.objects.get_or_create(
@@ -78,7 +79,8 @@ class Command(BaseCommand):
             Commodity.objects.get_or_create(
                 commodity_code=commodity,
                 commodity_type=commodity_type,
-                defaults={"validity_start_date": dt.date.today()},
+                # Default to start of the year just to play nicely with some tests.
+                defaults={"validity_start_date": dt.date(2024, 1, 1)},
             )
 
         group, created = CommodityGroup.objects.get_or_create(
