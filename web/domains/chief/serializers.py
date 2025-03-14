@@ -15,6 +15,7 @@ if TYPE_CHECKING:
         DFLApplication,
         ImportApplication,
         Importer,
+        NuclearMaterialApplication,
         Office,
         OpenIndividualLicenceApplication,
         SanctionsAndAdhocApplication,
@@ -23,16 +24,16 @@ if TYPE_CHECKING:
         SILGoodsSection5,
     )
 
-    # TODO: Extend with NuclearMaterialApplication
     CHIEF_APPLICATIONS = (
         SILApplication
         | DFLApplication
         | OpenIndividualLicenceApplication
         | SanctionsAndAdhocApplication
+        | NuclearMaterialApplication
     )
 
 CHIEF_ACTION = Literal["insert", "replace", "cancel"]
-CHIEF_TYPES = Literal["OIL", "DFL", "SIL", "SAN"]
+CHIEF_TYPES = Literal["OIL", "DFL", "SIL", "SAN", "NUCLEAR"]
 
 
 class ChiefSerializer(Protocol):
@@ -117,6 +118,45 @@ def sanction_serializer(
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
 
     licence_data = types.SanctionsLicenceData(
+        type=_get_type(application),  # type:ignore[arg-type]
+        action=action,  # type:ignore[arg-type]
+        id=chief_id,
+        reference=application.reference,
+        licence_reference=licence_reference,
+        start_date=doc_pack.licence_start_date,
+        end_date=doc_pack.licence_end_date,
+        organisation=organisation,
+        restrictions=get_restrictions(application),
+        goods=goods,
+        **country_kwargs,
+    )
+
+    return types.LicenceDataPayload(licence=licence_data)
+
+
+def nuclear_material_serializer(
+    application: "NuclearMaterialApplication", action: CHIEF_ACTION, chief_id: str
+) -> types.LicenceDataPayload:
+    organisation = get_organisation(application)
+    doc_pack = document_pack.pack_draft_get(application)
+    licence_reference = fix_licence_reference(
+        application.process_type, document_pack.doc_ref_licence_get(doc_pack).reference
+    )
+
+    goods_qs = application.nuclear_goods.select_related("commodity", "quantity_unit")
+    goods = [
+        types.NuclearMaterialGoodsData(
+            commodity=g.commodity.commodity_code,
+            description=g.goods_description,
+            quantity=g.quantity_amount,
+            unit=g.quantity_unit.hmrc_code,
+        )
+        for g in goods_qs
+    ]
+
+    country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
+
+    licence_data = types.NuclearMaterialLicenceData(
         type=_get_type(application),  # type:ignore[arg-type]
         action=action,  # type:ignore[arg-type]
         id=chief_id,
@@ -341,6 +381,8 @@ def _get_type(application: "CHIEF_APPLICATIONS") -> CHIEF_TYPES:
             return "SIL"
         case ProcessTypes.SANCTIONS:
             return "SAN"
+        case ProcessTypes.NUCLEAR:
+            return "NUCLEAR"
         case _:
             raise ValueError(f"Unknown process type: {application.process_type}")
 
