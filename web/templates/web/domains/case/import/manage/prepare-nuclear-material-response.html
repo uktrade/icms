@@ -1,0 +1,55 @@
+{% extends "web/domains/case/manage/prepare-response.html" %}
+
+
+{% block goods_content %}
+  <h4>Goods</h4>
+  <table class="setoutList">
+    <thead>
+      <tr>
+        <th>Commodity Code</th>
+        <th>Goods Description</th>
+        <th>Quantity</th>
+        <th>Unit</th>
+        {% if not readonly_view and not variation_refused %}<th colspan="2">Action</th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for goods_item in goods %}
+        <tr>
+          <td>
+            {{ commodity_link(goods_item.commodity) }}
+          </td>
+          <td>
+            {{ goods_item.goods_description }}
+          </td>
+          <td>
+            {{ goods_item.quantity_amount }}
+          </td>
+          <td>{{ goods_item.quantity_unit }}</td>
+          {% if not readonly_view and not variation_refused %}
+            <td>
+              <a
+                class="link-button button icon-pencil"
+                href={{ icms_url('import:nuclear:edit-goods-licence', kwargs={'application_pk': process.pk, 'goods_pk': goods_item.pk}) }}>
+                Edit
+              </a>
+            </td>
+            <td>
+              {% if goods_item.goods_description != goods_item.goods_description_original or goods_item.quantity_amount !=  goods_item.quantity_amount_original %}
+                <form
+                  method="post"
+                  action="{{ icms_url('import:nuclear:reset-goods-licence', kwargs={'application_pk': process.pk, 'goods_pk': goods_item.pk}) }}"
+                  class="form-inline">
+                  {{ csrf_input }}
+                  <button type="submit" class="link-button button icon-undo2" aria-label="Reset Data" data-confirm="Are you sure you want to reset the goods data? Any changes you have made will be lost.">
+                    Reset Data
+                  </button>
+                </form>
+              {% endif %}
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

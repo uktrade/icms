@@ -876,6 +876,22 @@ def nuclear_app_in_progress(
 
 
 @pytest.fixture()
+def nuclear_app_submitted(
+    importer_client, importer, office, importer_one_contact
+) -> NuclearMaterialApplication:
+    app = create_in_progress_nuclear_app(importer_client, importer, office, importer_one_contact)
+
+    submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
+
+    app.refresh_from_db()
+
+    case_progress.check_expected_status(app, [ImpExpStatus.SUBMITTED])
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
+
+    return app
+
+
+@pytest.fixture()
 def com_app_in_progress(
     exporter_client, exporter, exporter_office, exporter_one_contact
 ) -> "CertificateOfManufactureApplication":

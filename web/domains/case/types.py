@@ -22,6 +22,7 @@ from web.models import (
     Importer,
     ImporterAccessRequest,
     ImporterApprovalRequest,
+    NuclearMaterialApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     SanctionsAndAdhocApplication,
@@ -68,12 +69,12 @@ ApplicationsWithChecklist = Union[
     TextilesApplication,
 ]
 
-# TODO: Extend with NuclearMaterialApplication
 ApplicationsWithCaseEmail = Union[
     OpenIndividualLicenceApplication,
     DFLApplication,
     SILApplication,
     SanctionsAndAdhocApplication,
+    NuclearMaterialApplication,
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
 ]

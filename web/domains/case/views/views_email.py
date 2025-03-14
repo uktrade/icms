@@ -72,6 +72,9 @@ def manage_case_emails(
     elif application.process_type == ProcessTypes.SANCTIONS:
         email_title = "Sanction Emails"
 
+    elif application.process_type == ProcessTypes.NUCLEAR:
+        email_title = "Nuclear Material Import Licence Emails"
+
     verified_section_5_authorities = []
     verified_firearms_authorities = []
 
@@ -375,8 +378,21 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
             file_qs=files,
         )
 
-    # TODO: Extend with NuclearMaterialApplication
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
+        choices = [
+            (c.email, f"{c.name} ({c.email})") for c in SanctionEmail.objects.filter(is_active=True)
+        ]
+        files = application.supporting_documents.filter(is_active=True)
+
+        return CaseEmailConfig(
+            application=application,
+            to_choices=choices,
+            file_metadata=case_documents_metadata(application),
+            file_qs=files,
+        )
+
+    elif application.process_type == ProcessTypes.NUCLEAR:
+        # TODO: Revisit in ECIL-663 (using SanctionEmail currently)
         choices = [
             (c.email, f"{c.name} ({c.email})") for c in SanctionEmail.objects.filter(is_active=True)
         ]
@@ -420,29 +436,21 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
 
 # TODO: Refactor this to use a match statement and get_specific_model()
 def _get_case_email_application(application: ImpOrExp) -> ApplicationsWithCaseEmail:
-    # import applications
-    if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
-        return application.openindividuallicenceapplication
-
-    elif application.process_type == DFLApplication.PROCESS_TYPE:
-        return application.dflapplication
-
-    elif application.process_type == SILApplication.PROCESS_TYPE:
-        return application.silapplication
-
-    # TODO: Extend with NuclearMaterialApplication
-    elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
-        return application.sanctionsandadhocapplication
-
-    # certificate application
-    elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
-        return application.certificateoffreesaleapplication
-
-    elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
-        return application.certificateofgoodmanufacturingpracticeapplication
-
-    else:
-        raise ValueError(f"CaseEmail for application not supported {application.process_type}")
+    match application.process_type:
+        case (
+            # Import applications
+            ProcessTypes.FA_OIL
+            | ProcessTypes.FA_DFL
+            | ProcessTypes.FA_SIL
+            | ProcessTypes.SANCTIONS
+            | ProcessTypes.NUCLEAR
+            # Export applications
+            | ProcessTypes.CFS
+            | ProcessTypes.GMP
+        ):
+            return application.get_specific_model()
+        case _:
+            raise ValueError(f"CaseEmail for application not supported {application.process_type}")
 
 
 def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
@@ -457,6 +465,10 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
             )
 
         case pt.SANCTIONS:
+            return create_case_email(application, CaseEmailCodes.SANCTIONS_CASE_EMAIL)
+
+        case pt.NUCLEAR:
+            # TODO: Revisit in ECIL-663 (Using sanction email currently)
             return create_case_email(application, CaseEmailCodes.SANCTIONS_CASE_EMAIL)
 
         # certificate applications
