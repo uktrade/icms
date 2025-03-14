@@ -190,7 +190,7 @@ class OrganisationData(BaseModel):
 class LicenceDataPayloadBase(BaseModel):
     """Base class for all licence data payload records."""
 
-    type: Literal["OIL", "DFL", "SIL", "SAN"]
+    type: Literal["OIL", "DFL", "SIL", "SAN", "NUCLEAR"]
     action: Literal["insert", "cancel", "replace"]
 
     id: str  # UUID for this licence payload
@@ -244,10 +244,29 @@ class SanctionsLicenceData(InsertAndReplaceBase):
     goods: list[SanctionGoodsData]
 
 
+class NuclearMaterialGoodsData(BaseModel):
+    commodity: str
+    description: str
+    quantity: float
+    # This is hardcoded to Q rather than having to specify it for each record.
+    controlled_by: Literal[ControlledByEnum.QUANTITY] = ControlledByEnum.QUANTITY
+    unit: QuantityCodeEnum
+
+
+class NuclearMaterialLicenceData(InsertAndReplaceBase):
+    type: Literal["NUCLEAR"]
+    goods: list[NuclearMaterialGoodsData]
+
+
 class LicenceDataPayload(BaseModel):
     """Payload that gets sent to ICMS-HRMC."""
 
-    licence: FirearmLicenceData | SanctionsLicenceData | CancelLicencePayload
+    licence: (
+        FirearmLicenceData
+        | SanctionsLicenceData
+        | CancelLicencePayload
+        | NuclearMaterialLicenceData
+    )
 
 
 #

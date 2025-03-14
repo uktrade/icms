@@ -9,6 +9,7 @@ from web.domains.chief.serializers import (
     fix_licence_reference,
     get_organisation,
     get_restrictions,
+    nuclear_material_serializer,
     sanction_serializer,
 )
 from web.domains.chief.types import (
@@ -17,6 +18,8 @@ from web.domains.chief.types import (
     FirearmGoodsData,
     FirearmLicenceData,
     LicenceDataPayload,
+    NuclearMaterialGoodsData,
+    NuclearMaterialLicenceData,
     OrganisationData,
     QuantityCodeEnum,
     SanctionGoodsData,
@@ -346,3 +349,55 @@ def test_sanction_serializer(sanctions_app_processing):
         )
     )
     assert expected == sanction_serializer(app, "insert", "1234")
+
+
+def test_nuclear_serializer(nuclear_app_processing):
+    app = nuclear_app_processing
+
+    expected = LicenceDataPayload(
+        licence=NuclearMaterialLicenceData(
+            type="NUCLEAR",
+            action="insert",
+            id="1234",
+            reference="IMA/2024/00001",
+            licence_reference="GBSIL0000001B",
+            start_date=dt.date(2020, 6, 1),
+            end_date=dt.date(2024, 12, 31),
+            organisation=OrganisationData(
+                eori_number="GB0123456789ABCDE",
+                name="Test Importer 1",
+                address=AddressData(
+                    line_1="I1 address line 1",
+                    line_2="I1 address line 2",
+                    line_3="",
+                    line_4="",
+                    line_5="",
+                    postcode="BT180LZ",  # /PS-IGNORE
+                ),
+                start_date=None,
+                end_date=None,
+            ),
+            country_group=None,
+            country_code="BY",
+            restrictions="",
+            goods=[
+                NuclearMaterialGoodsData(
+                    commodity="2844500000",
+                    description="More Commoditites",
+                    quantity=56.78,
+                    controlled_by=ControlledByEnum.QUANTITY,
+                    unit=QuantityCodeEnum.WEIGHT_GRAMME,
+                ),
+                NuclearMaterialGoodsData(
+                    commodity="2612101000",
+                    description="Test Goods",
+                    quantity=1000.0,
+                    controlled_by=ControlledByEnum.QUANTITY,
+                    unit=QuantityCodeEnum.WEIGHT_KILOGRAMME,
+                ),
+            ],
+        )
+    )
+    actual = nuclear_material_serializer(app, "insert", "1234")
+
+    assert expected == actual

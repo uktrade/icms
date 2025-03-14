@@ -114,6 +114,8 @@ def get_serializer(
             return serializers.fa_sil_serializer
         case ProcessTypes.SANCTIONS:
             return serializers.sanction_serializer
+        case ProcessTypes.NUCLEAR:
+            return serializers.nuclear_material_serializer
         case _:
             raise NotImplementedError(f"Unsupported process_type: {process_type}")
 

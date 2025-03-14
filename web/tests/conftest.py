@@ -892,6 +892,32 @@ def nuclear_app_submitted(
 
 
 @pytest.fixture()
+def nuclear_app_processing(
+    importer_client, importer, office, importer_one_contact, ilb_admin_user, ilb_admin_client
+) -> NuclearMaterialApplication:
+    app = create_in_progress_nuclear_app(importer_client, importer, office, importer_one_contact)
+
+    submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
+
+    # Taking ownership and begin processing
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    # Set the cover letter, decision, and fill checklist so authorisation can begin
+    app.refresh_from_db()
+    app.decision = app.APPROVE
+    app.save()
+    _set_valid_licence(app)
+
+    # Start authorisation
+    ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+
+    case_progress.check_expected_status(app, [ImpExpStatus.PROCESSING])
+    case_progress.check_expected_task(app, Task.TaskType.AUTHORISE)
+
+    return app
+
+
+@pytest.fixture()
 def com_app_in_progress(
     exporter_client, exporter, exporter_office, exporter_one_contact
 ) -> "CertificateOfManufactureApplication":
