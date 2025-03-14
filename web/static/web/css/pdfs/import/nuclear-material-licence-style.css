@@ -1,0 +1,133 @@
+@page {
+    size: A4;
+    margin: 68px 40px 60px 70px;
+}
+
+body {
+    margin: 0 0 0 0;
+    font-size: 14px;
+}
+
+main {
+    box-decoration-break: clone;
+}
+
+p {
+    margin: 1px;
+    font-weight: normal;
+}
+
+.content-block {
+    padding: 10px;
+    min-height: 40px;
+}
+
+.min-height-150 {
+    min-height: 150px;
+}
+
+.min-height-40 {
+    min-height: 40px;
+}
+
+.large-text-box {
+    max-width: 98%;
+    padding-bottom: 10px;
+    overflow-wrap: anywhere;
+}
+
+.header-block {
+    display: inline-block;
+    vertical-align: top;
+    height: 80px;
+    width: 160px;
+
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+
+li {
+    font-weight: 5;
+}
+
+strong {
+    font-weight: bold;
+}
+
+
+.dbt-logo-block {
+    width: 330px;
+    margin: 20px 0 20px 0px;
+}
+
+.signature-block {
+    break-inside: avoid;
+    width: 100%;
+}
+
+div[name="signature-widget"] {
+    display: flex;
+    flex-wrap: wrap;
+    width: 200px;
+}
+
+div[name="signature-widget"] > span {
+    flex: 0 0 100%;
+    display: block;
+    font-size: 11px;
+    margin: 0;
+}
+
+
+#signature-widget-image-container {
+    flex: 0 0 100%;
+    display: block;
+    margin: 0;
+}
+
+#signature-widget-image {
+    width: 165px;
+    max-height: 100px;
+}
+
+#signature > p {
+    color: black;
+}
+
+#signature > img {
+    padding-left: 5px;
+}
+
+#not_signed_image{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-width: 175px;
+}
+
+.b-bottom-extended {
+    left: -42px;
+    padding-left: 42px;
+    position: relative;
+    border-bottom: 1px solid #000;
+}
+
+.title {
+    font-size: 11px;
+}
+
+.default-dbt-logo {
+    width: 250px;
+    height: 125px;
+}
+
+#licence-start-date {
+    align-self: flex-end;
+    margin-right:35px;
+}
+
+.flex-start{
+    align-self: flex-start;
+}

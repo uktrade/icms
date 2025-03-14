@@ -33,6 +33,8 @@ from web.models import (
     ExportApplicationCertificate,
     ImportApplication,
     ImportApplicationLicence,
+    NuclearMaterialApplication,
+    NuclearMaterialApplicationGoods,
     OpenIndividualLicenceApplication,
     SanctionsAndAdhocApplication,
     SanctionsAndAdhocApplicationGoods,
@@ -172,7 +174,6 @@ def get_sanctions_goods_line(goods: SanctionsAndAdhocApplicationGoods) -> list[s
     return goods_line
 
 
-# TODO: Extend with NuclearMaterialApplication
 def get_sanctions_licence_context(
     application: SanctionsAndAdhocApplication,
     licence: ImportApplicationLicence,
@@ -192,6 +193,45 @@ def get_sanctions_licence_context(
         "ref": application.applicant_reference,
         "goods_list": goods_list,
         "sanctions_contact_email": settings.ICMS_SANCTIONS_EMAIL,
+    }
+
+
+def get_nuclear_material_goods_line(goods: NuclearMaterialApplicationGoods) -> list[str]:
+    goods_line = _split_text_field_newlines(goods.goods_description)
+    last_line = goods_line.pop()
+
+    quantity = f"{goods.quantity_amount:.3f}".rstrip("0").rstrip(".")
+    commodity_code = goods.commodity.commodity_code
+    units_desc = goods.quantity_unit.description
+
+    if not units_desc:
+        units = ""
+    elif goods.quantity_amount == 1 or units_desc.endswith("s"):
+        units = f" {units_desc}"
+    else:
+        units = f" {units_desc}s"
+
+    goods_line.append(f"{last_line}, {commodity_code}, {quantity}{units}")
+
+    return goods_line
+
+
+def get_nuclear_material_licence_context(
+    application: NuclearMaterialApplication,
+    licence: ImportApplicationLicence,
+    doc_type: DocumentTypes,
+) -> Context:
+    context = get_licence_context(application, licence, doc_type)
+    goods_list = [
+        get_nuclear_material_goods_line(goods) for goods in application.nuclear_goods.order_by("pk")
+    ]
+
+    return context | {
+        "country_of_manufacture": get_country_and_geo_code(application.origin_country),
+        "country_of_shipment": get_country_and_geo_code(application.consignment_country),
+        "ref": application.applicant_reference,
+        "goods_list": goods_list,
+        "nuclear_contact_email": "TODO: Do we need this contact?",
     }
 
 

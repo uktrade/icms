@@ -89,6 +89,8 @@ class PdfGenerator(PdfGenBase):
                     return "pdf/import/fa-sil-licence.html"
                 case ProcessTypes.SANCTIONS:
                     return "pdf/import/sanctions-licence.html"
+                case ProcessTypes.NUCLEAR:
+                    return "pdf/import/nuclear-material-licence.html"
                 case ProcessTypes.WOOD:
                     return "pdf/import/wood-licence.html"
                 case ProcessTypes.CFS:
@@ -131,6 +133,10 @@ class PdfGenerator(PdfGenBase):
                 )
             case ProcessTypes.SANCTIONS:
                 context = utils.get_sanctions_licence_context(
+                    self.application, self.doc_pack, self.doc_type
+                )
+            case ProcessTypes.NUCLEAR:
+                context = utils.get_nuclear_material_licence_context(
                     self.application, self.doc_pack, self.doc_type
                 )
             case ProcessTypes.WOOD:
@@ -184,6 +190,8 @@ class PdfGenerator(PdfGenBase):
                 return pages.format_oil_pages(pdf_data, self.get_document_context())
             case ProcessTypes.SANCTIONS:
                 return pages.format_sanctions_pages(pdf_data, self.get_document_context())
+            case ProcessTypes.NUCLEAR:
+                return pages.format_nuclear_material_pages(pdf_data, self.get_document_context())
             case _:
                 return pdf_data
 
