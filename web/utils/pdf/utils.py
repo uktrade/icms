@@ -50,6 +50,7 @@ from web.utils import (
     is_northern_ireland_postcode,
     newlines_to_commas,
 )
+from web.utils.commodity import annotate_commodity_unit
 
 if TYPE_CHECKING:
     from web.reports.serializers import GoodsSectionSerializer
@@ -156,7 +157,17 @@ def get_sanctions_goods_line(goods: SanctionsAndAdhocApplicationGoods) -> list[s
 
     quantity = f"{goods.quantity_amount:.3f}".rstrip("0").rstrip(".")
     value = f"{goods.value:.2f}".rstrip("0").rstrip(".")
-    goods_line.append(f"{last_line}, {goods.commodity.commodity_code}, {quantity} kilos, {value}")
+    commodity_code = goods.commodity.commodity_code
+    units_desc = goods.unit_description
+
+    if not units_desc:
+        units = ""
+    elif goods.quantity_amount == 1 or units_desc.endswith("s"):
+        units = f" {units_desc}"
+    else:
+        units = f" {units_desc}s"
+
+    goods_line.append(f"{last_line}, {commodity_code}, {quantity}{units}, {value}")
 
     return goods_line
 
@@ -169,7 +180,10 @@ def get_sanctions_licence_context(
 ) -> Context:
     context = get_licence_context(application, licence, doc_type)
     goods_list = [
-        get_sanctions_goods_line(goods) for goods in application.sanctions_goods.order_by("pk")
+        get_sanctions_goods_line(goods)
+        for goods in annotate_commodity_unit(
+            application.sanctions_goods.order_by("pk"), "commodity__"
+        ).distinct()
     ]
 
     return context | {

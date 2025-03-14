@@ -281,10 +281,8 @@ def test_get_fa_sil_licence_pre_sign_context(sil_app, licence, sil_expected_prev
     assert sil_expected_preview_context == actual_context
 
 
-def test_get_sanctions_preview_licence_context(
-    sanctions_app_submitted, sanctions_expected_preview_context
-):
-    app = sanctions_app_submitted
+def test_get_sanctions_preview_licence_context(sanctions_app, sanctions_expected_preview_context):
+    app = sanctions_app
     licence = app.licences.first()
     generator = PdfGenerator(DocumentTypes.LICENCE_PREVIEW, app, licence)
 
@@ -299,9 +297,9 @@ def test_get_sanctions_preview_licence_context(
 
 
 def test_get_sanctions_pre_sign_licence_context(
-    sanctions_app_submitted, sanctions_expected_preview_context, ilb_admin_client
+    sanctions_app, sanctions_expected_preview_context, ilb_admin_client
 ):
-    app = sanctions_app_submitted
+    app = sanctions_app
     ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
 
     app.refresh_from_db()
