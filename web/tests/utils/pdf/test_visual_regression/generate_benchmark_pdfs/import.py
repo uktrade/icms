@@ -55,6 +55,9 @@ class TestGenerateSanctionsLicenceBenchmarkPDF:
     def test_generate_benchmark_sanctions_licence(self, completed_sanctions_app):
         _generate_licence_benchmark_pdf(completed_sanctions_app, "sanctions_licence.pdf")
 
+    def test_generate_benchmark_sanctions_long_licence(self, pdf_long_sanctions_app):
+        _generate_licence_benchmark_pdf(pdf_long_sanctions_app, "sanctions_long_licence.pdf")
+
 
 class TestGenerateCoverLetterBenchmarkPDF:
     @staticmethod

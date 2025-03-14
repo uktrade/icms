@@ -5434,3 +5434,6 @@ Nature of Business
 Goods Description (Including
 UN
 {{ application_field(process.end_user_address
+Heavy Goods
+Kilogrammes
+Light Goods

@@ -88,3 +88,8 @@ class TestSanctionsLicence(BaseTestImportPDFVisualRegression):
         self.benchmark_pdf_image_file_path = "sanctions_licence.pdf"
         self.application = completed_sanctions_app
         self.compare_pdf()
+
+    def test_pdf_long(self, pdf_long_sanctions_app):
+        self.benchmark_pdf_image_file_path = "sanctions_long_licence.pdf"
+        self.application = pdf_long_sanctions_app
+        self.compare_pdf()

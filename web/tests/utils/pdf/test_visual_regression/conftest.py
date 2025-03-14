@@ -5,9 +5,13 @@ from unittest import mock
 import PIL
 import pytest
 
-from web.domains.case._import.models import EndorsementImportApplication
 from web.domains.case.services import document_pack
 from web.domains.signature import utils as signature_utils
+from web.models import (
+    Commodity,
+    EndorsementImportApplication,
+    SanctionsAndAdhocApplicationGoods,
+)
 from web.utils.pdf import utils as pdf_utils
 
 
@@ -105,8 +109,19 @@ def pdf_paper_licence_only_dfl_app(completed_dfl_app):
 
 @pytest.fixture
 def pdf_long_sanctions_app(completed_sanctions_app):
+    commodity = Commodity.objects.get(commodity_code="2710199990")
+    SanctionsAndAdhocApplicationGoods.objects.create(
+        import_application_id=completed_sanctions_app.pk,
+        commodity=commodity,
+        goods_description="Heavy Goods",
+        quantity_amount=10000.000,
+        value=9876.00,
+        goods_description_original="Heavy Goods",
+        quantity_amount_original=10000.000,
+        value_original=9876.00,
+    )
     EndorsementImportApplication.objects.create(
-        import_application=completed_sanctions_app, content="This is an endorsement" * 100
+        import_application=completed_sanctions_app, content="This is an endorsement " * 100
     )
     return completed_sanctions_app
 

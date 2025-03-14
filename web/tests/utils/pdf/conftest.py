@@ -3,12 +3,14 @@ from django.conf import settings
 from django.utils import timezone
 
 from web.models import (
+    Commodity,
     Country,
     DFLApplication,
     ExportApplicationCertificate,
     ImportApplicationLicence,
     Office,
     OpenIndividualLicenceApplication,
+    SanctionsAndAdhocApplicationGoods,
     SILApplication,
     Template,
 )
@@ -66,6 +68,33 @@ def sil_app(importer, importer_office):
     )
 
     return sil_app
+
+
+@pytest.fixture()
+def sanctions_app(sanctions_app_submitted):
+    commodity = Commodity.objects.get(commodity_code="2715000000")
+    SanctionsAndAdhocApplicationGoods.objects.create(
+        import_application_id=sanctions_app_submitted.pk,
+        commodity=commodity,
+        goods_description="Light Goods",
+        quantity_amount=1.000,
+        value=100.00,
+        goods_description_original="Light Goods",
+        quantity_amount_original=1.000,
+        value_original=100.00,
+    )
+    commodity = Commodity.objects.get(commodity_code="2710199990")
+    SanctionsAndAdhocApplicationGoods.objects.create(
+        import_application_id=sanctions_app_submitted.pk,
+        commodity=commodity,
+        goods_description="Heavy Goods",
+        quantity_amount=10000.000,
+        value=9876.00,
+        goods_description_original="Heavy Goods",
+        quantity_amount_original=10000.000,
+        value_original=9876.00,
+    )
+    return sanctions_app_submitted
 
 
 @pytest.fixture()
@@ -176,8 +205,10 @@ def sanctions_expected_preview_context(active_signature):
         "country_of_shipment": "Afghanistan AF 660",
         "ref": "applicant_reference value",
         "goods_list": [
-            ["Test Goods, 4202199090, 1000 kilos, 10500"],
-            ["More Commoditites, 9013109000, 56.78 kilos, 789"],
+            ["Test Goods, 4202199090, 1000 pieces, 10500"],
+            ["More Commoditites, 9013109000, 56.78 units, 789"],
+            ["Light Goods, 2715000000, 1 Kilogramme, 100"],
+            ["Heavy Goods, 2710199990, 10000 Kilogrammes, 9876"],
         ],
         "signature": active_signature,
         "signature_file": "",
