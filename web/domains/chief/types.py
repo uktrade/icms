@@ -138,6 +138,20 @@ class QuantityCodeEnum(IntEnum):
     # VARIOUS_KAC_KG_NET_OF_ACESULFAME_POTASSIUM = 119
 
 
+# https://www.gov.uk/government/publications/measurement-unit-codes-for-data-elements-23-and-44-of-the-customs-declaration-service
+class HMRCQuantityCodeEnum(Enum):
+    """HMRC Quantity Code used in commodities."""
+
+    GRAM = "GRM"
+    KILOGRAM = "KGM"
+    LITRE = "LTR"
+    MICROGRAM = "MCG"
+    MICROLITRE = "MCL"
+    MILLIGRAM = "MGM"
+    MILLILITRE = "MLT"
+    PAIR = "NPR"
+
+
 class ControlledByEnum(Enum):
     """HMRC Controlled by values.
 
@@ -248,9 +262,8 @@ class NuclearMaterialGoodsData(BaseModel):
     commodity: str
     description: str
     quantity: float
-    # This is hardcoded to Q rather than having to specify it for each record.
-    controlled_by: Literal[ControlledByEnum.QUANTITY] = ControlledByEnum.QUANTITY
-    unit: QuantityCodeEnum
+    controlled_by: ControlledByEnum | None = None
+    unit: HMRCQuantityCodeEnum | None = None
 
 
 class NuclearMaterialLicenceData(InsertAndReplaceBase):

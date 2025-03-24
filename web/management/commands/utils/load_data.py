@@ -54,3 +54,4 @@ def load_app_test_data():
     call_command("ECIL_657_add_dfl_country_groups")
     call_command("ECIL_647_add_nuclear_material_app")
     call_command("ECIL_652_add_nuclear_commodities")
+    call_command("ECIL_668_update_unit_data", commit=True)

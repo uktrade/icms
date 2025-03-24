@@ -351,7 +351,7 @@ def create_in_progress_nuclear_app(
             "commodity": commodities.first().pk,
             "goods_description": "Test Goods",
             "quantity_amount": 1000,
-            "quantity_unit": Unit.objects.get(hmrc_code="23").pk,
+            "quantity_unit": Unit.objects.get(description="Gram").pk,
         },
     )
     assert resp.status_code == 302
@@ -362,7 +362,7 @@ def create_in_progress_nuclear_app(
             "commodity": commodities.last().pk,
             "goods_description": "More Commoditites",
             "quantity_amount": 56.78,
-            "quantity_unit": Unit.objects.get(hmrc_code="21").pk,
+            "quantity_unit": Unit.objects.get(description="Kilogram").pk,
         },
     )
     assert resp.status_code == 302

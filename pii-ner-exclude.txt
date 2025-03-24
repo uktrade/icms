@@ -5438,3 +5438,26 @@ Heavy Goods
 Kilogrammes
 Light Goods
 Reset Data
+HMRC Quantity Code
+KGM
+LTR
+MGM
+NPR
+Kilogram
+CTM
+GRT
+HMT
+KCC
+KNI
+Kilogram of N
+Kilogram of H2O2
+Kilogram of KOH
+KPO
+Kilogram of K2O
+KPP
+Kilogram of P2O5
+Kilogram of NaOH
+Kilogram of U
+Microlitre
+Microgram
+Kilograms

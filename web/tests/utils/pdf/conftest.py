@@ -207,8 +207,8 @@ def sanctions_expected_preview_context(active_signature):
         "goods_list": [
             ["Test Goods, 4202199090, 1000 pieces, 10500"],
             ["More Commoditites, 9013109000, 56.78 units, 789"],
-            ["Light Goods, 2715000000, 1 Kilogramme, 100"],
-            ["Heavy Goods, 2710199990, 10000 Kilogrammes, 9876"],
+            ["Light Goods, 2715000000, 1 Kilogram, 100"],
+            ["Heavy Goods, 2710199990, 10000 Kilograms, 9876"],
         ],
         "signature": active_signature,
         "signature_file": "",

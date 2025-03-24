@@ -148,8 +148,9 @@ def nuclear_material_serializer(
         types.NuclearMaterialGoodsData(
             commodity=g.commodity.commodity_code,
             description=g.goods_description,
+            controlled_by=types.ControlledByEnum.QUANTITY,  # TODO: Allow open when unlimited quantity
             quantity=g.quantity_amount,
-            unit=g.quantity_unit.hmrc_code,
+            unit=g.quantity_unit.hmrc_unit_code,
         )
         for g in goods_qs
     ]

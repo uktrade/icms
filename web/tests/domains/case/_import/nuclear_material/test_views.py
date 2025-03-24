@@ -545,7 +545,7 @@ class TestEditNuclearLicenceGoods:
 
         resp = self.client.get(self.url)
 
-        assert "<td>Test Goods</td><td>1000.000</td><td>Kilogramme</td>" in resp.content.decode()
+        assert "<td>Test Goods</td><td>1000.000</td><td>Gram</td>" in resp.content.decode()
 
         response = self.client.post(
             reverse(
@@ -569,7 +569,7 @@ class TestEditNuclearLicenceGoods:
         assert goods.quantity_amount_original == 1000
 
         resp = self.client.get(self.url)
-        assert "<td>New Description</td><td>99.000</td><td>Kilogramme</td>" in resp.content.decode()
+        assert "<td>New Description</td><td>99.000</td><td>Gram</td>" in resp.content.decode()
 
     def test_reset_licence_goods(self):
         goods: NuclearMaterialApplicationGoods = self.app.nuclear_goods.first()
@@ -584,7 +584,7 @@ class TestEditNuclearLicenceGoods:
         goods.refresh_from_db()
 
         resp = self.client.get(self.url)
-        assert "<td>Override</td><td>50.000</td><td>Kilogramme</td>" in resp.content.decode()
+        assert "<td>Override</td><td>50.000</td><td>Gram</td>" in resp.content.decode()
 
         self.client.post(
             reverse(
@@ -602,4 +602,4 @@ class TestEditNuclearLicenceGoods:
         assert goods.quantity_amount_original == 1000
 
         resp = self.client.get(self.url)
-        assert "<td>Test Goods</td><td>1000.000</td><td>Kilogramme</td>" in resp.content.decode()
+        assert "<td>Test Goods</td><td>1000.000</td><td>Gram</td>" in resp.content.decode()

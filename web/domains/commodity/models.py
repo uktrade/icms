@@ -10,8 +10,11 @@ class Unit(models.Model):
     """
 
     description = models.CharField(max_length=100)
-    hmrc_code = models.CharField(max_length=4)
     unit_type = models.CharField(max_length=20)
+    hmrc_unit_code = models.CharField(max_length=3, null=True)
+
+    # This field is deprecated in CDS
+    hmrc_code = models.CharField(max_length=4, null=True)
 
     # Field not used by ICMS - Will be deleted in future
     short_description = models.CharField(max_length=30)
