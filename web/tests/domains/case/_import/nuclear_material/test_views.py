@@ -1,3 +1,4 @@
+import datetime as dt
 from http import HTTPStatus
 
 import pytest
@@ -10,6 +11,7 @@ from web.domains.case._import.nuclear_material.forms import (
     nuclear_material_available_units,
 )
 from web.domains.case.shared import ImpExpStatus
+from web.forms.fields import JQUERY_DATE_FORMAT
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import (
     get_case_manage_view_url,
@@ -125,6 +127,7 @@ class TestNuclearMaterialApplicationApplicantDetails(AuthTestCase):
             "consignment_country": self.valid_country.pk,
             "consignor_name": consignor_name,
             "consignor_address": consignor_address,
+            "shipment_start_date": dt.date.today().strftime(JQUERY_DATE_FORMAT),
         }
         self.importer_client.post(
             reverse("import:nuclear:edit", kwargs={"application_pk": self.process.pk}),
@@ -167,7 +170,7 @@ class TestNuclearMaterialGoodsDetailView(AuthTestCase):
         assertTemplateUsed(response, "web/domains/case/import/nuclear_material/goods-list.html")
 
         context = response.context
-        assert len(context["goods_list"]) == 2
+        assert len(context["goods_list"]) == 3
 
         html = response.content.decode("utf-8")
         assert "Nuclear Materials Import Licence Application - Goods" in html

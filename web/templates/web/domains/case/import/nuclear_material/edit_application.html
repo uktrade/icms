@@ -18,11 +18,17 @@
   {{ fields.field(form.end_user_name) }}
   {{ fields.field(form.end_user_address) }}
   {{ fields.field(form.intended_use_of_shipment) }}
-  {{ fields.field(form.dates_of_shipment) }}
-  {{ fields.field(form.security_team_contact_information) }}
   {{ fields.field(form.licence_type) }}
+  {{ fields.field(form.shipment_start_date) }}
+  {{ fields.field(form.shipment_end_date, show_optional_indicator=False) }}
+  {{ fields.field(form.security_team_contact_information) }}
 {% endblock form_content %}
 
 {% block task_actions %}
   <input type="submit" name="save" class="primary-button button" value="Save"/>
 {% endblock task_actions %}
+
+{% block js %}
+  {{ super() }}
+  <script src="{{ static('web/js/pages/nuclear-material-edit.js') }}" type="text/javascript"></script>
+{% endblock %}

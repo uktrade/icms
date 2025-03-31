@@ -143,11 +143,16 @@ def nuclear_material_serializer(
         application.process_type, document_pack.doc_ref_licence_get(doc_pack).reference
     )
 
-    goods_qs = application.nuclear_goods.select_related("commodity", "quantity_unit")
+    goods_qs = application.nuclear_goods.select_related("commodity", "quantity_unit").order_by("pk")
     goods = [
         types.NuclearMaterialGoodsData(
             commodity=g.commodity.commodity_code,
             description=g.goods_description,
+            controlled_by=(
+                types.ControlledByEnum.OPEN
+                if g.unlimited_quantity
+                else types.ControlledByEnum.QUANTITY
+            ),
             quantity=g.quantity_amount,
             unit=g.quantity_unit.hmrc_code,
         )

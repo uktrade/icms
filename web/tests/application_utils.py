@@ -326,7 +326,8 @@ def create_in_progress_nuclear_app(
         "end_user_name": "Test end user name",
         "end_user_address": "Test end user address",
         "intended_use_of_shipment": "Test intended use of shipment",
-        "dates_of_shipment": "Test dates of shipment",
+        "shipment_start_date": dt.date.today().strftime(JQUERY_DATE_FORMAT),
+        "shipment_end_date": "",
         "security_team_contact_information": "Test security team contact information",
         "licence_type": NuclearMaterialApplication.LicenceType.SINGLE,
     }
@@ -363,6 +364,17 @@ def create_in_progress_nuclear_app(
             "goods_description": "More Commoditites",
             "quantity_amount": 56.78,
             "quantity_unit": Unit.objects.get(hmrc_code="21").pk,
+        },
+    )
+    assert resp.status_code == 302
+
+    resp = importer_client.post(
+        add_goods_url,
+        {
+            "commodity": commodities.all()[1].pk,
+            "goods_description": "Unlimited Commoditites",
+            "unlimited_quantity": True,
+            "quantity_unit": Unit.objects.get(hmrc_code="23").pk,
         },
     )
     assert resp.status_code == 302

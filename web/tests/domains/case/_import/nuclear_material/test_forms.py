@@ -1,3 +1,5 @@
+import datetime as dt
+
 import pytest
 
 from web.domains.case._import.nuclear_material.forms import (
@@ -6,6 +8,7 @@ from web.domains.case._import.nuclear_material.forms import (
     SubmitNuclearMaterialApplicationForm,
     nuclear_material_available_units,
 )
+from web.forms.fields import JQUERY_DATE_FORMAT
 from web.models import Commodity, Country, NuclearMaterialApplication
 from web.tests.auth import AuthTestCase
 
@@ -28,7 +31,8 @@ class TestNuclearMaterialApplicationForms(AuthTestCase):
             "end_user_name": "Test end user name",
             "end_user_address": "Test end user address",
             "intended_use_of_shipment": "Test intended use of shipment",
-            "dates_of_shipment": "Test dates of shipment",
+            "shipment_start_date": dt.date.today().strftime(JQUERY_DATE_FORMAT),
+            "shipment_end_date": "",
             "security_team_contact_information": "Test security team contact information",
             "licence_type": NuclearMaterialApplication.LicenceType.SINGLE,
         }
@@ -48,7 +52,8 @@ class TestNuclearMaterialApplicationForms(AuthTestCase):
             "end_user_name": None,
             "end_user_address": None,
             "intended_use_of_shipment": None,
-            "dates_of_shipment": None,
+            "shipment_start_date": None,
+            "shipment_end_date": None,
             "security_team_contact_information": None,
             "licence_type": None,
         }

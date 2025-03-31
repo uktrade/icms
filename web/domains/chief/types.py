@@ -247,9 +247,8 @@ class SanctionsLicenceData(InsertAndReplaceBase):
 class NuclearMaterialGoodsData(BaseModel):
     commodity: str
     description: str
-    quantity: float
-    # This is hardcoded to Q rather than having to specify it for each record.
-    controlled_by: Literal[ControlledByEnum.QUANTITY] = ControlledByEnum.QUANTITY
+    quantity: float | None = None
+    controlled_by: ControlledByEnum
     unit: QuantityCodeEnum
 
 
