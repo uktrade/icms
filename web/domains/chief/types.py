@@ -25,6 +25,7 @@ class QuantityCodeEnum(IntEnum):
     WEIGHT_TONNE = 25
     WEIGHT_METRIC_Carat = 26
     WEIGHT_50_kgs = 27
+    WIGHT_MICROGRAM = 116
 
     # 2. Gross weight
     GROSS_WEIGHT_POUND_GROSS = 60

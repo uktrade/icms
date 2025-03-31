@@ -62,26 +62,29 @@ class Command(BaseCommand):
 
         # Unit's in production to fix:
         # "kilos" - "23" (label only)
-        u = Unit.objects.get(description="kilos")
-        u.description = "Kilogramme"
-        u.save()
+        if u := Unit.objects.filter(description="kilos").first():
+            u.description = "Kilogramme"
+            u.save()
+
         # "metric carats" - "30" (label and hmrc_code)
-        u = Unit.objects.get(description="metric carats")
-        u.description = "Metric Carat"
-        u.hmrc_code = "26"
-        u.save()
+        if u := Unit.objects.filter(description="metric carats").first():
+            u.description = "Metric Carat"
+            u.hmrc_code = "26"
+            u.save()
+
         # "pairs" - "31" (label only)
-        u = Unit.objects.get(description="pairs")
-        u.description = "Pair"
-        u.save()
+        if u := Unit.objects.filter(description="pairs").first():
+            u.description = "Pair"
+            u.save()
+
         # "sq.metres" - "45" (label only)
-        u = Unit.objects.get(description="sq.metres")
-        u.description = "Square metre"
-        u.save()
+        if u := Unit.objects.filter(description="sq.metres").first():
+            u.description = "Square metre"
+            u.save()
         # "cubic metres" - "87" (label only)
-        u = Unit.objects.get(description="cubic metres")
-        u.description = "Cubic metre"
-        u.save()
+        if u := Unit.objects.filter(description="cubic metres").first():
+            u.description = "Cubic metre"
+            u.save()
 
         # Now all the existing records have been changed do the following:
         #   1. Create all other values
@@ -105,6 +108,7 @@ class Command(BaseCommand):
             ("Tonne", "25"),
             ("Metric Carat", "26"),
             ("50 kgs", "27"),
+            ("Microgram", "116"),
         ]
         for description, code in weights:
             unit, _ = Unit.objects.get_or_create(description=description, hmrc_code=code)
