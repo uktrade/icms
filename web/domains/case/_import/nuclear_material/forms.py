@@ -223,4 +223,6 @@ def nuclear_material_available_commodities() -> QuerySet[Commodity]:
 
 
 def nuclear_material_available_units() -> QuerySet[Unit]:
-    return Unit.objects.filter(hmrc_code__in=["23", "21", "74", "76"]).order_by("description")
+    return Unit.objects.filter(hmrc_code__in=["23", "21", "74", "76", "116"]).order_by(
+        "description"
+    )
