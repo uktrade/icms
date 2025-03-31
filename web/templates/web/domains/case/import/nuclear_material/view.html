@@ -5,7 +5,7 @@
   {{ super() }}
 
   {% call application_section("Nuclear Materials Import Licence Application") %}
-    {{ application_field(process.applicant_reference, "Applicant Reference", "N/a") }}
+    {{ application_field(process.applicant_reference, "Applicant Reference", "N/A") }}
     {{ application_field(process.origin_country, "Country Of Origin") }}
     {{ application_field(process.consignment_country, "Country Of Consignment") }}
     {{ application_field(process.nature_of_business, "Nature of Business") }}
@@ -14,7 +14,8 @@
     {{ application_field(process.end_user_name, "End User Company Name") }}
     {{ application_field(process.end_user_address, "End User Company Address and Postcode") }}
     {{ application_field(process.intended_use_of_shipment, "Intended use of shipment") }}
-    {{ application_field(process.dates_of_shipment, "Date(s) of shipments") }}
+    {{ application_field(process.shipment_start_date, "Date of first shipment") }}
+    {{ application_field(process.shipment_end_date, "Date of last shipment", "N/A") }}
     {{ application_field(process.security_team_contact_information, "Contact information for security team") }}
     {{ application_field(process.get_licence_type_display(), "Single or Open Licence") }}
   {% endcall %}
@@ -34,7 +35,11 @@
           <tr class="result-row">
             <td>{{ commodity_link(row.commodity) }}</td>
             <td>{{ row.goods_description }}</td>
-            <td>{{ row.quantity_amount }}</td>
+            {% if row.unlimited_quantity %}
+              <td>Unlimited</td>
+            {% else %}
+              <td>{{ row.quantity_amount }}</td>
+            {% endif %}
             <td>{{ row.quantity_unit }}</td>
           </tr>
         {% endfor %}

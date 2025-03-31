@@ -23,7 +23,11 @@
             {{ goods_item.goods_description }}
           </td>
           <td>
-            {{ goods_item.quantity_amount }}
+            {% if goods_item.unlimited_quantity %}
+              Unlimited
+            {% else %}
+              {{ goods_item.quantity_amount }}
+            {% endif %}
           </td>
           <td>{{ goods_item.quantity_unit }}</td>
           {% if not readonly_view and not variation_refused %}

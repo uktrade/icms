@@ -382,6 +382,13 @@ def test_nuclear_serializer(nuclear_app_processing):
             restrictions="",
             goods=[
                 NuclearMaterialGoodsData(
+                    commodity="2612101000",
+                    description="Test Goods",
+                    quantity=1000.0,
+                    controlled_by=ControlledByEnum.QUANTITY,
+                    unit=QuantityCodeEnum.WEIGHT_KILOGRAMME,
+                ),
+                NuclearMaterialGoodsData(
                     commodity="2844500000",
                     description="More Commoditites",
                     quantity=56.78,
@@ -389,10 +396,10 @@ def test_nuclear_serializer(nuclear_app_processing):
                     unit=QuantityCodeEnum.WEIGHT_GRAMME,
                 ),
                 NuclearMaterialGoodsData(
-                    commodity="2612101000",
-                    description="Test Goods",
-                    quantity=1000.0,
-                    controlled_by=ControlledByEnum.QUANTITY,
+                    commodity="2612109000",
+                    description="Unlimited Commoditites",
+                    quantity=None,
+                    controlled_by=ControlledByEnum.OPEN,
                     unit=QuantityCodeEnum.WEIGHT_KILOGRAMME,
                 ),
             ],

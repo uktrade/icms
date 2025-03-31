@@ -32,7 +32,15 @@ from web.mail.emails import (
     send_variation_request_email,
     send_withdrawal_email,
 )
-from web.models import CaseNote, File, Task, User, VariationRequest, WithdrawApplication
+from web.models import (
+    CaseNote,
+    File,
+    NuclearMaterialApplication,
+    Task,
+    User,
+    VariationRequest,
+    WithdrawApplication,
+)
 from web.permissions import (
     AppChecker,
     Perms,
@@ -299,6 +307,12 @@ def take_ownership(
                             delta = relativedelta(months=9)
                         case pt.OPT:
                             delta = relativedelta(months=8)
+                        case pt.NUCLEAR:
+                            app: NuclearMaterialApplication = application.get_specific_model()
+                            if app.licence_type == app.LicenceType.OPEN:
+                                delta = relativedelta(months=12)
+                            else:
+                                delta = relativedelta(months=3)
                         case _:
                             # All other app types don't set the licence_end_date.
                             delta = relativedelta()

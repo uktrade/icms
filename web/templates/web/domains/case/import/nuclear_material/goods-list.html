@@ -19,7 +19,11 @@
         <tr class="result-row">
           <td>{{ row.commodity }}</td>
           <td>{{ row.goods_description }}</td>
-          <td>{{ row.quantity_amount }}</td>
+          {% if row.unlimited_quantity %}
+            <td>Unlimited</td>
+          {% else %}
+            <td>{{ row.quantity_amount }}</td>
+          {% endif %}
           <td>{{ row.quantity_unit }}</td>
           <td>
             <a class="link-button button icon-pencil" data-input_action="edit"

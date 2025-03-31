@@ -468,6 +468,19 @@ def submit_nuclear_material(
 
         errors.add(get_org_update_request_errors(application, "import"))
 
+        if not application.supporting_documents.exists():
+            supporting_doc_url = reverse(
+                "import:nuclear:add-document", kwargs={"application_pk": application.pk}
+            )
+            docs_errors = PageErrors(page_name="Supporting Documents", url=supporting_doc_url)
+            docs_errors.add(
+                FieldError(
+                    field_name="Add Supporting Document",
+                    messages=["At least one supporting document must be uploaded."],
+                )
+            )
+            errors.add(docs_errors)
+
         if request.method == "POST":
             form = SubmitForm(data=request.POST)
 
