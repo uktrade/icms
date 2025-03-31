@@ -258,6 +258,26 @@ def test_sanctionadhoc_commodity_details_correct(importer_one_fixture_data):
     )
 
 
+def test_nuclear_commodity_details_correct(nuclear_app_submitted, ilb_admin_user):
+    # Update the fixture data
+    nuclear_app_submitted.applicant_reference = "Nuclear application 1"
+    nuclear_app_submitted.save()
+
+    search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.NMIL)
+
+    results = search_applications(search_terms, ilb_admin_user)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "Nuclear application 1")
+    check_commodity_details(
+        results.records[0].commodity_details,
+        expected_origin_country="Belarus",
+        expected_consignment_country="Afghanistan",
+        expected_shipping_year=nuclear_app_submitted.shipment_start_date.year,
+        expected_commodity_codes=["2612101000", "2612109000", "2844500000"],
+    )
+
+
 def test_sps_commodity_details_correct(importer_one_fixture_data):
     app = Build.sps_application("sps app 1", importer_one_fixture_data)
 
