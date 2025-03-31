@@ -207,6 +207,7 @@ def _get_search_records(
         ProcessTypes.FA_SIL: app_data.get_fa_sil_applications,
         ProcessTypes.OPT: app_data.get_opt_applications,
         ProcessTypes.SANCTIONS: app_data.get_sanctionadhoc_applications,
+        ProcessTypes.NUCLEAR: app_data.get_nuclear_applications,
         ProcessTypes.SPS: app_data.get_sps_applications,
         ProcessTypes.TEXTILES: app_data.get_textiles_applications,
         ProcessTypes.WOOD: app_data.get_wood_applications,

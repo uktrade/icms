@@ -1,8 +1,16 @@
-from typing import TYPE_CHECKING
-
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.aggregates import ArrayAgg, JSONBAgg
-from django.db.models import F, FilteredRelation, Func, OuterRef, Q, Subquery, Value
+from django.db.models import (
+    F,
+    FilteredRelation,
+    Func,
+    Model,
+    OuterRef,
+    Q,
+    QuerySet,
+    Subquery,
+    Value,
+)
 from django.db.models.expressions import RawSQL
 from django.db.models.functions import Coalesce
 
@@ -18,6 +26,8 @@ from web.models import (
     ExportApplicationCertificate,
     ImportApplication,
     ImportApplicationLicence,
+    NuclearMaterialApplication,
+    NuclearMaterialApplicationGoods,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     PriorSurveillanceApplication,
@@ -28,13 +38,10 @@ from web.models import (
     WoodQuotaApplication,
 )
 
-if TYPE_CHECKING:
-    from django.db.models import Model, QuerySet
-
 from . import types, utils
 
 
-def get_fa_dfl_applications(search_ids: list[int]) -> "QuerySet[DFLApplication]":
+def get_fa_dfl_applications(search_ids: list[int]) -> QuerySet[DFLApplication]:
     applications = DFLApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
@@ -47,7 +54,7 @@ def get_fa_dfl_applications(search_ids: list[int]) -> "QuerySet[DFLApplication]"
     return applications
 
 
-def get_fa_oil_applications(search_ids: list[int]) -> "QuerySet[OpenIndividualLicenceApplication]":
+def get_fa_oil_applications(search_ids: list[int]) -> QuerySet[OpenIndividualLicenceApplication]:
     applications = OpenIndividualLicenceApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
@@ -60,7 +67,7 @@ def get_fa_oil_applications(search_ids: list[int]) -> "QuerySet[OpenIndividualLi
     return applications
 
 
-def get_fa_sil_applications(search_ids: list[int]) -> "QuerySet[SILApplication]":
+def get_fa_sil_applications(search_ids: list[int]) -> QuerySet[SILApplication]:
     applications = SILApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
@@ -73,7 +80,7 @@ def get_fa_sil_applications(search_ids: list[int]) -> "QuerySet[SILApplication]"
     return applications
 
 
-def get_opt_applications(search_ids: list[int]) -> "QuerySet[OutwardProcessingTradeApplication]":
+def get_opt_applications(search_ids: list[int]) -> QuerySet[OutwardProcessingTradeApplication]:
     applications = OutwardProcessingTradeApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
@@ -110,10 +117,9 @@ def get_opt_applications(search_ids: list[int]) -> "QuerySet[OutwardProcessingTr
     return applications
 
 
-# TODO: Extend with NuclearMaterialApplication
 def get_sanctionadhoc_applications(
     search_ids: list[int],
-) -> "QuerySet[SanctionsAndAdhocApplication]":
+) -> QuerySet[SanctionsAndAdhocApplication]:
     applications = SanctionsAndAdhocApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
@@ -137,7 +143,31 @@ def get_sanctionadhoc_applications(
     return applications
 
 
-def get_sps_applications(search_ids: list[int]) -> "QuerySet[PriorSurveillanceApplication]":
+def get_nuclear_applications(search_ids: list[int]) -> QuerySet[NuclearMaterialApplication]:
+    applications = NuclearMaterialApplication.objects.filter(pk__in=search_ids)
+    applications = _apply_import_optimisation(applications)
+
+    applications = applications.select_related("origin_country", "consignment_country")
+
+    # Need to annotate using the subquery now we are using `DISTINCT ON`
+    # https://docs.djangoproject.com/en/4.0/ref/models/expressions/#using-aggregates-within-a-subquery-expression
+    commodity_codes_sub_query = (
+        NuclearMaterialApplicationGoods.objects.filter(import_application_id=OuterRef("id"))
+        .order_by()
+        .values("import_application")
+        .annotate(
+            commodity_array=ArrayAgg("commodity__commodity_code", distinct=True, default=Value([]))
+        )
+        .values("commodity_array")
+    )
+    applications = applications.annotate(commodity_codes=Subquery(commodity_codes_sub_query))
+
+    applications = _add_import_licence_data(applications)
+
+    return applications
+
+
+def get_sps_applications(search_ids: list[int]) -> QuerySet[PriorSurveillanceApplication]:
     applications = PriorSurveillanceApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
@@ -148,7 +178,7 @@ def get_sps_applications(search_ids: list[int]) -> "QuerySet[PriorSurveillanceAp
     return applications
 
 
-def get_textiles_applications(search_ids: list[int]) -> "QuerySet[TextilesApplication]":
+def get_textiles_applications(search_ids: list[int]) -> QuerySet[TextilesApplication]:
     applications = TextilesApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
@@ -161,7 +191,7 @@ def get_textiles_applications(search_ids: list[int]) -> "QuerySet[TextilesApplic
     return applications
 
 
-def get_wood_applications(search_ids: list[int]) -> "QuerySet[WoodQuotaApplication]":
+def get_wood_applications(search_ids: list[int]) -> QuerySet[WoodQuotaApplication]:
     applications = WoodQuotaApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
     applications = applications.select_related("commodity")
@@ -171,7 +201,7 @@ def get_wood_applications(search_ids: list[int]) -> "QuerySet[WoodQuotaApplicati
     return applications
 
 
-def get_cfs_applications(search_ids: list[int]) -> "QuerySet[CertificateOfFreeSaleApplication]":
+def get_cfs_applications(search_ids: list[int]) -> QuerySet[CertificateOfFreeSaleApplication]:
     applications = CertificateOfFreeSaleApplication.objects.filter(pk__in=search_ids)
     applications = _apply_export_optimisation(applications)
 
@@ -195,7 +225,7 @@ def get_cfs_applications(search_ids: list[int]) -> "QuerySet[CertificateOfFreeSa
     return applications
 
 
-def get_com_applications(search_ids: list[int]) -> "QuerySet[CertificateOfManufactureApplication]":
+def get_com_applications(search_ids: list[int]) -> QuerySet[CertificateOfManufactureApplication]:
     applications = CertificateOfManufactureApplication.objects.filter(pk__in=search_ids)
     applications = _apply_export_optimisation(applications)
     applications = _add_export_certificate_data(applications)
@@ -205,7 +235,7 @@ def get_com_applications(search_ids: list[int]) -> "QuerySet[CertificateOfManufa
 
 def get_gmp_applications(
     search_ids: list[int],
-) -> "QuerySet[CertificateOfGoodManufacturingPracticeApplication]":
+) -> QuerySet[CertificateOfGoodManufacturingPracticeApplication]:
     applications = CertificateOfGoodManufacturingPracticeApplication.objects.filter(
         pk__in=search_ids
     )
@@ -270,7 +300,6 @@ def get_commodity_details(rec: ImportApplication) -> types.CommodityDetails:
             commodity_codes=commodity_codes,
         )
 
-    # TODO: Extend with NuclearMaterialApplication
     elif app_pt == ProcessTypes.SANCTIONS:
         sanction_app: SanctionsAndAdhocApplication = rec
 
@@ -279,6 +308,16 @@ def get_commodity_details(rec: ImportApplication) -> types.CommodityDetails:
             consignment_country=sanction_app.consignment_country.name,
             shipping_year=sanction_app.submit_datetime.year,
             commodity_codes=sorted(sanction_app.commodity_codes),
+        )
+
+    elif app_pt == ProcessTypes.NUCLEAR:
+        nuclear_app: NuclearMaterialApplication = rec
+
+        details = types.CommodityDetails(
+            origin_country=nuclear_app.origin_country.name,
+            consignment_country=nuclear_app.consignment_country.name,
+            shipping_year=nuclear_app.shipment_start_date.year,
+            commodity_codes=sorted(nuclear_app.commodity_codes),
         )
 
     elif app_pt == ProcessTypes.SPS:
@@ -308,7 +347,7 @@ def get_commodity_details(rec: ImportApplication) -> types.CommodityDetails:
     return details
 
 
-def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
+def _apply_import_optimisation(model: QuerySet[Model]) -> QuerySet[Model]:
     """Selects related tables used for import applications."""
     model = model.select_related("importer", "agent", "contact", "application_type", "case_owner")
     model = model.annotate(order_by_datetime=utils.get_order_by_datetime("import"))
@@ -316,7 +355,7 @@ def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     return model
 
 
-def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
+def _apply_export_optimisation(model: QuerySet[Model]) -> QuerySet[Model]:
     """Selects related tables used for import applications."""
     model = model.select_related("exporter", "agent", "contact", "case_owner")
 
@@ -337,7 +376,7 @@ def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     return model
 
 
-def _add_import_licence_data(model: "QuerySet[Model]", distinct: bool = True) -> "QuerySet[Model]":
+def _add_import_licence_data(model: QuerySet[Model], distinct: bool = True) -> QuerySet[Model]:
     content_type_pk = get_content_type_pk("import")
 
     # This join will be used for all licence annotations
@@ -388,7 +427,7 @@ def _add_import_licence_data(model: "QuerySet[Model]", distinct: bool = True) ->
     return model
 
 
-def _add_export_certificate_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
+def _add_export_certificate_data(model: QuerySet[Model]) -> QuerySet[Model]:
     content_type_pk = get_content_type_pk("export")
 
     # This join will be used for all certificate annotations
