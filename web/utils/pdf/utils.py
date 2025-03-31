@@ -199,16 +199,17 @@ def get_nuclear_material_goods_line(goods: NuclearMaterialApplicationGoods) -> l
     goods_line = _split_text_field_newlines(goods.goods_description)
     last_line = goods_line.pop()
 
-    quantity = f"{goods.quantity_amount:.3f}".rstrip("0").rstrip(".")
+    if goods.unlimited_quantity:
+        quantity = "Unlimited"
+    else:
+        quantity = f"{goods.quantity_amount:.3f}".rstrip("0").rstrip(".")
     commodity_code = goods.commodity.commodity_code
     units_desc = goods.quantity_unit.description
 
     if not units_desc:
         units = ""
-    elif goods.quantity_amount == 1 or units_desc.endswith("s"):
-        units = f" {units_desc}"
     else:
-        units = f" {units_desc}s"
+        units = f" {units_desc}"
 
     goods_line.append(f"{last_line}, {commodity_code}, {quantity}{units}")
 
@@ -230,7 +231,7 @@ def get_nuclear_material_licence_context(
         "country_of_shipment": get_country_and_geo_code(application.consignment_country),
         "ref": application.applicant_reference,
         "goods_list": goods_list,
-        "nuclear_contact_email": "TODO: Do we need this contact?",
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
     }
 
 

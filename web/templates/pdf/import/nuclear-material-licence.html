@@ -39,16 +39,15 @@
             <p class="{{ 'preview-orange' if preview_licence }}">{{ licence_number }}</p>
           </div>
           <div class="content-block b-bottom row">
-            <p class="title"><strong>3. </strong>Proposed place and date of import</p>
+            <p class="title"><strong>3. </strong>Date issued</p>
 
           <div class="flex-row space-between">
-               <p class="flex-start">Any UK Port</p>
                <p id="licence-start-date">{{ licence_start_date }}</p>
           </div>
           </div>
           <div class="content-block row flex-row wrap">
             <p class="row title"><strong>4. </strong>Authority responsible for issue</p>
-            <p class="row min-height-40">Email: {{ nuclear_contact_email }}</p>
+            <p class="row min-height-40">Email: {{ ilb_contact_email }}</p>
           </div>
         </div>
       </div>
@@ -85,7 +84,7 @@
       </div>
       <div class="flex-row row">
         <div class="large-text-box content-block row">
-          <p class="title"><strong>9. </strong>Description of goods, commodity code and category, quantity, and value in GBP (cif at UK frontier)</p>
+          <p class="title"><strong>9. </strong>Description of goods, UN Number, commodity code and quantity</p>
           {% for goods in goods_list %}
             {% for goods_line in goods %}
               <p>{{ goods_line }}</p>
