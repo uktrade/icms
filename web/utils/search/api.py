@@ -663,6 +663,9 @@ def _get_commodity_code_filter(terms: types.SearchTerms) -> models.Q:
         ImportApplicationType.Types.SANCTION_ADHOC: [
             "sanctionsandadhocapplication__sanctions_goods__commodity"
         ],
+        ImportApplicationType.Types.NMIL: [
+            "nuclearmaterialapplication__nuclear_goods__commodity",
+        ],
         ImportApplicationType.Types.SPS: [
             "priorsurveillanceapplication__commodity",
         ],

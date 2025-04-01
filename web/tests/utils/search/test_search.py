@@ -1270,7 +1270,12 @@ def test_import_search_by_goods_category(importer_one_fixture_data: FixtureData)
     assert results.total_rows == 5
 
 
-def test_import_search_by_commodity_code(importer_one_fixture_data: FixtureData):
+def test_import_search_by_commodity_code(
+    importer_one_fixture_data: FixtureData, nuclear_app_submitted
+):
+    # Update the fixture data
+    nuclear_app_submitted.applicant_reference = "Nuclear application 1"
+    nuclear_app_submitted.save()
 
     Build.opt_application(
         "opt-app",
@@ -1290,7 +1295,7 @@ def test_import_search_by_commodity_code(importer_one_fixture_data: FixtureData)
     # Check single wildcard returns all apps
     search_terms = SearchTerms(case_type="import", commodity_code="%")
     results = search_applications(search_terms, importer_one_fixture_data.ilb_admin_user)
-    assert results.total_rows == 5
+    assert results.total_rows == 6
 
     # Search for one record by app type
     search_terms = SearchTerms(
@@ -1316,6 +1321,10 @@ def test_import_search_by_commodity_code(importer_one_fixture_data: FixtureData)
         ("xx7%7xx", "textiles-app"),
         ("xx888888xx", "wood-app"),
         ("xx8%8xx", "wood-app"),
+        ("2612101000", "Nuclear application 1"),
+        ("%612101000", "Nuclear application 1"),
+        ("2612%01000", "Nuclear application 1"),
+        ("261210100%", "Nuclear application 1"),
     ]
 
     for search_term, app_ref in search_pairs:
