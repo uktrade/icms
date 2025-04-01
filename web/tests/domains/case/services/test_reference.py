@@ -496,6 +496,7 @@ def test_get_exporter_access_request_reference(db, lock_manager):
         ("paper", ProcessTypes.SPS, 10, "0000010K"),
         ("paper", ProcessTypes.SANCTIONS, 11, "0000011L"),
         ("paper", ProcessTypes.TEXTILES, 12, "0000012M"),
+        ("electronic", ProcessTypes.NUCLEAR, 13, "GBSIL0000013A"),
     ],
 )
 def test_get_import_application_licence_reference(

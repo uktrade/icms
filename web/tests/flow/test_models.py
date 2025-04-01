@@ -22,6 +22,7 @@ def test_downcast_unknown():
         (ProcessTypes.WOOD, "Wood"),
         (ProcessTypes.SPS, "Prior Surveillance"),
         (ProcessTypes.SANCTIONS, "Sanctions and Adhoc"),
+        (ProcessTypes.NUCLEAR, "Nuclear Materials Import Licence"),
         (ProcessTypes.OPT, "Outward Processing Trade"),
         (ProcessTypes.CFS, "CFS Application"),
         (ProcessTypes.COM, "COM Application"),
