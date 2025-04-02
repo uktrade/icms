@@ -18,7 +18,6 @@ from django.http import HttpRequest, HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django.urls import resolve, reverse
 from django.utils.decorators import method_decorator
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 from django.views.defaults import permission_denied
 from django.views.generic import RedirectView, TemplateView
@@ -207,13 +206,12 @@ def cookie_consent_view(request: HttpRequest) -> HttpResponse:
             # cookie consent stuff lasts for 1 year
             cookie_max_age = 365 * 24 * 60 * 60
 
-            referrer_url = request.GET.get("referrer_url", "/")
-            if not url_has_allowed_host_and_scheme(
-                referrer_url, settings.ALLOWED_HOSTS, require_https=request.is_secure()
-            ):
-                # if the referrer URL is not allowed, redirect to the home page
-                referrer_url = "/"
-            response = redirect(referrer_url)
+            if request.user.is_authenticated:
+                url = reverse("workbasket")
+            else:
+                url = reverse("login-start")
+
+            response = redirect(url)
 
             # regardless of their choice, we set a cookie to say they've made a choice
             response.set_cookie("cookie_preferences_set", "true", max_age=cookie_max_age)
