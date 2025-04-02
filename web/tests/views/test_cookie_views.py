@@ -3,6 +3,7 @@
 from django.conf import settings
 from django.http import SimpleCookie
 from django.test import override_settings
+from django.urls import reverse
 
 from web.sites import SiteName
 from web.views.forms import CookieConsentForm
@@ -56,7 +57,7 @@ class TestCookieConsentPage:
     def test_cookie_consent_post_accept(self, importer_client):
         response = importer_client.post("/cookie-consent/", {"accept_cookies": "True"})
         assert response.status_code == 302
-        assert response.url == "/"
+        assert response.url == reverse("workbasket")
 
         assert response.cookies["cookie_preferences_set"].value == "true"
         assert response.cookies["cookie_preferences_set"]["max-age"] == 31536000
@@ -66,17 +67,16 @@ class TestCookieConsentPage:
     def test_cookie_consent_post_decline(self, importer_client):
         response = importer_client.post("/cookie-consent/", {"accept_cookies": "False"})
         assert response.status_code == 302
-        assert response.url == "/"
+        assert response.url == reverse("workbasket")
 
         assert response.cookies["cookie_preferences_set"].value == "true"
         assert response.cookies["cookie_preferences_set"]["max-age"] == 31536000
 
         assert response.cookies["accepted_ga_cookies"].value == "false"
 
-    def test_cookie_consent_redirect_forbidden(self, importer_client):
-        """Test that the cookie consent page redirects to the home page if referrer_url supplied is not ours."""
-        response = importer_client.post(
-            "/cookie-consent/?referrer_url=https://google.com", {"accept_cookies": "True"}
-        )
+    def test_cookie_consent_redirect_for_anonymous_user(self, imp_client):
+        """imp_client isn't logged in so should redirect to login-start"""
+
+        response = imp_client.post("/cookie-consent/", {"accept_cookies": "True"})
         assert response.status_code == 302
-        assert response.url == "/"
+        assert response.url == reverse("login-start")

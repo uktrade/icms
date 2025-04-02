@@ -86,7 +86,7 @@
             </div>
           </div>
           <div class="govuk-button-group mt-1">
-            <form method="post" action="{{ icms_url('cookie-consent') }}?referrer_url={{ request.path }}">
+            <form method="post" action="{{ icms_url('cookie-consent') }}">
               {{ csrf_input }}
               <button type="submit" class="small-button" data-module="govuk-button" name="accept_cookies"
                       value="True">
@@ -96,7 +96,7 @@
                       value="False">
                 Reject analytics cookies
               </button>
-              <a href="{{ icms_url('cookie-consent') }}?referrer_url={{ request.path }}" class="ml-1">View cookies</a>
+              <a href="{{ icms_url('cookie-consent') }}" class="ml-1" style="color: #2e3191 !important">View cookies</a>
             </form>
           </div>
         </div>
