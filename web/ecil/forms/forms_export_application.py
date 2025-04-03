@@ -15,7 +15,6 @@ class ExportApplicationExportCountriesForm(gds_forms.GDSForm):
         help_text=(
             "Enter a country or territory and select from the results."
             " You can add up to 40 countries or territories."
-            " You can change these later if you need to."
         ),
         choices=[],
         gds_field_kwargs={"label": {"isPageHeading": True, "classes": "govuk-label--l"}},

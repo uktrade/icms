@@ -88,7 +88,7 @@ class TestExportApplicationExportCountriesUpdateView:
         assert context["export_countries"]
 
         assert context["govuk_table_kwargs"] == {
-            "caption": "You have added 1 country",
+            "caption": "You have added 1 country or territory",
             "captionClasses": "govuk-table__caption--m",
             "firstCellIsHeader": False,
             "rows": [
