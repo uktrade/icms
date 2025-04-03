@@ -1192,6 +1192,19 @@
         }
     },
     {
+        "model": "web.template",
+        "pk": 94,
+        "fields": {
+            "is_active": true,
+            "template_name": "Nuclear Materials Email",
+            "template_code": "IMA_NMIL_EMAIL",
+            "template_type": "EMAIL_TEMPLATE",
+            "application_domain": "IMA",
+            "country_translation_set_id": null,
+            "countries": []
+        }
+    },
+    {
         "model": "web.templateversion",
         "pk": 1,
         "fields": {
@@ -2421,6 +2434,20 @@
             "title": "Request for more information [[CASE_REFERENCE]]",
             "content": "Dear [[IMPORTER_NAME]],\\n\\nYou need to provide some more information for Import Licencing Branch (ILB) to process your application.\\n\\n[DESCRIBE WHAT INFORMATION OR CLARIFICATION IS NEEDED. INCLUDE SUGGESTIONS IF RELEVANT]\\n\\nregarding [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT].\\n\\nYour application will not be processed further until you respond to this request.\\n\\nThe application will be closed if the requested response is not received within 1 working day of this email.\\n\\nContact [[SANCTIONS_EMAIL_ADDRESS]] if you have any questions about your application.\\n\\nInclude case reference number [[CASE_REFERENCE]] in your email, so we know which application you are contacting us about.\\n\\nYours sincerely,\\n\\n[[CASE_OFFICER_NAME]]",
             "created_by": 0
+        }
+    },
+    {
+        "model": "web.templateversion",
+        "pk": 91,
+        "fields": {
+            "template": 94,
+            "start_datetime": "2025-04-1T09:29:40.418Z",
+            "end_datetime": null,
+            "is_active": true,
+            "version_number": 1,
+            "title": "Nuclear materials import licence [[CASE_REFERENCE]]",
+            "content": "Dear colleagues\n\nWe have received a nuclear materials import licence application from:\n[[IMPORTER_NAME]]\n[[IMPORTER_ADDRESS]]\n\nThe application is for:\n\n[[GOODS_DESCRIPTION]]\n\nNature of business: [[NATURE_OF_BUSINESS]]\nConsigner company name: [[CONSIGNOR_NAME]]\nConsignor company address and postcode: [[CONSIGNOR_ADDRESS]]\nEnd user company name: [[END_USER_NAME]]\nEnd user company address and postcode: [[END_USER_ADDRESS]]\nIntended end use of shipment: [[INTENDED_USE_OF_SHIPMENT]]\nLicence type: [[LICENCE_TYPE]]\nDate of first shipment: [[SHIPMENT_START_DATE]]\nDate of last shipment: [[SHIPMENT_END_DATE]]\nContact information for security team: [[SECURITY_TEAM_CONTACT_INFORMATION]]\n\nYours sincerely,\n\n[[CASE_OFFICER_NAME]]\n[[CASE_OFFICER_EMAIL]]\n[[CASE_OFFICER_PHONE]]\n",
+            "created_by_id": 0
         }
     }
 ]

@@ -126,10 +126,11 @@ def get_email_addresses_for_users(users: Iterable[User]) -> list[RecipientDetail
 def get_email_addresses_for_case_email(case_email: CaseEmail) -> list[RecipientDetails]:
     first_name = DEFAULT_APPLICANT_GREETING
     if case_email.template_code in [
-        CaseEmailCodes.SANCTIONS_CASE_EMAIL,
-        CaseEmailCodes.CONSTABULARY_CASE_EMAIL,
         CaseEmailCodes.BEIS_CASE_EMAIL,
+        CaseEmailCodes.CONSTABULARY_CASE_EMAIL,
         CaseEmailCodes.HSE_CASE_EMAIL,
+        CaseEmailCodes.NMIL_CASE_EMAIL,
+        CaseEmailCodes.SANCTIONS_CASE_EMAIL,
     ]:
         first_name = DEFAULT_STAFF_GREETING
 

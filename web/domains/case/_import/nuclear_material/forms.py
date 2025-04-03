@@ -17,10 +17,10 @@ from .models import NuclearMaterialApplication, NuclearMaterialApplicationGoods
 
 class NuclearMaterialApplicationFormBase(forms.ModelForm):
     shipment_start_date = JqueryDateField(
-        label="Date of shipment",
+        label="Date of Shipment",
         required=True,
     )
-    shipment_end_date = JqueryDateField(label="Date of last shipment", required=False)
+    shipment_end_date = JqueryDateField(label="Date of Last Shipment", required=False)
 
     class Meta:
         model = NuclearMaterialApplication
@@ -48,10 +48,9 @@ class NuclearMaterialApplicationFormBase(forms.ModelForm):
         }
 
         labels = {
-            "applicant_reference": "Applicant's reference",
-            "origin_country": "Country of manufacture (origin)",
-            "consignment_country": "Country of shipment (consignment)",
-            "intended_use_of_shipment": "Intended end use of shipment",
+            "origin_country": "Country of Manufacture (Origin)",
+            "consignment_country": "Country of Shipment (Consignment)",
+            "intended_use_of_shipment": "Intended End Use of Shipment",
         }
         help_texts = {
             "consignment_country": (

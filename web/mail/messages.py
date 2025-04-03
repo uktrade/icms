@@ -483,6 +483,7 @@ class BaseCaseEmail(GOVNotifyEmailMessage):
     def get_site_domain(self) -> str:
         if self.case_email.template_code in [
             CaseEmailCodes.CONSTABULARY_CASE_EMAIL,
+            CaseEmailCodes.NMIL_CASE_EMAIL,
             CaseEmailCodes.SANCTIONS_CASE_EMAIL,
         ]:
             return get_importer_site_domain()

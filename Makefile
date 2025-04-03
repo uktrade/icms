@@ -39,7 +39,7 @@ showmigrations: ## make db migrations
 	docker compose run --rm web python ./manage.py showmigrations
 
 migrations: ## make db migrations
-	docker compose run --rm web python ./manage.py makemigrations web
+	docker compose run --rm web python ./manage.py makemigrations web ${args}
 
 check_migrations: ## Check for missing migrations:
 	docker compose run --no-TTY --rm web python ./manage.py makemigrations --check --dry-run --settings=config.settings_local

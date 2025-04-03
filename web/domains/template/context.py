@@ -14,6 +14,8 @@ from web.models import (
     CountryTranslationSet,
     ExportApplication,
     ImportApplication,
+    NuclearMaterialApplication,
+    NuclearMaterialApplicationGoods,
     Process,
     User,
 )
@@ -24,7 +26,7 @@ from web.sites import (
     get_importer_site_domain,
 )
 from web.types import DocumentTypes
-from web.utils import datetime_format, strip_spaces
+from web.utils import datetime_format, day_ordinal_date, strip_spaces
 
 
 def _get_selected_product_data(biocidal_schedules: QuerySet[CFSSchedule]) -> str:
@@ -65,6 +67,13 @@ def _get_sil_goods_text(
         return f"{quantity} x {description}{section_text}"
 
     return f"{description}{section_text}"
+
+
+def _get_nuclear_materials_goods_line_text(goods: NuclearMaterialApplicationGoods) -> str:
+    if goods.unlimited_quantity:
+        return f"Unlimited x {goods.goods_description}"
+
+    return f"{str(goods.quantity_amount).rstrip('0').rstrip('.')} {goods.quantity_unit.description} x {goods.goods_description}"
 
 
 def _get_import_goods_description(app: ImportApplication) -> str:
@@ -129,10 +138,8 @@ def _get_import_goods_description(app: ImportApplication) -> str:
         case ProcessTypes.NUCLEAR:
             return "\n".join(
                 [
-                    f"{str(quantity).rstrip('0').rstrip('.')} x {desc}"
-                    for quantity, desc in app.nuclear_goods.values_list(
-                        "quantity_amount", "goods_description"
-                    ).order_by("pk")
+                    _get_nuclear_materials_goods_line_text(goods)
+                    for goods in app.nuclear_goods.order_by("pk")
                 ]
             )
 
@@ -256,8 +263,13 @@ class EmailTemplateContext:
                 return self.process.importer.display_name
             case "IMPORTER_ADDRESS":
                 return str(self.process.importer_office)
-            case "SANCTIONS_EMAIL_ADDRESS":
-                return settings.ICMS_SANCTIONS_EMAIL
+
+        match self.process.process_type:
+            case ProcessTypes.NUCLEAR:
+                return self._nuclear_app_context(item)
+            case ProcessTypes.SANCTIONS:
+                return self._sanctions_app_context(item)
+
         return self._application_context(item)
 
     def _export_context(self, item: str) -> str:
@@ -281,6 +293,40 @@ class EmailTemplateContext:
             case ProcessTypes.CFS:
                 return self._cfs_app_context(item)
 
+        return self._application_context(item)
+
+    def _nuclear_app_context(self, item: str) -> str:
+        fields = [
+            "NATURE_OF_BUSINESS",
+            "CONSIGNOR_NAME",
+            "CONSIGNOR_ADDRESS",
+            "END_USER_NAME",
+            "END_USER_ADDRESS",
+            "INTENDED_USE_OF_SHIPMENT",
+            "SECURITY_TEAM_CONTACT_INFORMATION",
+        ]
+
+        if item in fields:
+            return getattr(self.process, item.lower())
+
+        match item:
+            case "LICENCE_TYPE":
+                if self.process.licence_type == NuclearMaterialApplication.LicenceType.OPEN:
+                    return "Open"
+                return "Single"
+            case "SHIPMENT_START_DATE":
+                return day_ordinal_date(self.process.shipment_start_date)
+            case "SHIPMENT_END_DATE":
+                if self.process.licence_type == NuclearMaterialApplication.LicenceType.SINGLE:
+                    return "N/A"
+                return day_ordinal_date(self.process.shipment_end_date)
+
+        return self._application_context(item)
+
+    def _sanctions_app_context(self, item: str) -> str:
+        match item:
+            case "SANCTIONS_EMAIL_ADDRESS":
+                return settings.ICMS_SANCTIONS_EMAIL
         return self._application_context(item)
 
     def _gmp_app_context(self, item: str) -> str:

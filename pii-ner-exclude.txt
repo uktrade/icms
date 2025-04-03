@@ -5445,3 +5445,18 @@ Environmental Agency
 {{ fields.field(form.shipment_start_date
 Date of last shipment
 Microgram
+END_USER_NAME
+Office for Nuclear Regulation
+Dear colleagues\n\n"
+CONSIGNER_ADDRESS]]\n
+END_USER_ADDRESS]]\n
+Generating Nuclear Material
+Date of Shipment
+Intended End Use of Shipment
+Date of First Shipment
+Nuclear Materials
+NuclearMaterialEmail
+f"We
+f"I1 address line
+f"1000 Kilogramme x Test
+f"enquiries.ilb@icms.trade.dev.uktrade.io\n

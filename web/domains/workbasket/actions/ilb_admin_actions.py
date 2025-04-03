@@ -29,6 +29,8 @@ def get_app_processing_label(application: ImpOrExp, active_tasks: list[str]) -> 
             section_label += " (Awaiting HSE Email Response)"
         if CaseEmailCodes.SANCTIONS_CASE_EMAIL in oce:
             section_label += " (Awaiting Sanctions Email Response)"
+        if CaseEmailCodes.NMIL_CASE_EMAIL in oce:
+            section_label += " (Awaiting Nuclear Materials Email Response)"
 
     if Task.TaskType.PREPARE in active_tasks:
         section_label += ", Out for Update"

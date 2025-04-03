@@ -5,6 +5,7 @@ from .add_application_type_data import (
     add_import_application_type_data,
     add_import_application_type_endorsements,
 )
+from .add_case_email_data import add_nuclear_material_data, add_sanction_data
 from .add_commodity_group_usage_data import add_usage_data
 from .add_constabulary_data import add_constabulary_data
 from .add_email_data import (
@@ -14,7 +15,6 @@ from .add_email_data import (
     update_database_email_templates,
 )
 from .add_fa_data import add_firearms_act_data
-from .add_sanction_data import add_sanction_data
 from .add_template_data import (
     add_cfs_declaration_template_countries,
     add_cfs_schedule_data,
@@ -46,6 +46,7 @@ def load_app_test_data():
     call_command("loaddata", "obsolete_calibre")
     call_command("loaddata", "product_legislations")
     add_sanction_data()
+    add_nuclear_material_data()
     add_user_management_email_templates()
     update_database_email_templates()
     archive_database_email_templates()

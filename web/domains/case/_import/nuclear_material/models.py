@@ -85,3 +85,16 @@ class NuclearMaterialApplicationGoods(models.Model):
 
     def __str__(self):
         return f"{self.import_application} - " f"{self.commodity} - " f"{self.quantity_amount} - "
+
+
+# TODO ECIL-681: Merge this model with sanction email and create CaseEmailAddress model
+class NuclearMaterialEmail(models.Model):
+    is_active = models.BooleanField(default=True)
+    name = models.CharField(max_length=255)
+    email = models.EmailField(verbose_name="Email Address", max_length=254)
+
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    updated_datetime = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("name",)

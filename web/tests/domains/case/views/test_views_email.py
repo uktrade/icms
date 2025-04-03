@@ -54,12 +54,31 @@ class TestViewEmail(AuthTestCase):
         assert response.context["email_subtitle"] == "HSE Emails"
         assert response.context["no_emails_msg"] == "There aren't any HSE emails."
 
+    def test_manage_nuclear_materials_emails_get(self, nuclear_app_processing):
+        resp = self.ilb_admin_client.get(CaseURLS.manage_case_emails(nuclear_app_processing.pk))
+        assert resp.status_code == 200
+
+        assertContains(resp, "Manage Emails")
+        assertTemplateUsed(resp, "web/domains/case/manage/case-emails.html")
+
+        assert resp.context["case_emails"].count() == 0
+
+        assert resp.context["email_title"] == "Nuclear Material Import Licence Emails"
+        assert resp.context["email_subtitle"] == ""
+        assert resp.context["no_emails_msg"] == "There aren't any emails."
+
     def test_create_case_email(self, fa_dfl_app_submitted):
         resp = self.create_case_for_application(fa_dfl_app_submitted)
         case_email = fa_dfl_app_submitted.case_emails.get()
         assertRedirects(
             resp, CaseURLS.edit_case_emails(fa_dfl_app_submitted.pk, case_email.pk), 302
         )
+
+    def test_create_nuclear_material_case_email(self, nuclear_app_submitted):
+        app = nuclear_app_submitted
+        resp = self.create_case_for_application(app)
+        case_email = app.case_emails.get()
+        assertRedirects(resp, CaseURLS.edit_case_emails(app.pk, case_email.pk), 302)
 
     @mock.patch("web.domains.case.views.views_email.send_case_email")
     def test_edit_case_email(self, mock_send_case_email, fa_dfl_app_submitted):

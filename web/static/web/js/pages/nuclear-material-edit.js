@@ -12,10 +12,10 @@ const showLastShipment = (licence_type) => {
   const last_shipment_row = document.querySelector(".row_id_shipment_end_date");
 
   if (licence_type === 'O') {
-    first_shipment_label.innerText = "Date of first shipment";
+    first_shipment_label.innerText = "Date of First Shipment";
     last_shipment_row.hidden = false;
   } else {
-    first_shipment_label.innerText = "Date of shipment";
+    first_shipment_label.innerText = "Date of Shipment";
     last_shipment_row.querySelector('#id_shipment_end_date').value = "";
     last_shipment_row.hidden = true;
   }
