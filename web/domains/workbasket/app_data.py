@@ -191,6 +191,7 @@ def _get_open_case_emails_annotation(
                 CaseEmailCodes.BEIS_CASE_EMAIL,
                 CaseEmailCodes.CONSTABULARY_CASE_EMAIL,
                 CaseEmailCodes.HSE_CASE_EMAIL,
+                CaseEmailCodes.NMIL_CASE_EMAIL,
                 CaseEmailCodes.SANCTIONS_CASE_EMAIL,
             ],
             is_active=True,

@@ -101,14 +101,14 @@ class DownloadLinkFormViewBase(FormView):
         return super().form_invalid(form)
 
 
-# TODO: Extend with NuclearMaterialApplication
 class DownloadCaseEmailDocumentsFormView(DownloadLinkFormViewBase):
     """View to see supporting documents relating to an application with case emails.
 
     The application types that support case emails with attachments are as follows:
-        - OpenIndividualLicenceApplication
         - DFLApplication
+        - OpenIndividualLicenceApplication
         - SILApplication
+        - NuclearMaterialApplication
         - SanctionsAndAdhocApplication
         - CertificateOfGoodManufacturingPracticeApplication
 
@@ -175,7 +175,11 @@ class DownloadCaseEmailDocumentsFormView(DownloadLinkFormViewBase):
         match case_email.template_code:
             case CaseEmailCodes.BEIS_CASE_EMAIL:
                 return ExportApplication.objects.get(case_emails=case_email).get_specific_model()
-            case CaseEmailCodes.CONSTABULARY_CASE_EMAIL | CaseEmailCodes.SANCTIONS_CASE_EMAIL:
+            case (
+                CaseEmailCodes.CONSTABULARY_CASE_EMAIL
+                | CaseEmailCodes.NMIL_CASE_EMAIL
+                | CaseEmailCodes.SANCTIONS_CASE_EMAIL
+            ):
                 return ImportApplication.objects.get(case_emails=case_email).get_specific_model()
             case _:
                 raise ValueError(f"Email attachments not supported for {case_email.template_code}.")

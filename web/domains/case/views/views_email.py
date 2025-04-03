@@ -24,6 +24,7 @@ from web.models import (
     DFLApplication,
     File,
     GMPFile,
+    NuclearMaterialEmail,
     OpenIndividualLicenceApplication,
     SanctionEmail,
     SanctionsAndAdhocApplication,
@@ -392,9 +393,9 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
         )
 
     elif application.process_type == ProcessTypes.NUCLEAR:
-        # TODO: Revisit in ECIL-663 (using SanctionEmail currently)
         choices = [
-            (c.email, f"{c.name} ({c.email})") for c in SanctionEmail.objects.filter(is_active=True)
+            (c.email, f"{c.name} ({c.email})")
+            for c in NuclearMaterialEmail.objects.filter(is_active=True)
         ]
         files = application.supporting_documents.filter(is_active=True)
 
@@ -468,8 +469,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
             return create_case_email(application, CaseEmailCodes.SANCTIONS_CASE_EMAIL)
 
         case pt.NUCLEAR:
-            # TODO: Revisit in ECIL-663 (Using sanction email currently)
-            return create_case_email(application, CaseEmailCodes.SANCTIONS_CASE_EMAIL)
+            return create_case_email(application, CaseEmailCodes.NMIL_CASE_EMAIL)
 
         # certificate applications
         case pt.CFS:

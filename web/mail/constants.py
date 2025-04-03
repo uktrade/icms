@@ -120,9 +120,10 @@ class EmailTypes(TypedTextChoices):
 class CaseEmailCodes(TypedTextChoices):
     """Class containing all TemplateCodes values that have been used to create CaseEmail Records."""
 
-    CONSTABULARY_CASE_EMAIL = (TemplateCodes.IMA_CONSTAB_EMAIL, "Constabulary Email")
-    SANCTIONS_CASE_EMAIL = (TemplateCodes.IMA_SANCTIONS_EMAIL, "Sanctions Email")
-    HSE_CASE_EMAIL = (TemplateCodes.CA_HSE_EMAIL, "Health and Safety Email")
     BEIS_CASE_EMAIL = (TemplateCodes.CA_BEIS_EMAIL, "Business, Energy & Industrial Strategy Email")
+    CONSTABULARY_CASE_EMAIL = (TemplateCodes.IMA_CONSTAB_EMAIL, "Constabulary Email")
+    HSE_CASE_EMAIL = (TemplateCodes.CA_HSE_EMAIL, "Health and Safety Email")
+    NMIL_CASE_EMAIL = (TemplateCodes.IMA_NMIL_EMAIL, "Nuclear Materials Email")
+    SANCTIONS_CASE_EMAIL = (TemplateCodes.IMA_SANCTIONS_EMAIL, "Sanctions Email")
     DEACTIVATE_USER_EMAIL = (TemplateCodes.DEACTIVATE_USER, "Deactivate User Email")
     REACTIVATE_USER_EMAIL = (TemplateCodes.REACTIVATE_USER, "Reactivate User Email")

@@ -6,6 +6,7 @@ from django.conf import settings
 
 from web.domains.case.services import document_pack
 from web.domains.mailshot.models import Mailshot
+from web.domains.template.constants import TemplateCodes
 from web.domains.template.context import CoverLetterTemplateContext
 from web.domains.template.utils import (
     ScheduleParagraphs,
@@ -18,6 +19,7 @@ from web.domains.template.utils import (
     get_application_update_template_data,
     get_context_dict,
     get_cover_letter_content,
+    get_email_template_subject_body,
     get_fir_template_data,
     get_letter_fragment,
 )
@@ -32,6 +34,7 @@ from web.models import (
     ExportApplicationType,
     FurtherInformationRequest,
     ImportApplicationType,
+    NuclearMaterialApplication,
     Office,
     OpenIndividualLicenceApplication,
     ProductLegislation,
@@ -44,6 +47,7 @@ from web.sites import get_importer_site_domain
 from web.tests.domains.mailshot.test_views import _create_mailshot
 from web.tests.helpers import CaseURLS
 from web.types import DocumentTypes
+from web.utils import day_ordinal_date
 from web.views.actions import EditTemplate
 
 
@@ -495,6 +499,38 @@ def test_get_fir_template_data_error(ilb_admin_user):
         match=r"Process must be an instance of ImportApplication / ExportApplication / AccessRequest",
     ):
         get_fir_template_data(fir, ilb_admin_user)
+
+
+def test_nuclear_materials_email_subject_body(nuclear_app_processing):
+    app: NuclearMaterialApplication = nuclear_app_processing
+    subject, body = get_email_template_subject_body(app, TemplateCodes.IMA_NMIL_EMAIL)
+    assert subject == f"Nuclear materials import licence {app.reference}"
+    assert body == (
+        f"Dear colleagues\n\n"
+        f"We have received a nuclear materials import licence application from:\n"
+        f"Test Importer 1\n"
+        f"I1 address line 1\n"
+        f"I1 address line 2\n"
+        f"BT180LZ\n\n"  # /PS-IGNORE
+        f"The application is for:\n\n"
+        f"1000 Kilogramme x Test Goods\n"
+        f"56.78 Gramme x More Commoditites\n"
+        f"Unlimited x Unlimited Commoditites\n\n"
+        f"Nature of business: Test nature of business\n"
+        f"Consigner company name: Test consignor name\n"
+        f"Consignor company address and postcode: Test consignor address\n"
+        f"End user company name: Test end user name\n"
+        f"End user company address and postcode: Test end user address\n"
+        f"Intended end use of shipment: Test intended use of shipment\n"
+        f"Licence type: Single\n"
+        f"Date of first shipment: {day_ordinal_date(app.shipment_start_date)}\n"
+        f"Date of last shipment: N/A\n"
+        f"Contact information for security team: Test security team contact information\n\n"
+        f"Yours sincerely,\n\n"
+        f"ilb_admin_user_first_name ilb_admin_user_last_name\n"
+        f"enquiries.ilb@icms.trade.dev.uktrade.io\n"  # /PS-IGNORE
+        f"N/A\n"
+    )
 
 
 class TestCreateSchedule:

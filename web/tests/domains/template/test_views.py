@@ -41,7 +41,7 @@ class TestTemplateListView(AuthTestCase):
     def test_page_results(self):
         response = self.ilb_admin_client.get(self.url, {"page": "2", "template_name_title": ""})
         page = response.context_data["page"]
-        assert len(page.object_list) == 40
+        assert len(page.object_list) == 41
 
     def test_email_template_not_archivable(self):
         response = self.ilb_admin_client.get(self.url, {"template_type": "EMAIL_TEMPLATE"})

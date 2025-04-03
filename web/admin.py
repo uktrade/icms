@@ -28,6 +28,7 @@ from web.models import (
     ImportApplication,
     ImportApplicationType,
     Importer,
+    NuclearMaterialEmail,
     PhoneNumber,
     Process,
     SanctionsAndAdhocApplication,
@@ -189,6 +190,8 @@ admin.site.register(Exporter, ExporterAdmin)
 admin.site.register(SanctionsAndAdhocApplication)
 admin.site.register(SanctionsAndAdhocApplicationGoods)
 admin.site.register(EmailTemplate, EmailTemplateAdmin)
+# TODO ECIL-681: Remove NuclearMaterialEmail from admin site when merged with SanctionEmail
+admin.site.register(NuclearMaterialEmail)
 
 
 @admin.register(Permission)

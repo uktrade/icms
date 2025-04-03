@@ -58,6 +58,7 @@ from web.domains.case._import.models import (
 from web.domains.case._import.nuclear_material.models import (
     NuclearMaterialApplication,
     NuclearMaterialApplicationGoods,
+    NuclearMaterialEmail,
 )
 from web.domains.case._import.sanctions.models import (
     SanctionsAndAdhocApplication,
@@ -246,6 +247,7 @@ __all__ = [
     "Mailshot",
     "NuclearMaterialApplication",
     "NuclearMaterialApplicationGoods",
+    "NuclearMaterialEmail",
     "OILSupplementaryInfo",
     "OILSupplementaryReport",
     "OILSupplementaryReportFirearm",
