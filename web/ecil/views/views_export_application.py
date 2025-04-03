@@ -129,9 +129,9 @@ class ExportApplicationExportCountriesUpdateView(ExportApplicationInProgressView
 
         if country_qs:
             if country_qs.count() > 1:
-                caption = f"You have added {country_qs.count()} countries"
+                caption = f"You have added {country_qs.count()} countries or territories"
             else:
-                caption = "You have added 1 country"
+                caption = "You have added 1 country or territory"
 
             rows = []
             for pk, name in country_qs.values_list("pk", "name", named=True):
@@ -168,6 +168,15 @@ class ExportApplicationExportCountriesUpdateView(ExportApplicationInProgressView
                     next_url = reverse("workbasket")
 
             context["next_url"] = next_url
+
+        # TODO: ECIL-683 Fix the hardcoded previous URL in another story.
+        #       This view is a common view for all export apps, it needs to go back to correct view
+        previous_step_url = reverse(
+            "ecil:export-cfs:application-contact", kwargs={"application_pk": self.application.pk}
+        )
+        context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
+            text="Back", href=previous_step_url
+        ).model_dump(exclude_defaults=True)
 
         return context
 

@@ -6,24 +6,27 @@ from web.models import CertificateOfFreeSaleApplication, User
 
 
 class CFSApplicationReferenceForm(gds_forms.GDSModelForm):
+    applicant_reference = gds_forms.GovUKTextInputField(
+        label="Name the application (Optional)",
+        help_text=(
+            "Give the application a name so you can refer back to it when needed."
+            " For example, gloss lipsticks."
+            " This is just for your reference and will not appear on the certificate."
+        ),
+        required=False,
+        error_messages={"required": "Enter a name for the application"},
+        gds_field_kwargs={"label": {"isPageHeading": True, "classes": "govuk-label--l"}},
+    )
+
     class Meta(gds_forms.GDSModelForm.Meta):
         model = CertificateOfFreeSaleApplication
         fields = ["applicant_reference"]
-        error_messages = {"applicant_reference": {"required": "Enter a name for the application"}}
-
-        formfield_callback = gds_forms.GDSFormfieldCallback(
-            gds_field_kwargs={
-                "applicant_reference": {
-                    "label": {"isPageHeading": True, "classes": "govuk-label--l"}
-                }
-            }
-        )
 
 
 class CFSApplicationContactForm(gds_forms.GDSForm):
     contact = gds_forms.GovUKRadioInputField(
         label="Who is the main contact for your application?",
-        help_text="This would normally be the person who created the application",
+        help_text="This is usually the person who created the application",
         error_messages={"required": "Select the main contact for your application"},
         gds_field_kwargs={
             "fieldset": {"legend": {"isPageHeading": True, "classes": "govuk-fieldset__legend--l"}}

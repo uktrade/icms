@@ -34,14 +34,13 @@ class TestCFSApplicationReferenceUpdateView:
         }
 
     def test_post(self):
-        # Test error message
+        # Test optional is valid
         form_data = {"applicant_reference": ""}
         response = self.client.post(self.url, data=form_data)
-        assert response.status_code == HTTPStatus.OK
-        form = response.context["form"]
-        assert form.errors == {
-            "applicant_reference": ["Enter a name for the application"],
-        }
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "ecil:export-cfs:application-contact", kwargs={"application_pk": self.app.pk}
+        )
 
         # Test post success
         form_data = {"applicant_reference": "test-application-reference"}
