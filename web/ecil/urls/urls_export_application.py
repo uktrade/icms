@@ -5,6 +5,11 @@ from web.ecil.views import views_export_application as views
 app_name = "export-application"
 urlpatterns = [
     path(
+        "create/<exportapplicationtype:type_code>/",
+        views.ExportApplicationCreateMultiStepFormView.as_view(),
+        name="create",
+    ),
+    path(
         "<int:application_pk>/",
         include(
             [

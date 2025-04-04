@@ -208,6 +208,7 @@ def create_export_application(
     else:
         form = CreateExportApplicationForm(user=request.user)
 
+    # This fetches agents.
     exporters_with_agents = get_objects_for_user(
         request.user, [Perms.obj.exporter.is_agent], Exporter
     ).values_list("pk", flat=True)
