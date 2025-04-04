@@ -1,11 +1,14 @@
 from typing import Any, ClassVar
 
 from django import forms as django_forms
-from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import FormView
-from markupsafe import Markup
+from django.forms.models import model_to_dict
+from django.http import HttpResponse, HttpResponseRedirect, QueryDict
+from django.views.generic import FormView, UpdateView
+from pydantic import BaseModel, ConfigDict, ValidationError
 
 from web.ecil.gds import component_serializers as serializers
+from web.ecil.gds.utils import get_html_or_text
+from web.types import AuthenticatedHttpRequest
 
 from .types import FormStep
 from .utils import (
@@ -16,7 +19,44 @@ from .utils import (
 )
 
 
-# TODO: Unless refactored this can only work with Model Forms
+class BackLinkMixin:
+    """Adds back_link_kwargs variable to template context."""
+
+    from_summary: bool = False
+
+    class QueryParams(BaseModel):
+        """Available query params used in this mixin"""
+
+        model_config = ConfigDict(extra="ignore")
+        from_summary: bool
+
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        try:
+            params = self.QueryParams.model_validate(request.GET.dict())
+            self.from_summary = params.from_summary
+
+        except ValidationError:
+            self.from_summary = False
+
+        return super().get(request, *args, **kwargs)  # type: ignore[misc]
+
+    def get_context_data(self, **kwargs):
+        context: dict[str, Any] = super().get_context_data(**kwargs)  # type: ignore[misc]
+
+        if back_link_url := self.get_back_link_url():
+            context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
+                text="Back", href=back_link_url
+            ).model_dump(exclude_defaults=True)
+        else:
+            context["back_link_kwargs"] = None
+
+        return context
+
+    def get_back_link_url(self) -> str | None:
+        raise NotImplementedError()
+
+
+# TODO: ECIL-697 Remove and replace with ECILUserAccessRequest
 class MultiStepFormView(FormView):
     form_steps: ClassVar[dict[str, FormStep]]
 
@@ -110,6 +150,7 @@ class MultiStepFormView(FormView):
         raise NotImplementedError()
 
 
+# TODO: ECIL-697 Remove and replace with ECILUserAccessRequest using SummaryUpdateView
 class MultiStepFormSummaryView(FormView):
     edit_view: ClassVar[type[MultiStepFormView]]
 
@@ -173,10 +214,7 @@ class MultiStepFormSummaryView(FormView):
         if value is None or value == "":
             value = "No value entered (Fix in ECIL-618)"
 
-        if isinstance(value, Markup):
-            row_value_kwargs: dict[str, str | Markup] = {"html": value}
-        else:
-            row_value_kwargs = {"text": value}
+        row_value_kwargs = get_html_or_text(value)
 
         return serializers.summary_list.Row(
             key=serializers.summary_list.RowKey(text=form.fields[field].label),
@@ -235,6 +273,90 @@ class MultiStepFormSummaryView(FormView):
         raise NotImplementedError()
 
     def form_invalid(self, form: django_forms.Form | django_forms.ModelForm) -> HttpResponse:
+        context = self.get_context_data(form=form)
+        error_list = []
+        for field_name, error in form.errors.items():
+            field = form.fields[field_name]
+            field_error = f"{field.label}: {','.join(error)}"
+
+            error_list.append(serializers.error_summary.Error(text=field_error))
+
+        context["error_summary_kwargs"] = serializers.error_summary.ErrorSummaryKwargs(
+            titleText="There is a problem",
+            errorList=error_list,
+        ).model_dump(exclude_defaults=True)
+
+        return self.render_to_response(context)
+
+
+class SummaryUpdateView(UpdateView):
+    # UpdateView config
+    template_name = "ecil/gds_summary_list.html"
+    http_method_names = ["get", "post"]
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        if self.request.method == "POST":
+            # Pass in object data as form data when posting the summary view.
+            kwargs["data"] = model_to_dict(self.object)
+
+        return kwargs
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        summary_items = self.get_summary_items(context)
+        summary_list_kwargs = self.get_summary_list_kwargs(summary_items)
+        summary_cards = self.get_summary_cards(summary_items)
+
+        return context | {
+            "summary_list_kwargs": summary_list_kwargs,
+            "summary_cards": summary_cards,
+        }
+
+    def get_summary_items(self, context: dict[str, Any]) -> dict[str, serializers.summary_list.Row]:
+        raise NotImplementedError()
+
+    def get_summary_item_row(
+        self, field: str, key: str, value: str, edit_link: str
+    ) -> serializers.summary_list.Row:
+        # TODO: Revisit in ECIL-618 to fix missing & optional fields
+        if value is None or value == "":
+            value = "No value entered (Fix in ECIL-618)"
+
+        row_value_kwargs = get_html_or_text(value)
+
+        qd = QueryDict(mutable=True)
+        qd.update({"from_summary": "true"})
+
+        return serializers.summary_list.Row(
+            key=serializers.summary_list.RowKey(text=key),
+            value=serializers.summary_list.RowValue(**row_value_kwargs),
+            actions=serializers.summary_list.RowActions(
+                items=[
+                    serializers.summary_list.RowActionItem(
+                        href=edit_link + f"?{qd.urlencode()}",
+                        text="Change",
+                        visuallyHiddenText=field,
+                    )
+                ]
+            ),
+        )
+
+    def get_summary_list_kwargs(
+        self, summary_items: dict[str, serializers.summary_list.Row]
+    ) -> dict[str, Any]:
+        return serializers.summary_list.SummaryListKwargs(
+            rows=list(summary_items.values()),
+        ).model_dump(exclude_defaults=True)
+
+    def get_summary_cards(
+        self, summary_items: dict[str, serializers.summary_list.Row]
+    ) -> list[dict[str, Any]]:
+        return []
+
+    def form_invalid(self, form: django_forms.ModelForm) -> HttpResponse:
         context = self.get_context_data(form=form)
         error_list = []
         for field_name, error in form.errors.items():

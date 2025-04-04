@@ -1,3 +1,4 @@
+from .constants import FIELDSET_LEGEND_HEADER, LABEL_HEADER
 from .fields import (
     GovUKCharacterCountField,
     GovUKCheckboxesField,
@@ -20,6 +21,8 @@ from .fields import (
 from .forms import GDSForm, GDSFormfieldCallback, GDSFormMixin, GDSModelForm
 
 __all__ = [
+    "FIELDSET_LEGEND_HEADER",
+    "LABEL_HEADER",
     "GDSForm",
     "GDSFormfieldCallback",
     "GDSFormMixin",

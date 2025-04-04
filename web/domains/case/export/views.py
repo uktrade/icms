@@ -19,7 +19,8 @@ from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
-from web.domains.case.services import case_progress, document_pack
+from web.domains.case.services import application as applicant_application
+from web.domains.case.services import case_progress
 from web.domains.case.utils import (
     get_application_form,
     redirect_after_submit,
@@ -73,11 +74,7 @@ from .forms import (
     SubmitCOMForm,
     SubmitGMPForm,
 )
-from .utils import (
-    copy_template_to_export_application,
-    get_product_spreadsheet_response,
-    process_products_file,
-)
+from .utils import get_product_spreadsheet_response, process_products_file
 
 
 def check_can_edit_application(
@@ -160,46 +157,16 @@ def create_export_application(
         form = CreateExportApplicationForm(request.POST, user=request.user, cat=app_template)
 
         if form.is_valid():
-            application = config.model_class()
-            application.exporter = form.cleaned_data["exporter"]
-            application.exporter_office = form.cleaned_data["exporter_office"]
-            application.agent = form.cleaned_data["agent"]
-            application.agent_office = form.cleaned_data["agent_office"]
-            application.process_type = config.model_class.PROCESS_TYPE
-            application.created_by = request.user
-            application.last_updated_by = request.user
-            application.application_type = application_type
-
-            with transaction.atomic():
-                application.save()
-
-                if app_template:
-                    try:
-                        copy_template_to_export_application(application, app_template, request.user)
-                    except ValidationError:
-                        messages.warning(request, "Unable to set all template data.")
-
-                    # Refresh in case any template data has been saved.
-                    application.refresh_from_db()
-
-                Task.objects.create(
-                    process=application, task_type=Task.TaskType.PREPARE, owner=request.user
-                )
-
-                if application.application_type.type_code == ExportApplicationType.Types.GMP:
-                    # GMP applications are for China only
-                    country = Country.app.get_gmp_countries().first()
-                    application.countries.add(country)
-                elif (
-                    application_type.type_code == ExportApplicationType.Types.FREE_SALE
-                    and not app_template
-                ):
-                    # A template will have already created the schedules in set_template_data
-                    application.schedules.create(created_by=request.user)
-
-                # Add a draft certificate when creating an application
-                # Ensures we never have to check for None
-                document_pack.pack_draft_create(application)
+            application = applicant_application.create_export_application(
+                request,
+                config.model_class,
+                application_type,
+                form.cleaned_data["exporter"],
+                form.cleaned_data["exporter_office"],
+                form.cleaned_data["agent"],
+                form.cleaned_data["agent_office"],
+                app_template,
+            )
 
             return redirect(
                 reverse(application.get_edit_view_name(), kwargs={"application_pk": application.pk})

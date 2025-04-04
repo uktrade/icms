@@ -1,4 +1,9 @@
-from .base import MultiStepFormSummaryView, MultiStepFormView
+from .base import (
+    BackLinkMixin,
+    MultiStepFormSummaryView,
+    MultiStepFormView,
+    SummaryUpdateView,
+)
 from .types import FormStep
 from .utils import (
     delete_session_form_data,
@@ -8,8 +13,10 @@ from .utils import (
 )
 
 __all__ = [
-    "MultiStepFormView",
+    "BackLinkMixin",
     "MultiStepFormSummaryView",
+    "MultiStepFormView",
+    "SummaryUpdateView",
     "FormStep",
     "delete_session_form_data",
     "get_session_form_data",

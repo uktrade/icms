@@ -1,0 +1,10 @@
+{% extends "ecil/base.html" %}
+
+{% block ecil_content %}
+  {{ gds.govukNotificationBanner(notification_banner_kwargs) }}
+  <p class="govuk-body">
+    Request permission from your organisation or get in touch with Import Licensing Branch (ILB) at
+    <a href="mailto:{{ ilb_contact_email }}" class="govuk-link govuk-link--text-colour">{{ ilb_contact_email }}</a>
+    if you need to add another office address.
+  </p>
+{% endblock %}

@@ -38,14 +38,14 @@ class ExporterTriageForm(gds_forms.GDSForm):
         },
         choices=[
             ("cfs", "Certificate of Free Sale (CFS)"),
-            ("gmp", "Certificate of Good Manufacture Practice (CGMP)"),
             ("com", "Certificate of Manufacture (CoM)"),
+            ("gmp", "Certificate of Good Manufacturing Practice (CGMP)"),
             (gds_forms.GovUKCheckboxesField.NONE_OF_THESE, "Something else"),
         ],
         choice_hints={
             "cfs": "Products which meet UK standards that fall under Department for Business and Trade regulation.",
-            "gmp": "Cosmetic products which meet UK good manufacturing practice standards. For use in China only.",
             "com": "Pesticides that are solely for use in overseas markets and will not be placed on the UK market.",
+            "gmp": "Cosmetic products which meet UK good manufacturing practice standards. For use in China only.",
         },
         choice_classes="govuk-!-font-weight-bold",
         gds_field_kwargs={
