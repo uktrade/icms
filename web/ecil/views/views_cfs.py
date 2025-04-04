@@ -120,9 +120,6 @@ class CFSApplicationContactUpdateView(CFSInProgressViewBase, UpdateView):
 
 @method_decorator(transaction.atomic, name="post")
 class CFSScheduleCreateView(CFSInProgressRelatedObjectViewBase, TemplateView):
-    # PermissionRequiredMixin config
-    permission_required = [Perms.sys.view_ecil_prototype]
-
     # TemplateView config
     http_method_names = ["get", "post"]
     template_name = "ecil/cfs/schedule_create.html"
@@ -132,6 +129,8 @@ class CFSScheduleCreateView(CFSInProgressRelatedObjectViewBase, TemplateView):
     ) -> HttpResponseRedirect:
         self.set_application_and_task()
 
+        # TODO: When the cfs app is created it already creates a schedule.
+        #       Decide how this should work (V2 isn't the same as v3).
         new_schedule = CFSSchedule.objects.create(
             application=self.application, created_by=request.user
         )

@@ -4,10 +4,11 @@ from typing import Any, ClassVar
 
 from django import forms
 from django.core.validators import RegexValidator
-from jinja2.filters import do_mark_safe
+from markupsafe import Markup
 
 from web.domains.file.utils import ICMSFileField
 from web.ecil.gds import component_serializers as serializers
+from web.ecil.gds.utils import get_html_or_text
 
 from .validators import MaxWordsValidator
 
@@ -444,9 +445,9 @@ class GovUKFileUploadField(GDSFieldMixin, ICMSFileField):
 
             gds_kwargs = serializer.model_dump(exclude_defaults=True)
 
-            # The hint contains HTML so do_mark_safe after model_dump
+            # The hint contains HTML so Markup after model_dump
             if gds_kwargs.get("hint"):
-                gds_kwargs["hint"]["text"] = do_mark_safe(gds_kwargs["hint"]["text"])
+                gds_kwargs["hint"]["text"] = Markup(gds_kwargs["hint"]["text"])
 
             context["gds_kwargs"] = gds_kwargs
 
@@ -605,13 +606,14 @@ class GovUKRadioInputFieldBase(GDSFieldMixin):
                 else:
                     conditional = None
 
+                label_kwargs = get_html_or_text(label)
                 item = serializers.radios.RadioItem(
                     id=f"{self.auto_id}_{i}",
                     value=value,
-                    text=label,
                     hint=serializers.common.InputHint(text=hint) if hint else None,
                     conditional=conditional,
                     label=item_label,
+                    **label_kwargs,  # type: ignore[arg-type]
                 )
                 items.append(item)
 

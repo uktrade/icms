@@ -1,6 +1,7 @@
 from typing import Any
 
 from django.forms.models import ModelChoiceIteratorValue
+from markupsafe import Markup
 from pydantic import BaseModel, ConfigDict
 
 from .common import FormGroup, InputHint, TextOrHTMLMixin
@@ -28,7 +29,7 @@ class RadioItem(TextOrHTMLMixin, BaseModel):
     text: str | None = None
     # Required. If text is set, this is not required. HTML to use within each radio item label.
     # If html is provided, the text option will be ignored.
-    html: str | None = None
+    html: str | None | Markup = None
     # Specific ID attribute for the radio item. If omitted, then idPrefix string will be applied.
     id: str | None = None
     # Required. Value for the radio input.
