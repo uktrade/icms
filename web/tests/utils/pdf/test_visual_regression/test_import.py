@@ -82,6 +82,13 @@ class TestCoverLetter(BaseTestImportPDFVisualRegression):
         self.compare_pdf()
 
 
+class TestNuclearMaterialsLicence(BaseTestImportPDFVisualRegression):
+    def test_pdf(self, nuclear_app_processing):
+        self.benchmark_pdf_image_file_path = "nuclear_materials_licence.pdf"
+        self.application = nuclear_app_processing
+        self.compare_pdf()
+
+
 class TestSanctionsLicence(BaseTestImportPDFVisualRegression):
 
     def test_pdf(self, completed_sanctions_app):

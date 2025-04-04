@@ -483,6 +483,25 @@ def test_gmp_get_context_preview(gmp_app_submitted):
     assert context["expiry_date"] == "26th October 2027"
 
 
+def test_get_nuclear_material_context(nuclear_app_processing):
+    app = nuclear_app_processing
+    licence = app.licences.first()
+    doc_type = DocumentTypes.LICENCE_PRE_SIGN
+    context = utils.get_nuclear_material_licence_context(app, licence, doc_type)
+    assert context["preview_licence"] is False
+    assert context["importer_name"] == "Test Importer 1"
+    assert context["eori_numbers"] == ["GB0123456789ABCDE"]
+    assert context["endorsements"] == []
+    assert context["country_of_manufacture"] == "Belarus BY 73"
+    assert context["country_of_shipment"] == "Afghanistan AF 660"
+    assert context["ref"] == "applicant_reference value"
+    assert context["goods_list"] == [
+        ["Test Goods, 2612101000, 1000 Kilogramme"],
+        ["More Commoditites, 2844500000, 56.78 Gramme"],
+        ["Unlimited Commoditites, 2612109000, Unlimited Kilogramme"],
+    ]
+
+
 @freeze_time("2024-10-26 12:00:00")
 def test_gmp_get_context_signed(gmp_app_processing):
     app = gmp_app_processing
@@ -493,7 +512,6 @@ def test_gmp_get_context_signed(gmp_app_processing):
     context = utils.get_gmp_certificate_context(
         app, certificate, DocumentTypes.CERTIFICATE_SIGNED, country
     )
-
     assert context["preview"] is False
     assert context["page_title"] == "Certificate of Good Manufacturing Practice (China) Preview"
     assert context["brand_name"] == "A Brand"

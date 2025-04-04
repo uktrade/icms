@@ -51,6 +51,11 @@ class TestGenerateDflLicenceBenchmarkPDF:
         )
 
 
+class TestGenerateNuclearMaterialLicenceBenchmarkPDF:
+    def test_generate_benchmark_nuclear_material_licence(self, nuclear_app_processing):
+        _generate_licence_benchmark_pdf(nuclear_app_processing, "nuclear_materials_licence.pdf")
+
+
 class TestGenerateSanctionsLicenceBenchmarkPDF:
     def test_generate_benchmark_sanctions_licence(self, completed_sanctions_app):
         _generate_licence_benchmark_pdf(completed_sanctions_app, "sanctions_licence.pdf")
