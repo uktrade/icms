@@ -25,6 +25,10 @@ case "$1" in
     echo "Generating DFL benchmark PDFs."
     ./run-tests.sh web/tests/utils/pdf/test_visual_regression/generate_benchmark_pdfs/import.py::TestGenerateDflLicenceBenchmarkPDF
     ;;
+  "nuclear")
+    echo "Generating Nuclear Material benchmark PDFs."
+    ./run-tests.sh web/tests/utils/pdf/test_visual_regression/generate_benchmark_pdfs/import.py::TestGenerateNuclearMaterialLicenceBenchmarkPDF
+    ;;
   "sanctions")
     echo "Generating Sanctions benchmark PDFs."
     ./run-tests.sh web/tests/utils/pdf/test_visual_regression/generate_benchmark_pdfs/import.py::TestGenerateSanctionsLicenceBenchmarkPDF
