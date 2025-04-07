@@ -16,6 +16,42 @@ from .utils import (
 )
 
 
+class SessionFormView(FormView):
+    """FormView subclass for saving form data in the user's session.
+
+    Useful when we wish to persist related data but are not ready to save in the db yet.
+    """
+
+    @classmethod
+    def cache_prefix(cls):
+        return cls.__name__
+
+    @classmethod
+    def get_field_key(cls, field_name: str) -> str:
+        return f"{cls.cache_prefix()}_{field_name}"
+
+    def form_valid(self, form):
+        for field_name, value in form.cleaned_data.items():
+            key = self.get_field_key(field_name)
+            # TODO: This will not store all data types
+            self.request.session[key] = value
+
+        return super().form_valid(form)
+
+    def get_initial(self) -> dict[str, Any]:
+        initial = super().get_initial()
+
+        form_cls = self.get_form_class()
+        for field_name in form_cls.base_fields.keys():
+            key = self.get_field_key(field_name)
+            session_value = self.request.session.get(key, None)
+
+            if session_value:
+                initial[field_name] = session_value
+
+        return initial
+
+
 # TODO: Unless refactored this can only work with Model Forms
 class MultiStepFormView(FormView):
     form_steps: ClassVar[dict[str, FormStep]]

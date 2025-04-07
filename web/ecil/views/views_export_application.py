@@ -7,7 +7,7 @@ from django.db import transaction
 from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
-from django.urls import Resolver404, ResolverMatch, resolve, reverse
+from django.urls import Resolver404, ResolverMatch, resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView, TemplateView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
@@ -15,7 +15,7 @@ from django.views.generic.detail import SingleObjectMixin
 from web.domains.case.services import case_progress
 from web.ecil.forms import forms_export_application as forms
 from web.ecil.gds import component_serializers as serializers
-from web.ecil.gds.views import MultiStepFormView
+from web.ecil.gds.views import MultiStepFormView, SessionFormView
 from web.ecil.types import EXPORT_APPLICATION
 from web.flow.models import ProcessTypes
 from web.models import Country, User
@@ -33,6 +33,41 @@ Changes required:
 -   - Go through create export agent app steps
 - Summary page to create export application
 """
+
+
+class CreateExportApplicationStartTemplateView(
+    LoginRequiredMixin, PermissionRequiredMixin, TemplateView
+):
+    permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
+    # TemplateView
+    http_method_names = ["get"]
+    template_name = "ecil/export_application/start.html"
+
+    extra_context = {"pick_app_type_url": reverse_lazy("ecil:export-application:application-type")}
+
+
+class CreateExportApplicationAppTypeFormView(
+    LoginRequiredMixin, PermissionRequiredMixin, SessionFormView
+):
+    # PermissionRequiredMixin config
+    permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
+
+    # FormView config
+    form_class = forms.ExportApplicationTypeForm
+    template_name = "ecil/gds_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        previous_step_url = reverse("ecil:export-application:new")
+        context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
+            text="Back", href=previous_step_url
+        ).model_dump(exclude_defaults=True)
+
+        return context
+
+    def get_success_url(self):
+        return reverse("workbasket")
 
 
 class ExportApplicationCreateMultiStepFormView(

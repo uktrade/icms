@@ -120,9 +120,6 @@ class CFSApplicationContactUpdateView(CFSInProgressViewBase, UpdateView):
 
 @method_decorator(transaction.atomic, name="post")
 class CFSScheduleCreateView(CFSInProgressRelatedObjectViewBase, TemplateView):
-    # PermissionRequiredMixin config
-    permission_required = [Perms.sys.view_ecil_prototype]
-
     # TemplateView config
     http_method_names = ["get", "post"]
     template_name = "ecil/cfs/schedule_create.html"

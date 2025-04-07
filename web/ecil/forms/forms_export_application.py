@@ -6,6 +6,29 @@ from web.models import Country
 from web.models.shared import YesNoChoices
 
 
+class ExportApplicationTypeForm(gds_forms.GDSForm):
+    app_type = gds_forms.GovUKRadioInputField(
+        label="Which certificate are you applying for?",
+        error_messages={
+            "required": "Select the certificate you are applying for.",
+        },
+        choices=[
+            ("cfs", "Certificate of Free Sale (CFS)"),
+            ("com", "Certificate of Manufacture (CoM)"),
+            ("gmp", "Certificate of Good Manufacturing Practice (CGMP)"),
+        ],
+        choice_hints={
+            "cfs": "Products which meet UK standards that fall under Department for Business and Trade regulation.",
+            "com": "Pesticides that are solely for use in overseas markets and will not be placed on the UK market.",
+            "gmp": "Cosmetic products which meet UK good manufacturing practice standards. For use in China only.",
+        },
+        choice_classes="govuk-!-font-weight-bold",
+        gds_field_kwargs={
+            "fieldset": {"legend": {"isPageHeading": True, "classes": "govuk-fieldset__legend--l"}}
+        },
+    )
+
+
 class ExportApplicationExportCountriesForm(gds_forms.GDSForm):
     # Can't use a ModelForm here as "countries" is a ManyToMany model field.
     # There are no GDS components that can render a select multiple form field.

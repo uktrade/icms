@@ -1,0 +1,7 @@
+{% extends "ecil/base.html" %}
+
+{% block ecil_content %}
+  <h1 class="govuk-heading-l">{{ request.site.name }}</h1>
+  <p class="govuk-body">Create export application placeholder start page content.</p>
+  {{ gds.govukButton({ "text": "Start", "isStartButton": True, "href": pick_app_type_url }) }}
+{% endblock %}

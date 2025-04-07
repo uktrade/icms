@@ -324,6 +324,9 @@ class Menu:
                         SubMenuLink(
                             label="Exporter Access Request", view="ecil:access_request:new"
                         ),
+                        SubMenuLink(
+                            label="New Export Application", view="ecil:export-application:new"
+                        ),
                     ]
                 ),
             ],
