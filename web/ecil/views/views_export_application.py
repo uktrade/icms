@@ -15,6 +15,7 @@ from django.views.generic.detail import SingleObjectMixin
 from web.domains.case.services import case_progress
 from web.ecil.forms import forms_export_application as forms
 from web.ecil.gds import component_serializers as serializers
+from web.ecil.gds import forms as gds_forms
 from web.ecil.gds.views import BackLinkMixin, MultiStepFormView, SessionFormView
 from web.ecil.types import EXPORT_APPLICATION
 from web.flow.models import ProcessTypes
@@ -83,9 +84,38 @@ class CreateExportApplicationExporterFormView(
     def get_back_link_url(self) -> str:
         return reverse("ecil:export-application:application-type")
 
+    def form_valid(self, form: forms.ExportApplicationExporterForm) -> HttpResponseRedirect:
+        self.save_form_in_session(form)
+
+        exporter = form.cleaned_data["exporter"]
+
+        if exporter == gds_forms.GovUKRadioInputField.NONE_OF_THESE:
+            response_url = reverse("ecil:export-application:another-exporter")
+        else:
+            response_url = self.get_success_url()
+
+        return redirect(response_url)
+
     def get_success_url(self):
         # TODO: Replace with next correct step.
         return reverse("ecil:export-application:new")
+
+
+class CreateExportApplicationAnotherExporterTemplateView(
+    LoginRequiredMixin, PermissionRequiredMixin, BackLinkMixin, TemplateView
+):
+    # PermissionRequiredMixin config
+    permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
+
+    # TemplateView config
+    http_method_names = ["get"]
+    template_name = "ecil/export_application/another_exporter.html"
+    extra_context = {
+        "create_access_request_url": reverse_lazy("ecil:access_request:new"),
+    }
+
+    def get_back_link_url(self) -> str:
+        return reverse("ecil:export-application:exporter")
 
 
 class ExportApplicationCreateMultiStepFormView(
@@ -95,7 +125,7 @@ class ExportApplicationCreateMultiStepFormView(
     pass
 
 
-class AnotherExportApplicationContactTemplateView(
+class CreateExportApplicationAnotherContactTemplateView(
     LoginRequiredMixin, PermissionRequiredMixin, TemplateView
 ):
     # PermissionRequiredMixin config

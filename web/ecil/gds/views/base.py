@@ -50,12 +50,15 @@ class SessionFormView(FormView):
         return f"{cls.cache_prefix()}_{field_name}"
 
     def form_valid(self, form):
+        self.save_form_in_session(form)
+
+        return super().form_valid(form)
+
+    def save_form_in_session(self, form):
         for field_name, value in form.cleaned_data.items():
             key = self.get_field_key(field_name)
             # TODO: This will not store all data types
             self.request.session[key] = value
-
-        return super().form_valid(form)
 
     def get_initial(self) -> dict[str, Any]:
         initial = super().get_initial()

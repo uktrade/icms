@@ -38,7 +38,12 @@ urlpatterns = [
     ),
     path(
         "another-contact/",
-        views.AnotherExportApplicationContactTemplateView.as_view(),
+        views.CreateExportApplicationAnotherContactTemplateView.as_view(),
         name="another-contact",
+    ),
+    path(
+        "another-exporter/",
+        views.CreateExportApplicationAnotherExporterTemplateView.as_view(),
+        name="another-exporter",
     ),
 ]
