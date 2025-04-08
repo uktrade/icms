@@ -1,5 +1,6 @@
 from typing import Any, Literal
 
+from django.db.models import QuerySet
 from guardian.shortcuts import get_objects_for_user
 
 from web.ecil.gds import forms as gds_forms
@@ -26,9 +27,7 @@ class ExportApplicationTypeForm(gds_forms.GDSForm):
             "gmp": "Cosmetic products which meet UK good manufacturing practice standards. For use in China only.",
         },
         choice_classes="govuk-!-font-weight-bold",
-        gds_field_kwargs={
-            "fieldset": {"legend": {"isPageHeading": True, "classes": "govuk-fieldset__legend--l"}}
-        },
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
     )
 
 
@@ -36,9 +35,7 @@ class ExportApplicationExporterForm(gds_forms.GDSForm):
     exporter = gds_forms.GovUKRadioInputField(
         label="Which company do you want an export certificate for?",
         error_messages={"required": "Select the company you want an export certificate for."},
-        gds_field_kwargs={
-            "fieldset": {"legend": {"isPageHeading": True, "classes": "govuk-fieldset__legend--l"}}
-        },
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
     )
 
     def clean_exporter(self) -> Literal["none-of-these"] | int:
@@ -51,20 +48,41 @@ class ExportApplicationExporterForm(gds_forms.GDSForm):
 
     def __init__(self, *args: Any, user: User, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.user = user
 
-        # TODO: This should be refactored to a reusable function
         # Main exporters the user can edit or is an agent of.
-        self.exporters = get_objects_for_user(
-            user,
-            [Perms.obj.exporter.edit, Perms.obj.exporter.is_agent],
-            Exporter.objects.filter(is_active=True, main_exporter__isnull=True),
-            any_perm=True,
-        )
+        self.exporters = get_user_editable_exporters(user)
 
         exporter_list = [(c.pk, c.name) for c in self.exporters]
         exporter_list.append((gds_forms.GovUKRadioInputField.NONE_OF_THESE, "Another company"))
         self.fields["exporter"].choices = exporter_list
+
+
+class ExportApplicationExporterOfficeForm(gds_forms.GDSForm):
+    office = gds_forms.GovUKRadioInputField(
+        label="Where will the certificate be issued to?",
+        error_messages={"required": "Select the address you want an export certificate for."},
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
+    )
+
+    def clean_office(self) -> Literal["none-of-these"] | int:
+        office_pk = self.cleaned_data["office"]
+
+        if office_pk == gds_forms.GovUKRadioInputField.NONE_OF_THESE:
+            return office_pk
+
+        return self.offices.get(pk=office_pk).pk
+
+    def __init__(self, *args: Any, user: User, exporter_pk: int, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        # Main exporters the user can edit or is an agent of.
+        linked_exporters = get_user_editable_exporters(user)
+
+        self.offices = linked_exporters.get(pk=exporter_pk).offices.filter(is_active=True)
+
+        office_list = [(c.pk, c.address) for c in self.offices]
+        office_list.append((gds_forms.GovUKRadioInputField.NONE_OF_THESE, "Another office address"))
+        self.fields["office"].choices = office_list
 
 
 class ExportApplicationExportCountriesForm(gds_forms.GDSForm):
@@ -78,7 +96,7 @@ class ExportApplicationExportCountriesForm(gds_forms.GDSForm):
             " You can add up to 40 countries or territories."
         ),
         choices=[],
-        gds_field_kwargs={"label": {"isPageHeading": True, "classes": "govuk-label--l"}},
+        gds_field_kwargs=gds_forms.LABEL_HEADER,
         error_messages={"required": "Select a country or territory you want to export to"},
     )
 
@@ -112,9 +130,7 @@ class ExportApplicationExportCountriesForm(gds_forms.GDSForm):
 class ExportApplicationRemoveExportCountryForm(gds_forms.GDSForm):
     are_you_sure = gds_forms.GovUKRadioInputField(
         choices=YesNoChoices.choices,
-        gds_field_kwargs={
-            "fieldset": {"legend": {"isPageHeading": True, "classes": "govuk-fieldset__legend--l"}}
-        },
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
         error_messages={"required": "Select yes or no"},
     )
 
@@ -123,3 +139,20 @@ class ExportApplicationRemoveExportCountryForm(gds_forms.GDSForm):
 
         self.country = country
         self.fields["are_you_sure"].label = f"Are you sure you want to remove {country}?"
+
+
+# TODO: Decide where this should live.
+def get_user_editable_exporters(user: User) -> QuerySet[Exporter]:
+    """Main exporters the user can edit or is an agent of.
+
+    This is a list of the following:
+        - Exporters where user has the edit permission on the main exporter.
+        - Exporters that the user is an agent of.
+    """
+
+    return get_objects_for_user(
+        user,
+        [Perms.obj.exporter.edit, Perms.obj.exporter.is_agent],
+        Exporter.objects.filter(is_active=True, main_exporter__isnull=True),
+        any_perm=True,
+    )

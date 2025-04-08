@@ -66,12 +66,15 @@ class SessionFormView(FormView):
         form_cls = self.get_form_class()
         for field_name in form_cls.base_fields.keys():
             key = self.get_field_key(field_name)
-            session_value = self.request.session.get(key, None)
+            session_value = self.get_session_value(key)
 
             if session_value:
                 initial[field_name] = session_value
 
         return initial
+
+    def get_session_value(self, key: str) -> Any:
+        return self.request.session.get(key, None)
 
 
 # TODO: Unless refactored this can only work with Model Forms

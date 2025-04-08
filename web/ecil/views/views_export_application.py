@@ -19,9 +19,9 @@ from web.ecil.gds import forms as gds_forms
 from web.ecil.gds.views import BackLinkMixin, SessionFormView
 from web.ecil.types import EXPORT_APPLICATION
 from web.flow.models import ProcessTypes
-from web.models import Country, User
+from web.models import Country, Exporter, User
 from web.models.shared import YesNoChoices
-from web.permissions import AppChecker, Perms
+from web.permissions import AppChecker, Perms, can_user_edit_org
 from web.types import AuthenticatedHttpRequest
 
 
@@ -85,8 +85,55 @@ class CreateExportApplicationExporterFormView(
         return redirect(response_url)
 
     def get_success_url(self):
+        return reverse("ecil:export-application:exporter-office")
+
+
+class CreateExportApplicationExporterOfficeFormView(
+    CreateExportApplicationBaseView, BackLinkMixin, SessionFormView
+):
+    # SessionFormView config
+    form_class = forms.ExportApplicationExporterOfficeForm
+    template_name = "ecil/gds_form.html"
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+
+        return kwargs | {
+            "user": self.request.user,
+            "exporter_pk": self._get_exporter().pk,
+        }
+
+    def get_back_link_url(self) -> str:
+        return reverse("ecil:export-application:exporter")
+
+    def form_valid(self, form: forms.ExportApplicationExporterOfficeForm) -> HttpResponseRedirect:
+        self.save_form_in_session(form)
+
+        office = form.cleaned_data["office"]
+
+        if office == gds_forms.GovUKRadioInputField.NONE_OF_THESE:
+            exporter = self._get_exporter()
+
+            if can_user_edit_org(self.request.user, exporter):
+                # TODO: Add another view to support creating a new exporter office.
+                response_url = reverse("ecil:export-application:another-exporter-office")
+            else:
+                response_url = reverse("ecil:export-application:another-exporter-office")
+        else:
+            response_url = self.get_success_url()
+
+        return redirect(response_url)
+
+    def get_success_url(self):
         # TODO: Replace with next correct step.
         return reverse("ecil:export-application:new")
+
+    def _get_exporter(self) -> Exporter:
+        # Load the chosen exporter from the session
+        exporter_key = CreateExportApplicationExporterFormView.get_field_key("exporter")
+        exporter_pk = self.get_session_value(exporter_key)
+
+        return Exporter.objects.get(pk=exporter_pk)
 
 
 class CreateExportApplicationAnotherExporterTemplateView(
@@ -101,6 +148,31 @@ class CreateExportApplicationAnotherExporterTemplateView(
 
     def get_back_link_url(self) -> str:
         return reverse("ecil:export-application:exporter")
+
+
+class CreateExportApplicationAnotherExporterOfficeTemplateView(
+    CreateExportApplicationBaseView, BackLinkMixin, TemplateView
+):
+    # TemplateView config
+    http_method_names = ["get"]
+    template_name = "ecil/export_application/another_exporter_office.html"
+    extra_context = {
+        "create_access_request_url": reverse_lazy("ecil:access_request:new"),
+    }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["notification_banner_kwargs"] = (
+            serializers.notification_banner.NotificationBannerKwargs(
+                text="You need permission to add an address",
+            ).model_dump(exclude_defaults=True)
+        )
+
+        return context
+
+    def get_back_link_url(self) -> str:
+        return reverse("ecil:export-application:exporter-office")
 
 
 class CreateExportApplicationAnotherContactTemplateView(

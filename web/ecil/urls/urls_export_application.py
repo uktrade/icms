@@ -21,6 +21,11 @@ urlpatterns = [
                     views.CreateExportApplicationExporterFormView.as_view(),
                     name="exporter",
                 ),
+                path(
+                    "exporter-office/",
+                    views.CreateExportApplicationExporterOfficeFormView.as_view(),
+                    name="exporter-office",
+                ),
             ]
         ),
     ),
@@ -33,6 +38,11 @@ urlpatterns = [
         "another-exporter/",
         views.CreateExportApplicationAnotherExporterTemplateView.as_view(),
         name="another-exporter",
+    ),
+    path(
+        "another-exporter-office/",
+        views.CreateExportApplicationAnotherExporterOfficeTemplateView.as_view(),
+        name="another-exporter-office",
     ),
     #
     # URLs relating to editing an in progress export application
