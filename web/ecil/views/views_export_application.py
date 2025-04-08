@@ -16,24 +16,13 @@ from web.domains.case.services import case_progress
 from web.ecil.forms import forms_export_application as forms
 from web.ecil.gds import component_serializers as serializers
 from web.ecil.gds import forms as gds_forms
-from web.ecil.gds.views import BackLinkMixin, MultiStepFormView, SessionFormView
+from web.ecil.gds.views import BackLinkMixin, SessionFormView
 from web.ecil.types import EXPORT_APPLICATION
 from web.flow.models import ProcessTypes
 from web.models import Country, User
 from web.models.shared import YesNoChoices
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
-
-"""
-Changes required:
-- Start page
-- Pick an application type
-- Pick an exporter
-- Do one of the following:
--   - Go through create export app steps
--   - Go through create export agent app steps
-- Summary page to create export application
-"""
 
 
 class CreateExportApplicationStartTemplateView(
@@ -116,13 +105,6 @@ class CreateExportApplicationAnotherExporterTemplateView(
 
     def get_back_link_url(self) -> str:
         return reverse("ecil:export-application:exporter")
-
-
-class ExportApplicationCreateMultiStepFormView(
-    LoginRequiredMixin, PermissionRequiredMixin, MultiStepFormView
-):
-    # TODO: Decide the best way to do this...
-    pass
 
 
 class CreateExportApplicationAnotherContactTemplateView(

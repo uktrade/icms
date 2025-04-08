@@ -4,23 +4,40 @@ from web.ecil.views import views_export_application as views
 
 app_name = "export-application"
 urlpatterns = [
-    # TOD: Make the URL's consistent when finished.
-    path("create/", views.CreateExportApplicationStartTemplateView.as_view(), name="new"),
+    #
+    # URLs relating to creating an export application
     path(
-        "create/application-type/",
-        views.CreateExportApplicationAppTypeFormView.as_view(),
-        name="application-type",
+        "create/",
+        include(
+            [
+                path("", views.CreateExportApplicationStartTemplateView.as_view(), name="new"),
+                path(
+                    "application-type/",
+                    views.CreateExportApplicationAppTypeFormView.as_view(),
+                    name="application-type",
+                ),
+                path(
+                    "exporter/",
+                    views.CreateExportApplicationExporterFormView.as_view(),
+                    name="exporter",
+                ),
+            ]
+        ),
     ),
     path(
-        "create/exporter/", views.CreateExportApplicationExporterFormView.as_view(), name="exporter"
+        "another-contact/",
+        views.CreateExportApplicationAnotherContactTemplateView.as_view(),
+        name="another-contact",
     ),
     path(
-        "create/<exportapplicationtype:type_code>/",
-        views.ExportApplicationCreateMultiStepFormView.as_view(),
-        name="create",
+        "another-exporter/",
+        views.CreateExportApplicationAnotherExporterTemplateView.as_view(),
+        name="another-exporter",
     ),
+    #
+    # URLs relating to editing an in progress export application
     path(
-        "<int:application_pk>/",
+        "edit/<int:application_pk>/",
         include(
             [
                 path(
@@ -35,15 +52,5 @@ urlpatterns = [
                 ),
             ]
         ),
-    ),
-    path(
-        "another-contact/",
-        views.CreateExportApplicationAnotherContactTemplateView.as_view(),
-        name="another-contact",
-    ),
-    path(
-        "another-exporter/",
-        views.CreateExportApplicationAnotherExporterTemplateView.as_view(),
-        name="another-exporter",
     ),
 ]
