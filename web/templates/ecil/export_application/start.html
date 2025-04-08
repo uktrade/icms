@@ -1,0 +1,19 @@
+{% extends "ecil/base.html" %}
+
+{% block ecil_content %}
+  <h1 class="govuk-heading-l">{{ request.site.name }}</h1>
+  <p class="govuk-body">To apply for an export certificate you will need to provide us with some details.</p>
+  <p class="govuk-body">Your information:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>which certificate you want to apply for</li>
+    <li>company information</li>
+  </ul>
+  <p class="govuk-body">Your application:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>where you want to export products</li>
+    <li>product manufacturer information</li>
+    <li>details of the product you want to eport, spelled correctly</li>
+    <li>the legislation that applies to your product</li>
+  </ul>
+  {{ gds.govukButton({ "text": "Start", "isStartButton": True, "href": pick_app_type_url }) }}
+{% endblock %}

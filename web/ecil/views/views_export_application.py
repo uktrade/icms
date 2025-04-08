@@ -7,7 +7,7 @@ from django.db import transaction
 from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
-from django.urls import Resolver404, ResolverMatch, resolve, reverse
+from django.urls import Resolver404, ResolverMatch, resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView, TemplateView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
@@ -15,6 +15,8 @@ from django.views.generic.detail import SingleObjectMixin
 from web.domains.case.services import case_progress
 from web.ecil.forms import forms_export_application as forms
 from web.ecil.gds import component_serializers as serializers
+from web.ecil.gds import forms as gds_forms
+from web.ecil.gds.views import BackLinkMixin, SessionFormView
 from web.ecil.types import EXPORT_APPLICATION
 from web.flow.models import ProcessTypes
 from web.models import Country, User
@@ -23,12 +25,87 @@ from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 
 
-class AnotherExportApplicationContactTemplateView(
-    LoginRequiredMixin, PermissionRequiredMixin, TemplateView
-):
+#
+# Views relating to creating an export application
+#
+class CreateExportApplicationBaseView(LoginRequiredMixin, PermissionRequiredMixin):
     # PermissionRequiredMixin config
-    permission_required = [Perms.sys.view_ecil_prototype]
+    permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
 
+
+class CreateExportApplicationStartTemplateView(CreateExportApplicationBaseView, TemplateView):
+    # TemplateView
+    http_method_names = ["get"]
+    template_name = "ecil/export_application/start.html"
+
+    extra_context = {
+        "pick_app_type_url": reverse_lazy("ecil:export-application:application-type"),
+    }
+
+
+class CreateExportApplicationAppTypeFormView(
+    CreateExportApplicationBaseView, BackLinkMixin, SessionFormView
+):
+    # SessionFormView config
+    form_class = forms.ExportApplicationTypeForm
+    template_name = "ecil/gds_form.html"
+
+    def get_back_link_url(self) -> str:
+        return reverse("ecil:export-application:new")
+
+    def get_success_url(self):
+        return reverse("ecil:export-application:exporter")
+
+
+class CreateExportApplicationExporterFormView(
+    CreateExportApplicationBaseView, BackLinkMixin, SessionFormView
+):
+    # SessionFormView config
+    form_class = forms.ExportApplicationExporterForm
+    template_name = "ecil/gds_form.html"
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+
+        return kwargs | {"user": self.request.user}
+
+    def get_back_link_url(self) -> str:
+        return reverse("ecil:export-application:application-type")
+
+    def form_valid(self, form: forms.ExportApplicationExporterForm) -> HttpResponseRedirect:
+        self.save_form_in_session(form)
+
+        exporter = form.cleaned_data["exporter"]
+
+        if exporter == gds_forms.GovUKRadioInputField.NONE_OF_THESE:
+            response_url = reverse("ecil:export-application:another-exporter")
+        else:
+            response_url = self.get_success_url()
+
+        return redirect(response_url)
+
+    def get_success_url(self):
+        # TODO: Replace with next correct step.
+        return reverse("ecil:export-application:new")
+
+
+class CreateExportApplicationAnotherExporterTemplateView(
+    CreateExportApplicationBaseView, BackLinkMixin, TemplateView
+):
+    # TemplateView config
+    http_method_names = ["get"]
+    template_name = "ecil/export_application/another_exporter.html"
+    extra_context = {
+        "create_access_request_url": reverse_lazy("ecil:access_request:new"),
+    }
+
+    def get_back_link_url(self) -> str:
+        return reverse("ecil:export-application:exporter")
+
+
+class CreateExportApplicationAnotherContactTemplateView(
+    CreateExportApplicationBaseView, TemplateView
+):
     # TemplateView
     http_method_names = ["get"]
     template_name = "ecil/export_application/another_contact.html"
@@ -74,6 +151,9 @@ class AnotherExportApplicationContactTemplateView(
         return super().get(request, *args, **kwargs)
 
 
+#
+# Views relating to editing an in progress export application
+#
 def check_can_edit_application(user: User, application: EXPORT_APPLICATION) -> None:
     checker = AppChecker(user, application)
 

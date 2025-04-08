@@ -4,8 +4,40 @@ from web.ecil.views import views_export_application as views
 
 app_name = "export-application"
 urlpatterns = [
+    #
+    # URLs relating to creating an export application
     path(
-        "<int:application_pk>/",
+        "create/",
+        include(
+            [
+                path("", views.CreateExportApplicationStartTemplateView.as_view(), name="new"),
+                path(
+                    "application-type/",
+                    views.CreateExportApplicationAppTypeFormView.as_view(),
+                    name="application-type",
+                ),
+                path(
+                    "exporter/",
+                    views.CreateExportApplicationExporterFormView.as_view(),
+                    name="exporter",
+                ),
+            ]
+        ),
+    ),
+    path(
+        "another-contact/",
+        views.CreateExportApplicationAnotherContactTemplateView.as_view(),
+        name="another-contact",
+    ),
+    path(
+        "another-exporter/",
+        views.CreateExportApplicationAnotherExporterTemplateView.as_view(),
+        name="another-exporter",
+    ),
+    #
+    # URLs relating to editing an in progress export application
+    path(
+        "edit/<int:application_pk>/",
         include(
             [
                 path(
@@ -20,10 +52,5 @@ urlpatterns = [
                 ),
             ]
         ),
-    ),
-    path(
-        "another-contact/",
-        views.AnotherExportApplicationContactTemplateView.as_view(),
-        name="another-contact",
     ),
 ]

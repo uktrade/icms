@@ -16,6 +16,64 @@ from .utils import (
 )
 
 
+class BackLinkMixin:
+    """Adds back_link_kwargs variable to template context."""
+
+    def get_context_data(self, **kwargs):
+        context: dict[str, Any] = super().get_context_data(**kwargs)  # type: ignore[misc]
+
+        if back_link_url := self.get_back_link_url():
+            context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
+                text="Back", href=back_link_url
+            ).model_dump(exclude_defaults=True)
+        else:
+            context["back_link_kwargs"] = None
+
+        return context
+
+    def get_back_link_url(self) -> str | None:
+        raise NotImplementedError()
+
+
+class SessionFormView(FormView):
+    """FormView subclass for saving form data in the user's session.
+
+    Useful when we wish to persist related data but are not ready to save in the db yet.
+    """
+
+    @classmethod
+    def cache_prefix(cls):
+        return cls.__name__
+
+    @classmethod
+    def get_field_key(cls, field_name: str) -> str:
+        return f"{cls.cache_prefix()}_{field_name}"
+
+    def form_valid(self, form):
+        self.save_form_in_session(form)
+
+        return super().form_valid(form)
+
+    def save_form_in_session(self, form):
+        for field_name, value in form.cleaned_data.items():
+            key = self.get_field_key(field_name)
+            # TODO: This will not store all data types
+            self.request.session[key] = value
+
+    def get_initial(self) -> dict[str, Any]:
+        initial = super().get_initial()
+
+        form_cls = self.get_form_class()
+        for field_name in form_cls.base_fields.keys():
+            key = self.get_field_key(field_name)
+            session_value = self.request.session.get(key, None)
+
+            if session_value:
+                initial[field_name] = session_value
+
+        return initial
+
+
 # TODO: Unless refactored this can only work with Model Forms
 class MultiStepFormView(FormView):
     form_steps: ClassVar[dict[str, FormStep]]
