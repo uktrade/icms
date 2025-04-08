@@ -97,7 +97,7 @@ class TestExportApplicationExportCountriesUpdateView:
                     {
                         "classes": "govuk-!-text-align-right",
                         "html": (
-                            f'<a href="/ecil/export-application/{self.app.pk}/export-countries/{valid_country.pk}/remove/"'
+                            f'<a href="/ecil/export-application/edit/{self.app.pk}/export-countries/{valid_country.pk}/remove/"'
                             ' class="govuk-link govuk-link--no-visited-state">Remove</a>'
                         ),
                     },

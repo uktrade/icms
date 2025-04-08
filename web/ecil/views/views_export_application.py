@@ -25,10 +25,15 @@ from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 
 
-class CreateExportApplicationStartTemplateView(
-    LoginRequiredMixin, PermissionRequiredMixin, TemplateView
-):
+#
+# Views relating to creating an export application
+#
+class CreateExportApplicationBaseView(LoginRequiredMixin, PermissionRequiredMixin):
+    # PermissionRequiredMixin config
     permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
+
+
+class CreateExportApplicationStartTemplateView(CreateExportApplicationBaseView, TemplateView):
     # TemplateView
     http_method_names = ["get"]
     template_name = "ecil/export_application/start.html"
@@ -39,11 +44,8 @@ class CreateExportApplicationStartTemplateView(
 
 
 class CreateExportApplicationAppTypeFormView(
-    LoginRequiredMixin, PermissionRequiredMixin, BackLinkMixin, SessionFormView
+    CreateExportApplicationBaseView, BackLinkMixin, SessionFormView
 ):
-    # PermissionRequiredMixin config
-    permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
-
     # SessionFormView config
     form_class = forms.ExportApplicationTypeForm
     template_name = "ecil/gds_form.html"
@@ -56,11 +58,8 @@ class CreateExportApplicationAppTypeFormView(
 
 
 class CreateExportApplicationExporterFormView(
-    LoginRequiredMixin, PermissionRequiredMixin, BackLinkMixin, SessionFormView
+    CreateExportApplicationBaseView, BackLinkMixin, SessionFormView
 ):
-    # PermissionRequiredMixin config
-    permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
-
     # SessionFormView config
     form_class = forms.ExportApplicationExporterForm
     template_name = "ecil/gds_form.html"
@@ -91,11 +90,8 @@ class CreateExportApplicationExporterFormView(
 
 
 class CreateExportApplicationAnotherExporterTemplateView(
-    LoginRequiredMixin, PermissionRequiredMixin, BackLinkMixin, TemplateView
+    CreateExportApplicationBaseView, BackLinkMixin, TemplateView
 ):
-    # PermissionRequiredMixin config
-    permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
-
     # TemplateView config
     http_method_names = ["get"]
     template_name = "ecil/export_application/another_exporter.html"
@@ -108,11 +104,8 @@ class CreateExportApplicationAnotherExporterTemplateView(
 
 
 class CreateExportApplicationAnotherContactTemplateView(
-    LoginRequiredMixin, PermissionRequiredMixin, TemplateView
+    CreateExportApplicationBaseView, TemplateView
 ):
-    # PermissionRequiredMixin config
-    permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
-
     # TemplateView
     http_method_names = ["get"]
     template_name = "ecil/export_application/another_contact.html"
@@ -158,6 +151,9 @@ class CreateExportApplicationAnotherContactTemplateView(
         return super().get(request, *args, **kwargs)
 
 
+#
+# Views relating to editing an in progress export application
+#
 def check_can_edit_application(user: User, application: EXPORT_APPLICATION) -> None:
     checker = AppChecker(user, application)
 
