@@ -2,14 +2,14 @@ from typing import Any
 from urllib import parse
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db import transaction
 from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import Resolver404, ResolverMatch, resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import FormView, TemplateView, UpdateView
+from django.views.generic import CreateView, FormView, TemplateView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 
 from web.domains.case.services import case_progress
@@ -19,7 +19,7 @@ from web.ecil.gds import forms as gds_forms
 from web.ecil.gds.views import BackLinkMixin, SessionFormView
 from web.ecil.types import EXPORT_APPLICATION
 from web.flow.models import ProcessTypes
-from web.models import Country, Exporter, User
+from web.models import Country, Exporter, Office, User
 from web.models.shared import YesNoChoices
 from web.permissions import AppChecker, Perms, can_user_edit_org
 from web.types import AuthenticatedHttpRequest
@@ -115,8 +115,7 @@ class CreateExportApplicationExporterOfficeFormView(
             exporter = self._get_exporter()
 
             if can_user_edit_org(self.request.user, exporter):
-                # TODO: Add another view to support creating a new exporter office.
-                response_url = reverse("ecil:export-application:another-exporter-office")
+                response_url = reverse("ecil:export-application:export-office-add")
             else:
                 response_url = reverse("ecil:export-application:another-exporter-office")
         else:
@@ -134,6 +133,45 @@ class CreateExportApplicationExporterOfficeFormView(
         exporter_pk = self.get_session_value(exporter_key)
 
         return Exporter.objects.get(pk=exporter_pk)
+
+
+class CreateExportApplicationExporterOfficeCreateView(
+    LoginRequiredMixin, PermissionRequiredMixin, BackLinkMixin, CreateView
+):
+    permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
+    model = Office
+    form_class = forms.ExportApplicationNewExporterOfficeForm
+    template_name = "ecil/gds_form.html"
+
+    def has_permission(self):
+        has_user_perms = super().has_permission()
+
+        try:
+            exporter_key = CreateExportApplicationExporterFormView.get_field_key("exporter")
+            exporter_pk = self.request.session.get(exporter_key, None)
+            self.exporter = Exporter.objects.get(pk=exporter_pk)
+
+        except ObjectDoesNotExist:
+            return False
+
+        return has_user_perms and can_user_edit_org(self.request.user, self.exporter)
+
+    def form_valid(
+        self, form: forms.ExportApplicationNewExporterOfficeForm
+    ) -> HttpResponseRedirect:
+        office = form.save(commit=False)
+        office.address_entry_type = Office.MANUAL
+        office.save()
+
+        self.exporter.offices.add(office)
+
+        return redirect(self.get_success_url())
+
+    def get_back_link_url(self) -> str:
+        return reverse("ecil:export-application:exporter-office")
+
+    def get_success_url(self):
+        return reverse("ecil:export-application:exporter-office")
 
 
 class CreateExportApplicationAnotherExporterTemplateView(

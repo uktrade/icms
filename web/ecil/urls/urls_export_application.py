@@ -26,6 +26,11 @@ urlpatterns = [
                     views.CreateExportApplicationExporterOfficeFormView.as_view(),
                     name="exporter-office",
                 ),
+                path(
+                    "export-office/add/",
+                    views.CreateExportApplicationExporterOfficeCreateView.as_view(),
+                    name="export-office-add",
+                ),
             ]
         ),
     ),

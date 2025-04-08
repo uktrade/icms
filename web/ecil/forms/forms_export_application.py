@@ -5,7 +5,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from web.ecil.gds import forms as gds_forms
 from web.ecil.types import EXPORT_APPLICATION
-from web.models import Country, Exporter, User
+from web.models import Country, Exporter, Office, User
 from web.models.shared import YesNoChoices
 from web.permissions import Perms
 
@@ -83,6 +83,39 @@ class ExportApplicationExporterOfficeForm(gds_forms.GDSForm):
         office_list = [(c.pk, c.address) for c in self.offices]
         office_list.append((gds_forms.GovUKRadioInputField.NONE_OF_THESE, "Another office address"))
         self.fields["office"].choices = office_list
+
+
+class ExportApplicationNewExporterOfficeForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = Office
+        fields = [
+            "address_1",
+            "address_2",
+            "address_3",
+            "address_4",
+            "address_5",
+            "address_6",
+            "address_7",
+            "address_8",
+            "postcode",
+        ]
+        error_messages = {
+            "address_1": {"required": "Enter address 1"},
+            "postcode": {"required": "Enter postcode"},
+        }
+        formfield_callback = gds_forms.GDSFormfieldCallback(
+            gds_field_kwargs={
+                "address_1": {"classes": "govuk-!-width-two-thirds"},
+                "address_2": {"classes": "govuk-!-width-two-thirds"},
+                "address_3": {"classes": "govuk-!-width-two-thirds"},
+                "address_4": {"classes": "govuk-!-width-two-thirds"},
+                "address_5": {"classes": "govuk-!-width-two-thirds"},
+                "address_6": {"classes": "govuk-!-width-two-thirds"},
+                "address_7": {"classes": "govuk-!-width-two-thirds"},
+                "address_8": {"classes": "govuk-!-width-two-thirds"},
+                "postcode": {"classes": "govuk-!-width-two-thirds"},
+            }
+        )
 
 
 class ExportApplicationExportCountriesForm(gds_forms.GDSForm):

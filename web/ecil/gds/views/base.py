@@ -42,19 +42,19 @@ class SessionFormView(FormView):
     """
 
     @classmethod
-    def cache_prefix(cls):
+    def cache_prefix(cls) -> str:
         return cls.__name__
 
     @classmethod
     def get_field_key(cls, field_name: str) -> str:
         return f"{cls.cache_prefix()}_{field_name}"
 
-    def form_valid(self, form):
+    def form_valid(self, form: django_forms.Form) -> HttpResponseRedirect:
         self.save_form_in_session(form)
 
         return super().form_valid(form)
 
-    def save_form_in_session(self, form):
+    def save_form_in_session(self, form: django_forms.Form) -> None:
         for field_name, value in form.cleaned_data.items():
             key = self.get_field_key(field_name)
             # TODO: This will not store all data types
