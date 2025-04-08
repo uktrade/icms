@@ -1,9 +1,12 @@
-from typing import Any
+from typing import Any, Literal
+
+from guardian.shortcuts import get_objects_for_user
 
 from web.ecil.gds import forms as gds_forms
 from web.ecil.types import EXPORT_APPLICATION
-from web.models import Country
+from web.models import Country, Exporter, User
 from web.models.shared import YesNoChoices
+from web.permissions import Perms
 
 
 class ExportApplicationTypeForm(gds_forms.GDSForm):
@@ -27,6 +30,41 @@ class ExportApplicationTypeForm(gds_forms.GDSForm):
             "fieldset": {"legend": {"isPageHeading": True, "classes": "govuk-fieldset__legend--l"}}
         },
     )
+
+
+class ExportApplicationExporterForm(gds_forms.GDSForm):
+    exporter = gds_forms.GovUKRadioInputField(
+        label="Which company do you want an export certificate for?",
+        error_messages={"required": "Select the company you want an export certificate for."},
+        gds_field_kwargs={
+            "fieldset": {"legend": {"isPageHeading": True, "classes": "govuk-fieldset__legend--l"}}
+        },
+    )
+
+    def clean_exporter(self) -> Literal["none-of-these"] | int:
+        exporter_pk = self.cleaned_data["exporter"]
+
+        if exporter_pk == gds_forms.GovUKRadioInputField.NONE_OF_THESE:
+            return exporter_pk
+
+        return self.exporters.get(pk=exporter_pk).pk
+
+    def __init__(self, *args: Any, user: User, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+        # TODO: This should be refactored to a reusable function
+        # Main exporters the user can edit or is an agent of.
+        self.exporters = get_objects_for_user(
+            user,
+            [Perms.obj.exporter.edit, Perms.obj.exporter.is_agent],
+            Exporter.objects.filter(is_active=True, main_exporter__isnull=True),
+            any_perm=True,
+        )
+
+        exporter_list = [(c.pk, c.name) for c in self.exporters]
+        exporter_list.append((gds_forms.GovUKRadioInputField.NONE_OF_THESE, "Another company"))
+        self.fields["exporter"].choices = exporter_list
 
 
 class ExportApplicationExportCountriesForm(gds_forms.GDSForm):

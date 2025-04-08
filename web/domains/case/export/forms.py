@@ -131,6 +131,7 @@ class CreateExportApplicationForm(forms.Form):
         self.user = user
         self.cat = cat
 
+        # TODO: This should be refactored to a reusable function
         # Return main exporters the user can edit or is an agent of.
         exporters = get_objects_for_user(
             user,

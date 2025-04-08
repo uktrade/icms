@@ -15,7 +15,7 @@ from django.views.generic.detail import SingleObjectMixin
 from web.domains.case.services import case_progress
 from web.ecil.forms import forms_export_application as forms
 from web.ecil.gds import component_serializers as serializers
-from web.ecil.gds.views import MultiStepFormView, SessionFormView
+from web.ecil.gds.views import BackLinkMixin, MultiStepFormView, SessionFormView
 from web.ecil.types import EXPORT_APPLICATION
 from web.flow.models import ProcessTypes
 from web.models import Country, User
@@ -43,31 +43,49 @@ class CreateExportApplicationStartTemplateView(
     http_method_names = ["get"]
     template_name = "ecil/export_application/start.html"
 
-    extra_context = {"pick_app_type_url": reverse_lazy("ecil:export-application:application-type")}
+    extra_context = {
+        "pick_app_type_url": reverse_lazy("ecil:export-application:application-type"),
+    }
 
 
 class CreateExportApplicationAppTypeFormView(
-    LoginRequiredMixin, PermissionRequiredMixin, SessionFormView
+    LoginRequiredMixin, PermissionRequiredMixin, BackLinkMixin, SessionFormView
 ):
     # PermissionRequiredMixin config
     permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
 
-    # FormView config
+    # SessionFormView config
     form_class = forms.ExportApplicationTypeForm
     template_name = "ecil/gds_form.html"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        previous_step_url = reverse("ecil:export-application:new")
-        context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
-            text="Back", href=previous_step_url
-        ).model_dump(exclude_defaults=True)
-
-        return context
+    def get_back_link_url(self) -> str:
+        return reverse("ecil:export-application:new")
 
     def get_success_url(self):
-        return reverse("workbasket")
+        return reverse("ecil:export-application:exporter")
+
+
+class CreateExportApplicationExporterFormView(
+    LoginRequiredMixin, PermissionRequiredMixin, BackLinkMixin, SessionFormView
+):
+    # PermissionRequiredMixin config
+    permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
+
+    # SessionFormView config
+    form_class = forms.ExportApplicationExporterForm
+    template_name = "ecil/gds_form.html"
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+
+        return kwargs | {"user": self.request.user}
+
+    def get_back_link_url(self) -> str:
+        return reverse("ecil:export-application:application-type")
+
+    def get_success_url(self):
+        # TODO: Replace with next correct step.
+        return reverse("ecil:export-application:new")
 
 
 class ExportApplicationCreateMultiStepFormView(

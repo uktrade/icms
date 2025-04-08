@@ -16,6 +16,25 @@ from .utils import (
 )
 
 
+class BackLinkMixin:
+    """Adds back_link_kwargs variable to template context."""
+
+    def get_context_data(self, **kwargs):
+        context: dict[str, Any] = super().get_context_data(**kwargs)  # type: ignore[misc]
+
+        if back_link_url := self.get_back_link_url():
+            context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
+                text="Back", href=back_link_url
+            ).model_dump(exclude_defaults=True)
+        else:
+            context["back_link_kwargs"] = None
+
+        return context
+
+    def get_back_link_url(self) -> str | None:
+        raise NotImplementedError()
+
+
 class SessionFormView(FormView):
     """FormView subclass for saving form data in the user's session.
 
