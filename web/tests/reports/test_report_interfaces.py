@@ -830,6 +830,44 @@ class TestImportLicenceInterface:
             }
         ]
 
+    def test_get_data_nuclear_material(self, nuclear_app_completed):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00001",
+                "Licence Ref": "GBSIL0000001B",
+                "Licence Type": "Electronic",
+                "Under Appeal": "",
+                "Ima Type": "NMIL",
+                "Ima Type Title": "Nuclear Materials Import Licence Application",
+                "Ima Sub Type": "",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "Belarus",
+                "Coc Country Name": "Afghanistan",
+                "Shipping Year": "",
+                "Com Group Name": "",
+                "Commodity Codes": (
+                    "Code: 2844500000; Desc: More Commoditites, "
+                    "Code: 2612109000; Desc: Unlimited Commoditites, "
+                    "Code: 2612101000; Desc: Test Goods"
+                ),
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": False,
+            }
+        ]
+
     def test_get_data_sanctions(self, completed_sanctions_app):
         interface = ImportLicenceInterface(self.report_schedule)
         data = interface.get_data()

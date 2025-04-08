@@ -918,6 +918,20 @@ def nuclear_app_processing(
 
 
 @pytest.fixture()
+def nuclear_app_completed(nuclear_app_processing, ilb_admin_user) -> NuclearMaterialApplication:
+    app = nuclear_app_processing
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
+    _set_document_pack_active(app)
+    _add_files_to_active_document_pack(app, ilb_admin_user)
+
+    return app
+
+
+@pytest.fixture()
 def com_app_in_progress(
     exporter_client, exporter, exporter_office, exporter_one_contact
 ) -> "CertificateOfManufactureApplication":
