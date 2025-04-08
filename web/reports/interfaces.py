@@ -51,6 +51,7 @@ from web.models import (
     ImportApplicationType,
     ImporterAccessRequest,
     ImporterUserObjectPermission,
+    NuclearMaterialApplicationGoods,
     OILSupplementaryReportFirearm,
     OpenIndividualLicenceApplication,
     ProductLegislation,
@@ -744,6 +745,18 @@ class ImportLicenceInterface(ReportInterface):
             .order_by("-commodity")
         )
 
+    def get_nmil_goods_query(self) -> QuerySet:
+        return (
+            NuclearMaterialApplicationGoods.objects.filter(import_application_id=OuterRef("pk"))
+            .values(
+                json=JSONObject(
+                    commodity_code="commodity__commodity_code",
+                    goods_description="goods_description",
+                )
+            )
+            .order_by("-commodity")
+        )
+
     def get_queryset(self) -> QuerySet:
         if self.filters.date_filter_type == DateFilterType.SUBMITTED:
             _filter = Q(submit_datetime__date__range=(self.filters.date_from, self.filters.date_to))
@@ -774,6 +787,7 @@ class ImportLicenceInterface(ReportInterface):
                 contact_first_name=F("contact__first_name"),
                 contact_last_name=F("contact__last_name"),
                 sanctions_commodities=ArraySubquery(self.get_sanctions_goods_query()),
+                nmil_commodities=ArraySubquery(self.get_nmil_goods_query()),
                 organisation_name=F("importer__name"),
                 importer_title=F("importer__user__title"),
                 importer_first_name=F("importer__user__first_name"),
@@ -812,6 +826,7 @@ class ImportLicenceInterface(ReportInterface):
             "agent_name",
             "com_group_name",
             "sanctions_commodities",
+            "nmil_commodities",
             "commodity_code",
         )
 
@@ -870,12 +885,17 @@ class ImportLicenceInterface(ReportInterface):
 
     def get_commodity_codes(self, ia: dict) -> str:
         commodity_code = ia["commodity_code"]
+
         if commodity_code:
             return f"Code: {commodity_code}"
 
         details = []
         for goods in ia["sanctions_commodities"]:
             details.append(f"Code: {goods['commodity_code']}; Desc: {goods['goods_description']}")
+
+        for goods in ia["nmil_commodities"]:
+            details.append(f"Code: {goods['commodity_code']}; Desc: {goods['goods_description']}")
+
         return ", ".join(details)
 
 
