@@ -365,21 +365,15 @@ class UserFeedbackSurveyAdmin(admin.ModelAdmin):
         "referrer_path",
     )
 
+    def email(self, obj: UserFeedbackSurvey) -> str:
+        return obj.created_by.email
+
     def case_reference(self, obj: UserFeedbackSurvey) -> str:
         if not obj.process:
             return ""
 
         app = obj.process.get_specific_model()
         return app.reference or ""
-
-    def email(self, obj: UserFeedbackSurvey) -> str:
-        if not obj.process:
-            return ""
-
-        app = obj.process.get_specific_model()
-        user: User = app.submitted_by
-
-        return user.email or ""
 
     def has_add_permission(
         self, request: AuthenticatedHttpRequest, obj: UserFeedbackSurvey | None = None
