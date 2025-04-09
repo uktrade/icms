@@ -115,7 +115,6 @@ class ExportApplicationNewExporterOfficeForm(gds_forms.GDSModelForm):
         ]
         error_messages = {
             "address_1": {"required": "Enter address 1"},
-            "postcode": {"required": "Enter postcode"},
         }
         formfield_callback = gds_forms.GDSFormfieldCallback(
             gds_field_kwargs={
@@ -130,6 +129,10 @@ class ExportApplicationNewExporterOfficeForm(gds_forms.GDSModelForm):
                 "postcode": {"classes": "govuk-!-width-two-thirds"},
             }
         )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["postcode"].required = False
 
 
 class ExportApplicationExportCountriesForm(gds_forms.GDSForm):
