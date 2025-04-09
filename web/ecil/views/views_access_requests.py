@@ -17,7 +17,7 @@ from django.views.generic import FormView
 from django.views.generic.detail import DetailView, SingleObjectMixin
 from django_ratelimit import UNSAFE
 from django_ratelimit.decorators import ratelimit
-from jinja2.filters import do_mark_safe
+from markupsafe import Markup, escape
 
 from web.domains.case.access.models import AccessRequest, ImporterAccessRequest
 from web.domains.case.services import case_progress
@@ -320,13 +320,16 @@ class ExporterAccessRequestMultiStepFormSummaryViewBase(
                 countries = Country.objects.filter(pk__in=value)
 
                 if countries.exists():
-                    return do_mark_safe("<br>".join(countries.values_list("name", flat=True)))
+                    return Markup(
+                        "<br>".join(escape(c) for c in countries.values_list("name", flat=True))
+                    )
 
                 return str(value)
 
             case "organisation_address" | "organisation_purpose" | "organisation_products":
                 lines = value.splitlines()
-                return do_mark_safe("<br>".join(lines))
+
+                return Markup("<br>".join(escape(line) for line in lines))
 
             case "request_type":
                 choices = dict(forms.ExporterAccessRequestTypeForm().fields["request_type"].choices)

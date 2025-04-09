@@ -2,6 +2,7 @@ from typing import Any, Literal
 
 from django.db.models import QuerySet
 from guardian.shortcuts import get_objects_for_user
+from markupsafe import Markup, escape
 
 from web.ecil.gds import forms as gds_forms
 from web.ecil.types import EXPORT_APPLICATION
@@ -80,9 +81,22 @@ class ExportApplicationExporterOfficeForm(gds_forms.GDSForm):
 
         self.offices = linked_exporters.get(pk=exporter_pk).offices.filter(is_active=True)
 
-        office_list = [(c.pk, c.address) for c in self.offices]
+        office_list = [(o.pk, self._get_address_label(o)) for o in self.offices]
         office_list.append((gds_forms.GovUKRadioInputField.NONE_OF_THESE, "Another office address"))
         self.fields["office"].choices = office_list
+
+    def _get_address_label(self, office: Office) -> str | Markup:
+        """Join the address property (all address fields) with the postcode.
+
+        All fields are escaped, as it's user entered data before being returned as safe Markup to
+        render as HTML by the GDS field macro.
+        """
+
+        address = office.address
+        if office.postcode:
+            address += f"\n{office.postcode}"
+
+        return Markup("<br>".join([escape(line) for line in address.split("\n")]))
 
 
 class ExportApplicationNewExporterOfficeForm(gds_forms.GDSModelForm):
