@@ -7,6 +7,36 @@ from django.db import models
 from web.types import TypedTextChoices
 
 
+class ECILUserExportApplication(models.Model):
+    """Model to store temporary data before the real export application model is created.
+
+    To get around the constraint of not breaking V2 while we iterate ECIL.
+    There is only ever one record per user in the system.
+    """
+
+    class ExportApplicationsChoices(TypedTextChoices):
+        CFS = ("cfs", "Certificate of Free Sale (CFS)")
+        COM = ("com", "Certificate of Manufacture (CoM)")
+        GMP = ("gmp", "Certificate of Good Manufacturing Practice (CGMP)")
+
+    app_type = models.CharField(max_length=3, choices=ExportApplicationsChoices.choices, default="")
+
+    created_by = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+"
+    )
+
+    exporter = models.ForeignKey(
+        "web.Exporter", on_delete=models.CASCADE, related_name="+", null=True
+    )
+    exporter_office = models.ForeignKey(
+        "web.Office", on_delete=models.CASCADE, related_name="+", null=True
+    )
+    agent = models.ForeignKey("web.Exporter", on_delete=models.CASCADE, related_name="+", null=True)
+    agent_office = models.ForeignKey(
+        "web.Office", on_delete=models.CASCADE, related_name="+", null=True
+    )
+
+
 class ECILExample(models.Model):
     class PrimaryColours(TypedTextChoices):
         blue = ("blue", "Blue")

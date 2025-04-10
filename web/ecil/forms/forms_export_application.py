@@ -1,4 +1,4 @@
-from typing import Any, Literal
+from typing import Any
 
 from django.db.models import QuerySet
 from guardian.shortcuts import get_objects_for_user
@@ -6,12 +6,12 @@ from markupsafe import Markup, escape
 
 from web.ecil.gds import forms as gds_forms
 from web.ecil.types import EXPORT_APPLICATION
-from web.models import Country, Exporter, Office, User
+from web.models import Country, ECILUserExportApplication, Exporter, Office, User
 from web.models.shared import YesNoChoices
 from web.permissions import Perms
 
 
-class ExportApplicationTypeForm(gds_forms.GDSForm):
+class ExportApplicationTypeForm(gds_forms.GDSModelForm):
     app_type = gds_forms.GovUKRadioInputField(
         label="Which certificate are you applying for?",
         error_messages={
@@ -31,59 +31,83 @@ class ExportApplicationTypeForm(gds_forms.GDSForm):
         gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
     )
 
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ECILUserExportApplication
+        fields = ["app_type"]
 
-class ExportApplicationExporterForm(gds_forms.GDSForm):
+
+class ExportApplicationExporterForm(gds_forms.GDSModelForm):
     exporter = gds_forms.GovUKRadioInputField(
         label="Which company do you want an export certificate for?",
         error_messages={"required": "Select the company you want an export certificate for."},
         gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
     )
 
-    def clean_exporter(self) -> Literal["none-of-these"] | int:
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ECILUserExportApplication
+        fields = ["exporter"]
+
+    def clean_exporter(self) -> Exporter | None:
         exporter_pk = self.cleaned_data["exporter"]
 
         if exporter_pk == gds_forms.GovUKRadioInputField.NONE_OF_THESE:
-            return exporter_pk
+            # None is a valid option when NONE_OF_THESE is chosen.
+            self.fields["exporter"].required = False
 
-        return self.exporters.get(pk=exporter_pk).pk
+            return None
 
-    def __init__(self, *args: Any, user: User, **kwargs: Any) -> None:
+        return self.exporters.get(pk=exporter_pk)
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         # Main exporters the user can edit or is an agent of.
-        self.exporters = get_user_editable_exporters(user)
+        self.exporters = get_user_editable_exporters(self.instance.created_by)
 
         exporter_list = [(c.pk, c.name) for c in self.exporters]
         exporter_list.append((gds_forms.GovUKRadioInputField.NONE_OF_THESE, "Another company"))
         self.fields["exporter"].choices = exporter_list
 
 
-class ExportApplicationExporterOfficeForm(gds_forms.GDSForm):
-    office = gds_forms.GovUKRadioInputField(
+class ExportApplicationExporterOfficeForm(gds_forms.GDSModelForm):
+    exporter_office = gds_forms.GovUKRadioInputField(
         label="Where will the certificate be issued to?",
         error_messages={"required": "Select the address you want an export certificate for."},
         gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
     )
 
-    def clean_office(self) -> Literal["none-of-these"] | int:
-        office_pk = self.cleaned_data["office"]
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ECILUserExportApplication
+        fields = ["exporter_office"]
+
+    def clean_exporter_office(self) -> Office | None:
+        office_pk = self.cleaned_data["exporter_office"]
 
         if office_pk == gds_forms.GovUKRadioInputField.NONE_OF_THESE:
-            return office_pk
+            # None is a valid option when NONE_OF_THESE is chosen.
+            self.fields["exporter_office"].required = False
+            return None
 
-        return self.offices.get(pk=office_pk).pk
+        return self.offices.get(pk=office_pk)
 
-    def __init__(self, *args: Any, user: User, exporter_pk: int, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         # Main exporters the user can edit or is an agent of.
-        linked_exporters = get_user_editable_exporters(user)
+        exporter = (
+            get_user_editable_exporters(self.instance.created_by)
+            .filter(pk=self.instance.exporter.pk)
+            .first()
+        )
 
-        self.offices = linked_exporters.get(pk=exporter_pk).offices.filter(is_active=True)
+        if exporter:
+            self.offices = exporter.offices.filter(is_active=True)
+        else:
+            self.offices = Office.objects.none()
 
         office_list = [(o.pk, self._get_address_label(o)) for o in self.offices]
         office_list.append((gds_forms.GovUKRadioInputField.NONE_OF_THESE, "Another office address"))
-        self.fields["office"].choices = office_list
+        self.fields["exporter_office"].choices = office_list
 
     def _get_address_label(self, office: Office) -> str | Markup:
         """Join the address property (all address fields) with the postcode.

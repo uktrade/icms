@@ -2,7 +2,7 @@ from typing import Any
 from urllib import parse
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect
@@ -15,11 +15,10 @@ from django.views.generic.detail import SingleObjectMixin
 from web.domains.case.services import case_progress
 from web.ecil.forms import forms_export_application as forms
 from web.ecil.gds import component_serializers as serializers
-from web.ecil.gds import forms as gds_forms
-from web.ecil.gds.views import BackLinkMixin, SessionFormView
+from web.ecil.gds.views import BackLinkMixin
 from web.ecil.types import EXPORT_APPLICATION
 from web.flow.models import ProcessTypes
-from web.models import Country, Exporter, Office, User
+from web.models import Country, ECILUserExportApplication, Office, User
 from web.models.shared import YesNoChoices
 from web.permissions import AppChecker, Perms, can_user_edit_org
 from web.types import AuthenticatedHttpRequest
@@ -28,6 +27,7 @@ from web.types import AuthenticatedHttpRequest
 #
 # Views relating to creating an export application
 #
+# TODO: Use this base class and include reusable UpdateView Logic
 class CreateExportApplicationBaseView(LoginRequiredMixin, PermissionRequiredMixin):
     # PermissionRequiredMixin config
     permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
@@ -44,11 +44,19 @@ class CreateExportApplicationStartTemplateView(CreateExportApplicationBaseView, 
 
 
 class CreateExportApplicationAppTypeFormView(
-    CreateExportApplicationBaseView, BackLinkMixin, SessionFormView
+    CreateExportApplicationBaseView, BackLinkMixin, UpdateView
 ):
-    # SessionFormView config
+    # UpdateView config
     form_class = forms.ExportApplicationTypeForm
     template_name = "ecil/gds_form.html"
+    object: ECILUserExportApplication
+
+    def get_object(self, queryset: QuerySet | None = None) -> ECILUserExportApplication:
+        instance, _ = ECILUserExportApplication.objects.get_or_create(
+            created_by=self.request.user,
+        )
+
+        return instance
 
     def get_back_link_url(self) -> str:
         return reverse("ecil:export-application:new")
@@ -58,81 +66,62 @@ class CreateExportApplicationAppTypeFormView(
 
 
 class CreateExportApplicationExporterFormView(
-    CreateExportApplicationBaseView, BackLinkMixin, SessionFormView
+    CreateExportApplicationBaseView, BackLinkMixin, UpdateView
 ):
-    # SessionFormView config
+    # UpdateView config
     form_class = forms.ExportApplicationExporterForm
     template_name = "ecil/gds_form.html"
+    object: ECILUserExportApplication
 
-    def get_form_kwargs(self) -> dict[str, Any]:
-        kwargs = super().get_form_kwargs()
+    def get_object(self, queryset: QuerySet | None = None) -> ECILUserExportApplication:
+        instance, _ = ECILUserExportApplication.objects.get_or_create(
+            created_by=self.request.user,
+        )
 
-        return kwargs | {"user": self.request.user}
+        return instance
 
     def get_back_link_url(self) -> str:
         return reverse("ecil:export-application:application-type")
 
-    def form_valid(self, form: forms.ExportApplicationExporterForm) -> HttpResponseRedirect:
-        self.save_form_in_session(form)
-
-        exporter = form.cleaned_data["exporter"]
-
-        if exporter == gds_forms.GovUKRadioInputField.NONE_OF_THESE:
-            response_url = reverse("ecil:export-application:another-exporter")
-        else:
-            response_url = self.get_success_url()
-
-        return redirect(response_url)
-
     def get_success_url(self):
-        return reverse("ecil:export-application:exporter-office")
+        # Valid options are either an exporter or None if "Another Company" has been selected
+        if self.object.exporter:
+            return reverse("ecil:export-application:exporter-office")
+        else:
+            return reverse("ecil:export-application:another-exporter")
 
 
 class CreateExportApplicationExporterOfficeFormView(
-    CreateExportApplicationBaseView, BackLinkMixin, SessionFormView
+    CreateExportApplicationBaseView, BackLinkMixin, UpdateView
 ):
-    # SessionFormView config
+    # UpdateView config
     form_class = forms.ExportApplicationExporterOfficeForm
     template_name = "ecil/gds_form.html"
+    object: ECILUserExportApplication
 
-    def get_form_kwargs(self) -> dict[str, Any]:
-        kwargs = super().get_form_kwargs()
+    def get_object(self, queryset: QuerySet | None = None) -> ECILUserExportApplication:
+        instance, _ = ECILUserExportApplication.objects.get_or_create(
+            created_by=self.request.user,
+        )
 
-        return kwargs | {
-            "user": self.request.user,
-            "exporter_pk": self._get_exporter().pk,
-        }
+        return instance
 
     def get_back_link_url(self) -> str:
         return reverse("ecil:export-application:exporter")
 
-    def form_valid(self, form: forms.ExportApplicationExporterOfficeForm) -> HttpResponseRedirect:
-        self.save_form_in_session(form)
-
-        office = form.cleaned_data["office"]
-
-        if office == gds_forms.GovUKRadioInputField.NONE_OF_THESE:
-            exporter = self._get_exporter()
-
-            if can_user_edit_org(self.request.user, exporter):
+    def get_success_url(self):
+        # Valid options are either an office or None if "Another Office" has been selected
+        if self.object.exporter_office:
+            # TODO: Replace with next correct step.
+            response_url = reverse("ecil:export-application:new")
+        else:
+            exporter = self.object.exporter
+            if exporter and can_user_edit_org(self.request.user, exporter):
                 response_url = reverse("ecil:export-application:export-office-add")
             else:
                 response_url = reverse("ecil:export-application:another-exporter-office")
-        else:
-            response_url = self.get_success_url()
 
-        return redirect(response_url)
-
-    def get_success_url(self):
-        # TODO: Replace with next correct step.
-        return reverse("ecil:export-application:new")
-
-    def _get_exporter(self) -> Exporter:
-        # Load the chosen exporter from the session
-        exporter_key = CreateExportApplicationExporterFormView.get_field_key("exporter")
-        exporter_pk = self.get_session_value(exporter_key)
-
-        return Exporter.objects.get(pk=exporter_pk)
+        return response_url
 
 
 class CreateExportApplicationExporterOfficeCreateView(
@@ -143,18 +132,21 @@ class CreateExportApplicationExporterOfficeCreateView(
     form_class = forms.ExportApplicationNewExporterOfficeForm
     template_name = "ecil/gds_form.html"
 
+    def get_user_export_application(self) -> ECILUserExportApplication:
+        instance, _ = ECILUserExportApplication.objects.get_or_create(
+            created_by=self.request.user,
+        )
+
+        return instance
+
     def has_permission(self):
         has_user_perms = super().has_permission()
 
-        try:
-            exporter_key = CreateExportApplicationExporterFormView.get_field_key("exporter")
-            exporter_pk = self.request.session.get(exporter_key, None)
-            self.exporter = Exporter.objects.get(pk=exporter_pk)
+        self.exporter = self.get_user_export_application().exporter
 
-        except ObjectDoesNotExist:
-            return False
-
-        return has_user_perms and can_user_edit_org(self.request.user, self.exporter)
+        return (
+            has_user_perms and self.exporter and can_user_edit_org(self.request.user, self.exporter)
+        )
 
     def form_valid(
         self, form: forms.ExportApplicationNewExporterOfficeForm
