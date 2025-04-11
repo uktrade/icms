@@ -63,10 +63,7 @@ class ExportApplicationExporterForm(gds_forms.GDSModelForm):
 
         # Main exporters the user can edit or is an agent of.
         self.exporters = get_user_editable_exporters(self.instance.created_by)
-
-        exporter_list = [(c.pk, c.name) for c in self.exporters]
-        exporter_list.append((gds_forms.GovUKRadioInputField.NONE_OF_THESE, "Another company"))
-        self.fields["exporter"].choices = exporter_list
+        self.fields["exporter"].choices = get_exporter_choices(self.exporters)
 
 
 class ExportApplicationExporterOfficeForm(gds_forms.GDSModelForm):
@@ -93,34 +90,8 @@ class ExportApplicationExporterOfficeForm(gds_forms.GDSModelForm):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        # Main exporters the user can edit or is an agent of.
-        exporter = (
-            get_user_editable_exporters(self.instance.created_by)
-            .filter(pk=self.instance.exporter.pk)
-            .first()
-        )
-
-        if exporter:
-            self.offices = exporter.offices.filter(is_active=True)
-        else:
-            self.offices = Office.objects.none()
-
-        office_list = [(o.pk, self._get_address_label(o)) for o in self.offices]
-        office_list.append((gds_forms.GovUKRadioInputField.NONE_OF_THESE, "Another office address"))
-        self.fields["exporter_office"].choices = office_list
-
-    def _get_address_label(self, office: Office) -> str | Markup:
-        """Join the address property (all address fields) with the postcode.
-
-        All fields are escaped, as it's user entered data before being returned as safe Markup to
-        render as HTML by the GDS field macro.
-        """
-
-        address = office.address
-        if office.postcode:
-            address += f"\n{office.postcode}"
-
-        return Markup("<br>".join([escape(line) for line in address.split("\n")]))
+        self.offices = get_user_offices(self.instance.created_by, self.instance.exporter)
+        self.fields["exporter_office"].choices = get_office_choices(self.offices)
 
 
 class ExportApplicationNewExporterOfficeForm(gds_forms.GDSModelForm):
@@ -157,6 +128,30 @@ class ExportApplicationNewExporterOfficeForm(gds_forms.GDSModelForm):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.fields["postcode"].required = False
+
+
+class CreateExportApplicationSummaryForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ECILUserExportApplication
+        fields = [
+            "app_type",
+            "exporter",
+            "exporter_office",
+        ]
+        labels = {
+            "app_type": "Which certificate are you applying for?",
+            "exporter": "Which company do you want an export certificate for?",
+            "exporter_office": "Where will the certificate be issued to?",
+        }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        exporters = get_user_editable_exporters(self.instance.created_by)
+        self.fields["exporter"].choices = get_exporter_choices(exporters)
+
+        offices = get_user_offices(self.instance.created_by, self.instance.exporter)
+        self.fields["exporter_office"].choices = get_office_choices(offices)
 
 
 class ExportApplicationExportCountriesForm(gds_forms.GDSForm):
@@ -230,3 +225,56 @@ def get_user_editable_exporters(user: User) -> QuerySet[Exporter]:
         Exporter.objects.filter(is_active=True, main_exporter__isnull=True),
         any_perm=True,
     )
+
+
+def get_exporter_choices(
+    exporters: QuerySet[Exporter], include_none_of_these: bool = True
+) -> list[tuple[int | str, Markup | str]]:
+    exporter_list: list[tuple[int | str, Markup | str]] = [(c.pk, c.name) for c in exporters]
+
+    if include_none_of_these:
+        exporter_list.append((gds_forms.GovUKRadioInputField.NONE_OF_THESE, "Another company"))
+
+    return exporter_list
+
+
+def get_user_offices(user: User, chosen_exporter: Exporter | None) -> QuerySet[Office]:
+    # Main exporters the user can edit or is an agent of filtered by the chosen exporter.
+
+    if chosen_exporter:
+        exporter = get_user_editable_exporters(user).filter(pk=chosen_exporter.pk).first()
+    else:
+        exporter = None
+
+    if exporter:
+        return exporter.offices.filter(is_active=True)
+    else:
+        return Office.objects.none()
+
+
+def get_office_choices(
+    offices: QuerySet[Office], include_none_of_these: bool = True
+) -> list[tuple[int | str, Markup | str]]:
+
+    office_list: list[tuple[int | str, Markup | str]] = [
+        (o.pk, _get_address_label(o)) for o in offices
+    ]
+
+    if include_none_of_these:
+        office_list.append((gds_forms.GovUKRadioInputField.NONE_OF_THESE, "Another office address"))
+
+    return office_list
+
+
+def _get_address_label(office: Office) -> Markup:
+    """Join the address property (all address fields) with the postcode.
+
+    All fields are escaped, as it's user entered data before being returned as safe Markup to
+    render as HTML by the GDS field macro.
+    """
+
+    address = office.address
+    if office.postcode:
+        address += f"\n{office.postcode}"
+
+    return Markup("<br>".join([escape(line) for line in address.split("\n")]))

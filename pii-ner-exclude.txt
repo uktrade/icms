@@ -5468,3 +5468,4 @@ request</h1
 Join the address property (all address fields
 f"\n{office.postcode
 Django 5.1.8
+self.get_summary_items(context

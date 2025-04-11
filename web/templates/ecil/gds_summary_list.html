@@ -6,6 +6,13 @@
     {{ gds.govukErrorSummary(error_summary_kwargs) }}
   {% endif %}
 
+  {% if h1_content %}
+    <h1 class="govuk-heading-l">{{ h1_content }}</h1>
+  {% endif %}
+  {% if below_h1_content %}
+    <p class="govuk-body">{{ below_h1_content }}</p>
+  {% endif %}
+
   {% if summary_cards %}
     {# Iterate over the summary_cards #}
     {% for summary_list_kwargs in summary_cards %}

@@ -31,6 +31,11 @@ urlpatterns = [
                     views.CreateExportApplicationExporterOfficeCreateView.as_view(),
                     name="export-office-add",
                 ),
+                path(
+                    "summary/",
+                    views.CreateExportApplicationSummaryUpdateView.as_view(),
+                    name="summary",
+                ),
             ]
         ),
     ),
