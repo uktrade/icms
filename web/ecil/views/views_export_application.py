@@ -12,13 +12,23 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, FormView, TemplateView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 
+from web.domains.case.services import application as applicant_application
 from web.domains.case.services import case_progress
 from web.ecil.forms import forms_export_application as forms
 from web.ecil.gds import component_serializers as serializers
 from web.ecil.gds.views import BackLinkMixin, SummaryUpdateView
 from web.ecil.types import EXPORT_APPLICATION
 from web.flow.models import ProcessTypes
-from web.models import Country, ECILUserExportApplication, Office, User
+from web.models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
+    CertificateOfManufactureApplication,
+    Country,
+    ECILUserExportApplication,
+    ExportApplicationType,
+    Office,
+    User,
+)
 from web.models.shared import YesNoChoices
 from web.permissions import AppChecker, Perms, can_user_edit_org
 from web.types import AuthenticatedHttpRequest
@@ -123,6 +133,7 @@ class CreateExportApplicationExporterOfficeFormView(
         return response_url
 
 
+@method_decorator(transaction.atomic, name="post")
 class CreateExportApplicationSummaryUpdateView(
     CreateExportApplicationBaseView, BackLinkMixin, SummaryUpdateView
 ):
@@ -136,6 +147,7 @@ class CreateExportApplicationSummaryUpdateView(
             "Check your details and the certificate details you have given are correct"
         ),
     }
+    object: ECILUserExportApplication
 
     def get_object(self, queryset: QuerySet | None = None) -> ECILUserExportApplication:
         instance, _ = ECILUserExportApplication.objects.get_or_create(
@@ -172,15 +184,64 @@ class CreateExportApplicationSummaryUpdateView(
         return items
 
     def form_valid(self, form: forms.CreateExportApplicationSummaryForm) -> HttpResponseRedirect:
-        # TODO: Actually create the application.
-        1 / 0
+        # Shouldn't actually change anything
+        self.object = form.save()
+
+        match self.object.app_type:
+            case self.object.ExportApplicationsChoices.CFS:
+                model_class = CertificateOfFreeSaleApplication
+                application_type = ExportApplicationType.objects.get(
+                    type_code=ExportApplicationType.Types.FREE_SALE
+                )
+
+            case self.object.ExportApplicationsChoices.COM:
+                model_class = CertificateOfManufactureApplication
+                application_type = ExportApplicationType.objects.get(
+                    type_code=ExportApplicationType.Types.MANUFACTURE
+                )
+
+            case self.object.ExportApplicationsChoices.GMP:
+                model_class = CertificateOfGoodManufacturingPracticeApplication
+                application_type = ExportApplicationType.objects.get(
+                    type_code=ExportApplicationType.Types.GMP
+                )
+
+            case _:
+                raise ValueError(
+                    f"Unable to create application for app_type: {self.object.app_type}"
+                )
+
+        # Create the correct application
+        self.application = applicant_application.create_export_application(
+            self.request,
+            model_class,
+            application_type,
+            self.object.exporter,
+            self.object.exporter_office,
+            self.object.agent,
+            self.object.agent_office,
+        )
+
+        return redirect(self.get_success_url())
 
     def get_back_link_url(self) -> str:
         return reverse("ecil:export-application:exporter-office")
 
     def get_success_url(self):
-        # TODO: Replace with next correct step.
-        return reverse("ecil:export-application:new")
+        kwargs = {"application_pk": self.application.pk}
+
+        match self.object.app_type:
+            case self.object.ExportApplicationsChoices.CFS:
+                response_url = reverse("ecil:export-cfs:application-reference", kwargs=kwargs)
+            case (
+                self.object.ExportApplicationsChoices.COM
+                | self.object.ExportApplicationsChoices.GMP
+            ):
+                response_url = reverse(self.application.get_edit_view_name(), kwargs=kwargs)
+            case _:
+                response_url = reverse("workbasket")
+
+        return response_url
 
 
 class CreateExportApplicationExporterOfficeCreateView(
