@@ -27,6 +27,14 @@ class TestCreateExportApplicationStartTemplateView:
 
         assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
 
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/export_application/start.html")
+        assert response.context["pick_app_type_url"] == reverse(
+            "ecil:export-application:application-type"
+        )
+
 
 class TestCreateExportApplicationAppTypeFormView:
     @pytest.fixture(autouse=True)
@@ -41,6 +49,43 @@ class TestCreateExportApplicationAppTypeFormView:
 
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        # No record exists until page viewed
+        assert not ECILUserExportApplication.objects.filter(created_by=self.user).exists()
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+
+        # Record exists after page viewed
+        assert ECILUserExportApplication.objects.filter(created_by=self.user).exists()
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-application:new"
+        )
+
+    def test_post(self):
+        # Test error message
+        form_data = {"app_type": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "app_type": ["Select the certificate you are applying for."],
+        }
+
+        # Check record exists but no app type set
+        record = ECILUserExportApplication.objects.get(created_by=self.user)
+        assert record.app_type == ""
+
+        # Test post success
+        form_data = {"app_type": "cfs"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("ecil:export-application:exporter")
+
+        record.refresh_from_db()
+        assert record.app_type == "cfs"
 
 
 class TestCreateExportApplicationExporterFormView:
