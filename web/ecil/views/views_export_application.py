@@ -126,7 +126,7 @@ class CreateExportApplicationExporterOfficeFormView(
         else:
             exporter = self.object.exporter
             if exporter and can_user_edit_org(self.request.user, exporter):
-                response_url = reverse("ecil:export-application:export-office-add")
+                response_url = reverse("ecil:export-application:exporter-office-add")
             else:
                 response_url = reverse("ecil:export-application:another-exporter-office")
 

@@ -4,8 +4,153 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertInHTML, assertTemplateUsed
 
-from web.models import Country
+from web.models import Country, ECILUserExportApplication
 from web.models.shared import YesNoChoices
+
+
+class TestCreateExportApplicationStartTemplateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_client, prototype_user):
+        self.user = prototype_user
+        self.url = reverse("ecil:export-application:new")
+        self.client = prototype_client
+
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_post_forbidden(self):
+        response = self.client.post(self.url)
+
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+
+class TestCreateExportApplicationAppTypeFormView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_client, prototype_user):
+        self.user = prototype_user
+        self.url = reverse("ecil:export-application:application-type")
+        self.client = prototype_client
+
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+
+class TestCreateExportApplicationExporterFormView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_client, prototype_user):
+        self.user = prototype_user
+        self.url = reverse("ecil:export-application:exporter")
+        self.client = prototype_client
+
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+
+class TestCreateExportApplicationExporterOfficeFormView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_client, prototype_user):
+        self.user = prototype_user
+        self.url = reverse("ecil:export-application:exporter-office")
+        self.client = prototype_client
+
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+
+class TestCreateExportApplicationSummaryUpdateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_client, prototype_user):
+        self.user = prototype_user
+        self.url = reverse("ecil:export-application:summary")
+        self.client = prototype_client
+
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+
+class TestCreateExportApplicationExporterOfficeCreateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_client, prototype_user):
+        self.user = prototype_user
+        self.url = reverse("ecil:export-application:exporter-office-add")
+        self.client = prototype_client
+        self.user_export_app, _ = ECILUserExportApplication.objects.get_or_create(
+            created_by=self.user
+        )
+
+    def test_permission(self, ilb_admin_client, exporter):
+        response = ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        # Requires a linked exporter set to have permission to view.
+        self.user_export_app.exporter = exporter
+        self.user_export_app.save()
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+
+class TestCreateExportApplicationAnotherExporterTemplateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_client, prototype_user):
+        self.user = prototype_user
+        self.url = reverse("ecil:export-application:another-exporter")
+        self.client = prototype_client
+
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_post_forbidden(self):
+        response = self.client.post(self.url)
+
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+
+class TestCreateExportApplicationAnotherExporterOfficeTemplateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_client, prototype_user):
+        self.user = prototype_user
+        self.url = reverse("ecil:export-application:another-exporter-office")
+        self.client = prototype_client
+
+    def test_permission(self, ilb_admin_client):
+        response = ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_post_forbidden(self):
+        response = self.client.post(self.url)
+
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
 
 
 class TestCreateExportApplicationAnotherContactTemplateView:

@@ -29,7 +29,7 @@ urlpatterns = [
                 path(
                     "export-office/add/",
                     views.CreateExportApplicationExporterOfficeCreateView.as_view(),
-                    name="export-office-add",
+                    name="exporter-office-add",
                 ),
                 path(
                     "summary/",
@@ -40,11 +40,6 @@ urlpatterns = [
         ),
     ),
     path(
-        "another-contact/",
-        views.CreateExportApplicationAnotherContactTemplateView.as_view(),
-        name="another-contact",
-    ),
-    path(
         "another-exporter/",
         views.CreateExportApplicationAnotherExporterTemplateView.as_view(),
         name="another-exporter",
@@ -53,6 +48,11 @@ urlpatterns = [
         "another-exporter-office/",
         views.CreateExportApplicationAnotherExporterOfficeTemplateView.as_view(),
         name="another-exporter-office",
+    ),
+    path(
+        "another-contact/",
+        views.CreateExportApplicationAnotherContactTemplateView.as_view(),
+        name="another-contact",
     ),
     #
     # URLs relating to editing an in progress export application
