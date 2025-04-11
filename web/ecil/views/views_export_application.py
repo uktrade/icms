@@ -5,19 +5,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import QuerySet
-from django.forms.models import model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import Resolver404, ResolverMatch, resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, FormView, TemplateView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
-from markupsafe import Markup
 
 from web.domains.case.services import case_progress
 from web.ecil.forms import forms_export_application as forms
 from web.ecil.gds import component_serializers as serializers
-from web.ecil.gds.views import BackLinkMixin
+from web.ecil.gds.views import BackLinkMixin, SummaryUpdateView
 from web.ecil.types import EXPORT_APPLICATION
 from web.flow.models import ProcessTypes
 from web.models import Country, ECILUserExportApplication, Office, User
@@ -125,14 +123,19 @@ class CreateExportApplicationExporterOfficeFormView(
         return response_url
 
 
-# TODO: Refactor a lot of this logic in to a base class.
 class CreateExportApplicationSummaryUpdateView(
-    CreateExportApplicationBaseView, BackLinkMixin, UpdateView
+    CreateExportApplicationBaseView, BackLinkMixin, SummaryUpdateView
 ):
     # UpdateView config
     form_class = forms.CreateExportApplicationSummaryForm
     template_name = "ecil/gds_summary_list.html"
     http_method_names = ["get", "post"]
+    extra_context = {
+        "h1_content": "Your details and certificate details",
+        "below_h1_content": (
+            "Check your details and the certificate details you have given are correct"
+        ),
+    }
 
     def get_object(self, queryset: QuerySet | None = None) -> ECILUserExportApplication:
         instance, _ = ECILUserExportApplication.objects.get_or_create(
@@ -141,26 +144,7 @@ class CreateExportApplicationSummaryUpdateView(
 
         return instance
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-
-        # summary_items = self.get_summary_items(context)
-        summary_items = self.get_new_summary_items(context)
-        summary_list_kwargs = self.get_summary_list_kwargs(summary_items)
-        summary_cards = self.get_summary_cards(summary_items)
-
-        return context | {
-            "summary_list_kwargs": summary_list_kwargs,
-            "summary_cards": summary_cards,
-            "h1_content": "Your details and certificate details",
-            "below_h1_content": (
-                "Check your details and the certificate details you have given are correct"
-            ),
-        }
-
-    def get_new_summary_items(
-        self, context: dict[str, Any]
-    ) -> dict[str, serializers.summary_list.Row]:
+    def get_summary_items(self, context: dict[str, Any]) -> dict[str, serializers.summary_list.Row]:
         submit_form = context["form"]
 
         if self.object.exporter:
@@ -183,131 +167,13 @@ class CreateExportApplicationSummaryUpdateView(
         items = {}
         for field, display_value, edit_link in rows:
             key = submit_form[field].label
-            items[field] = self.get_new_summary_item_row(field, key, display_value, edit_link)
+            items[field] = self.get_summary_item_row(field, key, display_value, edit_link)
 
         return items
-
-    def get_new_summary_item_row(
-        self, field: str, key: str, value: str, edit_link: str
-    ) -> serializers.summary_list.Row:
-        # TODO: Revisit in ECIL-618 to fix missing & optional fields
-        if value is None or value == "":
-            value = "No value entered (Fix in ECIL-618)"
-
-        if isinstance(value, Markup):
-            row_value_kwargs: dict[str, str | Markup] = {"html": value}
-        else:
-            row_value_kwargs = {"text": value}
-
-        return serializers.summary_list.Row(
-            key=serializers.summary_list.RowKey(text=key),
-            value=serializers.summary_list.RowValue(**row_value_kwargs),
-            actions=serializers.summary_list.RowActions(
-                items=[
-                    serializers.summary_list.RowActionItem(
-                        href=edit_link,
-                        text="Change",
-                        visuallyHiddenText=field,
-                    )
-                ]
-            ),
-        )
-
-    def get_summary_items(self, context: dict[str, Any]) -> dict[str, serializers.summary_list.Row]:
-        submit_form = context["form"]
-        items = {}
-
-        for field in submit_form.fields:
-            items[field] = self.get_summary_item_row(submit_form, field)
-
-        return items
-
-    def get_summary_list_kwargs(
-        self, summary_items: dict[str, serializers.summary_list.Row]
-    ) -> dict[str, Any]:
-        return serializers.summary_list.SummaryListKwargs(
-            rows=list(summary_items.values()),
-        ).model_dump(exclude_defaults=True)
-
-    def get_summary_cards(
-        self, summary_items: dict[str, serializers.summary_list.Row]
-    ) -> list[dict[str, Any]]:
-        return []
-
-    def get_summary_item_row(
-        self, form: forms.CreateExportApplicationSummaryForm, field: str
-    ) -> serializers.summary_list.Row:
-        value = self.get_display_value(field, form[field].initial)
-
-        # TODO: Revisit in ECIL-618 to fix missing & optional fields
-        if value is None or value == "":
-            value = "No value entered (Fix in ECIL-618)"
-
-        if isinstance(value, Markup):
-            row_value_kwargs: dict[str, str | Markup] = {"html": value}
-        else:
-            row_value_kwargs = {"text": value}
-
-        return serializers.summary_list.Row(
-            key=serializers.summary_list.RowKey(text=form.fields[field].label),
-            value=serializers.summary_list.RowValue(**row_value_kwargs),
-            actions=serializers.summary_list.RowActions(
-                items=[
-                    serializers.summary_list.RowActionItem(
-                        href="#",
-                        text="Change",
-                        visuallyHiddenText=field,
-                    )
-                ]
-            ),
-        )
-
-    def get_display_value(self, field: str, value: Any) -> str:
-        """Default method to display values in summary view."""
-        if field == "exporter":
-            return str(value)
-
-        if field == "exporter_office":
-            return str(value)
-
-        match value:
-            case True | "True":
-                return "Yes"
-            case False | "False":
-                return "No"
-            case None:
-                return ""
-            case _:
-                return value
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-
-        if self.request.method == "POST":
-            # Pass in object data as form data when posting the summary view.
-            kwargs["data"] = model_to_dict(self.object)
-
-        return kwargs
 
     def form_valid(self, form: forms.CreateExportApplicationSummaryForm) -> HttpResponseRedirect:
-        # TODO: Actuall create the application.
+        # TODO: Actually create the application.
         1 / 0
-
-    def form_invalid(self, form: forms.CreateExportApplicationSummaryForm) -> HttpResponse:
-        context = self.get_context_data(form=form)
-        error_list = []
-        for field_name, error in form.errors.items():  # type: ignore[union-attr]
-            field = form.fields[field_name]
-            field_error = f"{field.label}: {','.join(error)}"
-
-            error_list.append(serializers.error_summary.Error(text=field_error))
-
-        context["error_summary_kwargs"] = serializers.error_summary.ErrorSummaryKwargs(
-            titleText="There is a problem",
-            errorList=error_list,
-        ).model_dump(exclude_defaults=True)
-
-        return self.render_to_response(context)
 
     def get_back_link_url(self) -> str:
         return reverse("ecil:export-application:exporter-office")

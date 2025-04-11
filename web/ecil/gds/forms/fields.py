@@ -8,6 +8,7 @@ from markupsafe import Markup
 
 from web.domains.file.utils import ICMSFileField
 from web.ecil.gds import component_serializers as serializers
+from web.ecil.gds.utils import get_html_or_text
 
 from .validators import MaxWordsValidator
 
@@ -758,10 +759,3 @@ def recursive_merge(initial: dict[str, Any], updates: dict[str, Any]) -> dict[st
             initial[key] = value
 
     return initial
-
-
-def get_html_or_text(value: str | Markup) -> dict[str, str | Markup]:
-    if isinstance(value, Markup):
-        return {"html": value}
-
-    return {"text": value}
