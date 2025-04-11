@@ -222,6 +222,9 @@ class CreateExportApplicationSummaryUpdateView(
             self.object.agent_office,
         )
 
+        # Clear the ECILUserExportApplication record
+        self.object.delete()
+
         return redirect(self.get_success_url())
 
     def get_back_link_url(self) -> str:

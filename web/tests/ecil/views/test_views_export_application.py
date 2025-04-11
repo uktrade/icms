@@ -8,7 +8,7 @@ from web.models import Country
 from web.models.shared import YesNoChoices
 
 
-class TestAnotherExportApplicationContactTemplateView:
+class TestCreateExportApplicationAnotherContactTemplateView:
     @pytest.fixture(autouse=True)
     def setup(self, prototype_client, prototype_user):
         self.user = prototype_user
