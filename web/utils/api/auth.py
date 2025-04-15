@@ -61,24 +61,21 @@ def get_data_workspace_credentials(access_id: str) -> dict[str, Any]:
 def validate_request(request: HttpRequest, api_type: APIType) -> mohawk.Receiver:
     """Raise Django's BadRequest if the request has invalid credentials."""
 
-    try:
-        auth_token = request.headers.get("HAWK_AUTHENTICATION")
-
-        if not auth_token:
-            raise KeyError
-    except KeyError as err:
-        raise exceptions.BadRequest from err
-
     match api_type:
         case "hmrc":
             credentials_func = get_hmrc_credentials
+            auth_token = request.headers.get("HAWK_AUTHENTICATION")
+            # ICMS-HMRC creates the payload hash before encoding the json, therefore decode it here to get the same hash.
+            content = request.body.decode()
         case "data_workspace":
             credentials_func = get_data_workspace_credentials
+            auth_token = request.headers.get("AUTHORIZATION")
+            content = ""
         case _:
             raise ValueError(f'Unknown api type "{api_type}"')
 
-    # ICMS-HMRC creates the payload hash before encoding the json, therefore decode it here to get the same hash.
-    content = request.body.decode()
+    if not auth_token:
+        raise exceptions.BadRequest
 
     try:
         return mohawk.Receiver(

@@ -46,7 +46,7 @@ class TestUserSerializer:
         }
 
     def test_table_name(self):
-        assert self.serializer.table_name() == "icms_user"
+        assert self.serializer.table_name() == "user"
 
     def test_pk_name(self):
         assert self.serializer.pk_name() == "id"
@@ -128,7 +128,7 @@ class TestUserSerializer:
                 },
             ],
             "indexes": [],
-            "table_name": "icms_user",
+            "table_name": "user",
         }
 
 
@@ -138,7 +138,7 @@ class TestUserFeedbackSerializer:
         self.serializer = serializers.UserFeedbackSurveySerializer
 
     def test_table_name(self):
-        assert self.serializer.table_name() == "icms_userfeedbacksurvey"
+        assert self.serializer.table_name() == "userfeedbacksurvey"
 
     def test_pk_name(self):
         assert self.serializer.pk_name() == "id"
@@ -214,5 +214,5 @@ class TestUserFeedbackSerializer:
                 },
             ],
             "indexes": [],
-            "table_name": "icms_userfeedbacksurvey",
+            "table_name": "userfeedbacksurvey",
         }

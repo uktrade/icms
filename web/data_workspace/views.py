@@ -5,7 +5,7 @@ import pydantic
 from django.contrib.auth.models import Group
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import F, FilteredRelation, OuterRef, Q, QuerySet
-from django.http import Http404, HttpRequest, JsonResponse
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.views.generic import ListView, View
 
 from web.models import (
@@ -22,34 +22,48 @@ VERSION = 0
 
 
 class MetadataView(HawkDataWorkspaceMixin, View):
-    http_method_names = ["post"]
+    http_method_names = ["get"]
 
-    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         data = serializers.MetadataListSerializer(
-            metadata=[serializer.get_metadata() for serializer in serializers.DATA_SERIALIZERS]
+            tables=[serializer.get_metadata() for serializer in serializers.DATA_SERIALIZERS]
         ).model_dump(mode="json", exclude_defaults=True)
-        return JsonResponse(data["metadata"], status=http.HTTPStatus.OK, safe=False)
+        return JsonResponse(data, status=http.HTTPStatus.OK)
 
 
 class DataViewBase(HawkDataWorkspaceMixin, ListView):
-    http_method_names = ["post"]
-    qs_serializer: ClassVar[type[serializers.BaseSerializer]]
-    list_field: str
+    http_method_names = ["get"]
+    qs_serializer: ClassVar[type[serializers.BaseResultsSerializer]]
     data_serializer: ClassVar[type[serializers.BaseSerializer]]
     min_version: int = 0
     max_version: int = VERSION
     order_by: str = "pk"
+    paginate_by = 1000
 
-    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
+    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         version = self.kwargs["version"]
         self.version_number = int(version[1:])
         if self.version_number < self.min_version or self.version_number > self.max_version:
             raise Http404(
                 f"This endpoint is only available from v{self.min_version} to v{self.max_version}"
             )
+        return super().dispatch(request, *args, **kwargs)
 
-        data = self.get_data()
-        return JsonResponse(data, status=http.HTTPStatus.OK, safe=False)
+    def render_to_response(self, context: dict[str, Any], **response_kwargs: Any) -> HttpResponse:
+        queryset = context["object_list"]
+        data: dict[str, Any] = {"results": list(queryset)}
+
+        paginator = context["paginator"]
+        page = context["page_obj"]
+        if page.number < paginator.num_pages:
+            data["next"] = f"{self.request.path}?page={page.number + 1}"
+        else:
+            data["next"] = ""
+
+        qs_serializer = self.get_qs_serializer()
+        data = qs_serializer(**data).model_dump(mode="json", exclude_defaults=True)
+
+        return JsonResponse(data, status=http.HTTPStatus.OK)
 
     def get_qs_serializer(self) -> type[pydantic.BaseModel]:
         """Returns the queryset serilaizer. Allows override of the queryset serializer for specific versions"""
@@ -59,12 +73,11 @@ class DataViewBase(HawkDataWorkspaceMixin, ListView):
         """Returns the data serializer. Allows override of the data serializer for specific versions"""
         return self.data_serializer
 
-    def get_data(self) -> list[dict[str, Any]]:
+    def get_data(self) -> dict[str, Any]:
         """Fetches the queryset and return a json dump of the data"""
         qs_serializer = self.get_qs_serializer()
         queryset = self.get_queryset()
-        data = qs_serializer(**{self.list_field: list(queryset)}).model_dump(mode="json")
-        return data[self.list_field]
+        return qs_serializer(**{self.list_field: list(queryset)}).model_dump(mode="json")
 
     def get_queryset_annotations(self) -> dict[str, Any]:
         """Returns a dict of annotations to be used in get_queryset"""
@@ -95,7 +108,6 @@ class UserDataView(DataViewBase):
     model = User
     qs_serializer = serializers.Users
     data_serializer = serializers.UserSerializer
-    list_field = "users"
 
     def get_queryset_annotations(self) -> dict[str, Any]:
         return {
@@ -126,4 +138,3 @@ class UserFeedbackSurveyDataView(DataViewBase):
     model = UserFeedbackSurvey
     qs_serializer = serializers.UserFeedbackSurveys
     data_serializer = serializers.UserFeedbackSurveySerializer
-    list_field = "surveys"

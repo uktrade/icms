@@ -1,4 +1,3 @@
-import json
 from http import HTTPStatus
 from typing import Any
 
@@ -6,7 +5,7 @@ import pytest
 from django.urls import reverse
 
 from web.models import UserFeedbackSurvey
-from web.tests.api_auth import JSON_TYPE, make_testing_hawk_sender
+from web.tests.api_auth import make_testing_hawk_sender
 
 
 def at_example(prefix: str) -> str:
@@ -18,38 +17,21 @@ DT_STRING = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 class BaseTestDataView:
     def test_authentication_failure(self):
-        content = json.dumps({})
-        response = self.client.post(
-            self.url,
-            content,
-            content_type=JSON_TYPE,
-        )
+        response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
     def test_authentication_failure_hmrc_creds(self):
-        content = json.dumps({})
         sender = make_testing_hawk_sender(
-            "POST", self.url, api_type="hmrc", content=content, content_type=JSON_TYPE
+            "GET", self.url, api_type="hmrc", content="", content_type=""
         )
-        response = self.client.post(
-            self.url,
-            content,
-            content_type=JSON_TYPE,
-            HTTP_HAWK_AUTHENTICATION=sender.request_header,
-        )
+        response = self.client.get(self.url, HTTP_AUTHORIZATION=sender.request_header)
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
     def test_authetication(self):
-        content = json.dumps({})
         sender = make_testing_hawk_sender(
-            "POST", self.url, api_type="data_workspace", content=content, content_type=JSON_TYPE
+            "GET", self.url, api_type="data_workspace", content="", content_type=""
         )
-        response = self.client.post(
-            self.url,
-            content,
-            content_type=JSON_TYPE,
-            HTTP_HAWK_AUTHENTICATION=sender.request_header,
-        )
+        response = self.client.get(self.url, HTTP_AUTHORIZATION=sender.request_header)
         assert response.status_code == HTTPStatus.OK
         result = response.json()
         self.check_result(result)
@@ -65,144 +47,146 @@ class TestMetaDataView(BaseTestDataView):
         self.url = reverse("data-workspace:metadata")
 
     def check_result(self, result: list[dict[str, Any]]) -> None:
-        assert result == [
-            {
-                "endpoint": "/data-workspace/v0/users/",
-                "fields": [
-                    {
-                        "name": "id",
-                        "primary_key": True,
-                        "type": "Integer",
-                    },
-                    {
-                        "name": "title",
-                        "nullable": True,
-                        "type": "String",
-                    },
-                    {
-                        "name": "first_name",
-                        "type": "String",
-                    },
-                    {
-                        "name": "last_name",
-                        "type": "String",
-                    },
-                    {
-                        "name": "email",
-                        "type": "String",
-                    },
-                    {
-                        "name": "primary_email_address",
-                        "nullable": True,
-                        "type": "String",
-                    },
-                    {
-                        "name": "organisation",
-                        "nullable": True,
-                        "type": "String",
-                    },
-                    {
-                        "name": "department",
-                        "nullable": True,
-                        "type": "String",
-                    },
-                    {
-                        "name": "job_title",
-                        "nullable": True,
-                        "type": "String",
-                    },
-                    {
-                        "name": "date_joined",
-                        "nullable": True,
-                        "type": "Datetime",
-                    },
-                    {
-                        "name": "last_login",
-                        "nullable": True,
-                        "type": "Datetime",
-                    },
-                    {
-                        "name": "exporter_ids",
-                        "type": "ArrayInteger",
-                    },
-                    {
-                        "name": "importer_ids",
-                        "type": "ArrayInteger",
-                    },
-                    {
-                        "name": "group_names",
-                        "type": "ArrayString",
-                    },
-                ],
-                "indexes": [],
-                "table_name": "icms_user",
-            },
-            {
-                "endpoint": "/data-workspace/v0/user-surveys/",
-                "fields": [
-                    {
-                        "name": "id",
-                        "primary_key": True,
-                        "type": "Integer",
-                    },
-                    {
-                        "name": "satisfaction",
-                        "type": "String",
-                    },
-                    {
-                        "name": "issues",
-                        "type": "ArrayString",
-                    },
-                    {
-                        "name": "issue_details",
-                        "type": "String",
-                    },
-                    {
-                        "name": "find_service",
-                        "type": "String",
-                    },
-                    {
-                        "name": "find_service_details",
-                        "type": "String",
-                    },
-                    {
-                        "name": "additional_support",
-                        "type": "String",
-                    },
-                    {
-                        "name": "service_improvements",
-                        "type": "String",
-                    },
-                    {
-                        "name": "future_contact",
-                        "type": "String",
-                    },
-                    {
-                        "name": "referrer_path",
-                        "type": "String",
-                    },
-                    {
-                        "name": "site",
-                        "type": "String",
-                    },
-                    {
-                        "name": "process_id",
-                        "nullable": True,
-                        "type": "Integer",
-                    },
-                    {
-                        "name": "created_by_id",
-                        "type": "Integer",
-                    },
-                    {
-                        "name": "created_datetime",
-                        "type": "Datetime",
-                    },
-                ],
-                "indexes": [],
-                "table_name": "icms_userfeedbacksurvey",
-            },
-        ]
+        assert result == {
+            "tables": [
+                {
+                    "endpoint": "/data-workspace/v0/users/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "title",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "first_name",
+                            "type": "String",
+                        },
+                        {
+                            "name": "last_name",
+                            "type": "String",
+                        },
+                        {
+                            "name": "email",
+                            "type": "String",
+                        },
+                        {
+                            "name": "primary_email_address",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "organisation",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "department",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "job_title",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "date_joined",
+                            "nullable": True,
+                            "type": "Datetime",
+                        },
+                        {
+                            "name": "last_login",
+                            "nullable": True,
+                            "type": "Datetime",
+                        },
+                        {
+                            "name": "exporter_ids",
+                            "type": "ArrayInteger",
+                        },
+                        {
+                            "name": "importer_ids",
+                            "type": "ArrayInteger",
+                        },
+                        {
+                            "name": "group_names",
+                            "type": "ArrayString",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "user",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/user-surveys/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "satisfaction",
+                            "type": "String",
+                        },
+                        {
+                            "name": "issues",
+                            "type": "ArrayString",
+                        },
+                        {
+                            "name": "issue_details",
+                            "type": "String",
+                        },
+                        {
+                            "name": "find_service",
+                            "type": "String",
+                        },
+                        {
+                            "name": "find_service_details",
+                            "type": "String",
+                        },
+                        {
+                            "name": "additional_support",
+                            "type": "String",
+                        },
+                        {
+                            "name": "service_improvements",
+                            "type": "String",
+                        },
+                        {
+                            "name": "future_contact",
+                            "type": "String",
+                        },
+                        {
+                            "name": "referrer_path",
+                            "type": "String",
+                        },
+                        {
+                            "name": "site",
+                            "type": "String",
+                        },
+                        {
+                            "name": "process_id",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "created_by_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "created_datetime",
+                            "type": "Datetime",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "userfeedbacksurvey",
+                },
+            ]
+        }
 
 
 class TestUserDataView(BaseTestDataView):
@@ -212,7 +196,8 @@ class TestUserDataView(BaseTestDataView):
         self.url = reverse("data-workspace:user-data", kwargs={"version": "v0"})
 
     def check_result(self, result: list[dict[str, Any]]) -> None:
-        users = result
+        assert result["next"] == ""
+        users = result["results"]
         email = at_example("access_request_user")
 
         assert len(users) == 22
@@ -295,8 +280,8 @@ class TestUserFeedbackSurveyDataView(BaseTestDataView):
         )
 
     def check_result(self, result: list[dict[str, Any]]) -> None:
-        assert len(result) == 1
-        assert result[0] == {
+        assert len(result["results"]) == 1
+        assert result["results"][0] == {
             "id": self.survey.id,
             "satisfaction": self.survey.satisfaction,
             "issues": self.survey.issues,

@@ -34,7 +34,7 @@ class MetadataSerializer(BaseModel):
 
 
 class MetadataListSerializer(BaseModel):
-    metadata: list[MetadataSerializer]
+    tables: list[MetadataSerializer]
 
 
 class BaseSerializer(BaseModel):
@@ -78,8 +78,8 @@ class BaseSerializer(BaseModel):
     def table_name(cls) -> str:
         name = cls.__name__.lower()
         if name.endswith("serializer"):
-            return f"icms_{name.split('serializer')[0]}"
-        return f"icms_{name}"
+            return f"{name.split('serializer')[0]}"
+        return f"{name}"
 
     @staticmethod
     def table_indexes() -> list:
@@ -88,6 +88,10 @@ class BaseSerializer(BaseModel):
     @staticmethod
     def url() -> str:
         raise NotImplementedError("Url must be defined on the serilaizer class")
+
+
+class BaseResultsSerializer(BaseModel):
+    next: str | None = None
 
 
 class UserSerializer(BaseSerializer):
@@ -111,8 +115,8 @@ class UserSerializer(BaseSerializer):
         return reverse("data-workspace:user-data", kwargs={"version": "v0"})
 
 
-class Users(BaseSerializer):
-    users: list[UserSerializer]
+class Users(BaseResultsSerializer):
+    results: list[UserSerializer]
 
 
 class UserFeedbackSurveySerializer(BaseSerializer):
@@ -136,8 +140,8 @@ class UserFeedbackSurveySerializer(BaseSerializer):
         return reverse("data-workspace:user-survey-data", kwargs={"version": "v0"})
 
 
-class UserFeedbackSurveys(BaseSerializer):
-    surveys: list[UserFeedbackSurveySerializer]
+class UserFeedbackSurveys(BaseResultsSerializer):
+    results: list[UserFeedbackSurveySerializer]
 
 
 DATA_SERIALIZERS: list[type[BaseSerializer]] = [

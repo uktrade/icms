@@ -5462,3 +5462,4 @@ f"1000 Kilogramme x Test
 f"enquiries.ilb@icms.trade.dev.uktrade.io\n
 Unlimited Kilogramme
 Desc: Unlimited Commoditites
+f"{name.split('serializer')[0]
