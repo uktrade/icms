@@ -26,7 +26,7 @@ class Office(models.Model):
         max_length=100, null=True, blank=True, verbose_name="Address line 5"
     )
 
-    # Extra address_x fields that appear for exporters only
+    # Extra address_x fields to be deleted in next release.
     address_6 = models.CharField(
         max_length=100, null=True, blank=True, verbose_name="Address line 6"
     )
@@ -63,9 +63,6 @@ class Office(models.Model):
             self.address_3,
             self.address_4,
             self.address_5,
-            self.address_6,
-            self.address_7,
-            self.address_8,
         ]
         return "\n".join(f for f in fields if f)
 

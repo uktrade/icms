@@ -103,25 +103,37 @@ class ExportApplicationNewExporterOfficeForm(gds_forms.GDSModelForm):
             "address_3",
             "address_4",
             "address_5",
-            "address_6",
-            "address_7",
-            "address_8",
             "postcode",
         ]
         error_messages = {
             "address_1": {"required": "Enter address 1"},
         }
+
+        labels = {
+            "address_1": "Address line 1",
+            "address_2": "Address line 2 (optional) ",
+            "address_3": "Address line 3 (optional) ",
+            "address_4": "Town or city (optional) ",
+            "address_5": "County (optional)",
+            "postcode": "Postcode (optional)",
+        }
+
         formfield_callback = gds_forms.GDSFormfieldCallback(
+            # Autocomplete link:
+            # https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/autocomplete#address-line1
             gds_field_kwargs={
-                "address_1": {"classes": "govuk-!-width-two-thirds"},
-                "address_2": {"classes": "govuk-!-width-two-thirds"},
-                "address_3": {"classes": "govuk-!-width-two-thirds"},
-                "address_4": {"classes": "govuk-!-width-two-thirds"},
-                "address_5": {"classes": "govuk-!-width-two-thirds"},
-                "address_6": {"classes": "govuk-!-width-two-thirds"},
-                "address_7": {"classes": "govuk-!-width-two-thirds"},
-                "address_8": {"classes": "govuk-!-width-two-thirds"},
-                "postcode": {"classes": "govuk-!-width-two-thirds"},
+                "address_1": {"autocomplete": "address-line1"},
+                "address_2": {"autocomplete": "address-line2"},
+                "address_3": {"autocomplete": "address-line3"},
+                "address_4": {
+                    "autocomplete": "address-level2",
+                    "classes": "govuk-!-width-two-thirds",
+                },
+                "address_5": {
+                    "autocomplete": "address-level1",
+                    "classes": "govuk-!-width-two-thirds",
+                },
+                "postcode": {"autocomplete": "postal-code", "classes": "govuk-input--width-10"},
             }
         )
 

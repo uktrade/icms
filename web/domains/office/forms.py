@@ -57,9 +57,6 @@ class ExporterOfficeForm(forms.ModelForm):
             "address_3",
             "address_4",
             "address_5",
-            "address_6",
-            "address_7",
-            "address_8",
             "postcode",
         ]
 
