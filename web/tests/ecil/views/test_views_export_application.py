@@ -496,10 +496,18 @@ class TestCreateExportApplicationExporterOfficeCreateView:
 
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
-        assertTemplateUsed(response, "ecil/gds_form.html")
+        assertTemplateUsed(response, "ecil/export_application/add_exporter_office.html")
         assert response.context["back_link_kwargs"]["href"] == reverse(
             "ecil:export-application:exporter-office"
         )
+
+        assert response.context["fieldset_kwargs"] == {
+            "legend": {
+                "text": "What is the office address?",
+                "classes": "govuk-fieldset__legend--l",
+                "isPageHeading": True,
+            }
+        }
 
     def test_post(self, exporter):
         self.user_export_app.exporter = exporter
@@ -512,9 +520,6 @@ class TestCreateExportApplicationExporterOfficeCreateView:
             "address_3": "",
             "address_4": "",
             "address_5": "",
-            "address_6": "",
-            "address_7": "",
-            "address_8": "",
             "postcode": "",
         }
         response = self.client.post(self.url, data=form_data)
@@ -531,9 +536,6 @@ class TestCreateExportApplicationExporterOfficeCreateView:
             "address_3": "Test address_3",
             "address_4": "Test address_4",
             "address_5": "Test address_5",
-            "address_6": "Test address_6",
-            "address_7": "Test address_7",
-            "address_8": "Test address_8",
             "postcode": "postcode",
         }
         previous_office_count = self.user_export_app.exporter.offices.count()

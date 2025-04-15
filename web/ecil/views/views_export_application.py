@@ -254,7 +254,17 @@ class CreateExportApplicationExporterOfficeCreateView(
     # CreateView config
     model = Office
     form_class = forms.ExportApplicationNewExporterOfficeForm
-    template_name = "ecil/gds_form.html"
+    template_name = "ecil/export_application/add_exporter_office.html"
+
+    extra_context = {
+        "fieldset_kwargs": serializers.fieldset.FieldsetKwargs(
+            legend=serializers.fieldset.FieldsetLegend(
+                text="What is the office address?",
+                classes="govuk-fieldset__legend--l",
+                isPageHeading=True,
+            )
+        ).model_dump(exclude_defaults=True)
+    }
 
     def get_user_export_application(self) -> ECILUserExportApplication:
         instance, _ = ECILUserExportApplication.objects.get_or_create(

@@ -53,9 +53,6 @@ class CreateImportApplicationForm(forms.Form):
                 "address_3__icontains",
                 "address_4__icontains",
                 "address_5__icontains",
-                "address_6__icontains",
-                "address_7__icontains",
-                "address_8__icontains",
             ),
             dependent_fields={"importer": "importer"},
         ),
@@ -92,9 +89,6 @@ class CreateImportApplicationForm(forms.Form):
                 "address_3__icontains",
                 "address_4__icontains",
                 "address_5__icontains",
-                "address_6__icontains",
-                "address_7__icontains",
-                "address_8__icontains",
             ),
             # Key is a name of a field in a form.
             # Value is a name of a field in a model (used in `queryset`).

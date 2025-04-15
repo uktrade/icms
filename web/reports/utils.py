@@ -142,9 +142,6 @@ def format_importer_address(ia: QuerySet) -> str:
         ia["importer_address_3"],
         ia["importer_address_4"],
         ia["importer_address_5"],
-        ia["importer_address_6"],
-        ia["importer_address_7"],
-        ia["importer_address_8"],
         ia["importer_postcode"],
     ]
     return ", ".join(f for f in address if f)
