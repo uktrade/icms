@@ -332,6 +332,13 @@ def is_user_org_admin(user: User, org: ORGANISATION) -> bool:
             raise ValueError(f"Unknown org {org}")
 
 
+def is_user_agent_of_org(user: User, org: ORGANISATION) -> bool:
+    """Return True if the user is an agent of the supplied organisation."""
+    obj_perms = get_org_obj_permissions(org)
+
+    return user.has_perm(obj_perms.is_agent, org)
+
+
 def constabulary_get_contacts(
     constabulary: Constabulary, *, perms: list[str] | None = None
 ) -> QuerySet[User]:

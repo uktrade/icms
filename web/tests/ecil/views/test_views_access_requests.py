@@ -10,10 +10,10 @@ from web.models.shared import YesNoChoices
 
 class TestExporterAccessRequestTypeFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client, prototype_user):
-        self.user = prototype_user
+    def setup(self, prototype_export_client, prototype_export_user):
+        self.user = prototype_export_user
         self.url = reverse("ecil:access_request:new")
-        self.client = prototype_client
+        self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)
@@ -43,9 +43,9 @@ class TestExporterAccessRequestTypeFormView:
 
 class TestExporterAccessRequestMultiStepFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client, prototype_user):
-        self.user = prototype_user
-        self.client = prototype_client
+    def setup(self, prototype_export_client, prototype_export_user):
+        self.user = prototype_export_user
+        self.client = prototype_export_client
 
     def get_url(self, step: str) -> str:
         return reverse("ecil:access_request:exporter_step_form", kwargs={"step": step})
@@ -134,9 +134,9 @@ class TestExporterAccessRequestMultiStepFormView:
 
 class TestExporterAccessRequestAgentMultiStepFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client, prototype_user):
-        self.user = prototype_user
-        self.client = prototype_client
+    def setup(self, prototype_export_client, prototype_export_user):
+        self.user = prototype_export_user
+        self.client = prototype_export_client
 
     def get_url(self, step: str) -> str:
         return reverse("ecil:access_request:exporter_agent_step_form", kwargs={"step": step})
@@ -239,8 +239,8 @@ class TestExporterAccessRequestAgentMultiStepFormView:
 
 class TestExporterAccessRequestMultiStepFormSummaryView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client):
-        self.client = prototype_client
+    def setup(self, prototype_export_client):
+        self.client = prototype_export_client
         self.url = reverse("ecil:access_request:exporter_step_form_summary")
 
     def test_permission(self, ilb_admin_client):
@@ -273,8 +273,8 @@ class TestExporterAccessRequestMultiStepFormSummaryView:
 
 class TestExporterAccessRequestAgentMultiStepFormSummaryView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client):
-        self.client = prototype_client
+    def setup(self, prototype_export_client):
+        self.client = prototype_export_client
         self.url = reverse("ecil:access_request:exporter_agent_step_form_summary")
 
     def test_permission(self, ilb_admin_client):
@@ -309,9 +309,9 @@ class TestExporterAccessRequestAgentMultiStepFormSummaryView:
 
 class TestExporterAccessRequestConfirmRemoveCountryFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client, prototype_user):
-        self.user = prototype_user
-        self.client = prototype_client
+    def setup(self, prototype_export_client, prototype_export_user):
+        self.user = prototype_export_user
+        self.client = prototype_export_client
 
         self.exporter_country_url = reverse(
             "ecil:access_request:exporter_step_form", kwargs={"step": "export-countries"}
@@ -385,16 +385,16 @@ class TestExporterAccessRequestConfirmRemoveCountryFormView:
 
 class TestAccessRequestSubmittedDetailView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client, prototype_user, exporter_access_request):
+    def setup(self, prototype_export_client, prototype_export_user, exporter_access_request):
         self.ear = exporter_access_request
-        exporter_access_request.submitted_by = prototype_user
+        exporter_access_request.submitted_by = prototype_export_user
         exporter_access_request.save()
 
         self.url = reverse(
             "ecil:access_request:submitted_detail",
             kwargs={"access_request_pk": exporter_access_request.pk},
         )
-        self.client = prototype_client
+        self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)

@@ -32,6 +32,21 @@ urlpatterns = [
                     name="exporter-office-add",
                 ),
                 path(
+                    "exporter-agent/",
+                    views.CreateExportApplicationExporterAgentFormView.as_view(),
+                    name="exporter-agent",
+                ),
+                path(
+                    "exporter-agent-office/",
+                    views.CreateExportApplicationExporterAgentOfficeFormView.as_view(),
+                    name="exporter-agent-office",
+                ),
+                path(
+                    "export-agent-office/add/",
+                    views.CreateExportApplicationExporterAgentOfficeCreateView.as_view(),
+                    name="exporter-agent-office-add",
+                ),
+                path(
                     "summary/",
                     views.CreateExportApplicationSummaryUpdateView.as_view(),
                     name="summary",

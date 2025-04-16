@@ -9,12 +9,12 @@ from web.ecil.gds.forms import fields
 
 class TestCFSApplicationReferenceUpdateView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client, prototype_user, prototype_cfs_app_in_progress):
+    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.url = reverse(
             "ecil:export-cfs:application-reference", kwargs={"application_pk": self.app.pk}
         )
-        self.client = prototype_client
+        self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)
@@ -57,13 +57,13 @@ class TestCFSApplicationReferenceUpdateView:
 
 class TestCFSApplicationContactUpdateView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client, prototype_user, prototype_cfs_app_in_progress):
+    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
-        self.user = prototype_user
+        self.user = prototype_export_user
         self.url = reverse(
             "ecil:export-cfs:application-contact", kwargs={"application_pk": self.app.pk}
         )
-        self.client = prototype_client
+        self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)
@@ -119,12 +119,12 @@ class TestCFSApplicationContactUpdateView:
 
 class TestCFSScheduleCreateView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client, prototype_user, prototype_cfs_app_in_progress):
+    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.url = reverse(
             "ecil:export-cfs:schedule-create", kwargs={"application_pk": self.app.pk}
         )
-        self.client = prototype_client
+        self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)

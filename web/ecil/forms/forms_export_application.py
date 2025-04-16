@@ -166,6 +166,135 @@ class CreateExportApplicationSummaryForm(gds_forms.GDSModelForm):
         self.fields["exporter_office"].choices = get_office_choices(offices)
 
 
+class ExportApplicationExporterAgentForm(gds_forms.GDSModelForm):
+    agent = gds_forms.GovUKRadioInputField(
+        label="Which agent company are you working for?",
+        error_messages={"required": "Select the company you want an export certificate for."},
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
+    )
+
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ECILUserExportApplication
+        fields = ["agent"]
+
+    def clean_agent(self) -> Exporter | None:
+        exporter_pk = self.cleaned_data["agent"]
+
+        if exporter_pk == gds_forms.GovUKRadioInputField.NONE_OF_THESE:
+            # None is a valid option when NONE_OF_THESE is chosen.
+            self.fields["agent"].required = False
+
+            return None
+
+        return self.exporters.get(pk=exporter_pk)
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        if self.instance.exporter:
+            # Agent exporters linked to the main exporter that the user is an agent of.
+            agent_exporters = get_user_agent_exporters(self.instance.created_by)
+            self.exporters = agent_exporters.filter(main_exporter=self.instance.exporter)
+        else:
+            self.exporters = Exporter.objects.none()
+
+        self.fields["agent"].choices = get_exporter_choices(self.exporters)
+
+
+class ExportApplicationExporterAgentOfficeForm(gds_forms.GDSModelForm):
+    agent_office = gds_forms.GovUKRadioInputField(
+        label="What is the agent company’s office address?",
+        error_messages={"required": "Select the agent company's offices address."},
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
+    )
+
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ECILUserExportApplication
+        fields = ["agent_office"]
+
+    def clean_agent_office(self) -> Office | None:
+        office_pk = self.cleaned_data["agent_office"]
+
+        if office_pk == gds_forms.GovUKRadioInputField.NONE_OF_THESE:
+            # None is a valid option when NONE_OF_THESE is chosen.
+            self.fields["agent_office"].required = False
+            return None
+
+        return self.offices.get(pk=office_pk)
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        if self.instance.agent:
+            # Agent exporters the user is an agent of.
+            agent_exporters = get_user_agent_exporters(self.instance.created_by)
+            selected_agent = agent_exporters.filter(pk=self.instance.agent.pk).first()
+        else:
+            selected_agent = None
+
+        if selected_agent:
+            self.offices = selected_agent.offices.filter(is_active=True)
+        else:
+            self.offices = Office.objects.none()
+
+        self.fields["agent_office"].choices = get_office_choices(self.offices)
+
+
+class CreateExportApplicationAgentSummaryForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ECILUserExportApplication
+        fields = [
+            "app_type",
+            "exporter",
+            "exporter_office",
+            "agent",
+            "agent_office",
+        ]
+        labels = {
+            "app_type": "Which certificate are you applying for?",
+            "exporter": "Which company do you want an export certificate for?",
+            "exporter_office": "Where will the certificate be issued to?",
+            "agent": "Which agent company are you working for?",
+            "agent_office": "What is the agent company’s office address?",
+        }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        # Set exporter choices
+        exporters = get_user_editable_exporters(self.instance.created_by)
+        self.fields["exporter"].choices = get_exporter_choices(exporters)
+
+        # Set exporter_office choices
+        offices = get_user_offices(self.instance.created_by, self.instance.exporter)
+        self.fields["exporter_office"].choices = get_office_choices(offices)
+
+        # Set agent choices
+        if self.instance.exporter:
+            # Agent exporters linked to the main exporter that the user is an agent of.
+            agent_exporters = get_user_agent_exporters(self.instance.created_by).filter(
+                main_exporter=self.instance.exporter
+            )
+        else:
+            agent_exporters = Exporter.objects.none()
+
+        self.fields["agent"].choices = get_exporter_choices(agent_exporters)
+
+        # Set agent_office choices
+        if self.instance.agent:
+            # Agent exporters the user is an agent of.
+            selected_agent = agent_exporters.filter(pk=self.instance.agent.pk).first()
+        else:
+            selected_agent = None
+
+        if selected_agent:
+            agent_offices = selected_agent.offices.filter(is_active=True)
+        else:
+            agent_offices = Office.objects.none()
+
+        self.fields["agent_office"].choices = get_office_choices(agent_offices)
+
+
 class ExportApplicationExportCountriesForm(gds_forms.GDSForm):
     # Can't use a ModelForm here as "countries" is a ManyToMany model field.
     # There are no GDS components that can render a select multiple form field.
@@ -235,6 +364,16 @@ def get_user_editable_exporters(user: User) -> QuerySet[Exporter]:
         [Perms.obj.exporter.edit, Perms.obj.exporter.is_agent],
         Exporter.objects.filter(is_active=True, main_exporter__isnull=True),
         any_perm=True,
+    )
+
+
+def get_user_agent_exporters(user: User) -> QuerySet[Exporter]:
+    """Return exporters that the user is an agent of."""
+
+    return get_objects_for_user(
+        user,
+        [Perms.obj.exporter.edit],
+        Exporter.objects.filter(is_active=True, main_exporter__isnull=False),
     )
 
 

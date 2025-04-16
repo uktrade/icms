@@ -110,7 +110,7 @@ class TestUserDataView(BaseTestDataView):
         users = result["results"]
         email = at_example("access_request_user")
 
-        assert len(users) == 22
+        assert len(users) == 23
         assert users[0] == {
             "id": 1,
             "title": None,
