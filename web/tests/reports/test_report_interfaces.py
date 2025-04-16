@@ -1408,17 +1408,20 @@ class TestActiveUserInterface:
         self,
         importer,
         exporter,
+        agent_exporter,
         ilb_admin_two,
         importer_client,
         importer_one_contact,
-        prototype_user,
+        prototype_export_user,
+        prototype_export_agent_user,
     ):
         importer_client.force_login(importer_one_contact)
         # Makes an admin user an importer to make sure they are excluded from the report
         organisation_add_contact(importer, ilb_admin_two)
 
-        # Not required in test
-        organisation_remove_contact(exporter, prototype_user)
+        # Prototype users not required in test
+        organisation_remove_contact(exporter, prototype_export_user)
+        organisation_remove_contact(agent_exporter, prototype_export_agent_user)
 
         user_email = importer_one_contact.emails.get(is_primary=True)
         user_email.email = "I1_main_contact_alt_email@example.com"  # /PS-IGNORE

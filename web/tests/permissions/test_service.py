@@ -27,6 +27,7 @@ from web.permissions.service import (
     get_user_exporter_permissions,
     get_user_importer_permissions,
     get_users_with_permission,
+    is_user_agent_of_org,
     is_user_org_admin,
     organisation_add_contact,
     organisation_get_contacts,
@@ -350,7 +351,8 @@ class TestPermissionsService:
             "E1_main_contact",
             "E1_secondary_contact",
             "E2_main_contact",
-            "prototype_user",
+            "prototype_export_agent_user",
+            "prototype_export_user",
         ]
 
         ilb_admin_users = get_users_with_permission(Perms.sys.ilb_admin).values_list(
@@ -644,6 +646,29 @@ class TestPermissionsService:
         assert [
             user.email for user in get_case_officers_for_process_type(process_type)
         ] == expected_email_addresses
+
+    def test_is_user_agent_of_org(self):
+        tests = [
+            (self.importer, self.importer_contact, False),
+            (self.importer, self.importer_agent_contact, True),
+            (self.importer, self.exporter_contact, False),
+            (self.importer, self.exporter_agent_contact, False),
+            (self.agent_importer, self.importer_contact, False),
+            (self.agent_importer, self.importer_agent_contact, False),
+            (self.agent_importer, self.exporter_contact, False),
+            (self.agent_importer, self.exporter_agent_contact, False),
+            (self.exporter, self.importer_contact, False),
+            (self.exporter, self.importer_agent_contact, False),
+            (self.exporter, self.exporter_contact, False),
+            (self.exporter, self.exporter_agent_contact, True),
+            (self.agent_exporter, self.importer_contact, False),
+            (self.agent_exporter, self.importer_agent_contact, False),
+            (self.agent_exporter, self.exporter_contact, False),
+            (self.agent_exporter, self.exporter_agent_contact, False),
+        ]
+
+        for org, user, is_agent in tests:
+            assert is_user_agent_of_org(user, org) is is_agent
 
 
 def test_filter_users_with_org_access():

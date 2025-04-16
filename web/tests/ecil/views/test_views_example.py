@@ -10,9 +10,9 @@ from web.models import Commodity, ECILExample, ECILMultiStepExample
 
 class TestGDSTestPageView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client):
+    def setup(self, prototype_export_client):
         self.url = reverse("ecil:example:gds_example")
-        self.client = prototype_client
+        self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)
@@ -29,9 +29,9 @@ class TestGDSTestPageView:
 
 class TestGDSFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client):
+    def setup(self, prototype_export_client):
         self.url = reverse("ecil:example:gds_form_example")
-        self.client = prototype_client
+        self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)
@@ -64,9 +64,9 @@ class TestGDSFormView:
 
 class TestGDSModelFormCreateView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client):
+    def setup(self, prototype_export_client):
         self.url = reverse("ecil:example:gds_model_form_example")
-        self.client = prototype_client
+        self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)
@@ -118,9 +118,9 @@ class TestGDSModelFormCreateView:
 
 class TestGDSConditionalModelFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client):
+    def setup(self, prototype_export_client):
         self.url = reverse("ecil:example:gds_conditional_model_form_example")
-        self.client = prototype_client
+        self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)
@@ -142,8 +142,8 @@ class TestGDSConditionalModelFormView:
 
 class TestECILMultiStepFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client):
-        self.client = prototype_client
+    def setup(self, prototype_export_client):
+        self.client = prototype_export_client
 
     def get_url(self, step: str) -> str:
         return reverse("ecil:example:step_form", kwargs={"step": step})
@@ -190,8 +190,8 @@ class TestECILMultiStepFormView:
 
 class TestECILMultiStepFormSummaryView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client):
-        self.client = prototype_client
+    def setup(self, prototype_export_client):
+        self.client = prototype_export_client
 
         self.url = reverse("ecil:example:step_form_summary")
 

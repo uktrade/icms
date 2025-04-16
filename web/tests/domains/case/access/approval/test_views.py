@@ -22,9 +22,9 @@ from web.tests.helpers import (
 
 
 @pytest.fixture(autouse=True)
-def remove_prototype_user(prototype_user, exporter):
+def remove_prototype_user(prototype_export_user, exporter):
     # Linking the prototype user to an exporter breaks several of these tests.
-    organisation_remove_contact(exporter, prototype_user)
+    organisation_remove_contact(exporter, prototype_export_user)
 
 
 class TestManageAccessApprovalView(AuthTestCase):

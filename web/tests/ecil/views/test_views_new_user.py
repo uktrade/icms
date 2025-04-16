@@ -9,9 +9,9 @@ from web.ecil.gds import forms as gds_forms
 
 class TestExporterLoginStartView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client):
+    def setup(self, prototype_export_client):
         self.url = reverse("ecil:new_user:exporter_login_start")
-        self.client = prototype_client
+        self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)
@@ -34,10 +34,10 @@ class TestExporterLoginStartView:
 
 class TestNewUserUpdateNameView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client, prototype_user):
-        self.user = prototype_user
+    def setup(self, prototype_export_client, prototype_export_user):
+        self.user = prototype_export_user
         self.url = reverse("ecil:new_user:update_name")
-        self.client = prototype_client
+        self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)
@@ -54,8 +54,8 @@ class TestNewUserUpdateNameView:
         assert response.context["form"].instance.pk == self.user.pk
 
     def test_post(self):
-        assert self.user.first_name == "prototype_user_first_name"
-        assert self.user.last_name == "prototype_user_last_name"
+        assert self.user.first_name == "prototype_export_user_first_name"
+        assert self.user.last_name == "prototype_export_user_last_name"
 
         form_data = {"first_name": "John", "last_name": "Doe"}
         response = self.client.post(self.url, data=form_data)
@@ -70,10 +70,10 @@ class TestNewUserUpdateNameView:
 
 class TestNewUserExporterTriageFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client, prototype_user):
-        self.user = prototype_user
+    def setup(self, prototype_export_client, prototype_export_user):
+        self.user = prototype_export_user
         self.url = reverse("ecil:new_user:exporter_triage")
-        self.client = prototype_client
+        self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)
@@ -97,10 +97,10 @@ class TestNewUserExporterTriageFormView:
 
 class TestNewUserExporterTriageSomethingElseView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_client, prototype_user):
-        self.user = prototype_user
+    def setup(self, prototype_export_client, prototype_export_user):
+        self.user = prototype_export_user
         self.url = reverse("ecil:new_user:something_else")
-        self.client = prototype_client
+        self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
         response = ilb_admin_client.get(self.url)

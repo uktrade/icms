@@ -92,7 +92,8 @@ class Command(BaseCommand):
         self.create_con_user(
             "con_user", linked_constabularies=["Nottingham", "Lincolnshire", "Derbyshire"]
         )
-        self.create_prototype_user("prototype_user")
+        self.create_prototype_export_user("prototype_export_user")
+        self.create_prototype_export_agent_user("prototype_export_agent_user")
 
         # enable disabled application types
         ImportApplicationType.objects.exclude(
@@ -320,13 +321,21 @@ class Command(BaseCommand):
 
         return user
 
-    def create_prototype_user(self, username):
+    def create_prototype_export_user(self, username):
         user = self.create_user(username)
         add_email(user)
         add_group(user, "ECIL Prototype User")
 
         exporter_one = Exporter.objects.get(name="Test Exporter 1")
         organisation_add_contact(exporter_one, user, assign_manage=True)
+
+    def create_prototype_export_agent_user(self, username):
+        user = self.create_user(username)
+        add_email(user)
+        add_group(user, "ECIL Prototype User")
+
+        exporter_one = Exporter.objects.get(name="Test Exporter 1 Agent 1")
+        organisation_add_contact(exporter_one, user)
 
 
 def add_email(user):

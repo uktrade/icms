@@ -30,7 +30,7 @@ from web.models import (
     User,
 )
 from web.models.shared import YesNoChoices
-from web.permissions import AppChecker, Perms, can_user_edit_org
+from web.permissions import AppChecker, Perms, can_user_edit_org, is_user_agent_of_org
 from web.types import AuthenticatedHttpRequest
 
 
@@ -122,7 +122,11 @@ class CreateExportApplicationExporterOfficeFormView(CreateExportApplicationBase,
     def get_success_url(self) -> str:
         # Valid options are either an office or None if "Another Office" has been selected
         if self.object.exporter_office:
-            response_url = reverse("ecil:export-application:summary")
+            if is_user_agent_of_org(self.request.user, self.object.exporter):
+                response_url = reverse("ecil:export-application:exporter-agent")
+            else:
+                response_url = reverse("ecil:export-application:summary")
+
         else:
             exporter = self.object.exporter
             if exporter and can_user_edit_org(self.request.user, exporter):
@@ -133,10 +137,54 @@ class CreateExportApplicationExporterOfficeFormView(CreateExportApplicationBase,
         return response_url
 
 
+class CreateExportApplicationExporterAgentFormView(CreateExportApplicationBase, UpdateView):
+    # UpdateView config
+    form_class = forms.ExportApplicationExporterAgentForm
+    template_name = "ecil/gds_form.html"
+
+    def get_back_link_url(self) -> str:
+        if self.from_summary:
+            return reverse("ecil:export-application:summary")
+
+        return reverse("ecil:export-application:exporter-office")
+
+    def get_success_url(self) -> str:
+        # Valid options are either an exporter or None if "Another Company" has been selected
+        if self.object.agent:
+            return reverse("ecil:export-application:exporter-agent-office")
+        else:
+            return reverse("ecil:export-application:another-exporter")
+
+
+class CreateExportApplicationExporterAgentOfficeFormView(CreateExportApplicationBase, UpdateView):
+    # UpdateView config
+    form_class = forms.ExportApplicationExporterAgentOfficeForm
+    template_name = "ecil/gds_form.html"
+
+    def get_back_link_url(self) -> str:
+        if self.from_summary:
+            return reverse("ecil:export-application:summary")
+
+        return reverse("ecil:export-application:exporter-agent")
+
+    def get_success_url(self) -> str:
+        # Valid options are either an office or None if "Another Office" has been selected
+        if self.object.agent_office:
+            response_url = reverse("ecil:export-application:summary")
+
+        else:
+            exporter = self.object.agent
+            if exporter and can_user_edit_org(self.request.user, exporter):
+                response_url = reverse("ecil:export-application:exporter-agent-office-add")
+            else:
+                response_url = reverse("ecil:export-application:another-exporter-office")
+
+        return response_url
+
+
 @method_decorator(transaction.atomic, name="post")
 class CreateExportApplicationSummaryUpdateView(CreateExportApplicationBase, SummaryUpdateView):
     # UpdateView config
-    form_class = forms.CreateExportApplicationSummaryForm
     template_name = "ecil/gds_summary_list.html"
     http_method_names = ["get", "post"]
     extra_context = {
@@ -144,7 +192,23 @@ class CreateExportApplicationSummaryUpdateView(CreateExportApplicationBase, Summ
         "below_h1_content": (
             "Check your details and the certificate details you have given are correct"
         ),
+        "submit_btn_label": "Submit and continue to application",
     }
+
+    def _is_agent_application(self) -> bool:
+        return self.object.exporter and is_user_agent_of_org(
+            self.request.user, self.object.exporter
+        )
+
+    def get_form_class(
+        self,
+    ) -> type[
+        forms.CreateExportApplicationAgentSummaryForm | forms.CreateExportApplicationSummaryForm
+    ]:
+        if self._is_agent_application():
+            return forms.CreateExportApplicationAgentSummaryForm
+        else:
+            return forms.CreateExportApplicationSummaryForm
 
     def get_summary_items(self, context: dict[str, Any]) -> dict[str, serializers.summary_list.Row]:
         submit_form = context["form"]
@@ -173,6 +237,29 @@ class CreateExportApplicationSummaryUpdateView(CreateExportApplicationBase, Summ
                 reverse("ecil:export-application:exporter-office"),
             ),
         ]
+
+        if self._is_agent_application():
+            if self.object.agent:
+                selected_exporter = self.object.agent.name
+            else:
+                selected_exporter = ""
+
+            if self.object.agent_office:
+                office_choices = dict(submit_form.fields["agent_office"].choices)
+                selected_office = office_choices.get(self.object.agent_office.pk, "")
+            else:
+                selected_office = ""
+
+            agent_rows = [
+                ("agent", selected_exporter, reverse("ecil:export-application:exporter-agent")),
+                (
+                    "agent_office",
+                    selected_office,
+                    reverse("ecil:export-application:exporter-agent-office"),
+                ),
+            ]
+
+            rows.extend(agent_rows)
 
         items = {}
         for field, display_value, edit_link in rows:
@@ -226,6 +313,9 @@ class CreateExportApplicationSummaryUpdateView(CreateExportApplicationBase, Summ
         return redirect(self.get_success_url())
 
     def get_back_link_url(self) -> str:
+        if self._is_agent_application():
+            return reverse("ecil:export-application:exporter-agent-office")
+
         return reverse("ecil:export-application:exporter-office")
 
     def get_success_url(self) -> str:
@@ -300,6 +390,61 @@ class CreateExportApplicationExporterOfficeCreateView(
         return reverse("ecil:export-application:exporter-office")
 
 
+class CreateExportApplicationExporterAgentOfficeCreateView(
+    LoginRequiredMixin, PermissionRequiredMixin, BackLinkMixin, CreateView
+):
+    # PermissionRequiredMixin config
+    permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
+
+    # CreateView config
+    model = Office
+    form_class = forms.ExportApplicationNewExporterOfficeForm
+    template_name = "ecil/export_application/add_exporter_office.html"
+
+    extra_context = {
+        "fieldset_kwargs": serializers.fieldset.FieldsetKwargs(
+            legend=serializers.fieldset.FieldsetLegend(
+                text="What is the office address?",
+                classes="govuk-fieldset__legend--l",
+                isPageHeading=True,
+            )
+        ).model_dump(exclude_defaults=True)
+    }
+
+    def get_user_export_application(self) -> ECILUserExportApplication:
+        instance, _ = ECILUserExportApplication.objects.get_or_create(
+            created_by=self.request.user,
+        )
+
+        return instance
+
+    def has_permission(self) -> bool:
+        has_user_perms = super().has_permission()
+
+        self.exporter = self.get_user_export_application().agent
+
+        return (
+            has_user_perms and self.exporter and can_user_edit_org(self.request.user, self.exporter)
+        )
+
+    def form_valid(
+        self, form: forms.ExportApplicationNewExporterOfficeForm
+    ) -> HttpResponseRedirect:
+        office = form.save(commit=False)
+        office.address_entry_type = Office.MANUAL
+        office.save()
+
+        self.exporter.offices.add(office)
+
+        return redirect(self.get_success_url())
+
+    def get_back_link_url(self) -> str:
+        return reverse("ecil:export-application:exporter-agent-office")
+
+    def get_success_url(self) -> str:
+        return reverse("ecil:export-application:exporter-agent-office")
+
+
 class CreateExportApplicationAnotherExporterTemplateView(
     LoginRequiredMixin, PermissionRequiredMixin, BackLinkMixin, TemplateView
 ):
@@ -313,7 +458,19 @@ class CreateExportApplicationAnotherExporterTemplateView(
         "create_access_request_url": reverse_lazy("ecil:access_request:new"),
     }
 
+    def get_user_export_application(self) -> ECILUserExportApplication:
+        instance, _ = ECILUserExportApplication.objects.get_or_create(
+            created_by=self.request.user,
+        )
+
+        return instance
+
     def get_back_link_url(self) -> str:
+        record = self.get_user_export_application()
+
+        if record.exporter and is_user_agent_of_org(self.request.user, record.exporter):
+            return reverse("ecil:export-application:exporter-agent")
+
         return reverse("ecil:export-application:exporter")
 
 
@@ -338,7 +495,19 @@ class CreateExportApplicationAnotherExporterOfficeTemplateView(
 
         return context
 
+    def get_user_export_application(self) -> ECILUserExportApplication:
+        instance, _ = ECILUserExportApplication.objects.get_or_create(
+            created_by=self.request.user,
+        )
+
+        return instance
+
     def get_back_link_url(self) -> str:
+        record = self.get_user_export_application()
+
+        if record.exporter and is_user_agent_of_org(self.request.user, record.exporter):
+            return reverse("ecil:export-application:exporter-agent-office")
+
         return reverse("ecil:export-application:exporter-office")
 
 

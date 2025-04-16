@@ -64,9 +64,9 @@ from web.tests.helpers import (
 
 
 @pytest.fixture(autouse=True)
-def remove_prototype_user(prototype_user, exporter):
+def remove_prototype_user(prototype_export_user, exporter):
     # Linking the prototype user to an exporter breaks several of these tests.
-    organisation_remove_contact(exporter, prototype_user)
+    organisation_remove_contact(exporter, prototype_export_user)
 
 
 def default_personalisation() -> dict:
@@ -1189,7 +1189,7 @@ class TestEmails(AuthTestCase):
         mailshot.status = Mailshot.Statuses.RETRACTED
         mailshot.save()
         emails.send_retract_mailshot_email(mailshot)
-        assert self.mock_gov_notify_client.send_email_notification.call_count == 8
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 9
         expected_import_personalisation = default_personalisation() | {
             "body": "retract message",
             "icms_url": get_importer_site_domain(),
@@ -1248,7 +1248,7 @@ class TestEmails(AuthTestCase):
         mailshot.status = Mailshot.Statuses.PUBLISHED
         mailshot.save()
         emails.send_mailshot_email(mailshot)
-        assert self.mock_gov_notify_client.send_email_notification.call_count == 8
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 9
         expected_import_personalisation = default_personalisation() | {
             "body": "original message",
             "icms_url": get_importer_site_domain(),
