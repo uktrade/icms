@@ -26,17 +26,6 @@ class Office(models.Model):
         max_length=100, null=True, blank=True, verbose_name="Address line 5"
     )
 
-    # Extra address_x fields to be deleted in next release.
-    address_6 = models.CharField(
-        max_length=100, null=True, blank=True, verbose_name="Address line 6"
-    )
-    address_7 = models.CharField(
-        max_length=100, null=True, blank=True, verbose_name="Address line 7"
-    )
-    address_8 = models.CharField(
-        max_length=100, null=True, blank=True, verbose_name="Address line 8"
-    )
-
     postcode = models.CharField(max_length=8, null=True)
 
     eori_number = models.CharField(
