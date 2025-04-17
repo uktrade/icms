@@ -1,11 +1,11 @@
-from http import HTTPStatus
 from typing import Any
 
 import pytest
 from django.urls import reverse
 
 from web.models import UserFeedbackSurvey
-from web.tests.api_auth import make_testing_hawk_sender
+
+from ._base import BaseTestDataView
 
 
 def at_example(prefix: str) -> str:
@@ -15,177 +15,87 @@ def at_example(prefix: str) -> str:
 DT_STRING = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
-class BaseTestDataView:
-    def test_authentication_failure(self):
-        response = self.client.get(self.url)
-        assert response.status_code == HTTPStatus.BAD_REQUEST
-
-    def test_authentication_failure_hmrc_creds(self):
-        sender = make_testing_hawk_sender(
-            "GET", self.url, api_type="hmrc", content="", content_type=""
-        )
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=sender.request_header)
-        assert response.status_code == HTTPStatus.BAD_REQUEST
-
-    def test_authetication(self):
-        sender = make_testing_hawk_sender(
-            "GET", self.url, api_type="data_workspace", content="", content_type=""
-        )
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=sender.request_header)
-        assert response.status_code == HTTPStatus.OK
-        result = response.json()
-        self.check_result(result)
-
-    def check_result(self, result: list[dict[str, Any]]) -> None:
-        assert True
-
-
-class TestMetaDataView(BaseTestDataView):
+class TestExporterDataView(BaseTestDataView):
     @pytest.fixture(autouse=True)
     def _setup(self, cw_client):
         self.client = cw_client
-        self.url = reverse("data-workspace:metadata")
+        self.url = reverse("data-workspace:exporter-data", kwargs={"version": "v0"})
 
     def check_result(self, result: list[dict[str, Any]]) -> None:
-        assert result == {
-            "tables": [
-                {
-                    "endpoint": "/data-workspace/v0/users/",
-                    "fields": [
-                        {
-                            "name": "id",
-                            "primary_key": True,
-                            "type": "Integer",
-                        },
-                        {
-                            "name": "title",
-                            "nullable": True,
-                            "type": "String",
-                        },
-                        {
-                            "name": "first_name",
-                            "type": "String",
-                        },
-                        {
-                            "name": "last_name",
-                            "type": "String",
-                        },
-                        {
-                            "name": "email",
-                            "type": "String",
-                        },
-                        {
-                            "name": "primary_email_address",
-                            "nullable": True,
-                            "type": "String",
-                        },
-                        {
-                            "name": "organisation",
-                            "nullable": True,
-                            "type": "String",
-                        },
-                        {
-                            "name": "department",
-                            "nullable": True,
-                            "type": "String",
-                        },
-                        {
-                            "name": "job_title",
-                            "nullable": True,
-                            "type": "String",
-                        },
-                        {
-                            "name": "date_joined",
-                            "nullable": True,
-                            "type": "Datetime",
-                        },
-                        {
-                            "name": "last_login",
-                            "nullable": True,
-                            "type": "Datetime",
-                        },
-                        {
-                            "name": "exporter_ids",
-                            "type": "ArrayInteger",
-                        },
-                        {
-                            "name": "importer_ids",
-                            "type": "ArrayInteger",
-                        },
-                        {
-                            "name": "group_names",
-                            "type": "ArrayString",
-                        },
-                    ],
-                    "indexes": [],
-                    "table_name": "user",
-                },
-                {
-                    "endpoint": "/data-workspace/v0/user-surveys/",
-                    "fields": [
-                        {
-                            "name": "id",
-                            "primary_key": True,
-                            "type": "Integer",
-                        },
-                        {
-                            "name": "satisfaction",
-                            "type": "String",
-                        },
-                        {
-                            "name": "issues",
-                            "type": "ArrayString",
-                        },
-                        {
-                            "name": "issue_details",
-                            "type": "String",
-                        },
-                        {
-                            "name": "find_service",
-                            "type": "String",
-                        },
-                        {
-                            "name": "find_service_details",
-                            "type": "String",
-                        },
-                        {
-                            "name": "additional_support",
-                            "type": "String",
-                        },
-                        {
-                            "name": "service_improvements",
-                            "type": "String",
-                        },
-                        {
-                            "name": "future_contact",
-                            "type": "String",
-                        },
-                        {
-                            "name": "referrer_path",
-                            "type": "String",
-                        },
-                        {
-                            "name": "site",
-                            "type": "String",
-                        },
-                        {
-                            "name": "process_id",
-                            "nullable": True,
-                            "type": "Integer",
-                        },
-                        {
-                            "name": "created_by_id",
-                            "type": "Integer",
-                        },
-                        {
-                            "name": "created_datetime",
-                            "type": "Datetime",
-                        },
-                    ],
-                    "indexes": [],
-                    "table_name": "userfeedbacksurvey",
-                },
-            ]
+        assert result["next"] == ""
+        exporters = result["results"]
+        assert len(exporters) == 4
+        assert exporters[0] == {
+            "id": 1,
+            "is_active": True,
+            "name": "Test Exporter 1",
+            "registered_number": "111",
+            "comments": None,
+            "main_exporter_id": None,
+            "exclusive_correspondence": True,
+        }
+
+
+class TestImporterDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client):
+        self.client = cw_client
+        self.url = reverse("data-workspace:importer-data", kwargs={"version": "v0"})
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        importers = result["results"]
+        assert len(importers) == 5
+        assert importers[0] == {
+            "id": 1,
+            "is_active": True,
+            "type": "ORGANISATION",
+            "name": "Test Importer 1",
+            "registered_number": None,
+            "eori_number": "GB1111111111ABCDE",  # /PS-IGNORE
+            "region_origin": None,
+            "user_id": None,
+            "comments": None,
+            "main_importer_id": None,
+        }
+
+        assert importers[1] == {
+            "id": 2,
+            "is_active": True,
+            "type": "ORGANISATION",
+            "name": "Test Importer 1 Agent 1",
+            "registered_number": None,
+            "eori_number": None,
+            "region_origin": None,
+            "user_id": None,
+            "comments": None,
+            "main_importer_id": 1,
+        }
+
+
+class TestOfficeDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client):
+        self.client = cw_client
+        self.url = reverse("data-workspace:office-data", kwargs={"version": "v0"})
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        offices = result["results"]
+        assert len(offices) == 9
+        assert offices[0] == {
+            "id": 1,
+            "is_active": True,
+            "address_1": "I1 address line 1",
+            "address_2": "I1 address line 2",
+            "address_3": None,
+            "address_4": None,
+            "address_5": None,
+            "postcode": "BT180LZ",  # /PS-IGNORE
+            "eori_number": "GB0123456789ABCDE",  # /PS-IGNORE
+            "address_entry_type": "EMPTY",
+            "importer_id": 1,
+            "exporter_id": None,
         }
 
 

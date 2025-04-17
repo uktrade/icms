@@ -2,21 +2,12 @@ import http
 from typing import Any, ClassVar
 
 import pydantic
-from django.contrib.auth.models import Group
-from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import F, FilteredRelation, OuterRef, Q, QuerySet
+from django.db.models import QuerySet
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.views.generic import ListView, View
 
-from web.models import (
-    ExporterUserObjectPermission,
-    ImporterUserObjectPermission,
-    User,
-    UserFeedbackSurvey,
-)
+from web.data_workspace import serializers
 from web.utils.api.auth import HawkDataWorkspaceMixin
-
-from . import serializers
 
 VERSION = 0
 
@@ -88,6 +79,10 @@ class DataViewBase(HawkDataWorkspaceMixin, ListView):
         data_serializer = self.get_data_serializer()
         return list(data_serializer.model_fields.keys())
 
+    def get_queryset_value_kwargs(self) -> dict[str, Any]:
+        """Returns a dict of values to restrict the fields returned by get_queryset"""
+        return {}
+
     def get_queryset_filters(self) -> dict[str, Any]:
         """Returns a dict of filters to be used in get_queryset"""
         return {}
@@ -99,42 +94,5 @@ class DataViewBase(HawkDataWorkspaceMixin, ListView):
             qs.filter(**self.get_queryset_filters())
             .annotate(**self.get_queryset_annotations())
             .order_by(self.order_by)
-            .values(*self.get_queryset_values())
+            .values(*self.get_queryset_values(), **self.get_queryset_value_kwargs())
         )
-
-
-class UserDataView(DataViewBase):
-    # View Config
-    model = User
-    qs_serializer = serializers.Users
-    data_serializer = serializers.UserSerializer
-
-    def get_queryset_annotations(self) -> dict[str, Any]:
-        return {
-            "group_names": ArraySubquery(
-                Group.objects.filter(user__pk=OuterRef("pk"))
-                .values_list("name", flat=True)
-                .distinct()
-            ),
-            "exporter_ids": ArraySubquery(
-                ExporterUserObjectPermission.objects.filter(user__pk=OuterRef("pk"))
-                .values_list("content_object_id", flat=True)
-                .distinct()
-            ),
-            "importer_ids": ArraySubquery(
-                ImporterUserObjectPermission.objects.filter(user__pk=OuterRef("pk"))
-                .values_list("content_object_id", flat=True)
-                .distinct()
-            ),
-            "primary_email": FilteredRelation("emails", condition=Q(emails__is_primary=True)),
-            "primary_email_address": F("primary_email__email"),
-        }
-
-    def get_queryset_filters(self) -> dict[str, Any]:
-        return {"pk__gt": 0}
-
-
-class UserFeedbackSurveyDataView(DataViewBase):
-    model = UserFeedbackSurvey
-    qs_serializer = serializers.UserFeedbackSurveys
-    data_serializer = serializers.UserFeedbackSurveySerializer
