@@ -26,6 +26,7 @@ from web.domains.chief.types import (
     SanctionsLicenceData,
 )
 from web.flow.models import ProcessTypes
+from web.models import SILGoodsSectionNI
 
 
 @pytest.mark.parametrize(
@@ -121,6 +122,19 @@ class TestImporterData:
 
 def test_fa_sil_serializer(fa_sil_app_processing):
     app = fa_sil_app_processing
+
+    # Manually add a section_ni goods line
+    app.section_ni = True
+    app.save()
+
+    SILGoodsSectionNI.objects.create(
+        import_application=app,
+        description="Test Section NI Goods",
+        quantity=12345.0,
+        description_original="Test Section NI Goods",
+        quantity_original=12345,
+    )
+
     expected = LicenceDataPayload(
         licence=FirearmLicenceData(
             type="SIL",
@@ -190,10 +204,19 @@ def test_fa_sil_serializer(fa_sil_app_processing):
                     controlled_by=ControlledByEnum.QUANTITY,
                     unit=QuantityCodeEnum.UNIT_NUMBER,
                 ),
+                FirearmGoodsData(
+                    description="Test Section NI Goods",
+                    quantity=12345.0,
+                    controlled_by=ControlledByEnum.QUANTITY,
+                    unit=QuantityCodeEnum.NUMBER,
+                ),
             ],
         )
     )
-    assert expected == fa_sil_serializer(app, "insert", "1234")
+
+    actual = fa_sil_serializer(app, "insert", "1234")
+
+    assert expected == actual
 
 
 def test_fa_dfl_serializer(fa_dfl_app_pre_sign):
