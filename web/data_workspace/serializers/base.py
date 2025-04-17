@@ -2,20 +2,23 @@ import datetime as dt
 from decimal import Decimal
 from types import UnionType
 
-from django.urls import reverse
 from pydantic import BaseModel
 
+# Config to map the type annotations with the data type in data workspace
+# annotation: (data_type, nullable)
 ANNOTATION_CONF: dict[type | UnionType, tuple[str, bool]] = {
-    int: ("Integer", False),
-    int | None: ("Integer", True),
-    str: ("String", False),
-    str | None: ("String", True),
-    dt.datetime: ("Datetime", False),
-    dt.datetime | None: ("Datetime", True),
+    bool: ("Boolean", False),
+    bool | None: ("Boolean", True),
     Decimal: ("Decimal", False),
     Decimal | None: ("Decimal", True),
+    dt.datetime: ("Datetime", False),
+    dt.datetime | None: ("Datetime", True),
+    int: ("Integer", False),
+    int | None: ("Integer", True),
     list[int]: ("ArrayInteger", False),
     list[str]: ("ArrayString", False),
+    str: ("String", False),
+    str | None: ("String", True),
 }
 
 
@@ -92,59 +95,3 @@ class BaseSerializer(BaseModel):
 
 class BaseResultsSerializer(BaseModel):
     next: str | None = None
-
-
-class UserSerializer(BaseSerializer):
-    id: int
-    title: str | None
-    first_name: str
-    last_name: str
-    email: str
-    primary_email_address: str | None
-    organisation: str | None
-    department: str | None
-    job_title: str | None
-    date_joined: dt.datetime | None
-    last_login: dt.datetime | None
-    exporter_ids: list[int]
-    importer_ids: list[int]
-    group_names: list[str]
-
-    @staticmethod
-    def url() -> str:
-        return reverse("data-workspace:user-data", kwargs={"version": "v0"})
-
-
-class Users(BaseResultsSerializer):
-    results: list[UserSerializer]
-
-
-class UserFeedbackSurveySerializer(BaseSerializer):
-    id: int
-    satisfaction: str
-    issues: list[str]
-    issue_details: str
-    find_service: str
-    find_service_details: str
-    additional_support: str
-    service_improvements: str
-    future_contact: str
-    referrer_path: str
-    site: str
-    process_id: int | None
-    created_by_id: int
-    created_datetime: dt.datetime
-
-    @staticmethod
-    def url() -> str:
-        return reverse("data-workspace:user-survey-data", kwargs={"version": "v0"})
-
-
-class UserFeedbackSurveys(BaseResultsSerializer):
-    results: list[UserFeedbackSurveySerializer]
-
-
-DATA_SERIALIZERS: list[type[BaseSerializer]] = [
-    UserSerializer,
-    UserFeedbackSurveySerializer,
-]

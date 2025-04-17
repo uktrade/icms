@@ -5472,3 +5472,11 @@ f"\n{office.postcode
 Django 5.1.8
 self.get_summary_items(context
 SummaryUpdateView
+BaseResultsSerializer
+BaseSerializer
+ImporterSerializer
+UserSerializer
+Boolean
+MetadataView
+UserFeedbackSurveyDataView
+OfficeSerializer
