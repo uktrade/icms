@@ -374,7 +374,7 @@ def cfs_edit_schedule(
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
-            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+            application.schedules.select_for_update(), pk=schedule_pk
         )
 
         if request.method == "POST":
@@ -474,7 +474,7 @@ def cfs_delete_schedule(
         check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
-        schedule: CFSSchedule = application.schedules.get(pk=schedule_pk)
+        schedule: CFSSchedule = get_object_or_404(application.schedules, pk=schedule_pk)
         schedule.delete()
 
         return redirect(reverse("export:cfs-edit", kwargs={"application_pk": application_pk}))
@@ -492,7 +492,7 @@ def cfs_set_manufacturer(
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
-            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+            application.schedules.select_for_update(), pk=schedule_pk
         )
 
         if request.method == "POST":
@@ -535,7 +535,7 @@ def cfs_delete_manufacturer(
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
-            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+            application.schedules.select_for_update(), pk=schedule_pk
         )
 
         schedule.manufacturer_name = None
@@ -569,7 +569,7 @@ def cfs_manage_products(
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
-            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+            application.schedules.select_for_update(), pk=schedule_pk
         )
 
         formset_kwargs = {
@@ -624,7 +624,7 @@ def product_spreadsheet_download_template(
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
-            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+            application.schedules.select_for_update(), pk=schedule_pk
         )
 
         return get_product_spreadsheet_response(schedule)
@@ -648,7 +648,7 @@ def product_spreadsheet_upload(
             case_progress.application_in_progress(application)
 
             schedule: CFSSchedule = get_object_or_404(
-                CFSSchedule.objects.select_for_update(), pk=schedule_pk
+                application.schedules.select_for_update(), pk=schedule_pk
             )
 
             form = ProductsFileUploadForm(request.POST, request.FILES)
