@@ -15,6 +15,7 @@ from web.models import (
     Task,
     User,
 )
+from web.tests.application_utils import create_in_progress_cfs_app
 from web.tests.auth.auth import AuthTestCase
 
 
@@ -555,3 +556,35 @@ class TestEditCFS(AuthTestCase):
 
         assert self.schedule.any_raw_materials == "no"
         assert self.schedule.final_product_end_use == ""
+
+    def test_user_unable_to_view_schedule_data_for_another_application(
+        self, exporter_two_client, exporter_two, exporter_two_office, exporter_two_contact
+    ):
+        e2_app = create_in_progress_cfs_app(
+            exporter_two_client, exporter_two, exporter_two_office, exporter_two_contact
+        )
+
+        e2_schedule_1 = e2_app.schedules.first()
+
+        # E2 contact should be able to edit the schedule
+        schedule_url = reverse(
+            "export:cfs-schedule-edit",
+            kwargs={
+                "application_pk": e2_app.pk,
+                "schedule_pk": e2_schedule_1.pk,
+            },
+        )
+
+        assert exporter_two_client.get(schedule_url).status_code == HTTPStatus.OK
+
+        # E2 contact should not be able to view the schedule of the E1 app
+        schedule_url = reverse(
+            "export:cfs-schedule-edit",
+            kwargs={
+                # Valid APP PK
+                "application_pk": e2_app.pk,
+                # Invalid schedule PK (it's for another application)
+                "schedule_pk": self.schedule.pk,
+            },
+        )
+        assert exporter_two_client.get(schedule_url).status_code == HTTPStatus.NOT_FOUND
