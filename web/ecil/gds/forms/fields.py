@@ -58,9 +58,9 @@ class GDSBoundField(forms.BoundField):
         if not self.help_text:
             return None
 
-        return serializers.common.InputHint(
-            text=self.help_text,
-        )
+        input_hint_kwargs = get_html_or_text(self.help_text)
+
+        return serializers.common.InputHint(**input_hint_kwargs)  # type: ignore[arg-type]
 
     def _get_errors(self) -> serializers.error_message.ErrorMessageKwargs | None:
         if not self.errors:
@@ -568,10 +568,13 @@ class GovUKRadioInputFieldBase(GDSFieldMixin):
         def get_serializer_kwargs(self) -> dict[str, Any]:
             items = self.get_items()
 
+            fieldset_legend_label_kwargs = get_html_or_text(self.label)
             return serializers.radios.RadiosKwargs(
                 name=self.name,
                 fieldset=serializers.fieldset.FieldsetKwargs(
-                    legend=serializers.fieldset.FieldsetLegend(text=self.label)
+                    legend=serializers.fieldset.FieldsetLegend(
+                        **fieldset_legend_label_kwargs  # type: ignore[arg-type]
+                    )
                 ),
                 hint=self._get_hint(),
                 items=items,

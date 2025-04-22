@@ -1,8 +1,10 @@
 from typing import Any, Literal
 
+from markupsafe import Markup
+
 from web.domains.case.forms import application_contacts
 from web.ecil.gds import forms as gds_forms
-from web.models import CertificateOfFreeSaleApplication, User
+from web.models import CertificateOfFreeSaleApplication, CFSSchedule, User
 
 
 class CFSApplicationReferenceForm(gds_forms.GDSModelForm):
@@ -15,7 +17,7 @@ class CFSApplicationReferenceForm(gds_forms.GDSModelForm):
         ),
         required=False,
         error_messages={"required": "Enter a name for the application"},
-        gds_field_kwargs={"label": {"isPageHeading": True, "classes": "govuk-label--l"}},
+        gds_field_kwargs=gds_forms.LABEL_HEADER,
     )
 
     class Meta(gds_forms.GDSModelForm.Meta):
@@ -28,9 +30,7 @@ class CFSApplicationContactForm(gds_forms.GDSForm):
         label="Who is the main contact for your application?",
         help_text="This is usually the person who created the application",
         error_messages={"required": "Select the main contact for your application"},
-        gds_field_kwargs={
-            "fieldset": {"legend": {"isPageHeading": True, "classes": "govuk-fieldset__legend--l"}}
-        },
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
     )
 
     def clean_contact(self) -> Literal["none-of-these"] | User:
@@ -54,3 +54,48 @@ class CFSApplicationContactForm(gds_forms.GDSForm):
         self.fields["contact"].choices = contact_list
         if self.instance.contact:
             self.fields["contact"].initial = self.instance.contact.pk
+
+
+class CFSScheduleExporterStatusForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = CFSSchedule
+        fields = ["exporter_status"]
+
+    exporter_status = gds_forms.GovUKRadioInputField(
+        help_text=Markup(
+            """
+            <p class="govuk-hint">You are the product manufacturer if:</p>
+            <ul class="govuk-list govuk-list--bullet govuk-hint">
+              <li>you make the product yourself</li>
+              <li>you have had the product designed or manufactured and are marketing it under your own name or trademark</li>
+            </ul>
+            """
+        ),
+        error_messages={"required": "Select yes or no"},
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
+        choices=(
+            (CFSSchedule.ExporterStatus.IS_MANUFACTURER, "Yes"),
+            (CFSSchedule.ExporterStatus.IS_NOT_MANUFACTURER, "No"),
+        ),
+    )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.fields["exporter_status"].label = get_schedule_label(
+            self.instance, "Is the company the product manufacturer?"
+        )
+
+
+def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:
+    schedule_num = get_schedule_number(schedule)
+
+    return Markup(f'<span class="govuk-caption-l">Product schedule {schedule_num}</span>{label}')
+
+
+def get_schedule_number(schedule: CFSSchedule) -> int:
+    for idx, s in enumerate(schedule.application.schedules.order_by("created_at"), start=1):
+        if s.pk == schedule.pk:
+            return idx
+
+    return 1

@@ -19,6 +19,18 @@ urlpatterns = [
                     name="application-contact",
                 ),
                 path("schedule/", views.CFSScheduleCreateView.as_view(), name="schedule-create"),
+                path(
+                    "schedule/<int:schedule_pk>/",
+                    include(
+                        [
+                            path(
+                                "exporter-status/",
+                                views.CFSScheduleExporterStatusUpdateView.as_view(),
+                                name="schedule-exporter-status",
+                            ),
+                        ]
+                    ),
+                ),
             ]
         ),
     ),
