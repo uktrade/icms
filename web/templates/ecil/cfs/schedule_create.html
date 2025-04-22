@@ -6,12 +6,20 @@
   <p class="govuk-body">You can add products to a schedule one at a time or upload a spreadsheet to add them in bulk.</p>
   <p class="govuk-body">Any products included in kits need to be listed individually.</p>
   <h2 class="govuk-heading-m">Before you start</h2>
-  <p class="govuk-body">Your answers must apply to every product on the schedule. You will need to create a new schedule for any product or raw material that has different details.</p>
-  <p class="govuk-body">You will need to know:</p>
+  <p class="govuk-body">Your answers must apply to every product on the schedule. You will need to create a new schedule for any product that has different details.</p>
+  <h3 class="govuk-heading-s">Product eligibility:</h3>
   <ul class="govuk-list govuk-list--bullet">
-    <li>product names spelled correctly</li>
-    <li>product manufacturer details</li>
-    <li>the legislation that applies to your product - ask your technical team or check your product Material Safety Data Sheet (MSDS) if you are not sure</li>
+    <li>if the company is the product manufacturer</li>
+    <li>product safety requirements</li>
+    <li>brand name holder information</li>
+    <li>if any item is a raw material</li>
+    <li>country of manufacture</li>
+  </ul>
+  <h3 class="govuk-heading-s">Add your products:</h3>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>the legislation that applies to your product - ask your technical team or check your product Material Safety Data Sheet (MSDS) or Cosmetic Product Data Information Sheet if you are not sure</li>
+    <li>product name, spelled correctly</li>
+    <li>product use</li>
   </ul>
   <form method="post" action="">
     {{ csrf_input }}
