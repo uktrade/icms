@@ -5,6 +5,7 @@ from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
 from web.ecil.gds.forms import fields
+from web.models import CFSSchedule
 
 
 class TestCFSApplicationReferenceUpdateView:
@@ -163,9 +164,66 @@ class TestCFSScheduleCreateView:
 
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-exporter-status",
             kwargs={
                 "application_pk": self.app.pk,
                 "schedule_pk": self.app.schedules.last().pk,
             },
         )
+
+
+class TestCFSScheduleExporterStatusUpdateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
+        self.user = prototype_export_user
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.url = reverse(
+            "ecil:export-cfs:schedule-exporter-status",
+            kwargs={
+                "application_pk": prototype_cfs_app_in_progress.pk,
+                "schedule_pk": self.schedule.pk,
+            },
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-create", kwargs={"application_pk": self.app.pk}
+        )
+
+    def test_post(self):
+        # Test error message
+        form_data = {"exporter_status": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "exporter_status": ["Select yes or no"],
+        }
+
+        # Check record exists but no app type set
+        assert self.schedule.exporter_status is None
+
+        # Test post success
+        form_data = {"exporter_status": CFSSchedule.ExporterStatus.IS_MANUFACTURER}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        self.schedule.refresh_from_db()
+        assert self.schedule.exporter_status == CFSSchedule.ExporterStatus.IS_MANUFACTURER

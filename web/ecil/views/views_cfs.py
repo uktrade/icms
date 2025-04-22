@@ -3,6 +3,7 @@ from typing import Any
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.db.models import QuerySet
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -14,6 +15,7 @@ from web.domains.case.services import case_progress
 from web.ecil.forms import forms_cfs as forms
 from web.ecil.gds import component_serializers as serializers
 from web.ecil.gds import forms as gds_forms
+from web.ecil.gds.views import BackLinkMixin
 from web.models import CertificateOfFreeSaleApplication, User
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
@@ -135,10 +137,9 @@ class CFSScheduleCreateView(CFSInProgressRelatedObjectViewBase, TemplateView):
             application=self.application, created_by=request.user
         )
 
-        # TODO: Redirect to next V3 view - Not the old schedule edit view.
         return redirect(
             reverse(
-                "export:cfs-schedule-edit",
+                "ecil:export-cfs:schedule-exporter-status",
                 kwargs={"application_pk": self.application.pk, "schedule_pk": new_schedule.pk},
             )
         )
@@ -161,3 +162,37 @@ class CFSScheduleCreateView(CFSInProgressRelatedObjectViewBase, TemplateView):
         ).model_dump(exclude_defaults=True)
 
         return context
+
+
+#
+# Views relating to editing CFS Schedule fields
+#
+@method_decorator(transaction.atomic, name="post")
+class CFSScheduleBaseUpdateView(CFSInProgressRelatedObjectViewBase, BackLinkMixin, UpdateView):
+    """Common base class for all views used to update a CFSSchedule field."""
+
+    # UpdateView config
+    pk_url_kwarg = "schedule_pk"
+    model = CFSSchedule
+
+    def get_queryset(self) -> QuerySet[CFSSchedule]:
+        """Restrict the available schedules to the ones linked to the application."""
+        return self.application.schedules.all()
+
+
+class CFSScheduleExporterStatusUpdateView(CFSScheduleBaseUpdateView):
+    # UpdateView config
+    form_class = forms.CFSScheduleExporterStatusForm
+    template_name = "ecil/gds_form.html"
+
+    def get_back_link_url(self) -> str | None:
+        return reverse(
+            "ecil:export-cfs:schedule-create", kwargs={"application_pk": self.application.pk}
+        )
+
+    def get_success_url(self):
+        # TODO: Change to next view when implemented.
+        return reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
