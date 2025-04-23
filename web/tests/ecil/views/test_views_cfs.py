@@ -2,10 +2,11 @@ from http import HTTPStatus
 
 import pytest
 from django.urls import reverse
-from pytest_django.asserts import assertTemplateUsed
+from pytest_django.asserts import assertInHTML, assertTemplateUsed
 
 from web.ecil.gds.forms import fields
 from web.models import CFSSchedule
+from web.models.shared import AddressEntryType
 
 
 class TestCFSApplicationReferenceUpdateView:
@@ -180,10 +181,7 @@ class TestCFSScheduleExporterStatusUpdateView:
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
         self.url = reverse(
             "ecil:export-cfs:schedule-exporter-status",
-            kwargs={
-                "application_pk": prototype_cfs_app_in_progress.pk,
-                "schedule_pk": self.schedule.pk,
-            },
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
         self.client = prototype_export_client
 
@@ -221,9 +219,94 @@ class TestCFSScheduleExporterStatusUpdateView:
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
+            "ecil:export-cfs:schedule-manufacturer-address",
+            kwargs={
+                "application_pk": self.app.pk,
+                "schedule_pk": self.schedule.pk,
+            },
+        )
+
+        self.schedule.refresh_from_db()
+        assert self.schedule.exporter_status == CFSSchedule.ExporterStatus.IS_MANUFACTURER
+
+
+class TestCFSScheduleManufacturerAddressUpdateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
+        self.user = prototype_export_user
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.url = reverse(
+            "ecil:export-cfs:schedule-manufacturer-address",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/cfs/schedule_manufacturer_address.html")
+
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-exporter-status",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+            <h1 class="govuk-heading-l">
+                <span class="govuk-caption-l">
+                    Product schedule 1
+                </span>
+                What is the manufacturer name and address? (Optional)
+              </h1>
+            """,
+            html,
+        )
+
+        # Check custom header is present
+
+    def test_post(self):
+        # Test everything is optional
+        form_data = {
+            "manufacturer_name": "",
+            "manufacturer_postcode": "",
+            "manufacturer_address": "",
+        }
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        # Check record exists but no manufacturer address fields set
+        self.schedule.refresh_from_db()
+        assert self.schedule.manufacturer_name is None
+        assert self.schedule.manufacturer_postcode is None
+        assert self.schedule.manufacturer_address == ""
+        # Should be set to manual until we implement postcode search
+        assert self.schedule.manufacturer_address_entry_type == AddressEntryType.MANUAL
+
+        # Test post success
+        form_data = {
+            "manufacturer_name": "Test manufacturer name",
+            "manufacturer_postcode": "S12SS",  # /PS-IGNORE
+            "manufacturer_address": "Test manufacturer address",
+        }
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
             "export:cfs-schedule-edit",
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
         self.schedule.refresh_from_db()
-        assert self.schedule.exporter_status == CFSSchedule.ExporterStatus.IS_MANUFACTURER
+        assert self.schedule.manufacturer_name == "Test manufacturer name"
+        assert self.schedule.manufacturer_postcode == "S12SS"  # /PS-IGNORE
+        assert self.schedule.manufacturer_address == "Test manufacturer address"
+        assert self.schedule.manufacturer_address_entry_type == AddressEntryType.MANUAL
