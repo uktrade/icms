@@ -548,10 +548,13 @@ class GovUKRadioInputFieldBase(GDSFieldMixin):
         *args: Any,
         choice_hints: dict[str, str] | None = None,
         choice_classes: str | None = None,
+        choice_conditional_html: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> None:
         self.choice_hints = choice_hints or {}
         self.choice_classes = choice_classes
+        self.choice_conditional_html = choice_conditional_html or {}
+
         super().__init__(*args, **kwargs)
 
     class BF(GDSBoundField):
@@ -602,9 +605,14 @@ class GovUKRadioInputFieldBase(GDSFieldMixin):
                 else:
                     item_label = None
 
+                # If the value is one of the conditional form fields.
                 if value in self.form.gds_radio_conditional_fields:
                     conditional = serializers.radios.RadioItemConditional(
                         html=self.form.gds_radio_conditional_fields[value]
+                    )
+                elif value in self.field.choice_conditional_html:
+                    conditional = serializers.radios.RadioItemConditional(
+                        html=self.field.choice_conditional_html[value]
                     )
                 else:
                     conditional = None

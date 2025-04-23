@@ -6,7 +6,7 @@ from pytest_django.asserts import assertInHTML, assertTemplateUsed
 
 from web.ecil.gds.forms import fields
 from web.models import CFSSchedule
-from web.models.shared import AddressEntryType
+from web.models.shared import AddressEntryType, YesNoChoices
 
 
 class TestCFSApplicationReferenceUpdateView:
@@ -166,10 +166,7 @@ class TestCFSScheduleCreateView:
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
             "ecil:export-cfs:schedule-exporter-status",
-            kwargs={
-                "application_pk": self.app.pk,
-                "schedule_pk": self.app.schedules.last().pk,
-            },
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.app.schedules.last().pk},
         )
 
 
@@ -220,10 +217,7 @@ class TestCFSScheduleExporterStatusUpdateView:
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
             "ecil:export-cfs:schedule-manufacturer-address",
-            kwargs={
-                "application_pk": self.app.pk,
-                "schedule_pk": self.schedule.pk,
-            },
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
         self.schedule.refresh_from_db()
@@ -259,6 +253,7 @@ class TestCFSScheduleManufacturerAddressUpdateView:
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
+        # Check custom header is present
         html = response.content.decode("utf-8")
         assertInHTML(
             """
@@ -271,8 +266,6 @@ class TestCFSScheduleManufacturerAddressUpdateView:
             """,
             html,
         )
-
-        # Check custom header is present
 
     def test_post(self):
         # Test everything is optional
@@ -301,7 +294,7 @@ class TestCFSScheduleManufacturerAddressUpdateView:
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-brand-name-holder",
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
@@ -310,3 +303,70 @@ class TestCFSScheduleManufacturerAddressUpdateView:
         assert self.schedule.manufacturer_postcode == "S12SS"  # /PS-IGNORE
         assert self.schedule.manufacturer_address == "Test manufacturer address"
         assert self.schedule.manufacturer_address_entry_type == AddressEntryType.MANUAL
+
+
+class TestCFSScheduleBrandNameHolderUpdateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
+        self.user = prototype_export_user
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.url = reverse(
+            "ecil:export-cfs:schedule-brand-name-holder",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-manufacturer-address",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-l">Product schedule 1</span>
+              Is the company the brand name holder for the product?
+            </h1>
+            """,
+            html,
+        )
+
+    def test_post(self):
+        # Test error message
+        form_data = {"brand_name_holder": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "brand_name_holder": ["Select yes or no"],
+        }
+
+        # Check record exists but no brand holder name set
+        assert self.schedule.brand_name_holder is None
+
+        # Test post success
+        form_data = {"brand_name_holder": YesNoChoices.yes}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        self.schedule.refresh_from_db()
+        assert self.schedule.brand_name_holder == YesNoChoices.yes

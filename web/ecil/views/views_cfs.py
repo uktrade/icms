@@ -209,9 +209,8 @@ class CFSScheduleManufacturerAddressUpdateView(CFSScheduleBaseUpdateView):
         )
 
     def get_success_url(self):
-        # TODO: Change to next view when implemented.
         return reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-brand-name-holder",
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
         )
 
@@ -220,3 +219,22 @@ class CFSScheduleManufacturerAddressUpdateView(CFSScheduleBaseUpdateView):
         context["schedule_number"] = forms.get_schedule_number(self.object)
 
         return context
+
+
+class CFSScheduleBrandNameHolderUpdateView(CFSScheduleBaseUpdateView):
+    # UpdateView config
+    form_class = forms.CFSScheduleBrandNameHolderForm
+    template_name = "ecil/gds_form.html"
+
+    def get_back_link_url(self) -> str | None:
+        return reverse(
+            "ecil:export-cfs:schedule-manufacturer-address",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
+
+    def get_success_url(self):
+        # TODO: Change to next view when implemented.
+        return reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
