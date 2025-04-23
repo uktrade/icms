@@ -5,7 +5,7 @@ from markupsafe import Markup
 from web.domains.case.forms import application_contacts
 from web.ecil.gds import forms as gds_forms
 from web.models import CertificateOfFreeSaleApplication, CFSSchedule, User
-from web.models.shared import AddressEntryType
+from web.models.shared import AddressEntryType, YesNoChoices
 
 
 class CFSApplicationReferenceForm(gds_forms.GDSModelForm):
@@ -124,6 +124,31 @@ class CFSScheduleManufacturerAddressForm(gds_forms.GDSModelForm):
             instance.save()
 
         return instance
+
+
+class CFSScheduleBrandNameHolderForm(gds_forms.GDSModelForm):
+    brand_name_holder = gds_forms.GovUKRadioInputField(
+        choices=YesNoChoices.choices,
+        help_text="The brand name holder has a product marketed under their own name or trademark.",
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
+        choice_conditional_html={
+            YesNoChoices.no: Markup(
+                '<p class="govuk-body">Import Licensing Branch will contact you for more information about the brand name holder</p>'
+            )
+        },
+        error_messages={"required": "Select yes or no"},
+    )
+
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = CFSSchedule
+        fields = ["brand_name_holder"]
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.fields["brand_name_holder"].label = get_schedule_label(
+            self.instance, "Is the company the brand name holder for the product?"
+        )
 
 
 def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:

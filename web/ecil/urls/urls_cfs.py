@@ -33,7 +33,12 @@ urlpatterns = [
                                 views.CFSScheduleManufacturerAddressUpdateView.as_view(),
                                 name="schedule-manufacturer-address",
                             ),
-                        ]
+                            path(
+                                "brand-name-holder/",
+                                views.CFSScheduleBrandNameHolderUpdateView.as_view(),
+                                name="schedule-brand-name-holder",
+                            ),
+                        ],
                     ),
                 ),
             ]
