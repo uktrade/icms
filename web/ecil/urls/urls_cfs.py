@@ -38,6 +38,11 @@ urlpatterns = [
                                 views.CFSScheduleBrandNameHolderUpdateView.as_view(),
                                 name="schedule-brand-name-holder",
                             ),
+                            path(
+                                "country-of-manufacture",
+                                views.CFSScheduleCountryOfManufactureUpdateView.as_view(),
+                                name="schedule-country-of-manufacture",
+                            ),
                         ],
                     ),
                 ),

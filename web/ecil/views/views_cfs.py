@@ -233,6 +233,24 @@ class CFSScheduleBrandNameHolderUpdateView(CFSScheduleBaseUpdateView):
         )
 
     def get_success_url(self):
+        return reverse(
+            "ecil:export-cfs:schedule-country-of-manufacture",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
+
+
+class CFSScheduleCountryOfManufactureUpdateView(CFSScheduleBaseUpdateView):
+    # UpdateView config
+    form_class = forms.CFSScheduleCountryOfManufactureForm
+    template_name = "ecil/cfs/schedule_country_of_manufacture.html"
+
+    def get_back_link_url(self) -> str | None:
+        return reverse(
+            "ecil:export-cfs:schedule-brand-name-holder",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
+
+    def get_success_url(self):
         # TODO: Change to next view when implemented.
         return reverse(
             "export:cfs-schedule-edit",

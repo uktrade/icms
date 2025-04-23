@@ -52,7 +52,9 @@ class GDSFieldMixin:
 
 class GDSBoundField(forms.BoundField):
     def _get_label(self) -> serializers.common.InputLabel:
-        return serializers.common.InputLabel(text=str(self.label))
+        input_label_kwargs = get_html_or_text(self.label)
+
+        return serializers.common.InputLabel(**input_label_kwargs)  # type: ignore[arg-type]
 
     def _get_hint(self) -> serializers.common.InputHint | None:
         if not self.help_text:

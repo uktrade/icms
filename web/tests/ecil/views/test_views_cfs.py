@@ -5,7 +5,7 @@ from django.urls import reverse
 from pytest_django.asserts import assertInHTML, assertTemplateUsed
 
 from web.ecil.gds.forms import fields
-from web.models import CFSSchedule
+from web.models import CFSSchedule, Country
 from web.models.shared import AddressEntryType, YesNoChoices
 
 
@@ -364,9 +364,78 @@ class TestCFSScheduleBrandNameHolderUpdateView:
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-country-of-manufacture",
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
         self.schedule.refresh_from_db()
         assert self.schedule.brand_name_holder == YesNoChoices.yes
+
+
+class TestCFSScheduleCountryOfManufactureUpdateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
+        self.user = prototype_export_user
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.url = reverse(
+            "ecil:export-cfs:schedule-country-of-manufacture",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/cfs/schedule_country_of_manufacture.html")
+
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-brand-name-holder",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+            <h1 class="govuk-label-wrapper">
+              <label class="govuk-label govuk-label--l" for="id_country_of_manufacture">
+                <span class="govuk-caption-l">Product schedule 1</span>Where is the product manufactured?
+              </label>
+            </h1>
+            """,
+            html,
+        )
+
+    def test_post(self):
+        # Test error message
+        form_data = {"country_of_manufacture": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "country_of_manufacture": ["Add a country or territory"],
+        }
+
+        # Check record exists but no country of manufacture name set
+        assert self.schedule.country_of_manufacture is None
+
+        # Test post success
+        valid_country = Country.app.get_cfs_com_countries().first()
+        form_data = {"country_of_manufacture": valid_country.pk}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        self.schedule.refresh_from_db()
+        assert self.schedule.country_of_manufacture == valid_country

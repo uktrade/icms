@@ -4,7 +4,7 @@ from markupsafe import Markup
 
 from web.domains.case.forms import application_contacts
 from web.ecil.gds import forms as gds_forms
-from web.models import CertificateOfFreeSaleApplication, CFSSchedule, User
+from web.models import CertificateOfFreeSaleApplication, CFSSchedule, Country, User
 from web.models.shared import AddressEntryType, YesNoChoices
 
 
@@ -148,6 +148,32 @@ class CFSScheduleBrandNameHolderForm(gds_forms.GDSModelForm):
 
         self.fields["brand_name_holder"].label = get_schedule_label(
             self.instance, "Is the company the brand name holder for the product?"
+        )
+
+
+class CFSScheduleCountryOfManufactureForm(gds_forms.GDSModelForm):
+    country_of_manufacture = gds_forms.GovUKSelectModelField(
+        help_text=(
+            "Enter a country or territory and select it from the results."
+            " You can only add one."
+            " Create another product schedule for any product manufactured in a different country"
+            " or territory."
+        ),
+        queryset=Country.objects.none(),
+        error_messages={"required": "Add a country or territory"},
+        gds_field_kwargs=gds_forms.LABEL_HEADER,
+    )
+
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = CFSSchedule
+        fields = ["country_of_manufacture"]
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.fields["country_of_manufacture"].queryset = Country.app.get_cfs_com_countries()
+        self.fields["country_of_manufacture"].label = get_schedule_label(
+            self.instance, "Where is the product manufactured?"
         )
 
 
