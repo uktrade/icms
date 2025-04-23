@@ -5,6 +5,7 @@ from markupsafe import Markup
 from web.domains.case.forms import application_contacts
 from web.ecil.gds import forms as gds_forms
 from web.models import CertificateOfFreeSaleApplication, CFSSchedule, User
+from web.models.shared import AddressEntryType
 
 
 class CFSApplicationReferenceForm(gds_forms.GDSModelForm):
@@ -85,6 +86,44 @@ class CFSScheduleExporterStatusForm(gds_forms.GDSModelForm):
         self.fields["exporter_status"].label = get_schedule_label(
             self.instance, "Is the company the product manufacturer?"
         )
+
+
+class CFSScheduleManufacturerAddressForm(gds_forms.GDSModelForm):
+    manufacturer_address = gds_forms.GovUKTextareaField(label="Company address")
+
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = CFSSchedule
+        fields = [
+            "manufacturer_name",
+            "manufacturer_address",
+            "manufacturer_postcode",
+        ]
+
+        labels = {
+            "manufacturer_name": " Company name",
+            "manufacturer_postcode": "Company postcode",
+        }
+
+        formfield_callback = gds_forms.GDSFormfieldCallback(
+            gds_field_kwargs={"manufacturer_postcode": {"classes": "govuk-input--width-10"}},
+        )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        # For now all fields are optional.
+        for f in self.fields:
+            self.fields[f].required = False
+
+    def save(self, commit: bool = True) -> CFSSchedule:
+        instance = super().save(commit)
+
+        # Set to manual until we implement postcode search
+        instance.manufacturer_address_entry_type = AddressEntryType.MANUAL
+        if commit:
+            instance.save()
+
+        return instance
 
 
 def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:

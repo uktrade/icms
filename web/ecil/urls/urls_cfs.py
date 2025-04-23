@@ -28,6 +28,11 @@ urlpatterns = [
                                 views.CFSScheduleExporterStatusUpdateView.as_view(),
                                 name="schedule-exporter-status",
                             ),
+                            path(
+                                "manufacturer-address/",
+                                views.CFSScheduleManufacturerAddressUpdateView.as_view(),
+                                name="schedule-manufacturer-address",
+                            ),
                         ]
                     ),
                 ),

@@ -191,8 +191,32 @@ class CFSScheduleExporterStatusUpdateView(CFSScheduleBaseUpdateView):
         )
 
     def get_success_url(self):
+        return reverse(
+            "ecil:export-cfs:schedule-manufacturer-address",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
+
+
+class CFSScheduleManufacturerAddressUpdateView(CFSScheduleBaseUpdateView):
+    # UpdateView config
+    form_class = forms.CFSScheduleManufacturerAddressForm
+    template_name = "ecil/cfs/schedule_manufacturer_address.html"
+
+    def get_back_link_url(self) -> str | None:
+        return reverse(
+            "ecil:export-cfs:schedule-exporter-status",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
+
+    def get_success_url(self):
         # TODO: Change to next view when implemented.
         return reverse(
             "export:cfs-schedule-edit",
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
         )
+
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["schedule_number"] = forms.get_schedule_number(self.object)
+
+        return context

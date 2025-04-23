@@ -23,7 +23,9 @@ def _get_export_application_goods(app: ExportApplication) -> str:
             return "N/A"
         case ProcessTypes.CFS:
             cfs = app.get_specific_model()
-            product_names = cfs.schedules.values_list("products__product_name", flat=True)
+            product_names = cfs.schedules.order_by("products__product_name").values_list(
+                "products__product_name", flat=True
+            )
             return ", ".join(goods for goods in product_names)
         case ProcessTypes.COM:
             return app.get_specific_model().product_name
