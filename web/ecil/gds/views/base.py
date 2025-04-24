@@ -1,8 +1,11 @@
+import logging
 from typing import Any, ClassVar
+from urllib import parse
 
 from django import forms as django_forms
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
+from django.urls import Resolver404, ResolverMatch, resolve
 from django.views.generic import FormView, UpdateView
 from pydantic import BaseModel, ConfigDict, ValidationError
 
@@ -18,9 +21,15 @@ from .utils import (
     save_session_form_data,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class BackLinkMixin:
-    """Adds back_link_kwargs variable to template context."""
+    """Adds back_link_kwargs variable to template context.
+
+    Also stores HTTP_REFERER as a session variable to allow back links for views that are
+    referenced by several other views.
+    """
 
     from_summary: bool = False
 
@@ -38,7 +47,22 @@ class BackLinkMixin:
         except ValidationError:
             self.from_summary = False
 
+        # Store the referrer url to create the return link later
+        referrer = self.request.META.get("HTTP_REFERER", "")  # type: ignore[attr-defined]
+        referrer_path: str = parse.urlparse(referrer).path
+
+        try:
+            resolver_match: ResolverMatch = resolve(referrer_path)
+            self.request.session["_referrer_view"] = resolver_match.view_name  # type: ignore[attr-defined]
+
+        except Resolver404:
+            logger.warning("Unable to resolve referrer '%s'", referrer_path)
+            pass
+
         return super().get(request, *args, **kwargs)  # type: ignore[misc]
+
+    def get_referrer_view(self) -> str:
+        return self.request.session.get("_referrer_view", "")  # type: ignore[attr-defined]
 
     def get_context_data(self, **kwargs):
         context: dict[str, Any] = super().get_context_data(**kwargs)  # type: ignore[misc]
