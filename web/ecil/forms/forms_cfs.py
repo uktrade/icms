@@ -1,10 +1,19 @@
 from typing import Any, Literal
 
+from django.conf import settings
+from django.db.models import QuerySet
+from django.template.loader import render_to_string
 from markupsafe import Markup
 
 from web.domains.case.forms import application_contacts
 from web.ecil.gds import forms as gds_forms
-from web.models import CertificateOfFreeSaleApplication, CFSSchedule, Country, User
+from web.models import (
+    CertificateOfFreeSaleApplication,
+    CFSSchedule,
+    Country,
+    ProductLegislation,
+    User,
+)
 from web.models.shared import AddressEntryType, YesNoChoices
 
 
@@ -63,15 +72,7 @@ class CFSScheduleExporterStatusForm(gds_forms.GDSModelForm):
         fields = ["exporter_status"]
 
     exporter_status = gds_forms.GovUKRadioInputField(
-        help_text=Markup(
-            """
-            <p class="govuk-hint">You are the product manufacturer if:</p>
-            <ul class="govuk-list govuk-list--bullet govuk-hint">
-              <li>you make the product yourself</li>
-              <li>you have had the product designed or manufactured and are marketing it under your own name or trademark</li>
-            </ul>
-            """
-        ),
+        help_text=Markup(render_to_string("ecil/cfs/help_text/schedule_exporter_status.html")),
         error_messages={"required": "Select yes or no"},
         gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
         choices=(
@@ -175,6 +176,67 @@ class CFSScheduleCountryOfManufactureForm(gds_forms.GDSModelForm):
         self.fields["country_of_manufacture"].label = get_schedule_label(
             self.instance, "Where is the product manufactured?"
         )
+
+
+class CFSScheduleAddLegislationForm(gds_forms.GDSModelForm):
+    legislations = gds_forms.GovUKSelectModelField(
+        help_text=Markup(
+            render_to_string(
+                template_name="ecil/cfs/help_text/schedule_legislations.html",
+                context={"ilb_contact_email": settings.ILB_CONTACT_EMAIL},
+            ),
+        ),
+        queryset=ProductLegislation.objects.none(),
+        error_messages={"required": "Add a legislation that applies to the product"},
+        gds_field_kwargs=gds_forms.LABEL_HEADER,
+    )
+
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = CFSSchedule
+        fields = ["legislations"]
+
+    def __init__(self, *args: Any, initial: dict[str, Any] | None = None, **kwargs: Any) -> None:
+        if not initial:
+            initial = {}
+
+        # legislations is a ManyToMany and sets the initial value to a list.
+        # A list is not a supported value for gds_forms.GovUKSelectModelField.
+        # This form is for adding legislations only so override the initial value to "".
+        initial["legislations"] = ""
+        super().__init__(*args, initial=initial, **kwargs)
+        self.selected_legislations = self.instance.legislations.all().values_list("id", flat=True)
+
+        self.fields["legislations"].queryset = self.get_legislations_queryset()
+        self.fields["legislations"].label = get_schedule_label(
+            self.instance, "Which legislation applies to the product?"
+        )
+
+    def clean(self) -> None:
+        cleaned_data = super().clean()
+
+        if (
+            self.selected_legislations
+            and cleaned_data.get("legislations")
+            and len(self.selected_legislations) >= 3
+        ):
+            self.add_error("legislations", "You can only add up to 3 legislations")
+
+        return cleaned_data
+
+    def get_legislations_queryset(self) -> QuerySet[ProductLegislation]:
+        active_legislations = ProductLegislation.objects.filter(is_active=True)
+
+        if self.instance.application.exporter_office.is_in_northern_ireland:
+            legislation_qs = active_legislations.filter(ni_legislation=True)
+        else:
+            legislation_qs = active_legislations.filter(gb_legislation=True)
+
+        return legislation_qs.order_by("name")
+
+    def _save_m2m(self):
+        """Custom method to save the new legislation to the set of existing legislations."""
+        new_legislation = self.cleaned_data["legislations"]
+        self.instance.legislations.add(new_legislation)
 
 
 def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:

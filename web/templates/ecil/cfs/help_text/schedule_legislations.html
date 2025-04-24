@@ -1,0 +1,18 @@
+{% import "gds/components.html" as gds %}
+
+{%- set details_html -%}
+<p class="govuk-body">
+  Check with your technical team if you are not sure which legislation to choose. Details can also be found in the regulatory section of the product Material Safety Data Sheet.
+</p>
+<p class="govuk-body">
+  Email Import Licensing Branch at
+  <a href="mailto:{{ ilb_contact_email }}" class="govuk-link govuk-link--text-colour">{{ ilb_contact_email }}</a>
+  if you cannot find the relevant legislation and want to ask for it to be added to the list.
+</p>
+{% endset %}
+
+<p class="govuk-hint">Enter a legislation and select it from the results. You can add up to 3 legislations.</p>
+{{ gds.govukDetails({
+  "summaryText": "I need help choosing the correct legislation",
+  "html": details_html
+}) }}

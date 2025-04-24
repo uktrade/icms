@@ -433,9 +433,98 @@ class TestCFSScheduleCountryOfManufactureUpdateView:
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-legislation",
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
         self.schedule.refresh_from_db()
         assert self.schedule.country_of_manufacture == valid_country
+
+
+class TestCFSScheduleAddLegislationUpdateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
+        self.user = prototype_export_user
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.url = reverse(
+            "ecil:export-cfs:schedule-legislation",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/cfs/schedule_legislation.html")
+
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-country-of-manufacture",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+            <h1 class="govuk-label-wrapper">
+                <label class="govuk-label govuk-label--l" for="id_legislations">
+                    <span class="govuk-caption-l">Product schedule 1</span>Which legislation applies to the product?
+                </label>
+            </h1>
+            """,
+            html,
+        )
+
+    def test_post(self):
+        # Test error message
+        form_data = {"legislations": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "legislations": ["Add a legislation that applies to the product"],
+        }
+
+        # Check record exists but no country of manufacture name set
+        assert self.schedule.legislations.count() == 0
+
+        # Test post success
+        valid_legislation = form.fields["legislations"].queryset.first()
+        form_data = {"legislations": valid_legislation.pk}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        self.schedule.refresh_from_db()
+        assert self.schedule.legislations.count() == 1
+        assert self.schedule.legislations.first() == valid_legislation
+
+        # Test limit of adding 3 legislations (already linked to one)
+        l2, l3, l4 = form.fields["legislations"].queryset[2:5]
+
+        form_data = {"legislations": l2.pk}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        form_data = {"legislations": l3.pk}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        form_data = {"legislations": l4.pk}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "legislations": ["You can only add up to 3 legislations"],
+        }
