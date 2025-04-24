@@ -239,6 +239,15 @@ class CFSScheduleAddLegislationForm(gds_forms.GDSModelForm):
         self.instance.legislations.add(new_legislation)
 
 
+class CFSScheduleAddAnotherLegislationForm(gds_forms.GDSForm):
+    add_another = gds_forms.GovUKRadioInputField(
+        label="Do you need to add another legislation?",
+        choices=YesNoChoices.choices,
+        gds_field_kwargs={"fieldset": {"legend": {"classes": "govuk-fieldset__legend--m"}}},
+        error_messages={"required": "Select yes or no"},
+    )
+
+
 def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:
     schedule_num = get_schedule_number(schedule)
 

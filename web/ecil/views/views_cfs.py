@@ -8,7 +8,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, UpdateView
+from django.views.generic import FormView, TemplateView, UpdateView
+from django.views.generic.detail import SingleObjectMixin
 
 from web.domains.case.export.models import CFSSchedule
 from web.domains.case.services import case_progress
@@ -17,6 +18,7 @@ from web.ecil.gds import component_serializers as serializers
 from web.ecil.gds import forms as gds_forms
 from web.ecil.gds.views import BackLinkMixin
 from web.models import CertificateOfFreeSaleApplication, User
+from web.models.shared import YesNoChoices
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 
@@ -268,14 +270,73 @@ class CFSScheduleAddLegislationUpdateView(CFSScheduleBaseUpdateView):
     template_name = "ecil/cfs/schedule_legislation.html"
 
     def get_back_link_url(self) -> str | None:
+        match self.get_referrer_view():
+            case "ecil:export-cfs:schedule-legislation-add-another":
+                return reverse(
+                    "ecil:export-cfs:schedule-legislation-add-another",
+                    kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+                )
+
+            case _:
+                return reverse(
+                    "ecil:export-cfs:schedule-country-of-manufacture",
+                    kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+                )
+
+    def get_success_url(self):
         return reverse(
-            "ecil:export-cfs:schedule-country-of-manufacture",
+            "ecil:export-cfs:schedule-legislation-add-another",
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
         )
 
-    def get_success_url(self):
-        # TODO: Change to next view when implemented.
+
+@method_decorator(transaction.atomic, name="post")
+class CFSScheduleAddAnotherLegislationFormView(
+    CFSInProgressRelatedObjectViewBase, BackLinkMixin, SingleObjectMixin, FormView
+):
+    # SingleObjectMixin config
+    pk_url_kwarg = "schedule_pk"
+    model = CFSSchedule
+
+    form_class = forms.CFSScheduleAddAnotherLegislationForm
+    template_name = "ecil/cfs/schedule_legislation_add_another.html"
+
+    def get_queryset(self) -> QuerySet[CFSSchedule]:
+        """Restrict the available schedules to the ones linked to the application."""
+        return self.application.schedules.all()
+
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        self.object = self.get_object()
+        context = super().get_context_data(**kwargs)
+
+        schedule = self.get_object()
+        schedule_legislations = schedule.legislations.all()
+
+        context["schedule_legislations"] = schedule_legislations
+        context["schedule_number"] = forms.get_schedule_number(schedule)
+        context["legislation_count"] = schedule_legislations.count()
+
+        return context
+
+    def form_valid(self, form: forms.CFSScheduleAddAnotherLegislationForm) -> HttpResponseRedirect:
+        self.object = self.get_object()
+        add_another = form.cleaned_data["add_another"]
+
+        if add_another == YesNoChoices.yes:
+            redirect_to = reverse(
+                "ecil:export-cfs:schedule-legislation",
+                kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+            )
+        else:
+            redirect_to = reverse(
+                "export:cfs-schedule-edit",
+                kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+            )
+
+        return redirect(redirect_to)
+
+    def get_back_link_url(self) -> str | None:
         return reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-legislation",
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
         )

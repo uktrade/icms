@@ -48,6 +48,11 @@ urlpatterns = [
                                 views.CFSScheduleAddLegislationUpdateView.as_view(),
                                 name="schedule-legislation",
                             ),
+                            path(
+                                "legislation/add-another/",
+                                views.CFSScheduleAddAnotherLegislationFormView.as_view(),
+                                name="schedule-legislation-add-another",
+                            ),
                         ],
                     ),
                 ),
