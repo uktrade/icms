@@ -251,6 +251,29 @@ class CFSScheduleCountryOfManufactureUpdateView(CFSScheduleBaseUpdateView):
         )
 
     def get_success_url(self):
+        return reverse(
+            "ecil:export-cfs:schedule-legislation",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
+
+
+class CFSScheduleAddLegislationUpdateView(CFSScheduleBaseUpdateView):
+    """View to add a legislation to the set of legislations linked to the schedule.
+
+    Logic to add the legislation is in the form save method.
+    """
+
+    # UpdateView config
+    form_class = forms.CFSScheduleAddLegislationForm
+    template_name = "ecil/cfs/schedule_legislation.html"
+
+    def get_back_link_url(self) -> str | None:
+        return reverse(
+            "ecil:export-cfs:schedule-country-of-manufacture",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
+
+    def get_success_url(self):
         # TODO: Change to next view when implemented.
         return reverse(
             "export:cfs-schedule-edit",
