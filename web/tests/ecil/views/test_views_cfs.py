@@ -5,7 +5,7 @@ from django.urls import reverse
 from pytest_django.asserts import assertInHTML, assertTemplateUsed
 
 from web.ecil.gds.forms import fields
-from web.models import CFSSchedule, Country
+from web.models import CFSSchedule, Country, ProductLegislation
 from web.models.shared import AddressEntryType, YesNoChoices
 
 
@@ -172,8 +172,7 @@ class TestCFSScheduleCreateView:
 
 class TestCFSScheduleExporterStatusUpdateView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
-        self.user = prototype_export_user
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
         self.url = reverse(
@@ -226,8 +225,7 @@ class TestCFSScheduleExporterStatusUpdateView:
 
 class TestCFSScheduleManufacturerAddressUpdateView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
-        self.user = prototype_export_user
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
         self.url = reverse(
@@ -307,8 +305,7 @@ class TestCFSScheduleManufacturerAddressUpdateView:
 
 class TestCFSScheduleBrandNameHolderUpdateView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
-        self.user = prototype_export_user
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
         self.url = reverse(
@@ -374,8 +371,7 @@ class TestCFSScheduleBrandNameHolderUpdateView:
 
 class TestCFSScheduleCountryOfManufactureUpdateView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
-        self.user = prototype_export_user
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
         self.url = reverse(
@@ -443,8 +439,7 @@ class TestCFSScheduleCountryOfManufactureUpdateView:
 
 class TestCFSScheduleAddLegislationUpdateView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
-        self.user = prototype_export_user
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
         self.url = reverse(
@@ -460,7 +455,7 @@ class TestCFSScheduleAddLegislationUpdateView:
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
-    def test_get(self):
+    def test_get(self, exporter_site):
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/cfs/schedule_legislation.html")
@@ -483,6 +478,16 @@ class TestCFSScheduleAddLegislationUpdateView:
             html,
         )
 
+        # Test referrer back link is correct.
+        referrer = reverse(
+            "ecil:export-cfs:schedule-legislation-add-another",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        headers = {"REFERER": f"http://{exporter_site.domain}{referrer}"}
+        response = self.client.get(self.url, headers=headers)
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["back_link_kwargs"]["href"] == referrer
+
     def test_post(self):
         # Test error message
         form_data = {"legislations": ""}
@@ -502,7 +507,7 @@ class TestCFSScheduleAddLegislationUpdateView:
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-legislation-add-another",
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
@@ -528,3 +533,76 @@ class TestCFSScheduleAddLegislationUpdateView:
         assert form.errors == {
             "legislations": ["You can only add up to 3 legislations"],
         }
+
+
+class TestCFSScheduleAddAnotherLegislationFormView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.available_legislations = ProductLegislation.objects.filter(
+            is_active=True, gb_legislation=True
+        )
+        self.schedule.legislations.add(*self.available_legislations[:2])
+
+        self.url = reverse(
+            "ecil:export-cfs:schedule-legislation-add-another",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self, exporter_site):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/cfs/schedule_legislation_add_another.html")
+
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-legislation",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+              <h1 class="govuk-heading-l">
+                <span class="govuk-caption-l">Product schedule 1</span>You have added 2 legislation
+              </h1>
+            """,
+            html,
+        )
+
+    def test_post(self):
+        # Test error message
+        form_data = {"add_another": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "add_another": ["Select yes or no"],
+        }
+
+        # Test post success (yes)
+        form_data = {"add_another": YesNoChoices.yes}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "ecil:export-cfs:schedule-legislation",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        # Test post success (no)
+        form_data = {"add_another": YesNoChoices.no}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
