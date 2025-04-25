@@ -6,12 +6,11 @@
   </h1>
   {# TODO: Revisit in ECIL-715 Replace with a task list macro / serializer #}
   <dl class="govuk-summary-list no-value">
-    {% for legislation in schedule_legislations %}
+    {% for (legislation_name, remove_link) in legislation_list %}
       <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">{{ legislation.name }}</dt>
+        <dt class="govuk-summary-list__key">{{ legislation_name }}</dt>
         <dd class="govuk-summary-list__actions">
-          {# TODO: Add links to remove view. #}
-          <a class="govuk-link govuk-link--no-visited-state" href="#">Remove<span class="govuk-visually-hidden"> {{ legislation.name }}</span></a>
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ remove_link }}">Remove<span class="govuk-visually-hidden"> {{ legislation_name }}</span></a>
         </dd>
       </div>
     {% endfor %}
