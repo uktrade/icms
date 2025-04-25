@@ -488,6 +488,24 @@ class TestCFSScheduleAddLegislationUpdateView:
         assert response.status_code == HTTPStatus.OK
         assert response.context["back_link_kwargs"]["href"] == referrer
 
+        # Test having an existing legislation changes the title.
+        self.schedule.legislations.add(
+            ProductLegislation.objects.filter(is_active=True, gb_legislation=True).first()
+        )
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+            <h1 class="govuk-label-wrapper">
+                <label class="govuk-label govuk-label--l" for="id_legislations">
+                    <span class="govuk-caption-l">Product schedule 1</span>Add another legislation
+                </label>
+            </h1>
+            """,
+            html,
+        )
+
     def test_post(self):
         # Test error message
         form_data = {"legislations": ""}
@@ -606,3 +624,105 @@ class TestCFSScheduleAddAnotherLegislationFormView:
             "export:cfs-schedule-edit",
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
+
+
+class TestCFSScheduleConfirmRemoveLegislationFormView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        available_legislations = ProductLegislation.objects.filter(
+            is_active=True, gb_legislation=True
+        )
+        self.schedule.legislations.add(*available_legislations[:2])
+        self.client = prototype_export_client
+        self.legislation = self.schedule.legislations.first()
+
+        self.url = reverse(
+            "ecil:export-cfs:schedule-legislation-remove",
+            kwargs={
+                "application_pk": self.app.pk,
+                "schedule_pk": self.schedule.pk,
+                "legislation_pk": self.legislation.pk,
+            },
+        )
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self, exporter_site):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-legislation-add-another",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+              <h1 class="govuk-fieldset__heading">
+                <span class="govuk-caption-l">Product schedule 1</span>Are you sure you want to remove this legislation?
+              </h1>
+            """,
+            html,
+        )
+        # Check leslation text is present.
+        assertInHTML(f"""<div class="govuk-inset-text">{self.legislation.name}</div>""", html)
+
+    def test_post(self):
+        # Test error message
+        form_data = {"are_you_sure": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "are_you_sure": ["Select yes or no"],
+        }
+
+        # Test post success (no)
+        assert self.schedule.legislations.count() == 2
+        form_data = {"are_you_sure": YesNoChoices.no}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "ecil:export-cfs:schedule-legislation-add-another",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        assert self.schedule.legislations.count() == 2
+
+        # Test post success (yes)
+        form_data = {"are_you_sure": YesNoChoices.yes}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "ecil:export-cfs:schedule-legislation-add-another",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        assert self.schedule.legislations.count() == 1
+
+        # Test removing last legislation redirects to correct view.
+        legislation = self.schedule.legislations.first()
+        url = reverse(
+            "ecil:export-cfs:schedule-legislation-remove",
+            kwargs={
+                "application_pk": self.app.pk,
+                "schedule_pk": self.schedule.pk,
+                "legislation_pk": legislation.pk,
+            },
+        )
+        form_data = {"are_you_sure": YesNoChoices.yes}
+        response = self.client.post(url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "ecil:export-cfs:schedule-legislation",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        assert self.schedule.legislations.count() == 0

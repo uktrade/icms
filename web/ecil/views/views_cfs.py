@@ -4,8 +4,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import QuerySet
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView, TemplateView, UpdateView
@@ -312,7 +312,14 @@ class CFSScheduleAddAnotherLegislationFormView(
         schedule = self.get_object()
         schedule_legislations = schedule.legislations.all()
 
-        context["schedule_legislations"] = schedule_legislations
+        kwargs = {"application_pk": self.application.pk, "schedule_pk": self.object.pk}
+        legislation_list = []
+        for legislation in schedule_legislations:
+            kwargs["legislation_pk"] = legislation.pk
+            remove_link = reverse("ecil:export-cfs:schedule-legislation-remove", kwargs=kwargs)
+            legislation_list.append((legislation.name, remove_link))
+
+        context["legislation_list"] = legislation_list
         context["schedule_number"] = forms.get_schedule_number(schedule)
         context["legislation_count"] = schedule_legislations.count()
 
@@ -339,4 +346,74 @@ class CFSScheduleAddAnotherLegislationFormView(
         return reverse(
             "ecil:export-cfs:schedule-legislation",
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
+
+
+@method_decorator(transaction.atomic, name="post")
+class CFSScheduleConfirmRemoveLegislationFormView(
+    CFSInProgressRelatedObjectViewBase,
+    BackLinkMixin,
+    SingleObjectMixin,
+    FormView,
+):
+    """View to confirm removal of legislation linked to an in progress CFS application.."""
+
+    # SingleObjectMixin config
+    pk_url_kwarg = "schedule_pk"
+    model = CFSSchedule
+    # Extra typing for clarity
+    object: CFSSchedule
+
+    # FormView config
+    form_class = forms.CFSScheduleRemoveLegislationForm
+    template_name = "ecil/gds_form.html"
+    http_method_names = ["get", "post"]
+
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        self.set_application_and_task()
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def post(
+        self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any
+    ) -> HttpResponseRedirect:
+        self.set_application_and_task()
+        self.object = self.get_object()
+        return super().post(request, *args, **kwargs)
+
+    def get_queryset(self) -> QuerySet[CFSSchedule]:
+        """Restrict the available schedules to the ones linked to the application."""
+        return self.application.schedules.all()
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+        kwargs["schedule"] = self.object
+        kwargs["legislation"] = get_object_or_404(
+            self.object.legislations, pk=self.kwargs["legislation_pk"]
+        )
+
+        return kwargs
+
+    def form_valid(self, form: forms.CFSScheduleRemoveLegislationForm) -> HttpResponseRedirect:
+        schedule: CFSSchedule = self.get_object()
+
+        if form.cleaned_data["are_you_sure"] == YesNoChoices.yes:
+            schedule.legislations.remove(form.legislation)
+
+        return super().form_valid(form)
+
+    def get_back_link_url(self) -> str | None:
+        return reverse(
+            "ecil:export-cfs:schedule-legislation-add-another",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
+
+    def get_success_url(self) -> str:
+        if self.object.legislations.count() == 0:
+            view_name = "ecil:export-cfs:schedule-legislation"
+        else:
+            view_name = "ecil:export-cfs:schedule-legislation-add-another"
+
+        return reverse(
+            view_name, kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk}
         )

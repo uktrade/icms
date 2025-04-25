@@ -206,10 +206,12 @@ class CFSScheduleAddLegislationForm(gds_forms.GDSModelForm):
         super().__init__(*args, initial=initial, **kwargs)
         self.selected_legislations = self.instance.legislations.all().values_list("id", flat=True)
 
+        if len(self.selected_legislations) == 0:
+            label = "Which legislation applies to the product?"
+        else:
+            label = "Add another legislation"
+        self.fields["legislations"].label = get_schedule_label(self.instance, label)
         self.fields["legislations"].queryset = self.get_legislations_queryset()
-        self.fields["legislations"].label = get_schedule_label(
-            self.instance, "Which legislation applies to the product?"
-        )
 
     def clean(self) -> None:
         cleaned_data = super().clean()
@@ -246,6 +248,29 @@ class CFSScheduleAddAnotherLegislationForm(gds_forms.GDSForm):
         gds_field_kwargs={"fieldset": {"legend": {"classes": "govuk-fieldset__legend--m"}}},
         error_messages={"required": "Select yes or no"},
     )
+
+
+class CFSScheduleRemoveLegislationForm(gds_forms.GDSForm):
+    are_you_sure = gds_forms.GovUKRadioInputField(
+        choices=YesNoChoices.choices,
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
+        error_messages={"required": "Select yes or no"},
+    )
+
+    def __init__(
+        self, *args: Any, schedule: CFSSchedule, legislation: ProductLegislation, **kwargs: Any
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.legislation = legislation
+        self.fields["are_you_sure"].label = get_schedule_label(
+            schedule, "Are you sure you want to remove this legislation?"
+        )
+        self.fields["are_you_sure"].help_text = Markup(
+            render_to_string(
+                template_name="ecil/cfs/help_text/schedule_remove_legislation.html",
+                context={"legislation_text": legislation.name},
+            ),
+        )
 
 
 def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:
