@@ -77,8 +77,13 @@ urlpatterns = [
             [
                 path(
                     "export-countries/",
-                    views.ExportApplicationExportCountriesUpdateView.as_view(),
+                    views.ExportApplicationAddExportCountryUpdateView.as_view(),
                     name="countries",
+                ),
+                path(
+                    "export-countries/add-another/",
+                    views.ExportApplicationAddAnotherExportCountryFormView.as_view(),
+                    name="countries-add-another",
                 ),
                 path(
                     "export-countries/<int:country_pk>/remove/",

@@ -607,79 +607,91 @@ class ExportApplicationInProgressRelatedObjectViewBase(
 
 
 @method_decorator(transaction.atomic, name="post")
-class ExportApplicationExportCountriesUpdateView(ExportApplicationInProgressViewBase, UpdateView):
+class ExportApplicationAddExportCountryUpdateView(
+    ExportApplicationInProgressViewBase, BackLinkMixin, UpdateView
+):
     # UpdateView config
-    form_class = forms.ExportApplicationExportCountriesForm
+    form_class = forms.ExportApplicationAddExportCountryForm
     template_name = "ecil/export_application/export_countries.html"
+
+    def get_back_link_url(self) -> str:
+        match self.get_referrer_view():
+
+            case "ecil:export-application:countries-add-another":
+                return reverse(
+                    "ecil:export-application:countries-add-another",
+                    kwargs={"application_pk": self.application.pk},
+                )
+
+            case _:
+                # TODO: ECIL-683 Fix the hardcoded previous URL
+                #       This view is a common view for all export apps.
+                #       it needs to go back to correct view
+                return reverse(
+                    "ecil:export-cfs:application-contact",
+                    kwargs={"application_pk": self.application.pk},
+                )
+
+    def get_success_url(self) -> str:
+        return reverse(
+            "ecil:export-application:countries-add-another",
+            kwargs={"application_pk": self.application.pk},
+        )
+
+
+@method_decorator(transaction.atomic, name="post")
+class ExportApplicationAddAnotherExportCountryFormView(
+    ExportApplicationInProgressViewBase,
+    BackLinkMixin,
+    FormView,
+):
+    form_class = forms.ExportApplicationAddAnotherExportCountryForm
+    template_name = "ecil/export_application/export_country_add_another.html"
 
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
+        app_countries = self.application.countries.all().order_by("name")
 
-        country_qs = self.application.countries.all()
-        context["export_countries"] = country_qs
+        if app_countries.count() > 1:
+            country_header = f"You have added {app_countries.count()} countries or territories"
+        else:
+            country_header = "You have added 1 country or territory"
+        context["country_header"] = country_header
 
-        if country_qs:
-            if country_qs.count() > 1:
-                caption = f"You have added {country_qs.count()} countries or territories"
-            else:
-                caption = "You have added 1 country or territory"
+        kwargs = {"application_pk": self.application.pk}
+        country_list = []
+        for country in app_countries:
+            kwargs["country_pk"] = country.pk
+            remove_link = reverse("ecil:export-application:countries-remove", kwargs=kwargs)
+            country_list.append((country.name, remove_link))
 
-            rows = []
-            for pk, name in country_qs.values_list("pk", "name", named=True):
-                remove_country_url = reverse(
-                    "ecil:export-application:countries-remove",
-                    kwargs={
-                        "application_pk": self.application.pk,
-                        "country_pk": pk,
-                    },
-                )
-                link = f'<a href="{remove_country_url}" class="govuk-link govuk-link--no-visited-state">Remove</a>'
+        context["country_list"] = country_list
 
-                rows.append(
-                    [
-                        serializers.table.RowItem(text=name),
-                        serializers.table.RowItem(html=link, classes="govuk-!-text-align-right"),
-                    ]
-                )
+        return context
 
-            context["govuk_table_kwargs"] = serializers.table.TableKwargs(
-                caption=caption,
-                captionClasses="govuk-table__caption--m",
-                firstCellIsHeader=False,
-                rows=rows,
-            ).model_dump(exclude_defaults=True)
+    def form_valid(
+        self, form: forms.ExportApplicationAddAnotherExportCountryForm
+    ) -> HttpResponseRedirect:
+        self.object = self.get_object()
+        add_another = form.cleaned_data["add_another"]
 
+        if add_another == YesNoChoices.yes:
+            redirect_to = reverse(
+                "ecil:export-application:countries", kwargs={"application_pk": self.application.pk}
+            )
+        else:
             match self.application.process_type:
                 case ProcessTypes.CFS:
-                    next_url = reverse(
+                    redirect_to = reverse(
                         "ecil:export-cfs:schedule-create",
                         kwargs={"application_pk": self.application.pk},
                     )
                 case _:
-                    next_url = reverse("workbasket")
+                    redirect_to = reverse("workbasket")
 
-            context["next_url"] = next_url
+        return redirect(redirect_to)
 
-        # TODO: ECIL-683 Fix the hardcoded previous URL in another story.
-        #       This view is a common view for all export apps, it needs to go back to correct view
-        previous_step_url = reverse(
-            "ecil:export-cfs:application-contact", kwargs={"application_pk": self.application.pk}
-        )
-        context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
-            text="Back", href=previous_step_url
-        ).model_dump(exclude_defaults=True)
-
-        return context
-
-    def form_valid(self, form: forms.ExportApplicationExportCountriesForm) -> HttpResponseRedirect:
-        country = form.cleaned_data["countries"]
-
-        self.application.countries.add(country)
-        self.application.save()
-
-        return redirect(self.get_success_url())
-
-    def get_success_url(self) -> str:
+    def get_back_link_url(self) -> str | None:
         return reverse(
             "ecil:export-application:countries", kwargs={"application_pk": self.application.pk}
         )
@@ -728,6 +740,9 @@ class ExportApplicationConfirmRemoveCountryFormView(
         return super().form_valid(form)
 
     def get_success_url(self) -> str:
-        return reverse(
-            "ecil:export-application:countries", kwargs={"application_pk": self.application.pk}
-        )
+        if self.application.countries.count() == 0:
+            view_name = "ecil:export-application:countries"
+        else:
+            view_name = "ecil:export-application:countries-add-another"
+
+        return reverse(view_name, kwargs={"application_pk": self.application.pk})

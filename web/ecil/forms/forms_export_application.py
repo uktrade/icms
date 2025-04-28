@@ -5,8 +5,15 @@ from guardian.shortcuts import get_objects_for_user
 from markupsafe import Markup, escape
 
 from web.ecil.gds import forms as gds_forms
-from web.ecil.types import EXPORT_APPLICATION
-from web.models import Country, ECILUserExportApplication, Exporter, Office, User
+from web.models import (
+    CertificateOfFreeSaleApplication,
+    Country,
+    ECILUserExportApplication,
+    ExportApplication,
+    Exporter,
+    Office,
+    User,
+)
 from web.models.shared import YesNoChoices
 from web.permissions import Perms
 
@@ -295,38 +302,37 @@ class CreateExportApplicationAgentSummaryForm(gds_forms.GDSModelForm):
         self.fields["agent_office"].choices = get_office_choices(agent_offices)
 
 
-class ExportApplicationExportCountriesForm(gds_forms.GDSForm):
-    # Can't use a ModelForm here as "countries" is a ManyToMany model field.
-    # There are no GDS components that can render a select multiple form field.
-    # Therefore, it's cleaner to create a GDSForm and save the data in the view.
-    countries = gds_forms.GovUKSelectField(
-        label="Where do you want to export products to?",
+class ExportApplicationAddExportCountryForm(gds_forms.GDSModelForm):
+    countries = gds_forms.GovUKSelectModelField(
+        label="Where do you want to export products?",
         help_text=(
             "Enter a country or territory and select from the results."
             " You can add up to 40 countries or territories."
         ),
-        choices=[],
+        queryset=Country.objects.none(),
         gds_field_kwargs=gds_forms.LABEL_HEADER,
-        error_messages={"required": "Select a country or territory you want to export to"},
+        error_messages={"required": "Add a country or territory"},
     )
 
-    def __init__(self, *args: Any, instance: EXPORT_APPLICATION, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self.instance = instance
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = ExportApplication
+        fields = ["countries"]
+
+    def __init__(self, *args: Any, initial: dict[str, Any] | None = None, **kwargs: Any) -> None:
+        if not initial:
+            initial = {}
+
+        # countries is a ManyToMany and sets the initial value to a list.
+        # A list is not a supported value for gds_forms.GovUKSelectModelField.
+        # This form is for adding legislations only so override the initial value to "".
+        initial["countries"] = ""
+        super().__init__(*args, initial=initial, **kwargs)
         self.selected_countries = self.instance.countries.all()
 
-        countries = [(None, "")] + list(Country.app.get_cfs_countries().values_list("id", "name"))
-        self.fields["countries"].choices = countries
-
-    def clean_countries(self) -> Country | None:
-        if country_pk := self.cleaned_data.get("countries"):
-            return Country.app.get_cfs_countries().get(pk=country_pk)
-
-        return None
+        self.fields["countries"].queryset = self.get_countries_qs()
 
     def clean(self) -> None:
         cleaned_data = super().clean()
-
         if (
             self.selected_countries
             and cleaned_data.get("countries")
@@ -335,6 +341,28 @@ class ExportApplicationExportCountriesForm(gds_forms.GDSForm):
             self.add_error("countries", "You can only add up to 40 countries or territories")
 
         return cleaned_data
+
+    def get_countries_qs(self) -> QuerySet[Country]:
+        if isinstance(self.instance, CertificateOfFreeSaleApplication):
+            return Country.app.get_cfs_countries()
+
+        return Country.util.get_all_countries()
+
+    def _save_m2m(self) -> None:
+        """Custom method to save the new country to the set of existing countries."""
+        new_country = self.cleaned_data["countries"]
+
+        self.instance.countries.add(new_country)
+        self.instance.save()
+
+
+class ExportApplicationAddAnotherExportCountryForm(gds_forms.GDSForm):
+    add_another = gds_forms.GovUKRadioInputField(
+        label="Do you need to add another country or territory?",
+        choices=YesNoChoices.choices,
+        gds_field_kwargs={"fieldset": {"legend": {"classes": "govuk-fieldset__legend--m"}}},
+        error_messages={"required": "Select yes or no"},
+    )
 
 
 class ExportApplicationRemoveExportCountryForm(gds_forms.GDSForm):

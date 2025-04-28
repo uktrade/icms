@@ -591,7 +591,7 @@ class TestCFSScheduleAddAnotherLegislationFormView:
         assertInHTML(
             """
               <h1 class="govuk-heading-l">
-                <span class="govuk-caption-l">Product schedule 1</span>You have added 2 legislation
+                <span class="govuk-caption-l">Product schedule 1</span>You have added 2 legislations
               </h1>
             """,
             html,
