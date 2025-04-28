@@ -1,23 +1,4 @@
-{% extends "ecil/base.html" %}
-
-{% block ecil_content %}
-  <form {% if form.is_multipart %} enctype="multipart/form-data" {% endif %} method="post" action="">
-    {{ csrf_input }}
-    {{ form }}
-    {{ gds.govukButton({
-      "text": "Add country or territory ",
-      "name": "action",
-      "value": "add-country",
-      "classes": "govuk-button--secondary govuk-!-display-block",
-      "type": "submit",
-      "preventDoubleClick": True
-      }) }}
-  </form>
-  {% if export_countries %}
-    {{ gds.govukTable(govuk_table_kwargs) }}
-    {{ gds.govukButton({"text": "Continue", "href": next_url}) }}
-  {% endif %}
-{% endblock %}
+{% extends "ecil/gds_form.html" %}
 
 {% block bodyEnd %}
   {{ super() }}

@@ -1129,7 +1129,7 @@ class TestCreateExportApplicationAnotherContactTemplateView:
         assert response.context["back_link_kwargs"] == {"text": "Back", "href": referer_url}
 
 
-class TestExportApplicationExportCountriesUpdateView:
+class TestExportApplicationAddExportCountryUpdateView:
     @pytest.fixture(autouse=True)
     def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
@@ -1151,6 +1151,11 @@ class TestExportApplicationExportCountriesUpdateView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/export_application/export_countries.html")
 
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:application-contact",
+            kwargs={"application_pk": self.app.pk},
+        )
+
     def test_post(self):
         # Test error message
         form_data = {"countries": ""}
@@ -1158,44 +1163,89 @@ class TestExportApplicationExportCountriesUpdateView:
         assert response.status_code == HTTPStatus.OK
         form = response.context["form"]
         assert form.errors == {
-            "countries": ["Select a country or territory you want to export to"],
+            "countries": ["Add a country or territory"],
+        }
+
+        invalid_country = (
+            Country.util.get_all_countries().difference(Country.app.get_cfs_countries()).first()
+        )
+        form_data = {"countries": invalid_country.pk}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "countries": [
+                "Select a valid choice. That choice is not one of the available choices."
+            ],
         }
 
         # Test post success
         valid_country = Country.app.get_cfs_countries().first()
         form_data = {"countries": valid_country.pk}
-        response = self.client.post(self.url, data=form_data, follow=True)
-
-        assert response.status_code == HTTPStatus.OK
-        self.app.refresh_from_db()
-
-        # Check extra context set now we've added a country
-        context = response.context
-        assert context["next_url"] == reverse(
-            "ecil:export-cfs:schedule-create", kwargs={"application_pk": self.app.pk}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "ecil:export-application:countries-add-another", kwargs={"application_pk": self.app.pk}
         )
-        assert context["export_countries"]
 
-        assert context["govuk_table_kwargs"] == {
-            "caption": "You have added 1 country or territory",
-            "captionClasses": "govuk-table__caption--m",
-            "firstCellIsHeader": False,
-            "rows": [
-                [
-                    {"text": "Afghanistan"},
-                    {
-                        "classes": "govuk-!-text-align-right",
-                        "html": (
-                            f'<a href="/ecil/export-application/edit/{self.app.pk}/export-countries/{valid_country.pk}/remove/"'
-                            ' class="govuk-link govuk-link--no-visited-state">Remove</a>'
-                        ),
-                    },
-                ]
-            ],
-        }
+        self.app.refresh_from_db()
 
         assert self.app.countries.count() == 1
         assert self.app.countries.filter(pk=valid_country.pk).exists()
+
+
+class TestExportApplicationAddAnotherExportCountryFormView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
+        self.app = prototype_cfs_app_in_progress
+        self.user = prototype_export_user
+        self.url = reverse(
+            "ecil:export-application:countries-add-another", kwargs={"application_pk": self.app.pk}
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/export_application/export_country_add_another.html")
+
+        context = response.context
+        assert context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-application:countries", kwargs={"application_pk": self.app.pk}
+        )
+
+    def test_post(self):
+        # Test error message
+        form_data = {"add_another": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "add_another": ["Select yes or no"],
+        }
+
+        # Test post success (yes)
+        form_data = {"add_another": YesNoChoices.yes}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "ecil:export-application:countries", kwargs={"application_pk": self.app.pk}
+        )
+
+        # Test post success (no)
+        form_data = {"add_another": YesNoChoices.no}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "ecil:export-cfs:schedule-create", kwargs={"application_pk": self.app.pk}
+        )
 
 
 class TestExportApplicationConfirmRemoveCountryFormView:
@@ -1237,11 +1287,30 @@ class TestExportApplicationConfirmRemoveCountryFormView:
             "are_you_sure": ["Select yes or no"],
         }
 
-        assert self.app.countries.count() == 1
+        self.app.countries.add(Country.app.get_cfs_countries().last())
+        assert self.app.countries.count() == 2
 
         # Test post success
         form_data = {"are_you_sure": YesNoChoices.yes}
         response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "ecil:export-application:countries-add-another", kwargs={"application_pk": self.app.pk}
+        )
+
+        self.app.refresh_from_db()
+        assert self.app.countries.count() == 1
+
+        # Test removing last country redirects to correct view.
+        url = reverse(
+            "ecil:export-application:countries-remove",
+            kwargs={
+                "application_pk": self.app.pk,
+                "country_pk": Country.app.get_cfs_countries().last().pk,
+            },
+        )
+        form_data = {"are_you_sure": YesNoChoices.yes}
+        response = self.client.post(url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
             "ecil:export-application:countries", kwargs={"application_pk": self.app.pk}

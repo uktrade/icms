@@ -312,6 +312,13 @@ class CFSScheduleAddAnotherLegislationFormView(
         schedule = self.get_object()
         schedule_legislations = schedule.legislations.all()
 
+        if schedule_legislations.count() > 1:
+            legislation_header = f"You have added {schedule_legislations.count()} legislations"
+        else:
+            legislation_header = "You have added 1 legislation"
+
+        context["legislation_header"] = legislation_header
+
         kwargs = {"application_pk": self.application.pk, "schedule_pk": self.object.pk}
         legislation_list = []
         for legislation in schedule_legislations:
@@ -321,7 +328,6 @@ class CFSScheduleAddAnotherLegislationFormView(
 
         context["legislation_list"] = legislation_list
         context["schedule_number"] = forms.get_schedule_number(schedule)
-        context["legislation_count"] = schedule_legislations.count()
 
         return context
 

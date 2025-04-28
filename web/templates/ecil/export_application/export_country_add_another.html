@@ -1,0 +1,16 @@
+{% extends "ecil/gds_form.html" %}
+
+{% block ecil_content_before_form %}
+  <h1 class="govuk-heading-l">{{ country_header }}</h1>
+  {# TODO: Revisit in ECIL-715 Replace with a task list macro / serializer #}
+  <dl class="govuk-summary-list no-value">
+    {% for (country_name, remove_link) in country_list %}
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">{{ country_name }}</dt>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link govuk-link--no-visited-state" href="{{ remove_link }}">Remove<span class="govuk-visually-hidden"> {{ country_name }}</span></a>
+        </dd>
+      </div>
+    {% endfor %}
+  </dl>
+{% endblock %}
