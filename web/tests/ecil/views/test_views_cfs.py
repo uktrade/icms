@@ -617,6 +617,45 @@ class TestCFSScheduleAddAnotherLegislationFormView:
             html,
         )
 
+        # Check list_with_actions_kwargs
+        l1, l2 = self.available_legislations[:2]
+        assert response.context["list_with_actions_kwargs"] == {
+            "rows": [
+                {
+                    "name": l1.name,
+                    "actions": [
+                        {
+                            "label": "Remove",
+                            "url": reverse(
+                                "ecil:export-cfs:schedule-legislation-remove",
+                                kwargs={
+                                    "application_pk": self.app.pk,
+                                    "schedule_pk": self.schedule.pk,
+                                    "legislation_pk": l1.pk,
+                                },
+                            ),
+                        }
+                    ],
+                },
+                {
+                    "name": l2.name,
+                    "actions": [
+                        {
+                            "label": "Remove",
+                            "url": reverse(
+                                "ecil:export-cfs:schedule-legislation-remove",
+                                kwargs={
+                                    "application_pk": self.app.pk,
+                                    "schedule_pk": self.schedule.pk,
+                                    "legislation_pk": l2.pk,
+                                },
+                            ),
+                        }
+                    ],
+                },
+            ]
+        }
+
     def test_post(self):
         # Test error message
         form_data = {"add_another": ""}

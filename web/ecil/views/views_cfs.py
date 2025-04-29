@@ -320,21 +320,41 @@ class CFSScheduleAddAnotherLegislationFormView(
         schedule = self.get_object()
         schedule_legislations = schedule.legislations.all()
 
-        if schedule_legislations.count() > 1:
-            legislation_header = f"You have added {schedule_legislations.count()} legislations"
-        else:
+        legislation_count = schedule_legislations.count()
+
+        if legislation_count == 1:
             legislation_header = "You have added 1 legislation"
+        else:
+            # Correct message for 0 or greater than 1
+            legislation_header = f"You have added {legislation_count} legislations"
 
         context["legislation_header"] = legislation_header
 
-        kwargs = {"application_pk": self.application.pk, "schedule_pk": self.object.pk}
-        legislation_list = []
+        rows = []
         for legislation in schedule_legislations:
-            kwargs["legislation_pk"] = legislation.pk
-            remove_link = reverse("ecil:export-cfs:schedule-legislation-remove", kwargs=kwargs)
-            legislation_list.append((legislation.name, remove_link))
+            rows.append(
+                serializers.list_with_actions.ListRow(
+                    name=legislation.name,
+                    actions=[
+                        serializers.list_with_actions.ListRowAction(
+                            label="Remove",
+                            url=reverse(
+                                "ecil:export-cfs:schedule-legislation-remove",
+                                kwargs={
+                                    "application_pk": self.application.pk,
+                                    "schedule_pk": self.object.pk,
+                                    "legislation_pk": legislation.pk,
+                                },
+                            ),
+                        ),
+                    ],
+                )
+            )
 
-        context["legislation_list"] = legislation_list
+        context["list_with_actions_kwargs"] = serializers.list_with_actions.ListWithActionsKwargs(
+            rows=rows
+        ).model_dump(exclude_defaults=True)
+
         context["schedule_number"] = forms.get_schedule_number(schedule)
 
         return context
