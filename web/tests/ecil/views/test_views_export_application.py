@@ -564,6 +564,10 @@ class TestCreateExportApplicationSummaryUpdateView:
         kwargs = {"application_pk": CertificateOfFreeSaleApplication.objects.last().pk}
         assert response.url == reverse("ecil:export-cfs:application-reference", kwargs=kwargs)
 
+        # Check a schedule hasn't been added yet (as that happens later in ECIL)
+        new_app = CertificateOfFreeSaleApplication.objects.last()
+        assert new_app.schedules.count() == 0
+
     def test_post_com(self, exporter, exporter_office):
         # Test error messages
         response = self.client.post(self.url)

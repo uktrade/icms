@@ -32,6 +32,7 @@ def create_export_application(
     agent: Exporter | None = None,
     agent_office: Office | None = None,
     app_template: CertificateApplicationTemplate | None = None,
+    legacy_create: bool = True,
 ) -> (
     CertificateOfFreeSaleApplication
     | CertificateOfManufactureApplication
@@ -70,7 +71,10 @@ def create_export_application(
             country = Country.app.get_gmp_countries().first()
             application.countries.add(country)
         elif (
-            application_type.type_code == ExportApplicationType.Types.FREE_SALE and not app_template
+            application_type.type_code == ExportApplicationType.Types.FREE_SALE
+            and not app_template
+            # Only create a CFS schedule for legacy create (v2)
+            and legacy_create
         ):
             # A template will have already created the schedules in set_template_data
             application.schedules.create(created_by=request.user)

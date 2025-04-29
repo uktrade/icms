@@ -305,6 +305,7 @@ class CreateExportApplicationSummaryUpdateView(CreateExportApplicationBase, Summ
             self.object.exporter_office,
             self.object.agent,
             self.object.agent_office,
+            legacy_create=False,
         )
 
         # Clear the ECILUserExportApplication record
