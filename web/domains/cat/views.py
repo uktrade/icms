@@ -177,7 +177,7 @@ class CATEditView(LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMix
 
         return [template]
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:  # type: ignore[return]
         url_name = "view" if self.read_only else "edit"
         step = self.kwargs.get("step")
         step_pk = self.kwargs.get("step_pk")

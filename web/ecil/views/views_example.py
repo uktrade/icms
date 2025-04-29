@@ -28,7 +28,7 @@ class GDSFormView(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     form_class = forms.ExampleGDSForm
     template_name = "ecil/example/form.html"
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse("ecil:example:gds_form_example")
 
 
@@ -41,7 +41,7 @@ class GDSModelFormCreateView(LoginRequiredMixin, PermissionRequiredMixin, Create
     form_class = forms.ExampleGDSModelForm
     template_name = "ecil/gds_form.html"
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse("ecil:example:ecil_example_list")
 
 
@@ -70,7 +70,7 @@ class GDSConditionalModelFormView(LoginRequiredMixin, PermissionRequiredMixin, F
     form_class = forms.ExampleConditionalGDSModelForm
     template_name = "ecil/gds_form.html"
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse("ecil:example:gds_conditional_model_form_example")
 
 

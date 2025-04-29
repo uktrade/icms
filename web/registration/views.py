@@ -22,7 +22,7 @@ class RegisterView(CreateView):
     template_name = "registration/register.html"
     form_class = UserCreationForm
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse(settings.LOGIN_URL)
 
 

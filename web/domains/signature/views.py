@@ -130,7 +130,7 @@ class SignatureCreateView(LoginRequiredMixin, PermissionRequiredMixin, Signature
 
             return redirect(reverse("signature-list"))
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse(reverse("signature-list"))
 
 

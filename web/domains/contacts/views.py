@@ -109,7 +109,7 @@ class InviteOrgContactView(LoginRequiredMixin, PermissionRequiredMixin, FormView
     def has_permission(self):
         return can_user_manage_org_contacts(self.request.user, self._get_org())
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         org_type = self.kwargs["org_type"]
         org = self._get_org()
 
@@ -248,7 +248,7 @@ class AcceptOrgContactInviteView(LoginRequiredMixin, UserPassesTestMixin, FormVi
 
         raise PermissionDenied
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse("workbasket")
 
 

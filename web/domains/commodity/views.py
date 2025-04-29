@@ -122,7 +122,7 @@ class CommodityGroupCreateView(ModelCreateView):
     model = CommodityGroup
     permission_required = Perms.sys.commodity_admin
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse("commodity-group-edit", kwargs={"pk": self.object.pk})
 
 
