@@ -34,6 +34,7 @@
 {%- from 'govuk_frontend_jinja/components/task-list/macro.html' import govukTaskList -%}
 {%- from 'govuk_frontend_jinja/components/textarea/macro.html' import govukTextarea -%}
 {%- from 'govuk_frontend_jinja/components/warning-text/macro.html' import govukWarningText -%}
+{%- from 'ecil/gds/components/list-with-actions/macro.html' import uktradeListWithActions -%}
 
 
 {# Re-export govuk_frontend_jinja macros so they are easier to import #}
@@ -73,3 +74,6 @@
 {% set govukTaskList = govukTaskList %}
 {% set govukTextarea = govukTextarea %}
 {% set govukWarningText = govukWarningText %}
+
+{# Custom macros #}
+{% set uktradeListWithActions = uktradeListWithActions %}

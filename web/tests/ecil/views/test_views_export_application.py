@@ -1216,6 +1216,9 @@ class TestExportApplicationAddAnotherExportCountryFormView:
         assert response.status_code == HTTPStatus.OK
 
     def test_get(self):
+        valid_country = Country.app.get_cfs_countries().first()
+        self.app.countries.add(valid_country)
+
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/export_application/export_country_add_another.html")
@@ -1224,6 +1227,25 @@ class TestExportApplicationAddAnotherExportCountryFormView:
         assert context["back_link_kwargs"]["href"] == reverse(
             "ecil:export-application:countries", kwargs={"application_pk": self.app.pk}
         )
+        assert context["list_with_actions_kwargs"] == {
+            "rows": [
+                {
+                    "name": valid_country.name,
+                    "actions": [
+                        {
+                            "label": "Remove",
+                            "url": reverse(
+                                "ecil:export-application:countries-remove",
+                                kwargs={
+                                    "application_pk": self.app.pk,
+                                    "country_pk": valid_country.pk,
+                                },
+                            ),
+                        }
+                    ],
+                }
+            ]
+        }
 
     def test_post(self):
         # Test error message

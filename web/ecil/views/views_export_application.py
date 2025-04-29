@@ -653,20 +653,38 @@ class ExportApplicationAddAnotherExportCountryFormView(
         context = super().get_context_data(**kwargs)
         app_countries = self.application.countries.all().order_by("name")
 
-        if app_countries.count() > 1:
-            country_header = f"You have added {app_countries.count()} countries or territories"
-        else:
+        country_count = app_countries.count()
+
+        if country_count == 1:
             country_header = "You have added 1 country or territory"
+        else:
+            # Correct message for 0 or greater than 1
+            country_header = f"You have added {app_countries.count()} countries or territories"
         context["country_header"] = country_header
 
-        kwargs = {"application_pk": self.application.pk}
-        country_list = []
+        rows = []
         for country in app_countries:
-            kwargs["country_pk"] = country.pk
-            remove_link = reverse("ecil:export-application:countries-remove", kwargs=kwargs)
-            country_list.append((country.name, remove_link))
+            rows.append(
+                serializers.list_with_actions.ListRow(
+                    name=country.name,
+                    actions=[
+                        serializers.list_with_actions.ListRowAction(
+                            label="Remove",
+                            url=reverse(
+                                "ecil:export-application:countries-remove",
+                                kwargs={
+                                    "application_pk": self.application.pk,
+                                    "country_pk": country.pk,
+                                },
+                            ),
+                        ),
+                    ],
+                )
+            )
 
-        context["country_list"] = country_list
+        context["list_with_actions_kwargs"] = serializers.list_with_actions.ListWithActionsKwargs(
+            rows=rows
+        ).model_dump(exclude_defaults=True)
 
         return context
 

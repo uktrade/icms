@@ -4,15 +4,5 @@
   <h1 class="govuk-heading-l">
     <span class="govuk-caption-l">Product schedule {{ schedule_number }}</span>{{ legislation_header }}
   </h1>
-  {# TODO: Revisit in ECIL-715 Replace with a task list macro / serializer #}
-  <dl class="govuk-summary-list no-value">
-    {% for (legislation_name, remove_link) in legislation_list %}
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">{{ legislation_name }}</dt>
-        <dd class="govuk-summary-list__actions">
-          <a class="govuk-link govuk-link--no-visited-state" href="{{ remove_link }}">Remove<span class="govuk-visually-hidden"> {{ legislation_name }}</span></a>
-        </dd>
-      </div>
-    {% endfor %}
-  </dl>
+  {{ gds.uktradeListWithActions(list_with_actions_kwargs) }}
 {% endblock %}

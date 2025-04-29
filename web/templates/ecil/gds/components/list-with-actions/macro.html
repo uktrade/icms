@@ -1,0 +1,20 @@
+{# If we need to extend this component then look at the HMRC one. #}
+{# This component has been kept as simple as possible for now #}
+{# https://design.tax.service.gov.uk/hmrc-design-patterns/add-to-a-list/ #}
+{# https://github.com/hmrc/hmrc-frontend/blob/main/src/components/list-with-actions/macro.njk #}
+{% macro uktradeListWithActions(params) %}
+  <dl class="govuk-summary-list no-value">
+    {% for row in params.rows %}
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key">{{ row.name }}</dt>
+          <dd class="govuk-summary-list__actions">
+            {% if row.actions %}
+              {% for action in row.actions %}
+                <a class="govuk-link govuk-link--no-visited-state" href="{{ action.url }}">{{ action.label }}<span class="govuk-visually-hidden">{{ action.label }} {{ row.name }}</span></a>
+              {% endfor %}
+            {% endif %}
+          </dd>
+        </div>
+      {% endfor %}
+  </dl>
+{% endmacro %}
