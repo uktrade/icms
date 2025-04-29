@@ -117,9 +117,12 @@ class CFSApplicationContactUpdateView(CFSInProgressViewBase, UpdateView):
         return redirect(self.get_success_url())
 
     def get_success_url(self) -> str:
-        return reverse(
-            "ecil:export-application:countries", kwargs={"application_pk": self.application.pk}
-        )
+        if self.application.countries.exists():
+            redirect_to = "ecil:export-application:countries-add-another"
+        else:
+            redirect_to = "ecil:export-application:countries"
+
+        return reverse(redirect_to, kwargs={"application_pk": self.application.pk})
 
 
 @method_decorator(transaction.atomic, name="post")
@@ -192,7 +195,7 @@ class CFSScheduleExporterStatusUpdateView(CFSScheduleBaseUpdateView):
             "ecil:export-cfs:schedule-create", kwargs={"application_pk": self.application.pk}
         )
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse(
             "ecil:export-cfs:schedule-manufacturer-address",
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
@@ -210,7 +213,7 @@ class CFSScheduleManufacturerAddressUpdateView(CFSScheduleBaseUpdateView):
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
         )
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse(
             "ecil:export-cfs:schedule-brand-name-holder",
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
@@ -234,7 +237,7 @@ class CFSScheduleBrandNameHolderUpdateView(CFSScheduleBaseUpdateView):
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
         )
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse(
             "ecil:export-cfs:schedule-country-of-manufacture",
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
@@ -252,9 +255,14 @@ class CFSScheduleCountryOfManufactureUpdateView(CFSScheduleBaseUpdateView):
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
         )
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
+        if self.object.legislations.exists():
+            redirect_to = "ecil:export-cfs:schedule-legislation-add-another"
+        else:
+            redirect_to = "ecil:export-cfs:schedule-legislation"
+
         return reverse(
-            "ecil:export-cfs:schedule-legislation",
+            redirect_to,
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
         )
 
@@ -283,7 +291,7 @@ class CFSScheduleAddLegislationUpdateView(CFSScheduleBaseUpdateView):
                     kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
                 )
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse(
             "ecil:export-cfs:schedule-legislation-add-another",
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},

@@ -204,7 +204,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
     permission_required = [Perms.sys.ilb_admin]
     pk_url_kwarg = "mailshot_pk"
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         action = self.request.POST.get("action")
 
         if action and action == "save_draft":

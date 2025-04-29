@@ -228,7 +228,7 @@ class CountryTranslationSetListView(PostActionMixin, ModelCreateView):
     page_title = "Manage Country Translation Sets"
     permission_required = Perms.sys.ilb_admin
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse("country:translation-set-edit", kwargs={"pk": self.object.pk})
 
     def archive(self, request):
@@ -311,7 +311,7 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
         )
         return context
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         object = super().get_object()
         return reverse(self.success_url, args=[object.id])
 
@@ -354,7 +354,7 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
         context.update({"translation_set": self.translation_set, "country": self.country})
         return context
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse("country:translation-set-edit", args=[self.translation_set.id])
 
     def get_cancel_url(self):

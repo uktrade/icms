@@ -105,6 +105,15 @@ class TestCFSApplicationContactUpdateView:
             "ecil:export-application:countries", kwargs={"application_pk": self.app.pk}
         )
 
+        # Test having an existing country changes the post redirect.
+        self.app.countries.add(Country.app.get_cfs_countries().first())
+
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "ecil:export-application:countries-add-another", kwargs={"application_pk": self.app.pk}
+        )
+
         self.app.refresh_from_db()
         assert self.app.contact == self.user
 
@@ -435,6 +444,17 @@ class TestCFSScheduleCountryOfManufactureUpdateView:
 
         self.schedule.refresh_from_db()
         assert self.schedule.country_of_manufacture == valid_country
+
+        # Test having an existing legislation changes the post redirect.
+        self.schedule.legislations.add(
+            ProductLegislation.objects.filter(is_active=True, gb_legislation=True).first()
+        )
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "ecil:export-cfs:schedule-legislation-add-another",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
 
 
 class TestCFSScheduleAddLegislationUpdateView:

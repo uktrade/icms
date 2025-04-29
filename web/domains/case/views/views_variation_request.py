@@ -197,7 +197,7 @@ class VariationRequestRequestUpdateView(
         )
         return result
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse(
             "case:variation-request-manage",
             kwargs={"application_pk": self.application.pk, "case_type": self.kwargs["case_type"]},

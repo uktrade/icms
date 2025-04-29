@@ -76,7 +76,7 @@ class UserBaseMixin(LoginRequiredMixin, UserPassesTestMixin):
             "show_account_recovery": not self.request.user.icms_v1_user,
         }
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         """Used in create and update views."""
         return reverse("user-edit", kwargs={"user_pk": self.request.user.pk})
 
