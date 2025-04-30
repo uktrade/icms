@@ -41,6 +41,20 @@ class CFSScheduleABC(models.Model):
             "The products meet the product safety requirements to be sold on the UK market",
         )
 
+    class ProductStandards(TypedTextChoices):
+        PRODUCT_SOLD_ON_UK_MARKET = (
+            "PRODUCT_SOLD_ON_UK_MARKET",
+            "It meets safety standards and is currently being sold on the UK market",
+        )
+        PRODUCT_FUTURE_UK_MARKET = (
+            "PRODUCT_FUTURE_UK_MARKET",
+            "It meets safety standards and will be sold on the UK market in the future",
+        )
+        PRODUCT_EXPORT_ONLY = (
+            "PRODUCT_EXPORT_ONLY",
+            "It meets safety standards and is for export only",
+        )
+
     exporter_status = models.CharField(
         null=True,
         default=None,
@@ -102,6 +116,20 @@ class CFSScheduleABC(models.Model):
         null=True,
         default=None,
         verbose_name="Are these goods for export only and will never be placed by you on the UK market?",
+    )
+
+    # The following field is a new field for ECIL.
+    # It is used instead of the following fields:
+    #   - product_eligibility
+    #   - goods_placed_on_uk_market
+    #   - goods_export_only
+    # To maintain compatability the ECIL code will set the above fields to appropriate values.
+    product_standard = models.CharField(
+        max_length=30,
+        choices=ProductStandards.choices,
+        default="",
+        verbose_name="Which statement applies to the product?",
+        help_text="Products must meet the safety standards to be sold on the UK market",
     )
 
     any_raw_materials = models.CharField(

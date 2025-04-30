@@ -370,7 +370,7 @@ class CFSScheduleAddAnotherLegislationFormView(
             )
         else:
             redirect_to = reverse(
-                "export:cfs-schedule-edit",
+                "ecil:export-cfs:schedule-product-standard",
                 kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
             )
 
@@ -390,8 +390,6 @@ class CFSScheduleConfirmRemoveLegislationFormView(
     SingleObjectMixin,
     FormView,
 ):
-    """View to confirm removal of legislation linked to an in progress CFS application.."""
-
     # SingleObjectMixin config
     pk_url_kwarg = "schedule_pk"
     model = CFSSchedule
@@ -450,4 +448,27 @@ class CFSScheduleConfirmRemoveLegislationFormView(
 
         return reverse(
             view_name, kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk}
+        )
+
+
+class CFSScheduleProductStandardUpdateView(CFSScheduleBaseUpdateView):
+    # UpdateView config
+    form_class = forms.CFSScheduleProductStandardForm
+    template_name = "ecil/gds_form.html"
+
+    def get_back_link_url(self) -> str | None:
+        if self.object.legislations.count() == 0:
+            view_name = "ecil:export-cfs:schedule-legislation"
+        else:
+            view_name = "ecil:export-cfs:schedule-legislation-add-another"
+
+        return reverse(
+            view_name, kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk}
+        )
+
+    def get_success_url(self) -> str:
+        # TODO: Change to next view when implemented.
+        return reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
         )
