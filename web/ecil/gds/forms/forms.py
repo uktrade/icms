@@ -20,7 +20,7 @@ class GDSFormMixin:
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # See this file to understand gds_radio_conditional_fields:
-        #   - web/templates/ecil/gds/forms/field.html
+        #   - web/templates/gds/forms/field.html
         self.gds_radio_conditional_fields: dict[str, str] = {}
 
         super().__init__(*args, **kwargs)
