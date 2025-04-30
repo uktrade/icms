@@ -680,7 +680,7 @@ class TestCFSScheduleAddAnotherLegislationFormView:
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-product-standard",
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
@@ -785,3 +785,122 @@ class TestCFSScheduleConfirmRemoveLegislationFormView:
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
         assert self.schedule.legislations.count() == 0
+
+
+class TestCFSScheduleProductStandardUpdateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.url = reverse(
+            "ecil:export-cfs:schedule-product-standard",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-legislation",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+              <h1 class="govuk-fieldset__heading">
+                <span class="govuk-caption-l">Product schedule 1</span>Which statement applies to the product?
+              </h1>
+            """,
+            html,
+        )
+
+        # Having existing legislation should change the back link.
+        self.schedule.legislations.add(
+            ProductLegislation.objects.filter(is_active=True, gb_legislation=True).first()
+        )
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-legislation-add-another",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+    def test_post(self):
+        # Test error message
+        form_data = {"product_standard": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "product_standard": ["Select a statement"],
+        }
+
+        # Check record exists but no country of manufacture name set
+        assert self.schedule.product_standard == ""
+
+        # Test post success (PRODUCT_SOLD_ON_UK_MARKET)
+        form_data = {"product_standard": CFSSchedule.ProductStandards.PRODUCT_SOLD_ON_UK_MARKET}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        self.schedule.refresh_from_db()
+        assert (
+            self.schedule.product_standard == CFSSchedule.ProductStandards.PRODUCT_SOLD_ON_UK_MARKET
+        )
+        assert self.schedule.product_eligibility == CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET
+        assert self.schedule.goods_placed_on_uk_market == YesNoChoices.yes
+        assert self.schedule.goods_export_only == YesNoChoices.no
+
+        # Test post success (PRODUCT_FUTURE_UK_MARKET)
+        form_data = {"product_standard": CFSSchedule.ProductStandards.PRODUCT_FUTURE_UK_MARKET}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        self.schedule.refresh_from_db()
+        assert (
+            self.schedule.product_standard == CFSSchedule.ProductStandards.PRODUCT_FUTURE_UK_MARKET
+        )
+        assert (
+            self.schedule.product_eligibility
+            == CFSSchedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY
+        )
+        assert self.schedule.goods_placed_on_uk_market == YesNoChoices.yes
+        assert self.schedule.goods_export_only == YesNoChoices.no
+
+        # Test post success (PRODUCT_EXPORT_ONLY)
+        form_data = {"product_standard": CFSSchedule.ProductStandards.PRODUCT_EXPORT_ONLY}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        self.schedule.refresh_from_db()
+        assert self.schedule.product_standard == CFSSchedule.ProductStandards.PRODUCT_EXPORT_ONLY
+        assert (
+            self.schedule.product_eligibility
+            == CFSSchedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY
+        )
+        assert self.schedule.goods_placed_on_uk_market == YesNoChoices.no
+        assert self.schedule.goods_export_only == YesNoChoices.yes

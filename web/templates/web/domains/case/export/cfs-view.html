@@ -50,6 +50,9 @@
         {{ application_field(schedule.get_goods_placed_on_uk_market_display(), labels["goods_placed_on_uk_market"]) }}
         {{ application_field(schedule.get_goods_export_only_display(), labels["goods_export_only"]) }}
       {% endif %}
+      {% if schedule.product_standard %}
+        {{ application_field(schedule.get_product_standard_display(), labels["product_standard"]) }}
+      {% endif %}
       {{ application_field(schedule.get_any_raw_materials_display(), labels["any_raw_materials"]) }}
 
       {% if schedule.final_product_end_use %}

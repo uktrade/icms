@@ -273,6 +273,57 @@ class CFSScheduleRemoveLegislationForm(gds_forms.GDSForm):
         )
 
 
+class CFSScheduleProductStandardForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = CFSSchedule
+        fields = ["product_standard"]
+        error_messages = {"product_standard": {"required": "Select a statement"}}
+        formfield_callback = gds_forms.GDSFormfieldCallback(
+            gds_field_kwargs={"product_standard": gds_forms.FIELDSET_LEGEND_HEADER},
+        )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        model_label = self.fields["product_standard"].label
+        self.fields["product_standard"].label = get_schedule_label(self.instance, model_label)
+
+    def save(self, commit: bool = True) -> CFSSchedule:
+        self.instance = super().save(commit)
+
+        self._save_product_standard_fields()
+
+        if commit:
+            self.instance.save()
+
+        return self.instance
+
+    def _save_product_standard_fields(self) -> None:
+        # "It meets safety standards and is currently being sold on the UK market"
+        if self.instance.product_standard == CFSSchedule.ProductStandards.PRODUCT_SOLD_ON_UK_MARKET:
+            self.instance.product_eligibility = CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET
+            self.instance.goods_placed_on_uk_market = YesNoChoices.yes
+            self.instance.goods_export_only = YesNoChoices.no
+
+        # "It meets safety standards and will be sold on the UK market in the future"
+        elif (
+            self.instance.product_standard == CFSSchedule.ProductStandards.PRODUCT_FUTURE_UK_MARKET
+        ):
+            self.instance.product_eligibility = (
+                CFSSchedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY
+            )
+            self.instance.goods_placed_on_uk_market = YesNoChoices.yes
+            self.instance.goods_export_only = YesNoChoices.no
+
+        # "It meets safety standards and is for export only"
+        elif self.instance.product_standard == CFSSchedule.ProductStandards.PRODUCT_EXPORT_ONLY:
+            self.instance.product_eligibility = (
+                CFSSchedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY
+            )
+            self.instance.goods_placed_on_uk_market = YesNoChoices.no
+            self.instance.goods_export_only = YesNoChoices.yes
+
+
 def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:
     schedule_num = get_schedule_number(schedule)
 
