@@ -5,19 +5,19 @@
     {{ csrf_input }}
     {{ form }}
 
-    {# TODO: Use preventDoubleClick on all submit buttons #}
     {{ gds.govukButton({
       "text": "Add country or territory ",
       "name": "action",
       "value": "add-country",
       "classes": "govuk-button--secondary govuk-!-display-block",
-      "type": "submit"
+      "type": "submit",
+      "preventDoubleClick": True,
       })
     }}
     {% if not export_countries %}
       {# If there are no export countries show a fake continue button to submit the main form #}
       {# This ensures the error message is shown to populate the form #}
-      {{ gds.govukButton({"text": "Continue"})}}
+      {{ gds.govukButton({"text": "Continue", "preventDoubleClick": True})}}
     {% endif %}
   </form>
 

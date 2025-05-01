@@ -5,6 +5,6 @@
   <form {% if form.is_multipart %} enctype="multipart/form-data" {% endif %} method="post" action="">
     {{ csrf_input }}
     {{ form }}
-    {{ gds.govukButton({ "text": submit_btn_label|default("Continue"), "type": "submit" }) }}
+    {{ gds.govukButton({ "text": submit_btn_label|default("Continue"), "type": "submit", "preventDoubleClick": True }) }}
   </form>
 {% endblock %}
