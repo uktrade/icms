@@ -5488,3 +5488,5 @@ Valid APP PK
 body">Import Licensing Branch
 {{ gds.uktradeListWithActions(list_with_actions_kwargs
 static("css
+{{ legislation_link_text }
+schedule_statements_is_responsible_person

@@ -63,6 +63,11 @@ urlpatterns = [
                                 views.CFSScheduleProductStandardUpdateView.as_view(),
                                 name="schedule-product-standard",
                             ),
+                            path(
+                                "responsible-person/",
+                                views.CFSScheduleStatementIsResponsiblePersonUpdateView.as_view(),
+                                name="schedule-is-responsible-person",
+                            ),
                         ],
                     ),
                 ),

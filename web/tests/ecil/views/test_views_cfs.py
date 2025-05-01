@@ -904,3 +904,116 @@ class TestCFSScheduleProductStandardUpdateView:
         )
         assert self.schedule.goods_placed_on_uk_market == YesNoChoices.no
         assert self.schedule.goods_export_only == YesNoChoices.yes
+
+        # Test eu_cosmetic_regulation redirects to correct schedule statement view.
+        self.schedule.legislations.add(
+            ProductLegislation.objects.filter(
+                is_active=True,
+                gb_legislation=True,
+                is_eu_cosmetics_regulation=True,
+            ).first()
+        )
+
+        form_data = {"product_standard": CFSSchedule.ProductStandards.PRODUCT_SOLD_ON_UK_MARKET}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "ecil:export-cfs:schedule-is-responsible-person",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+
+class TestCFSScheduleStatementIsResponsiblePersonUpdateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.schedule.goods_export_only = YesNoChoices.no
+        self.schedule.save()
+
+        self.url = reverse(
+            "ecil:export-cfs:schedule-is-responsible-person",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        self.client = prototype_export_client
+        self.gb_eu_cosmetic_legislation = ProductLegislation.objects.filter(
+            is_active=True, gb_legislation=True, is_eu_cosmetics_regulation=True
+        ).first()
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        # Test correct client doesn't have permission without the requited legislation.
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_get(self):
+        # Add a GB legislation
+        self.schedule.legislations.add(self.gb_eu_cosmetic_legislation)
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-product-standard",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+              <h1 class="govuk-fieldset__heading">
+                <span class="govuk-caption-l">Product schedule 1</span>Are you the responsible person for the product?
+              </h1>
+            """,
+            html,
+        )
+
+        # Check legislation is in html
+        assertInHTML("Cosmetic Regulation No 1223/2009 as applicable in GB", html)
+
+        # Check NI legislation changes html
+        self.schedule.legislations.remove(self.gb_eu_cosmetic_legislation)
+        self.schedule.legislations.add(
+            ProductLegislation.objects.filter(
+                is_active=True, ni_legislation=True, is_eu_cosmetics_regulation=True
+            ).first()
+        )
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            "Regulation (EC) No 1223/2009 of the European Parliament and of the Council of 30 November 2009 on cosmetic products as applicable in NI",
+            html,
+        )
+
+    def test_post(self):
+        # Test error message
+        self.schedule.legislations.add(self.gb_eu_cosmetic_legislation)
+        form_data = {"schedule_statements_is_responsible_person": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "schedule_statements_is_responsible_person": ["Select yes or no"],
+        }
+
+        # Check schedule_statements_is_responsible_person is set to default.
+        assert self.schedule.schedule_statements_is_responsible_person is False
+
+        # Test post success
+        form_data = {"schedule_statements_is_responsible_person": "True"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        self.schedule.refresh_from_db()
+        assert self.schedule.schedule_statements_is_responsible_person is True
