@@ -324,6 +324,45 @@ class CFSScheduleProductStandardForm(gds_forms.GDSModelForm):
             self.instance.goods_export_only = YesNoChoices.yes
 
 
+class CFSScheduleStatementIsResponsiblePersonForm(gds_forms.GDSModelForm):
+    schedule_statements_is_responsible_person = gds_forms.GovUKRadioInputField(
+        choices=[
+            (
+                "True",
+                "Yes, I am is the responsible person for the product",
+            ),
+            (
+                "False",
+                "No, I am a third party exporter and not the responsible person for the product",
+            ),
+        ],
+        error_messages={"required": "Select yes or no"},
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
+    )
+
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = CFSSchedule
+        fields = ["schedule_statements_is_responsible_person"]
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.fields["schedule_statements_is_responsible_person"].label = get_schedule_label(
+            self.instance, "Are you the responsible person for the product?"
+        )
+
+        is_ni_eu_cosmetics_regulation = self.instance.legislations.filter(
+            is_active=True, is_eu_cosmetics_regulation=True, ni_legislation=True
+        ).exists()
+
+        self.fields["schedule_statements_is_responsible_person"].help_text = Markup(
+            render_to_string(
+                template_name="ecil/cfs/help_text/schedule_statements_is_responsible_person.html",
+                context={"is_ni_eu_cosmetics_regulation": is_ni_eu_cosmetics_regulation},
+            ),
+        )
+
+
 def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:
     schedule_num = get_schedule_number(schedule)
 

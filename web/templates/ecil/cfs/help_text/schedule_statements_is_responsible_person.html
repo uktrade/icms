@@ -1,0 +1,21 @@
+{% if is_ni_eu_cosmetics_regulation %}
+  {% set legislation_link = "https://www.legislation.gov.uk/eur/2009/1223/contents" %}
+  {% set legislation_link_text = "Regulation (EC) No 1223/2009 of the European Parliament and of the Council of 30 November 2009 on cosmetic products as applicable in NI" %}
+{% else %}
+  {% set legislation_link = "https://www.gov.uk/government/publications/cosmetic-products-enforcement-regulations-2013/regulation-20091223-and-the-cosmetic-products-enforcement-regulations-2013-great-britain" %}
+  {% set legislation_link_text = "Cosmetic Regulation No 1223/2009 as applicable in GB" %}
+{% endif %}
+
+<p class="govuk-body govuk-hint">
+  You understand that <strong>your company</strong> is legally responsible for ensuring the products
+  in the schedule meet the safety legislation requirements set out in
+  <a href="{{ legislation_link }}" class="govuk-link" target="_blank" rel="noopener noreferrer">
+    {{ legislation_link_text }}
+  </a>.
+</p>
+<p class="govuk-body govuk-hint">
+  In line with the responsible person definition as set out in this regulation,
+  <strong>
+    the person making the application is not individually responsible for the product
+  </strong>.
+</p>
