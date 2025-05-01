@@ -7,6 +7,6 @@
     {% call gds.govukFieldset(fieldset_kwargs) %}
       {{ form }}
     {% endcall %}
-    {{ gds.govukButton({ "text": submit_btn_label|default("Continue"), "type": "submit" }) }}
+    {{ gds.govukButton({ "text": submit_btn_label|default("Continue"), "type": "submit", "preventDoubleClick": True }) }}
   </form>
 {% endblock %}

@@ -23,9 +23,8 @@
     {{ gds.govukSummaryList(summary_list_kwargs) }}
   {% endif %}
 
-  {# Form to save the access request #}
   <form method="post" action="">
     {{ csrf_input }}
-    {{ gds.govukButton({ "text": submit_btn_label|default("Submit"), "type": "submit" }) }}
+    {{ gds.govukButton({ "text": submit_btn_label|default("Submit"), "type": "submit", "preventDoubleClick": True }) }}
   </form>
 {% endblock %}
