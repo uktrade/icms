@@ -470,8 +470,7 @@ class CFSScheduleProductStandardUpdateView(CFSScheduleBaseUpdateView):
         if has_eu_cosmetic_regulation(self.object):
             view_name = "ecil:export-cfs:schedule-is-responsible-person"
         else:
-            # TODO: Change to next view when implemented.
-            view_name = "export:cfs-schedule-edit"
+            view_name = "ecil:export-cfs:schedule-accordance-with-standards"
 
         return reverse(
             view_name, kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk}
@@ -494,9 +493,8 @@ class CFSScheduleStatementIsResponsiblePersonUpdateView(CFSScheduleBaseUpdateVie
         )
 
     def get_success_url(self) -> str:
-        # TODO: Change to next view when implemented.
         return reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-accordance-with-standards",
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
         )
 
@@ -508,3 +506,26 @@ def has_eu_cosmetic_regulation(schedule: CFSSchedule) -> bool:
     not_export_only = schedule.goods_export_only == YesNoChoices.no
 
     return has_cosmetics and not_export_only
+
+
+class CFSScheduleStatementAccordanceWithStandardsUpdateView(CFSScheduleBaseUpdateView):
+    # UpdateView config
+    form_class = forms.CFSScheduleStatementAccordanceWithStandardsForm
+    template_name = "ecil/gds_form.html"
+
+    def get_back_link_url(self) -> str | None:
+        if has_eu_cosmetic_regulation(self.object):
+            view_name = "ecil:export-cfs:schedule-is-responsible-person"
+        else:
+            view_name = "ecil:export-cfs:schedule-product-standard"
+
+        return reverse(
+            view_name, kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk}
+        )
+
+    def get_success_url(self) -> str:
+        # TODO: Change to next view when implemented.
+        return reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )

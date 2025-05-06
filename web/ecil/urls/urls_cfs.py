@@ -68,6 +68,11 @@ urlpatterns = [
                                 views.CFSScheduleStatementIsResponsiblePersonUpdateView.as_view(),
                                 name="schedule-is-responsible-person",
                             ),
+                            path(
+                                "accordance-with-standards/",
+                                views.CFSScheduleStatementAccordanceWithStandardsUpdateView.as_view(),
+                                name="schedule-accordance-with-standards",
+                            ),
                         ],
                     ),
                 ),
