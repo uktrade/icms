@@ -855,7 +855,7 @@ class TestCFSScheduleProductStandardUpdateView:
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-accordance-with-standards",
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
@@ -872,7 +872,7 @@ class TestCFSScheduleProductStandardUpdateView:
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-accordance-with-standards",
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
@@ -892,7 +892,7 @@ class TestCFSScheduleProductStandardUpdateView:
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-accordance-with-standards",
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
@@ -947,6 +947,11 @@ class TestCFSScheduleStatementIsResponsiblePersonUpdateView:
         # Test correct client doesn't have permission without the requited legislation.
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
+
+        # Add a GB legislation
+        self.schedule.legislations.add(self.gb_eu_cosmetic_legislation)
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
 
     def test_get(self):
         # Add a GB legislation
@@ -1011,9 +1016,94 @@ class TestCFSScheduleStatementIsResponsiblePersonUpdateView:
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-accordance-with-standards",
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
         self.schedule.refresh_from_db()
         assert self.schedule.schedule_statements_is_responsible_person is True
+
+
+class TestCFSScheduleStatementAccordanceWithStandardsUpdateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+
+        self.url = reverse(
+            "ecil:export-cfs:schedule-accordance-with-standards",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-product-standard",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+              <h1 class="govuk-fieldset__heading">
+                <span class="govuk-caption-l">Product schedule 1</span>
+                Are these products manufactured in accordance with the Good Manufacturing Practice standards set out in UK law?
+              </h1>
+            """,
+            html,
+        )
+
+        # Check adding a cosmetic legislation changes the back link.
+        self.schedule.legislations.add(
+            ProductLegislation.objects.filter(
+                is_active=True, gb_legislation=True, is_eu_cosmetics_regulation=True
+            ).first()
+        )
+        self.schedule.goods_export_only = YesNoChoices.no
+        self.schedule.save()
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-is-responsible-person",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+    def test_post(self):
+        # Test error message
+        form_data = {"schedule_statements_accordance_with_standards": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "schedule_statements_accordance_with_standards": ["Select yes or no"],
+        }
+
+        # Check schedule_statements_accordance_with_standards is set to default.
+        assert self.schedule.schedule_statements_accordance_with_standards is False
+
+        # Test post success
+        form_data = {"schedule_statements_accordance_with_standards": "True"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        self.schedule.refresh_from_db()
+        assert self.schedule.schedule_statements_accordance_with_standards is True

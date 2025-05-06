@@ -363,6 +363,33 @@ class CFSScheduleStatementIsResponsiblePersonForm(gds_forms.GDSModelForm):
         )
 
 
+class CFSScheduleStatementAccordanceWithStandardsForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = CFSSchedule
+        fields = ["schedule_statements_accordance_with_standards"]
+        error_messages = {
+            "schedule_statements_accordance_with_standards": {"required": "Select yes or no"}
+        }
+        formfield_callback = gds_forms.GDSFormfieldCallback(
+            gds_field_kwargs={
+                "schedule_statements_accordance_with_standards": gds_forms.FIELDSET_LEGEND_HEADER
+            },
+        )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.fields["schedule_statements_accordance_with_standards"].label = get_schedule_label(
+            self.instance,
+            "Are these products manufactured in accordance with the Good Manufacturing Practice standards set out in UK law?",
+        )
+        self.fields["schedule_statements_accordance_with_standards"].help_text = Markup(
+            render_to_string(
+                template_name="ecil/cfs/help_text/schedule_statements_accordance_with_standards.html",
+            ),
+        )
+
+
 def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:
     schedule_num = get_schedule_number(schedule)
 
