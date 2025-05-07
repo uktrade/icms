@@ -1,0 +1,11 @@
+{% extends "ecil/base.html" %}
+
+{% block ecil_content %}
+  <h1 class="govuk-heading-l">
+    <span class="govuk-caption-l">Product schedule {{ schedule_number }}</span>Add product details
+  </h1>
+  <p class="govuk-body">Add details of the products you want to export. You can choose to add products one at a time or upload a spreadsheet to add them in bulk.</p>
+  <p class="govuk-body">Your answers must apply to every product on the schedule. You will need to create a new schedule if any product has different details.</p>
+  {{ gds.govukDetails(details_kwargs) }}
+  {{ gds.govukButton({ "text": "Continue", "href": next_url }) }}
+{% endblock %}
