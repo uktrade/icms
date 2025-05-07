@@ -1101,9 +1101,72 @@ class TestCFSScheduleStatementAccordanceWithStandardsUpdateView:
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-product-start",
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
         self.schedule.refresh_from_db()
         assert self.schedule.schedule_statements_accordance_with_standards is True
+
+
+class TestCFSScheduleAddProductStartTemplateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+
+        self.url = reverse(
+            "ecil:export-cfs:schedule-product-start",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/cfs/schedule_product_start.html")
+
+        context = response.context
+
+        assert context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-accordance-with-standards",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        assert context["next_url"] == reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        assert context["details_kwargs"] == {
+            "text": (
+                "Products included in kits need to be listed individually."
+                " Some products may need different legislations."
+                " For example, if a kit includes toner, moisturiser and a hairbrush,"
+                " the hairbrush would require a separate legislation as it is not a cosmetic product."
+            ),
+            "summaryText": "The product is part of a kit",
+        }
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+              <h1 class="govuk-heading-l">
+                <span class="govuk-caption-l">Product schedule 1</span>Add product details
+              </h1>
+            """,
+            html,
+        )
+
+    def test_post_forbidden(self):
+        response = self.client.post(self.url)
+
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED

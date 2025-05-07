@@ -34,7 +34,6 @@ class CFSInProgressViewBase(
     LoginRequiredMixin,
     PermissionRequiredMixin,
     case_progress.InProgressApplicationStatusTaskMixin,
-    UpdateView,
 ):
     permission_required = [Perms.sys.exporter_access, Perms.sys.view_ecil_prototype]
 
@@ -66,18 +65,13 @@ class CFSInProgressRelatedObjectViewBase(
 
 
 @method_decorator(transaction.atomic, name="post")
-class CFSApplicationReferenceUpdateView(CFSInProgressViewBase, UpdateView):
+class CFSApplicationReferenceUpdateView(CFSInProgressViewBase, BackLinkMixin, UpdateView):
     # UpdateView config
     form_class = forms.CFSApplicationReferenceForm
     template_name = "ecil/gds_form.html"
 
-    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
-            text="Back", href=reverse("workbasket")
-        ).model_dump(exclude_defaults=True)
-
-        return context
+    def get_back_link_url(self) -> str | None:
+        return reverse("workbasket")
 
     def get_success_url(self) -> str:
         return reverse(
@@ -86,21 +80,10 @@ class CFSApplicationReferenceUpdateView(CFSInProgressViewBase, UpdateView):
 
 
 @method_decorator(transaction.atomic, name="post")
-class CFSApplicationContactUpdateView(CFSInProgressViewBase, UpdateView):
+class CFSApplicationContactUpdateView(CFSInProgressViewBase, BackLinkMixin, UpdateView):
     # UpdateView config
     form_class = forms.CFSApplicationContactForm
     template_name = "ecil/gds_form.html"
-
-    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        previous_step_url = reverse(
-            "ecil:export-cfs:application-reference", kwargs={"application_pk": self.application.pk}
-        )
-        context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
-            text="Back", href=previous_step_url
-        ).model_dump(exclude_defaults=True)
-
-        return context
 
     def form_valid(self, form: forms.CFSApplicationContactForm) -> HttpResponseRedirect:
         contact = form.cleaned_data["contact"]
@@ -116,6 +99,11 @@ class CFSApplicationContactUpdateView(CFSInProgressViewBase, UpdateView):
 
         return redirect(self.get_success_url())
 
+    def get_back_link_url(self) -> str | None:
+        return reverse(
+            "ecil:export-cfs:application-reference", kwargs={"application_pk": self.application.pk}
+        )
+
     def get_success_url(self) -> str:
         if self.application.countries.exists():
             redirect_to = "ecil:export-application:countries-add-another"
@@ -126,7 +114,7 @@ class CFSApplicationContactUpdateView(CFSInProgressViewBase, UpdateView):
 
 
 @method_decorator(transaction.atomic, name="post")
-class CFSScheduleCreateView(CFSInProgressRelatedObjectViewBase, TemplateView):
+class CFSScheduleCreateView(CFSInProgressViewBase, BackLinkMixin, TemplateView):
     # TemplateView config
     http_method_names = ["get", "post"]
     template_name = "ecil/cfs/schedule_create.html"
@@ -152,13 +140,6 @@ class CFSScheduleCreateView(CFSInProgressRelatedObjectViewBase, TemplateView):
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
-        previous_step_url = reverse(
-            "ecil:export-application:countries", kwargs={"application_pk": self.application.pk}
-        )
-        context["back_link_kwargs"] = serializers.back_link.BackLinkKwargs(
-            text="Back", href=previous_step_url
-        ).model_dump(exclude_defaults=True)
-
         context["create_schedule_btn_kwargs"] = serializers.button.ButtonKwargs(
             text="Create a product schedule",
             type="submit",
@@ -168,21 +149,55 @@ class CFSScheduleCreateView(CFSInProgressRelatedObjectViewBase, TemplateView):
 
         return context
 
+    def get_back_link_url(self) -> str | None:
+        return reverse(
+            "ecil:export-application:countries", kwargs={"application_pk": self.application.pk}
+        )
+
 
 #
 # Views relating to editing CFS Schedule fields
 #
-@method_decorator(transaction.atomic, name="post")
-class CFSScheduleBaseUpdateView(CFSInProgressRelatedObjectViewBase, BackLinkMixin, UpdateView):
-    """Common base class for all views used to update a CFSSchedule field."""
-
-    # UpdateView config
+class CFSScheduleSingleObjectMixin(SingleObjectMixin):
+    # SingleObjectMixin | UpdateView config
     pk_url_kwarg = "schedule_pk"
     model = CFSSchedule
+
+    # Classes using this mixin will have an application instance attribute
+    application: CertificateOfFreeSaleApplication
 
     def get_queryset(self) -> QuerySet[CFSSchedule]:
         """Restrict the available schedules to the ones linked to the application."""
         return self.application.schedules.all()
+
+    def get_object(self, queryset: QuerySet[CFSSchedule] | None = None) -> CFSSchedule:
+        return super().get_object(queryset)
+
+
+@method_decorator(transaction.atomic, name="post")
+class CFSScheduleBaseUpdateView(
+    CFSInProgressRelatedObjectViewBase, BackLinkMixin, CFSScheduleSingleObjectMixin, UpdateView
+):
+    """Common base class for all in progres CFS Schedule update views."""
+
+    ...
+
+
+@method_decorator(transaction.atomic, name="post")
+class CFSScheduleBaseFormView(
+    CFSInProgressRelatedObjectViewBase, BackLinkMixin, CFSScheduleSingleObjectMixin, FormView
+):
+    """Common base class for all in progres CFS Schedule related form views."""
+
+    ...
+
+
+class CFSScheduleBaseTemplateView(
+    CFSInProgressRelatedObjectViewBase, BackLinkMixin, CFSScheduleSingleObjectMixin, TemplateView
+):
+    """Common base class for all in progres CFS Schedule related template views."""
+
+    ...
 
 
 class CFSScheduleExporterStatusUpdateView(CFSScheduleBaseUpdateView):
@@ -299,19 +314,10 @@ class CFSScheduleAddLegislationUpdateView(CFSScheduleBaseUpdateView):
 
 
 @method_decorator(transaction.atomic, name="post")
-class CFSScheduleAddAnotherLegislationFormView(
-    CFSInProgressRelatedObjectViewBase, BackLinkMixin, SingleObjectMixin, FormView
-):
-    # SingleObjectMixin config
-    pk_url_kwarg = "schedule_pk"
-    model = CFSSchedule
-
+class CFSScheduleAddAnotherLegislationFormView(CFSScheduleBaseFormView):
+    # FormView config
     form_class = forms.CFSScheduleAddAnotherLegislationForm
     template_name = "ecil/cfs/schedule_legislation_add_another.html"
-
-    def get_queryset(self) -> QuerySet[CFSSchedule]:
-        """Restrict the available schedules to the ones linked to the application."""
-        return self.application.schedules.all()
 
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         self.object = self.get_object()
@@ -384,18 +390,7 @@ class CFSScheduleAddAnotherLegislationFormView(
 
 
 @method_decorator(transaction.atomic, name="post")
-class CFSScheduleConfirmRemoveLegislationFormView(
-    CFSInProgressRelatedObjectViewBase,
-    BackLinkMixin,
-    SingleObjectMixin,
-    FormView,
-):
-    # SingleObjectMixin config
-    pk_url_kwarg = "schedule_pk"
-    model = CFSSchedule
-    # Extra typing for clarity
-    object: CFSSchedule
-
+class CFSScheduleConfirmRemoveLegislationFormView(CFSScheduleBaseFormView):
     # FormView config
     form_class = forms.CFSScheduleRemoveLegislationForm
     template_name = "ecil/gds_form.html"
@@ -412,10 +407,6 @@ class CFSScheduleConfirmRemoveLegislationFormView(
         self.set_application_and_task()
         self.object = self.get_object()
         return super().post(request, *args, **kwargs)
-
-    def get_queryset(self) -> QuerySet[CFSSchedule]:
-        """Restrict the available schedules to the ones linked to the application."""
-        return self.application.schedules.all()
 
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
@@ -524,8 +515,44 @@ class CFSScheduleStatementAccordanceWithStandardsUpdateView(CFSScheduleBaseUpdat
         )
 
     def get_success_url(self) -> str:
-        # TODO: Change to next view when implemented.
         return reverse(
+            "ecil:export-cfs:schedule-product-start",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
+
+
+#
+# Schedule product views
+#
+class CFSScheduleAddProductStartTemplateView(CFSScheduleBaseTemplateView):
+    # TemplateView config
+    template_name = "ecil/cfs/schedule_product_start.html"
+    http_method_names = ["get"]
+
+    def get_back_link_url(self) -> str | None:
+        return reverse(
+            "ecil:export-cfs:schedule-accordance-with-standards",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
+
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        self.object = self.get_object()
+        context = super().get_context_data(**kwargs)
+
+        context["schedule_number"] = forms.get_schedule_number(self.object)
+        # TODO: Change to next view when implemented.
+        context["next_url"] = reverse(
             "export:cfs-schedule-edit",
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
         )
+        context["details_kwargs"] = serializers.details.DetailsKwargs(
+            summaryText="The product is part of a kit",
+            text=(
+                "Products included in kits need to be listed individually."
+                " Some products may need different legislations."
+                " For example, if a kit includes toner, moisturiser and a hairbrush, the hairbrush"
+                " would require a separate legislation as it is not a cosmetic product."
+            ),
+        ).model_dump(exclude_defaults=True)
+
+        return context
