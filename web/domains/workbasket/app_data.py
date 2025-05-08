@@ -181,7 +181,7 @@ def get_ilb_admin_qs(user: User) -> chain[QuerySet]:
 
 
 def _get_open_case_emails_annotation(
-    related_name: Literal["import_applications", "export_applications"]
+    related_name: Literal["import_applications", "export_applications"],
 ) -> Subquery:
 
     return ArraySubquery(
