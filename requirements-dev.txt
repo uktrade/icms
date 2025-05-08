@@ -37,7 +37,7 @@ beautifulsoup4==4.12.3
     # via django-htmlmin
 billiard==4.2.0
     # via celery
-black==24.8.0
+black==25.1.0
     # via -r requirements/requirements-dev.in
 boto3==1.35.20
     # via
@@ -191,7 +191,7 @@ faker==28.4.1
     #   factory-boy
 filelock==3.16.0
     # via virtualenv
-flake8==7.1.1
+flake8==7.2.0
     # via -r requirements/requirements-dev.in
 freezegun==1.5.1
     # via -r requirements/requirements-dev.in
@@ -231,7 +231,7 @@ ipdb==0.13.13
     # via -r requirements/requirements-dev.in
 ipython==8.27.0
     # via ipdb
-isort==5.13.2
+isort==6.0.1
     # via -r requirements/requirements-dev.in
 jedi==0.19.1
     # via ipython
@@ -398,7 +398,7 @@ ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.3
     # via stack-data
-pycodestyle==2.12.1
+pycodestyle==2.13.0
     # via
     #   -r requirements/requirements-dev.in
     #   flake8
@@ -414,7 +414,7 @@ pydantic-settings==2.5.2
     # via -r requirements/requirements-base.in
 pyee==12.0.0
     # via playwright
-pyflakes==3.2.0
+pyflakes==3.3.2
     # via
     #   -r requirements/requirements-dev.in
     #   flake8
