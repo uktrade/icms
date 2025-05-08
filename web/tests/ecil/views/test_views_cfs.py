@@ -1141,7 +1141,7 @@ class TestCFSScheduleAddProductStartTemplateView:
         )
 
         assert context["next_url"] == reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-product-add-method",
             kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
         )
 
@@ -1170,3 +1170,71 @@ class TestCFSScheduleAddProductStartTemplateView:
         response = self.client.post(self.url)
 
         assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+
+class TestCFSScheduleAddProductMethodFormView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.url = reverse(
+            "ecil:export-cfs:schedule-product-add-method",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self, exporter_site):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+
+        assert response.context["back_link_kwargs"]["href"] == reverse(
+            "ecil:export-cfs:schedule-product-start",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+              <h1 class="govuk-fieldset__heading">
+                <span class="govuk-caption-l">Product schedule 1</span>How do you want to add products?
+              </h1>
+            """,
+            html,
+        )
+
+    def test_post(self):
+        # Test error message
+        form_data = {"method": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "method": ["Select how you want to add your products"],
+        }
+
+        # Test post success (manual)
+        form_data = {"method": "manual"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )
+
+        # Test post success (in bulk)
+        form_data = {"method": "in_bulk"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        )

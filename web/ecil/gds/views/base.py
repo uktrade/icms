@@ -77,7 +77,7 @@ class BackLinkMixin:
         return context
 
     def get_back_link_url(self) -> str | None:
-        raise NotImplementedError()
+        raise NotImplementedError("get_back_link_url not implemented")
 
 
 # TODO: ECIL-697 Remove and replace with ECILUserAccessRequest
