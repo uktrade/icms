@@ -390,6 +390,27 @@ class CFSScheduleStatementAccordanceWithStandardsForm(gds_forms.GDSModelForm):
         )
 
 
+class CFSScheduleAddProductMethodForm(gds_forms.GDSForm):
+    MANUAL = "manual"
+    IN_BULK = "in_bulk"
+
+    method = gds_forms.GovUKRadioInputField(
+        choices=(
+            (MANUAL, "Add one at a time"),
+            (IN_BULK, "Add in bulk"),
+        ),
+        choice_hints={IN_BULK: "Upload multiple products using a spreadsheet"},
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
+        error_messages={"required": "Select how you want to add your products"},
+    )
+
+    def __init__(self, *args: Any, schedule: CFSSchedule, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["method"].label = get_schedule_label(
+            schedule, "How do you want to add products?"
+        )
+
+
 def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:
     schedule_num = get_schedule_number(schedule)
 

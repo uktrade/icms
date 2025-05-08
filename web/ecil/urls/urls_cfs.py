@@ -73,10 +73,18 @@ urlpatterns = [
                                 views.CFSScheduleStatementAccordanceWithStandardsUpdateView.as_view(),
                                 name="schedule-accordance-with-standards",
                             ),
+                            #
+                            # Schedule product views
+                            #
                             path(
                                 "products/",
                                 views.CFSScheduleAddProductStartTemplateView.as_view(),
                                 name="schedule-product-start",
+                            ),
+                            path(
+                                "products/upload-method/",
+                                views.CFSScheduleAddProductMethodFormView.as_view(),
+                                name="schedule-product-add-method",
                             ),
                         ],
                     ),

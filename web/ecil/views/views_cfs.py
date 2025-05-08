@@ -189,7 +189,17 @@ class CFSScheduleBaseFormView(
 ):
     """Common base class for all in progres CFS Schedule related form views."""
 
-    ...
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        self.set_application_and_task()
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def post(
+        self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any
+    ) -> HttpResponseRedirect:
+        self.set_application_and_task()
+        self.object = self.get_object()
+        return super().post(request, *args, **kwargs)
 
 
 class CFSScheduleBaseTemplateView(
@@ -320,12 +330,9 @@ class CFSScheduleAddAnotherLegislationFormView(CFSScheduleBaseFormView):
     template_name = "ecil/cfs/schedule_legislation_add_another.html"
 
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
-        self.object = self.get_object()
         context = super().get_context_data(**kwargs)
 
-        schedule = self.get_object()
-        schedule_legislations = schedule.legislations.all()
-
+        schedule_legislations = self.object.legislations.all()
         legislation_count = schedule_legislations.count()
 
         if legislation_count == 1:
@@ -361,12 +368,11 @@ class CFSScheduleAddAnotherLegislationFormView(CFSScheduleBaseFormView):
             rows=rows
         ).model_dump(exclude_defaults=True)
 
-        context["schedule_number"] = forms.get_schedule_number(schedule)
+        context["schedule_number"] = forms.get_schedule_number(self.object)
 
         return context
 
     def form_valid(self, form: forms.CFSScheduleAddAnotherLegislationForm) -> HttpResponseRedirect:
-        self.object = self.get_object()
         add_another = form.cleaned_data["add_another"]
 
         if add_another == YesNoChoices.yes:
@@ -396,18 +402,6 @@ class CFSScheduleConfirmRemoveLegislationFormView(CFSScheduleBaseFormView):
     template_name = "ecil/gds_form.html"
     http_method_names = ["get", "post"]
 
-    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        self.set_application_and_task()
-        self.object = self.get_object()
-        return super().get(request, *args, **kwargs)
-
-    def post(
-        self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any
-    ) -> HttpResponseRedirect:
-        self.set_application_and_task()
-        self.object = self.get_object()
-        return super().post(request, *args, **kwargs)
-
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
         kwargs["schedule"] = self.object
@@ -418,10 +412,8 @@ class CFSScheduleConfirmRemoveLegislationFormView(CFSScheduleBaseFormView):
         return kwargs
 
     def form_valid(self, form: forms.CFSScheduleRemoveLegislationForm) -> HttpResponseRedirect:
-        schedule: CFSSchedule = self.get_object()
-
         if form.cleaned_data["are_you_sure"] == YesNoChoices.yes:
-            schedule.legislations.remove(form.legislation)
+            self.object.legislations.remove(form.legislation)
 
         return super().form_valid(form)
 
@@ -540,9 +532,8 @@ class CFSScheduleAddProductStartTemplateView(CFSScheduleBaseTemplateView):
         context = super().get_context_data(**kwargs)
 
         context["schedule_number"] = forms.get_schedule_number(self.object)
-        # TODO: Change to next view when implemented.
         context["next_url"] = reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-product-add-method",
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
         )
         context["details_kwargs"] = serializers.details.DetailsKwargs(
@@ -556,3 +547,38 @@ class CFSScheduleAddProductStartTemplateView(CFSScheduleBaseTemplateView):
         ).model_dump(exclude_defaults=True)
 
         return context
+
+
+class CFSScheduleAddProductMethodFormView(CFSScheduleBaseFormView):
+    # FormView config
+    form_class = forms.CFSScheduleAddProductMethodForm
+    template_name = "ecil/gds_form.html"
+    http_method_names = ["get", "post"]
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+        kwargs["schedule"] = self.object
+
+        return kwargs
+
+    def form_valid(self, form: forms.CFSScheduleAddProductMethodForm) -> HttpResponseRedirect:
+        method = form.cleaned_data["method"]
+
+        if method == forms.CFSScheduleAddProductMethodForm.MANUAL:
+            redirect_to = reverse(
+                "export:cfs-schedule-edit",
+                kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+            )
+        else:
+            redirect_to = reverse(
+                "export:cfs-schedule-edit",
+                kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+            )
+
+        return redirect(redirect_to)
+
+    def get_back_link_url(self) -> str | None:
+        return reverse(
+            "ecil:export-cfs:schedule-product-start",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
