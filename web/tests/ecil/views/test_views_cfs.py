@@ -1,21 +1,47 @@
 from http import HTTPStatus
 
 import pytest
+from django.http import HttpResponse
 from django.urls import reverse
 from pytest_django.asserts import assertInHTML, assertTemplateUsed
 
 from web.ecil.gds.forms import fields
-from web.models import CFSSchedule, Country, ProductLegislation
+from web.models import (
+    CertificateOfFreeSaleApplication,
+    CFSSchedule,
+    Country,
+    ProductLegislation,
+)
 from web.models.shared import AddressEntryType, YesNoChoices
+
+
+def assert_back_link_url(
+    response: HttpResponse, expected_url: str, expected_text: str = "Back"
+) -> None:
+    back_link_kwargs = response.context["back_link_kwargs"]
+
+    actual_text = back_link_kwargs["text"]
+    assert expected_text == actual_text
+
+    actual_url = back_link_kwargs["href"]
+    assert expected_url == actual_url
+
+
+def get_cfs_url(view_name: str, app: CertificateOfFreeSaleApplication) -> str:
+    return reverse(view_name, kwargs={"application_pk": app.pk})
+
+
+def get_cfs_schedule_url(
+    view_name: str, app: CertificateOfFreeSaleApplication, schedule: CFSSchedule
+) -> str:
+    return reverse(view_name, kwargs={"application_pk": app.pk, "schedule_pk": schedule.pk})
 
 
 class TestCFSApplicationReferenceUpdateView:
     @pytest.fixture(autouse=True)
     def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
-        self.url = reverse(
-            "ecil:export-cfs:application-reference", kwargs={"application_pk": self.app.pk}
-        )
+        self.url = get_cfs_url("ecil:export-cfs:application-reference", self.app)
         self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
@@ -40,18 +66,14 @@ class TestCFSApplicationReferenceUpdateView:
         form_data = {"applicant_reference": ""}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:application-contact", kwargs={"application_pk": self.app.pk}
-        )
+        assert response.url == get_cfs_url("ecil:export-cfs:application-contact", self.app)
 
         # Test post success
         form_data = {"applicant_reference": "test-application-reference"}
         response = self.client.post(self.url, data=form_data)
 
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:application-contact", kwargs={"application_pk": self.app.pk}
-        )
+        assert response.url == get_cfs_url("ecil:export-cfs:application-contact", self.app)
 
         self.app.refresh_from_db()
         assert self.app.applicant_reference == "test-application-reference"
@@ -62,9 +84,7 @@ class TestCFSApplicationContactUpdateView:
     def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.user = prototype_export_user
-        self.url = reverse(
-            "ecil:export-cfs:application-contact", kwargs={"application_pk": self.app.pk}
-        )
+        self.url = get_cfs_url("ecil:export-cfs:application-contact", self.app)
         self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
@@ -81,9 +101,7 @@ class TestCFSApplicationContactUpdateView:
 
         assert response.context["back_link_kwargs"] == {
             "text": "Back",
-            "href": reverse(
-                "ecil:export-cfs:application-reference", kwargs={"application_pk": self.app.pk}
-            ),
+            "href": get_cfs_url("ecil:export-cfs:application-reference", self.app),
         }
 
     def test_post(self):
@@ -101,17 +119,15 @@ class TestCFSApplicationContactUpdateView:
         response = self.client.post(self.url, data=form_data)
 
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-application:countries", kwargs={"application_pk": self.app.pk}
-        )
+        assert response.url == get_cfs_url("ecil:export-application:countries", self.app)
 
         # Test having an existing country changes the post redirect.
         self.app.countries.add(Country.app.get_cfs_countries().first())
 
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-application:countries-add-another", kwargs={"application_pk": self.app.pk}
+        assert response.url == get_cfs_url(
+            "ecil:export-application:countries-add-another", self.app
         )
 
         self.app.refresh_from_db()
@@ -132,9 +148,7 @@ class TestCFSScheduleCreateView:
     @pytest.fixture(autouse=True)
     def setup(self, prototype_export_client, prototype_export_user, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
-        self.url = reverse(
-            "ecil:export-cfs:schedule-create", kwargs={"application_pk": self.app.pk}
-        )
+        self.url = get_cfs_url("ecil:export-cfs:schedule-create", self.app)
         self.client = prototype_export_client
 
     def test_permission(self, ilb_admin_client):
@@ -149,12 +163,8 @@ class TestCFSScheduleCreateView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/cfs/schedule_create.html")
 
-        assert response.context["back_link_kwargs"] == {
-            "text": "Back",
-            "href": reverse(
-                "ecil:export-application:countries", kwargs={"application_pk": self.app.pk}
-            ),
-        }
+        expected_url = get_cfs_url("ecil:export-application:countries", self.app)
+        assert_back_link_url(response, expected_url)
 
         assert response.context["create_schedule_btn_kwargs"] == {
             "text": "Create a product schedule",
@@ -173,10 +183,11 @@ class TestCFSScheduleCreateView:
         assert self.app.schedules.count() == 2
 
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-exporter-status",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.app.schedules.last().pk},
+
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-exporter-status", self.app, self.app.schedules.last()
         )
+        assert response.url == expected_url
 
 
 class TestCFSScheduleExporterStatusUpdateView:
@@ -184,9 +195,8 @@ class TestCFSScheduleExporterStatusUpdateView:
     def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
-        self.url = reverse(
-            "ecil:export-cfs:schedule-exporter-status",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        self.url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-exporter-status", self.app, self.schedule
         )
         self.client = prototype_export_client
 
@@ -202,9 +212,8 @@ class TestCFSScheduleExporterStatusUpdateView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/gds_form.html")
 
-        assert response.context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-create", kwargs={"application_pk": self.app.pk}
-        )
+        expected_url = get_cfs_url("ecil:export-cfs:schedule-create", self.app)
+        assert_back_link_url(response, expected_url)
 
     def test_post(self):
         # Test error message
@@ -223,9 +232,8 @@ class TestCFSScheduleExporterStatusUpdateView:
         form_data = {"exporter_status": CFSSchedule.ExporterStatus.IS_MANUFACTURER}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-manufacturer-address",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-manufacturer-address", self.app, self.schedule
         )
 
         self.schedule.refresh_from_db()
@@ -237,9 +245,8 @@ class TestCFSScheduleManufacturerAddressUpdateView:
     def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
-        self.url = reverse(
-            "ecil:export-cfs:schedule-manufacturer-address",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        self.url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-manufacturer-address", self.app, self.schedule
         )
         self.client = prototype_export_client
 
@@ -255,10 +262,10 @@ class TestCFSScheduleManufacturerAddressUpdateView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/cfs/schedule_manufacturer_address.html")
 
-        assert response.context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-exporter-status",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-exporter-status", self.app, self.schedule
         )
+        assert_back_link_url(response, expected_url)
 
         # Check custom header is present
         html = response.content.decode("utf-8")
@@ -300,9 +307,9 @@ class TestCFSScheduleManufacturerAddressUpdateView:
         }
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-brand-name-holder",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-brand-name-holder", self.app, self.schedule
         )
 
         self.schedule.refresh_from_db()
@@ -317,9 +324,8 @@ class TestCFSScheduleBrandNameHolderUpdateView:
     def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
-        self.url = reverse(
-            "ecil:export-cfs:schedule-brand-name-holder",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        self.url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-brand-name-holder", self.app, self.schedule
         )
         self.client = prototype_export_client
 
@@ -335,10 +341,10 @@ class TestCFSScheduleBrandNameHolderUpdateView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/gds_form.html")
 
-        assert response.context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-manufacturer-address",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-manufacturer-address", self.app, self.schedule
         )
+        assert_back_link_url(response, expected_url)
 
         # Check custom header is present
         html = response.content.decode("utf-8")
@@ -369,9 +375,9 @@ class TestCFSScheduleBrandNameHolderUpdateView:
         form_data = {"brand_name_holder": YesNoChoices.yes}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-country-of-manufacture",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-country-of-manufacture", self.app, self.schedule
         )
 
         self.schedule.refresh_from_db()
@@ -383,9 +389,8 @@ class TestCFSScheduleCountryOfManufactureUpdateView:
     def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
-        self.url = reverse(
-            "ecil:export-cfs:schedule-country-of-manufacture",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        self.url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-country-of-manufacture", self.app, self.schedule
         )
         self.client = prototype_export_client
 
@@ -401,10 +406,10 @@ class TestCFSScheduleCountryOfManufactureUpdateView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/cfs/schedule_country_of_manufacture.html")
 
-        assert response.context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-brand-name-holder",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-brand-name-holder", self.app, self.schedule
         )
+        assert_back_link_url(response, expected_url)
 
         # Check custom header is present
         html = response.content.decode("utf-8")
@@ -437,9 +442,9 @@ class TestCFSScheduleCountryOfManufactureUpdateView:
         form_data = {"country_of_manufacture": valid_country.pk}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-legislation",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation", self.app, self.schedule
         )
 
         self.schedule.refresh_from_db()
@@ -451,9 +456,8 @@ class TestCFSScheduleCountryOfManufactureUpdateView:
         )
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-legislation-add-another",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation-add-another", self.app, self.schedule
         )
 
 
@@ -462,9 +466,8 @@ class TestCFSScheduleAddLegislationUpdateView:
     def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
-        self.url = reverse(
-            "ecil:export-cfs:schedule-legislation",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        self.url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation", self.app, self.schedule
         )
         self.client = prototype_export_client
 
@@ -480,10 +483,10 @@ class TestCFSScheduleAddLegislationUpdateView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/cfs/schedule_legislation.html")
 
-        assert response.context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-country-of-manufacture",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-country-of-manufacture", self.app, self.schedule
         )
+        assert_back_link_url(response, expected_url)
 
         # Check custom header is present
         html = response.content.decode("utf-8")
@@ -499,9 +502,8 @@ class TestCFSScheduleAddLegislationUpdateView:
         )
 
         # Test referrer back link is correct.
-        referrer = reverse(
-            "ecil:export-cfs:schedule-legislation-add-another",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        referrer = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation-add-another", self.app, self.schedule
         )
         headers = {"REFERER": f"http://{exporter_site.domain}{referrer}"}
         response = self.client.get(self.url, headers=headers)
@@ -544,9 +546,8 @@ class TestCFSScheduleAddLegislationUpdateView:
         form_data = {"legislations": valid_legislation.pk}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-legislation-add-another",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation-add-another", self.app, self.schedule
         )
 
         self.schedule.refresh_from_db()
@@ -582,10 +583,8 @@ class TestCFSScheduleAddAnotherLegislationFormView:
             is_active=True, gb_legislation=True
         )
         self.schedule.legislations.add(*self.available_legislations[:2])
-
-        self.url = reverse(
-            "ecil:export-cfs:schedule-legislation-add-another",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        self.url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation-add-another", self.app, self.schedule
         )
         self.client = prototype_export_client
 
@@ -601,10 +600,10 @@ class TestCFSScheduleAddAnotherLegislationFormView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/cfs/schedule_legislation_add_another.html")
 
-        assert response.context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-legislation",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation", self.app, self.schedule
         )
+        assert_back_link_url(response, expected_url)
 
         # Check custom header is present
         html = response.content.decode("utf-8")
@@ -670,18 +669,16 @@ class TestCFSScheduleAddAnotherLegislationFormView:
         form_data = {"add_another": YesNoChoices.yes}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-legislation",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation", self.app, self.schedule
         )
 
         # Test post success (no)
         form_data = {"add_another": YesNoChoices.no}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-product-standard",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-product-standard", self.app, self.schedule
         )
 
 
@@ -696,7 +693,6 @@ class TestCFSScheduleConfirmRemoveLegislationFormView:
         self.schedule.legislations.add(*available_legislations[:2])
         self.client = prototype_export_client
         self.legislation = self.schedule.legislations.first()
-
         self.url = reverse(
             "ecil:export-cfs:schedule-legislation-remove",
             kwargs={
@@ -718,10 +714,10 @@ class TestCFSScheduleConfirmRemoveLegislationFormView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/gds_form.html")
 
-        assert response.context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-legislation-add-another",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation-add-another", self.app, self.schedule
         )
+        assert_back_link_url(response, expected_url)
 
         # Check custom header is present
         html = response.content.decode("utf-8")
@@ -751,9 +747,8 @@ class TestCFSScheduleConfirmRemoveLegislationFormView:
         form_data = {"are_you_sure": YesNoChoices.no}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-legislation-add-another",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation-add-another", self.app, self.schedule
         )
         assert self.schedule.legislations.count() == 2
 
@@ -761,9 +756,8 @@ class TestCFSScheduleConfirmRemoveLegislationFormView:
         form_data = {"are_you_sure": YesNoChoices.yes}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-legislation-add-another",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation-add-another", self.app, self.schedule
         )
         assert self.schedule.legislations.count() == 1
 
@@ -780,9 +774,8 @@ class TestCFSScheduleConfirmRemoveLegislationFormView:
         form_data = {"are_you_sure": YesNoChoices.yes}
         response = self.client.post(url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-legislation",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation", self.app, self.schedule
         )
         assert self.schedule.legislations.count() == 0
 
@@ -792,9 +785,9 @@ class TestCFSScheduleProductStandardUpdateView:
     def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
-        self.url = reverse(
-            "ecil:export-cfs:schedule-product-standard",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+
+        self.url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-product-standard", self.app, self.schedule
         )
         self.client = prototype_export_client
 
@@ -810,10 +803,10 @@ class TestCFSScheduleProductStandardUpdateView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/gds_form.html")
 
-        assert response.context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-legislation",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation", self.app, self.schedule
         )
+        assert_back_link_url(response, expected_url)
 
         # Check custom header is present
         html = response.content.decode("utf-8")
@@ -832,10 +825,11 @@ class TestCFSScheduleProductStandardUpdateView:
         )
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
-        assert response.context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-legislation-add-another",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-legislation-add-another", self.app, self.schedule
         )
+        assert_back_link_url(response, expected_url)
 
     def test_post(self):
         # Test error message
@@ -854,9 +848,8 @@ class TestCFSScheduleProductStandardUpdateView:
         form_data = {"product_standard": CFSSchedule.ProductStandards.PRODUCT_SOLD_ON_UK_MARKET}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-accordance-with-standards",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-accordance-with-standards", self.app, self.schedule
         )
 
         self.schedule.refresh_from_db()
@@ -871,9 +864,9 @@ class TestCFSScheduleProductStandardUpdateView:
         form_data = {"product_standard": CFSSchedule.ProductStandards.PRODUCT_FUTURE_UK_MARKET}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-accordance-with-standards",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-accordance-with-standards", self.app, self.schedule
         )
 
         self.schedule.refresh_from_db()
@@ -891,9 +884,8 @@ class TestCFSScheduleProductStandardUpdateView:
         form_data = {"product_standard": CFSSchedule.ProductStandards.PRODUCT_EXPORT_ONLY}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-accordance-with-standards",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-accordance-with-standards", self.app, self.schedule
         )
 
         self.schedule.refresh_from_db()
@@ -917,9 +909,8 @@ class TestCFSScheduleProductStandardUpdateView:
         form_data = {"product_standard": CFSSchedule.ProductStandards.PRODUCT_SOLD_ON_UK_MARKET}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-is-responsible-person",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-is-responsible-person", self.app, self.schedule
         )
 
 
@@ -931,9 +922,8 @@ class TestCFSScheduleStatementIsResponsiblePersonUpdateView:
         self.schedule.goods_export_only = YesNoChoices.no
         self.schedule.save()
 
-        self.url = reverse(
-            "ecil:export-cfs:schedule-is-responsible-person",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        self.url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-is-responsible-person", self.app, self.schedule
         )
         self.client = prototype_export_client
         self.gb_eu_cosmetic_legislation = ProductLegislation.objects.filter(
@@ -961,10 +951,10 @@ class TestCFSScheduleStatementIsResponsiblePersonUpdateView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/gds_form.html")
 
-        assert response.context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-product-standard",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-product-standard", self.app, self.schedule
         )
+        assert_back_link_url(response, expected_url)
 
         # Check custom header is present
         html = response.content.decode("utf-8")
@@ -1015,9 +1005,8 @@ class TestCFSScheduleStatementIsResponsiblePersonUpdateView:
         form_data = {"schedule_statements_is_responsible_person": "True"}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-accordance-with-standards",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-accordance-with-standards", self.app, self.schedule
         )
 
         self.schedule.refresh_from_db()
@@ -1029,10 +1018,8 @@ class TestCFSScheduleStatementAccordanceWithStandardsUpdateView:
     def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
-
-        self.url = reverse(
-            "ecil:export-cfs:schedule-accordance-with-standards",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        self.url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-accordance-with-standards", self.app, self.schedule
         )
         self.client = prototype_export_client
 
@@ -1048,10 +1035,10 @@ class TestCFSScheduleStatementAccordanceWithStandardsUpdateView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/gds_form.html")
 
-        assert response.context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-product-standard",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-product-standard", self.app, self.schedule
         )
+        assert_back_link_url(response, expected_url)
 
         # Check custom header is present
         html = response.content.decode("utf-8")
@@ -1078,10 +1065,10 @@ class TestCFSScheduleStatementAccordanceWithStandardsUpdateView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/gds_form.html")
 
-        assert response.context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-is-responsible-person",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-is-responsible-person", self.app, self.schedule
         )
+        assert_back_link_url(response, expected_url)
 
     def test_post(self):
         # Test error message
@@ -1100,9 +1087,8 @@ class TestCFSScheduleStatementAccordanceWithStandardsUpdateView:
         form_data = {"schedule_statements_accordance_with_standards": "True"}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "ecil:export-cfs:schedule-product-start",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-product-start", self.app, self.schedule
         )
 
         self.schedule.refresh_from_db()
@@ -1114,10 +1100,8 @@ class TestCFSScheduleAddProductStartTemplateView:
     def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
-
-        self.url = reverse(
-            "ecil:export-cfs:schedule-product-start",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        self.url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-product-start", self.app, self.schedule
         )
         self.client = prototype_export_client
 
@@ -1135,14 +1119,13 @@ class TestCFSScheduleAddProductStartTemplateView:
 
         context = response.context
 
-        assert context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-accordance-with-standards",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-accordance-with-standards", self.app, self.schedule
         )
+        assert_back_link_url(response, expected_url)
 
-        assert context["next_url"] == reverse(
-            "ecil:export-cfs:schedule-product-add-method",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert context["next_url"] == get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-product-add-method", self.app, self.schedule
         )
 
         assert context["details_kwargs"] == {
@@ -1177,9 +1160,8 @@ class TestCFSScheduleAddProductMethodFormView:
     def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
-        self.url = reverse(
-            "ecil:export-cfs:schedule-product-add-method",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        self.url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-product-add-method", self.app, self.schedule
         )
         self.client = prototype_export_client
 
@@ -1195,10 +1177,10 @@ class TestCFSScheduleAddProductMethodFormView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/gds_form.html")
 
-        assert response.context["back_link_kwargs"]["href"] == reverse(
-            "ecil:export-cfs:schedule-product-start",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-product-start", self.app, self.schedule
         )
+        assert_back_link_url(response, expected_url)
 
         # Check custom header is present
         html = response.content.decode("utf-8")
@@ -1225,16 +1207,14 @@ class TestCFSScheduleAddProductMethodFormView:
         form_data = {"method": "manual"}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "export:cfs-schedule-edit",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "export:cfs-schedule-edit", self.app, self.schedule
         )
 
         # Test post success (in bulk)
         form_data = {"method": "in_bulk"}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse(
-            "export:cfs-schedule-edit",
-            kwargs={"application_pk": self.app.pk, "schedule_pk": self.schedule.pk},
+        assert response.url == get_cfs_schedule_url(
+            "export:cfs-schedule-edit", self.app, self.schedule
         )
