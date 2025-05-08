@@ -1,8 +1,7 @@
 {% extends "ecil/gds_form.html" %}
+{% from "ecil/cfs/macros.html" import product_schedule_h1 %}
 
 {% block ecil_content_before_form %}
-  <h1 class="govuk-heading-l">
-    <span class="govuk-caption-l">Product schedule {{ schedule_number }}</span>{{ legislation_header }}
-  </h1>
+  {{ product_schedule_h1(schedule_number, legislation_heading) }}
   {{ gds.uktradeListWithActions(list_with_actions_kwargs) }}
 {% endblock %}

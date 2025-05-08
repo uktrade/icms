@@ -336,12 +336,12 @@ class CFSScheduleAddAnotherLegislationFormView(CFSScheduleBaseFormView):
         legislation_count = schedule_legislations.count()
 
         if legislation_count == 1:
-            legislation_header = "You have added 1 legislation"
+            legislation_heading = "You have added 1 legislation"
         else:
             # Correct message for 0 or greater than 1
-            legislation_header = f"You have added {legislation_count} legislations"
+            legislation_heading = f"You have added {legislation_count} legislations"
 
-        context["legislation_header"] = legislation_header
+        context["legislation_heading"] = legislation_heading
 
         rows = []
         for legislation in schedule_legislations:
