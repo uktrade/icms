@@ -203,7 +203,7 @@ class TestUserFeedbackSurveyDataView(BaseTestDataView):
             "future_contact": "yes",
             "referrer_path": "/submit",
             "site": "exporter",
-            "process_id": self.app.pk,
+            "application_id": self.app.pk,
             "created_by_id": self.user.pk,
             "created_datetime": self.survey.created_datetime.strftime(DT_STRING),
         }

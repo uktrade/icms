@@ -200,7 +200,7 @@ class TestUserFeedbackSerializer:
                     "type": "String",
                 },
                 {
-                    "name": "process_id",
+                    "name": "application_id",
                     "nullable": True,
                     "type": "Integer",
                 },

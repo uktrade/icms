@@ -6,7 +6,6 @@ from .base import BaseResultsSerializer, BaseSerializer
 
 
 class UserSerializer(BaseSerializer):
-    id: int
     title: str | None
     first_name: str
     last_name: str
@@ -31,7 +30,6 @@ class UserListSerializer(BaseResultsSerializer):
 
 
 class UserFeedbackSurveySerializer(BaseSerializer):
-    id: int
     satisfaction: str
     issues: list[str]
     issue_details: str
@@ -42,7 +40,7 @@ class UserFeedbackSurveySerializer(BaseSerializer):
     future_contact: str
     referrer_path: str
     site: str
-    process_id: int | None
+    application_id: int | None
     created_by_id: int
     created_datetime: dt.datetime
 
@@ -56,7 +54,6 @@ class UserFeedbackSurveys(BaseResultsSerializer):
 
 
 class ExporterSerializer(BaseSerializer):
-    id: int
     is_active: bool
     name: str
     registered_number: str | None
@@ -74,7 +71,6 @@ class ExporterListSerializer(BaseResultsSerializer):
 
 
 class ImporterSerializer(BaseSerializer):
-    id: int
     is_active: bool
     type: str
     name: str | None
@@ -95,7 +91,6 @@ class ImporterListSerializer(BaseResultsSerializer):
 
 
 class OfficeSerializer(BaseSerializer):
-    id: int
     is_active: bool
     address_1: str
     address_2: str | None
