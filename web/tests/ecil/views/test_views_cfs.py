@@ -44,8 +44,8 @@ class TestCFSApplicationReferenceUpdateView:
         self.url = get_cfs_url("ecil:export-cfs:application-reference", self.app)
         self.client = prototype_export_client
 
-    def test_permission(self, ilb_admin_client):
-        response = ilb_admin_client.get(self.url)
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         response = self.client.get(self.url)
@@ -87,8 +87,8 @@ class TestCFSApplicationContactUpdateView:
         self.url = get_cfs_url("ecil:export-cfs:application-contact", self.app)
         self.client = prototype_export_client
 
-    def test_permission(self, ilb_admin_client):
-        response = ilb_admin_client.get(self.url)
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         response = self.client.get(self.url)
@@ -151,8 +151,8 @@ class TestCFSScheduleCreateView:
         self.url = get_cfs_url("ecil:export-cfs:schedule-create", self.app)
         self.client = prototype_export_client
 
-    def test_permission(self, ilb_admin_client):
-        response = ilb_admin_client.get(self.url)
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         response = self.client.get(self.url)
@@ -1208,7 +1208,7 @@ class TestCFSScheduleAddProductMethodFormView:
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == get_cfs_schedule_url(
-            "export:cfs-schedule-edit", self.app, self.schedule
+            "ecil:export-cfs:schedule-product-add", self.app, self.schedule
         )
 
         # Test post success (in bulk)
@@ -1218,3 +1218,87 @@ class TestCFSScheduleAddProductMethodFormView:
         assert response.url == get_cfs_schedule_url(
             "export:cfs-schedule-edit", self.app, self.schedule
         )
+
+
+class TestCFSScheduleProductCreateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-product-add", self.app, self.schedule
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/cfs/schedule_product_add.html")
+
+        expected_url = get_cfs_schedule_url(
+            "ecil:export-cfs:schedule-product-add-method", self.app, self.schedule
+        )
+        assert_back_link_url(response, expected_url)
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+            <h1 class="govuk-heading-l">
+              <span class="govuk-caption-l">Product schedule 1</span>
+              Add a product
+            </h1>
+            """,
+            html,
+        )
+
+    def test_post(self):
+        # product_name
+        # is_raw_material
+
+        # Test error message
+        form_data = {"product_name": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {"product_name": ["Add a product name"]}
+
+        # Check no products exist yet
+        assert self.schedule.products.count() == 0
+
+        # Test post success
+        form_data = {"product_name": "Test product 1"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == get_cfs_schedule_url(
+            "export:cfs-schedule-edit", self.app, self.schedule
+        )
+
+        # Check a product has been added
+        assert self.schedule.products.count() == 1
+        product = self.schedule.products.first()
+        assert product.product_name == "Test product 1"
+        assert not product.is_raw_material
+
+        #
+        # Test adding a raw material product
+        #
+        form_data = {"product_name": "Test product 2", "is_raw_material": "True"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == get_cfs_schedule_url(
+            "export:cfs-schedule-edit", self.app, self.schedule
+        )
+
+        # Check a product has been added
+        assert self.schedule.products.count() == 2
+        product = self.schedule.products.last()
+        assert product.product_name == "Test product 2"
+        assert product.is_raw_material

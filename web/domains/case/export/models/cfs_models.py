@@ -210,6 +210,8 @@ class CFSProductABC(models.Model):
         abstract = True
 
     product_name = models.CharField(max_length=1000)
+    is_raw_material = models.BooleanField(default=False)
+    product_end_use = models.CharField(default="", blank=True, max_length=1000)
 
 
 class CFSProduct(CFSProductABC):

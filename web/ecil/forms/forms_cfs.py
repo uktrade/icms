@@ -9,6 +9,7 @@ from web.domains.case.forms import application_contacts
 from web.ecil.gds import forms as gds_forms
 from web.models import (
     CertificateOfFreeSaleApplication,
+    CFSProduct,
     CFSSchedule,
     Country,
     ProductLegislation,
@@ -409,6 +410,21 @@ class CFSScheduleAddProductMethodForm(gds_forms.GDSForm):
         self.fields["method"].label = get_schedule_label(
             schedule, "How do you want to add products?"
         )
+
+
+class CFSScheduleProductCreateForm(gds_forms.GDSModelForm):
+    product_name = gds_forms.GovUKTextInputField(
+        label="What is the product name?",
+        help_text="Make sure the product name is spelled correctly",
+        error_messages={"required": "Add a product name"},
+    )
+    is_raw_material = gds_forms.GovUKCheckboxesBooleanField(
+        label="", help_text="The item is a raw material"
+    )
+
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = CFSProduct
+        fields = ["product_name", "is_raw_material"]
 
 
 def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:
