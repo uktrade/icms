@@ -78,13 +78,18 @@ urlpatterns = [
                             #
                             path(
                                 "products/",
-                                views.CFSScheduleAddProductStartTemplateView.as_view(),
+                                views.CFSScheduleProductStartTemplateView.as_view(),
                                 name="schedule-product-start",
                             ),
                             path(
                                 "products/upload-method/",
                                 views.CFSScheduleAddProductMethodFormView.as_view(),
                                 name="schedule-product-add-method",
+                            ),
+                            path(
+                                "products/add/",
+                                views.CFSScheduleProductCreateView.as_view(),
+                                name="schedule-product-add",
                             ),
                         ],
                     ),

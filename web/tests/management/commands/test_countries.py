@@ -12,7 +12,7 @@ from web.models import Country, CountryGroup
 class TestReadCountryCSV:
     def test_read(self):
         rows = [
-            ["first", "row", "is" "junk"],
+            ["first", "row", "is", "junk"],
             ["id", "name", "is_active", "type", "commission_code", "hmrc_code", "foo", "bar"],
             ["", "", "", "", "", "", "comment on foo", ""],
             ["a", "Mexico", "true", "X", "abc", "def", "Y", ""],
