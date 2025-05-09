@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import FormView, TemplateView, UpdateView
+from django.views.generic import CreateView, FormView, TemplateView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 
 from web.domains.case.export.models import CFSSchedule
@@ -17,7 +17,7 @@ from web.ecil.forms import forms_cfs as forms
 from web.ecil.gds import component_serializers as serializers
 from web.ecil.gds import forms as gds_forms
 from web.ecil.gds.views import BackLinkMixin
-from web.models import CertificateOfFreeSaleApplication, User
+from web.models import CertificateOfFreeSaleApplication, CFSProduct, User
 from web.models.shared import YesNoChoices
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
@@ -516,11 +516,12 @@ class CFSScheduleStatementAccordanceWithStandardsUpdateView(CFSScheduleBaseUpdat
 #
 # Schedule product views
 #
-class CFSScheduleAddProductStartTemplateView(CFSScheduleBaseTemplateView):
+class CFSScheduleProductStartTemplateView(CFSScheduleBaseTemplateView):
     # TemplateView config
     template_name = "ecil/cfs/schedule_product_start.html"
     http_method_names = ["get"]
 
+    # TODO: make get_back_link_url / get_success_url order consistent (always at the bottom)
     def get_back_link_url(self) -> str | None:
         return reverse(
             "ecil:export-cfs:schedule-accordance-with-standards",
@@ -566,7 +567,7 @@ class CFSScheduleAddProductMethodFormView(CFSScheduleBaseFormView):
 
         if method == forms.CFSScheduleAddProductMethodForm.MANUAL:
             redirect_to = reverse(
-                "export:cfs-schedule-edit",
+                "ecil:export-cfs:schedule-product-add",
                 kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
             )
         else:
@@ -581,4 +582,45 @@ class CFSScheduleAddProductMethodFormView(CFSScheduleBaseFormView):
         return reverse(
             "ecil:export-cfs:schedule-product-start",
             kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
+
+
+@method_decorator(transaction.atomic, name="post")
+class CFSScheduleProductCreateView(
+    CFSInProgressRelatedObjectViewBase, BackLinkMixin, CFSScheduleSingleObjectMixin, CreateView
+):
+    # UpdateView config
+    form_class = forms.CFSScheduleProductCreateForm
+    template_name = "ecil/cfs/schedule_product_add.html"
+
+    # Once the form is saved the view will have access to self.object
+    object: CFSProduct
+
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["schedule_number"] = forms.get_schedule_number(self.get_object())
+
+        return context
+
+    def form_valid(self, form: forms.CFSScheduleProductCreateForm) -> HttpResponseRedirect:
+        self.object = form.save(commit=False)
+        self.object.schedule = self.get_object()
+        self.object.save()
+
+        return redirect(self.get_success_url())
+
+    def get_back_link_url(self) -> str | None:
+        schedule = self.get_object()
+
+        return reverse(
+            "ecil:export-cfs:schedule-product-add-method",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": schedule.pk},
+        )
+
+    def get_success_url(self) -> str:
+        schedule = self.get_object()
+
+        return reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": schedule.pk},
         )
