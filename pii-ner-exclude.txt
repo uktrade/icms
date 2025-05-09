@@ -5490,3 +5490,5 @@ body">Import Licensing Branch
 static("css
 {{ legislation_link_text }
 schedule_statements_is_responsible_person
+"Alternative GovUKCheckboxesField
+0070_cfsschedule_product_standard_and_more

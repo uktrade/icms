@@ -6,6 +6,8 @@
 {%- set _f -%}
 {% if fieldClass == "GovUKCharacterCountField" %}
   {{ gds.govukCharacterCount(gds_kwargs) }}
+{% elif fieldClass == "GovUKCheckboxesBooleanField" %}
+  {{ gds.govukCheckboxes(gds_kwargs) }}
 {% elif fieldClass == "GovUKCheckboxesField" %}
   {{ gds.govukCheckboxes(gds_kwargs) }}
 {% elif fieldClass == "GovUKCheckboxesModelField" %}

@@ -1208,7 +1208,7 @@ class TestCFSScheduleAddProductMethodFormView:
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == get_cfs_schedule_url(
-            "export:cfs-schedule-edit", self.app, self.schedule
+            "ecil:export-cfs:schedule-product-add", self.app, self.schedule
         )
 
         # Test post success (in bulk)

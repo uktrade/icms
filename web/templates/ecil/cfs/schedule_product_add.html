@@ -1,0 +1,6 @@
+{% extends "ecil/gds_form.html" %}
+{% from "ecil/cfs/macros.html" import product_schedule_h1 %}
+
+{% block ecil_content_before_form %}
+  {{ product_schedule_h1(schedule_number, "Add a product") }}
+{% endblock %}
