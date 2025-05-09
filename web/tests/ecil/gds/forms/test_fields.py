@@ -288,6 +288,76 @@ class TestGovUKCheckboxesModelField:
         assertHTMLEqual(expected_html, actual_html)
 
 
+class TestGovUKCheckboxesBooleanField:
+    class Form(gds.GDSForm):
+        field = gds.GovUKCheckboxesBooleanField(
+            label="Test label",
+            help_text="Test help_text",
+            gds_field_kwargs=get_previous_fieldset_default_kwargs(),
+        )
+
+    def test_form_valid(self):
+        for true_value in [True, "True", "1"]:
+            data = {"field": true_value}
+            form = self.Form(data=data)
+
+            assert form.is_valid(), f"True value not valid: {true_value}"
+            assert form.cleaned_data == {"field": True}
+
+        # A user not checking the checkbox should be valid.
+        form = self.Form(data={})
+        assert form.is_valid()
+        assert form.cleaned_data == {"field": False}
+
+    def test_template(self):
+        form = self.Form()
+
+        expected_html = """
+            <div>
+              <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset">
+                  <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h1 class="govuk-fieldset__heading">Test label</h1>
+                  </legend>
+                  <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input" id="id_field" name="field" type="checkbox" value="True">
+                      <label class="govuk-label govuk-checkboxes__label" for="id_field">Test help_text</label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+        """
+        actual_html = form.as_div()
+
+        assertHTMLEqual(expected_html, actual_html)
+
+    def test_template_with_initial_data(self):
+        initial = {"field": True}
+        form = self.Form(initial=initial)
+
+        expected_html = """
+            <div>
+              <div class="govuk-form-group">
+                <fieldset class="govuk-fieldset">
+                  <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                    <h1 class="govuk-fieldset__heading">Test label</h1>
+                  </legend>
+                  <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                      <input class="govuk-checkboxes__input" id="id_field" name="field" type="checkbox" value="True" checked>
+                      <label class="govuk-label govuk-checkboxes__label" for="id_field">Test help_text</label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+        """
+        actual_html = form.as_div()
+        assertHTMLEqual(expected_html, actual_html)
+
+
 class TestGovUKDateInputField:
     class Form(gds.GDSForm):
         field = gds.GovUKDateInputField(

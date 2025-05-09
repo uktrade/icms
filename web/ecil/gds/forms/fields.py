@@ -164,16 +164,23 @@ class GovUKCheckboxesFieldBase(GDSFieldMixin):
             return context
 
         def get_serializer_kwargs(self) -> dict[str, Any]:
+            if self.label:
+                fieldset_kwargs = {
+                    "fieldset": serializers.fieldset.FieldsetKwargs(
+                        legend=serializers.fieldset.FieldsetLegend(text=self.label)
+                    )
+                }
+            else:
+                fieldset_kwargs = {}
+
             return serializers.checkboxes.CheckboxesKwargs(
                 name=self.name,
-                fieldset=serializers.fieldset.FieldsetKwargs(
-                    legend=serializers.fieldset.FieldsetLegend(text=self.label)
-                ),
                 hint=self._get_hint(),
                 items=self.get_items(),
                 values=self.data or self.initial or [],
                 errorMessage=self._get_errors(),
                 attributes=self.field.widget.attrs,
+                **fieldset_kwargs,  # type: ignore[arg-type]
             ).model_dump(exclude_defaults=True)
 
         def get_items(
@@ -222,6 +229,58 @@ class GovUKCheckboxesModelField(GovUKCheckboxesFieldBase, forms.ModelMultipleCho
     """
 
     pass
+
+
+class GovUKCheckboxesBooleanField(GDSFieldMixin, forms.BooleanField):
+    """Alternative GovUKCheckboxesField when the value to save is either True or False
+
+    Checked checkbox will save as True.
+    Unchecked checkbox will save as False.
+    """
+
+    def __init__(self, *args: Any, required: bool = False, **kwargs: Any) -> None:
+        # required should always be False to support not checking the checkbox
+        super().__init__(*args, required=required, **kwargs)
+
+    class BF(GDSBoundField):
+        def get_context(self) -> dict[str, Any]:
+            context = super().get_context()
+
+            input_kwargs = self.get_input_kwargs()
+            serializer = serializers.checkboxes.CheckboxesKwargs(**input_kwargs)
+
+            context["gds_kwargs"] = serializer.model_dump(exclude_defaults=True)
+
+            return context
+
+        def get_serializer_kwargs(self) -> dict[str, Any]:
+            if self.label:
+                fieldset_kwargs = {
+                    "fieldset": serializers.fieldset.FieldsetKwargs(
+                        legend=serializers.fieldset.FieldsetLegend(text=self.label)
+                    )
+                }
+            else:
+                fieldset_kwargs = {}
+
+            # The help_text is used for the single checkbox label
+            label_kwargs = get_html_or_text(self.help_text)
+
+            item = serializers.checkboxes.CheckboxItem(
+                id=self.auto_id,
+                value="True",
+                checked=self.value(),
+                **label_kwargs,  # type: ignore[arg-type]
+                **fieldset_kwargs,  # type: ignore[arg-type]
+            )
+
+            return serializers.checkboxes.CheckboxesKwargs(
+                name=self.name,
+                items=[item],
+                errorMessage=self._get_errors(),
+                attributes=self.field.widget.attrs,
+                **fieldset_kwargs,  # type: ignore[arg-type]
+            ).model_dump(exclude_defaults=True)
 
 
 class DateMultiWidget(forms.MultiWidget):
