@@ -11,8 +11,10 @@ ANNOTATION_CONF: dict[type | UnionType, tuple[str, bool]] = {
     bool | None: ("Boolean", True),
     Decimal: ("Decimal", False),
     Decimal | None: ("Decimal", True),
-    dt.datetime: ("Datetime", False),
+    dt.date | None: ("Date", True),
+    dt.date: ("Date", False),
     dt.datetime | None: ("Datetime", True),
+    dt.datetime: ("Datetime", False),
     int: ("Integer", False),
     int | None: ("Integer", True),
     list[int]: ("ArrayInteger", False),
@@ -41,6 +43,8 @@ class MetadataListSerializer(BaseModel):
 
 
 class BaseSerializer(BaseModel):
+    id: int
+
     @classmethod
     def get_metadata(cls) -> MetadataSerializer:
         return MetadataSerializer(
@@ -60,7 +64,7 @@ class BaseSerializer(BaseModel):
             )
 
             if not data_type:
-                raise ValueError("Unknown data type")
+                raise ValueError(f"Unmapped data type: {str(field.annotation)}")
 
             metadata.append(
                 FieldMetadataSerializer(
@@ -95,3 +99,27 @@ class BaseSerializer(BaseModel):
 
 class BaseResultsSerializer(BaseModel):
     next: str | None = None
+
+
+class ApplicationBaseSerializer(BaseSerializer):
+    # Process fields
+    process_type: str
+    is_active: bool
+    created: dt.datetime
+    finished: dt.datetime | None
+
+    # Application fields
+    status: str
+    submit_datetime: dt.datetime
+    last_submit_datetime: dt.datetime | None
+    reassign_datetime: dt.datetime | None
+    reference: str
+    decision: str | None
+    refuse_reason: str | None
+    agent_id: int | None
+    agent_office_id: int | None
+    last_update_datetime: dt.datetime
+    last_updated_by_id: int
+    variation_number: int
+    created_by_id: int
+    submitted_by_id: int

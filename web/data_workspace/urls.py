@@ -17,4 +17,39 @@ urlpatterns = [
         views.UserFeedbackSurveyDataView.as_view(),
         name="user-survey-data",
     ),
+    path(
+        "<dwversion:version>/case-documents/",
+        views.CaseDocumentDataView.as_view(),
+        name="case-document-data",
+    ),
+    path(
+        "<dwversion:version>/export-applications/",
+        views.ExportApplicationDataView.as_view(),
+        name="export-application-data",
+    ),
+    path(
+        "<dwversion:version>/com-applications/",
+        views.COMApplicationDataView.as_view(),
+        name="com-application-data",
+    ),
+    path(
+        "<dwversion:version>/gmp-applications/",
+        views.GMPApplicationDataView.as_view(),
+        name="gmp-application-data",
+    ),
+    path(
+        "<dwversion:version>/cfs-schedules/",
+        views.CFSScheduleDataView.as_view(),
+        name="cfs-schedule-data",
+    ),
+    path(
+        "<dwversion:version>/cfs-products/",
+        views.CFSProductDataView.as_view(),
+        name="cfs-product-data",
+    ),
+    path(
+        "<dwversion:version>/legislations/",
+        views.LegislationDataView.as_view(),
+        name="legislation-data",
+    ),
 ]
