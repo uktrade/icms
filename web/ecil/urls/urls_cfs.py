@@ -91,6 +91,11 @@ urlpatterns = [
                                 views.CFSScheduleProductCreateView.as_view(),
                                 name="schedule-product-add",
                             ),
+                            path(
+                                "products/<product_pk>/end-use/",
+                                views.CFSScheduleProductEndUseUpdateView.as_view(),
+                                name="schedule-product-end-use",
+                            ),
                         ],
                     ),
                 ),

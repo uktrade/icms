@@ -8,6 +8,7 @@ from pytest_django.asserts import assertInHTML, assertTemplateUsed
 from web.ecil.gds.forms import fields
 from web.models import (
     CertificateOfFreeSaleApplication,
+    CFSProduct,
     CFSSchedule,
     Country,
     ProductLegislation,
@@ -35,6 +36,18 @@ def get_cfs_schedule_url(
     view_name: str, app: CertificateOfFreeSaleApplication, schedule: CFSSchedule
 ) -> str:
     return reverse(view_name, kwargs={"application_pk": app.pk, "schedule_pk": schedule.pk})
+
+
+def get_cfs_schedule_product_url(
+    view_name: str,
+    app: CertificateOfFreeSaleApplication,
+    schedule: CFSSchedule,
+    product: CFSProduct,
+) -> str:
+    return reverse(
+        view_name,
+        kwargs={"application_pk": app.pk, "schedule_pk": schedule.pk, "product_pk": product.pk},
+    )
 
 
 class TestCFSApplicationReferenceUpdateView:
@@ -1260,9 +1273,6 @@ class TestCFSScheduleProductCreateView:
         )
 
     def test_post(self):
-        # product_name
-        # is_raw_material
-
         # Test error message
         form_data = {"product_name": ""}
         response = self.client.post(self.url, data=form_data)
@@ -1277,15 +1287,15 @@ class TestCFSScheduleProductCreateView:
         form_data = {"product_name": "Test product 1"}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == get_cfs_schedule_url(
-            "export:cfs-schedule-edit", self.app, self.schedule
-        )
 
         # Check a product has been added
         assert self.schedule.products.count() == 1
         product = self.schedule.products.first()
         assert product.product_name == "Test product 1"
         assert not product.is_raw_material
+        assert response.url == get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-end-use", self.app, self.schedule, product
+        )
 
         #
         # Test adding a raw material product
@@ -1293,12 +1303,106 @@ class TestCFSScheduleProductCreateView:
         form_data = {"product_name": "Test product 2", "is_raw_material": "True"}
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
-        assert response.url == get_cfs_schedule_url(
-            "export:cfs-schedule-edit", self.app, self.schedule
-        )
 
         # Check a product has been added
         assert self.schedule.products.count() == 2
         product = self.schedule.products.last()
         assert product.product_name == "Test product 2"
         assert product.is_raw_material
+        assert response.url == get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-end-use", self.app, self.schedule, product
+        )
+
+
+class TestCFSScheduleProductEndUseUpdateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.product = self.schedule.products.create(product_name="Test product")
+        self.url = get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-end-use", self.app, self.schedule, self.product
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+
+        expected_url = get_cfs_schedule_url("export:cfs-schedule-edit", self.app, self.schedule)
+        assert_back_link_url(response, expected_url)
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+            <h1 class="govuk-label-wrapper">
+                <label class="govuk-label govuk-label--l" for="id_product_end_use">
+                    <span class="govuk-caption-l">Product schedule 1</span>What is Test product used for? (Optional)
+                </label>
+            </h1>
+            """,
+            html,
+        )
+
+        # Check raw material has a different header.
+        self.product.is_raw_material = True
+        self.product.save()
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+
+        expected_url = get_cfs_schedule_url("export:cfs-schedule-edit", self.app, self.schedule)
+        assert_back_link_url(response, expected_url)
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+            <h1 class="govuk-label-wrapper">
+                <label class="govuk-label govuk-label--l" for="id_product_end_use">
+                    <span class="govuk-caption-l">Product schedule 1</span>What is the finished product use for Test product?
+                </label>
+            </h1>
+            """,
+            html,
+        )
+
+    def test_post(self):
+        # Test field optional for non-raw material
+        form_data = {"product_end_use": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == get_cfs_schedule_url(
+            "export:cfs-schedule-edit", self.app, self.schedule
+        )
+
+        # Test required error for required product
+        self.product.is_raw_material = True
+        self.product.save()
+
+        form_data = {"product_end_use": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {"product_end_use": ["Enter a finished product use"]}
+
+        # Test post success
+        form_data = {"product_end_use": "Test product end use."}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == get_cfs_schedule_url(
+            "export:cfs-schedule-edit", self.app, self.schedule
+        )
+
+        self.product.refresh_from_db()
+        assert self.product.product_end_use == "Test product end use."

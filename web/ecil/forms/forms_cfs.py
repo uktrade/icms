@@ -3,7 +3,7 @@ from typing import Any, Literal
 from django.conf import settings
 from django.db.models import QuerySet
 from django.template.loader import render_to_string
-from markupsafe import Markup
+from markupsafe import Markup, escape
 
 from web.domains.case.forms import application_contacts
 from web.ecil.gds import forms as gds_forms
@@ -427,7 +427,45 @@ class CFSScheduleProductCreateForm(gds_forms.GDSModelForm):
         fields = ["product_name", "is_raw_material"]
 
 
+class CFSScheduleProductEndUseForm(gds_forms.GDSModelForm):
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = CFSProduct
+        fields = ["product_end_use"]
+        formfield_callback = gds_forms.GDSFormfieldCallback(
+            gds_field_kwargs={"product_end_use": gds_forms.LABEL_HEADER},
+        )
+        error_messages = {"product_end_use": {"required": "Enter a finished product use"}}
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        product: CFSProduct = self.instance
+
+        if product.is_raw_material:
+            # raw material label / helptext
+            label = f"What is the finished product use for {escape(product.product_name)}?"
+            help_text: Markup | str = Markup(
+                render_to_string(
+                    template_name="ecil/cfs/help_text/schedule_raw_material_product_end_use.html",
+                ),
+            )
+            required = True
+        else:
+            # Non raw material label / helptext
+            label = f"What is {escape(product.product_name)} used for? (Optional)"
+            help_text = "For example, shampoo"
+            required = False
+
+        self.fields["product_end_use"].label = get_schedule_label(product.schedule, label)
+        self.fields["product_end_use"].help_text = help_text
+        self.fields["product_end_use"].required = required
+
+
 def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:
+    """Return a schedule label.
+
+    This function returns Markup, therefore any user defined content in label must be escaped first.
+    """
     schedule_num = get_schedule_number(schedule)
 
     return Markup(f'<span class="govuk-caption-l">Product schedule {schedule_num}</span>{label}')
