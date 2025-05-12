@@ -620,6 +620,49 @@ class CFSScheduleProductCreateView(
         schedule = self.get_object()
 
         return reverse(
+            "ecil:export-cfs:schedule-product-end-use",
+            kwargs={
+                "application_pk": self.application.pk,
+                "schedule_pk": schedule.pk,
+                "product_pk": self.object.pk,
+            },
+        )
+
+
+#
+# Views relating to editing CFS Schedule product fields.
+#
+@method_decorator(transaction.atomic, name="post")
+class CFSScheduleProductEndUseUpdateView(
+    CFSInProgressRelatedObjectViewBase, BackLinkMixin, UpdateView
+):
+    # UpdateView config
+    pk_url_kwarg = "product_pk"
+    form_class = forms.CFSScheduleProductEndUseForm
+    template_name = "ecil/gds_form.html"
+
+    # Extra typing for clarity
+    object: CFSProduct
+
+    def get_queryset(self) -> QuerySet[CFSProduct]:
+        """Filter the queryset used in SingleObjectMixin that fetches the correct product."""
+        schedule = get_object_or_404(self.application.schedules, pk=self.kwargs["schedule_pk"])
+
+        return schedule.products.all()
+
+    def get_back_link_url(self) -> str | None:
+        schedule = self.object.schedule
+
+        # TODO: The back link will need to go to an edit view (once created)
+        return reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": schedule.pk},
+        )
+
+    def get_success_url(self) -> str:
+        schedule = self.object.schedule
+
+        return reverse(
             "export:cfs-schedule-edit",
             kwargs={"application_pk": self.application.pk, "schedule_pk": schedule.pk},
         )
