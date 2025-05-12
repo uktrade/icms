@@ -5,14 +5,11 @@ from django.urls import reverse
 
 from web.models import UserFeedbackSurvey
 
-from ._base import BaseTestDataView
+from ._base import DT_STR_FORMAT, BaseTestDataView
 
 
 def at_example(prefix: str) -> str:
     return f"{prefix}@example.com"  # /PS-IGNORE
-
-
-DT_STRING = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
 class TestExporterDataView(BaseTestDataView):
@@ -203,7 +200,7 @@ class TestUserFeedbackSurveyDataView(BaseTestDataView):
             "future_contact": "yes",
             "referrer_path": "/submit",
             "site": "exporter",
-            "process_id": self.app.pk,
+            "application_id": self.app.pk,
             "created_by_id": self.user.pk,
-            "created_datetime": self.survey.created_datetime.strftime(DT_STRING),
+            "created_datetime": self.survey.created_datetime.strftime(DT_STR_FORMAT),
         }
