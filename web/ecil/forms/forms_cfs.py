@@ -412,7 +412,7 @@ class CFSScheduleAddProductMethodForm(gds_forms.GDSForm):
         )
 
 
-class CFSScheduleProductCreateForm(gds_forms.GDSModelForm):
+class CFSScheduleProductForm(gds_forms.GDSModelForm):
     product_name = gds_forms.GovUKTextInputField(
         label="What is the product name?",
         help_text="Make sure the product name is spelled correctly",
@@ -422,9 +422,36 @@ class CFSScheduleProductCreateForm(gds_forms.GDSModelForm):
         label="", help_text="The item is a raw material"
     )
 
+    instance: CFSProduct
+
     class Meta(gds_forms.GDSModelForm.Meta):
         model = CFSProduct
         fields = ["product_name", "is_raw_material"]
+
+    def __init__(self, *args: Any, schedule: CFSSchedule, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.schedule = schedule
+
+    def clean_product_name(self) -> str:
+        product_name = self.cleaned_data["product_name"]
+
+        if (
+            self.schedule.products.filter(product_name__iexact=product_name)
+            .exclude(pk=self.instance.pk)
+            .exists()
+        ):
+            self.add_error("product_name", "Product name must be unique to the schedule.")
+
+        return product_name
+
+    def save(self, commit: bool = True) -> CFSProduct:
+        self.instance.schedule = self.schedule
+        self.instance = super().save(commit)
+
+        if commit:
+            self.instance.save()
+
+        return self.instance
 
 
 class CFSScheduleProductEndUseForm(gds_forms.GDSModelForm):

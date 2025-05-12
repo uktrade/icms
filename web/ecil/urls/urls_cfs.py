@@ -92,7 +92,12 @@ urlpatterns = [
                                 name="schedule-product-add",
                             ),
                             path(
-                                "products/<product_pk>/end-use/",
+                                "products/<int:product_pk>/edit/",
+                                views.CFSScheduleProductUpdateView.as_view(),
+                                name="schedule-product-edit",
+                            ),
+                            path(
+                                "products/<int:product_pk>/end-use/",
                                 views.CFSScheduleProductEndUseUpdateView.as_view(),
                                 name="schedule-product-end-use",
                             ),
