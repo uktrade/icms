@@ -1313,6 +1313,114 @@ class TestCFSScheduleProductCreateView:
             "ecil:export-cfs:schedule-product-end-use", self.app, self.schedule, product
         )
 
+    def test_duplicate_product_name_error(self):
+        form_data = {"product_name": "Test product 1"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        # Check a product has been added
+        assert self.schedule.products.count() == 1
+
+        form_data = {"product_name": "Test product 1"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {"product_name": ["Product name must be unique to the schedule."]}
+
+
+class TestCFSScheduleProductUpdateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.product = self.schedule.products.create(product_name="Test product")
+        self.url = get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-edit", self.app, self.schedule, self.product
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/cfs/schedule_product_add.html")
+
+        expected_url = get_cfs_schedule_url("export:cfs-schedule-edit", self.app, self.schedule)
+        assert_back_link_url(response, expected_url)
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+            <h1 class="govuk-heading-l">
+              <span class="govuk-caption-l">Product schedule 1</span>
+              Add a product
+            </h1>
+            """,
+            html,
+        )
+
+    def test_post(self):
+        # Test error message
+        form_data = {"product_name": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {"product_name": ["Add a product name"]}
+
+        # Check one product exists already
+        assert self.schedule.products.count() == 1
+
+        # Test post success
+        form_data = {"product_name": "Test product 1 updated"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        # Check the product has been updated
+        assert self.schedule.products.count() == 1
+
+        self.product.refresh_from_db()
+
+        assert self.product.product_name == "Test product 1 updated"
+        assert not self.product.is_raw_material
+        assert response.url == get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-end-use", self.app, self.schedule, self.product
+        )
+
+        #
+        # Test raw material product
+        #
+        form_data = {"product_name": "Test product 1", "is_raw_material": "True"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        # Check the product has been updated
+        assert self.schedule.products.count() == 1
+        self.product.refresh_from_db()
+
+        assert self.product.product_name == "Test product 1"
+        assert self.product.is_raw_material
+        assert response.url == get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-end-use", self.app, self.schedule, self.product
+        )
+
+    def test_duplicate_product_name_error(self):
+        assert self.schedule.products.count() == 1
+        # Create another product to test a duplicate
+        self.schedule.products.create(product_name="Test product 2")
+
+        form_data = {"product_name": "Test product 2"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {"product_name": ["Product name must be unique to the schedule."]}
+
 
 class TestCFSScheduleProductEndUseUpdateView:
     @pytest.fixture(autouse=True)
@@ -1337,7 +1445,9 @@ class TestCFSScheduleProductEndUseUpdateView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/gds_form.html")
 
-        expected_url = get_cfs_schedule_url("export:cfs-schedule-edit", self.app, self.schedule)
+        expected_url = get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-edit", self.app, self.schedule, self.product
+        )
         assert_back_link_url(response, expected_url)
 
         # Check custom header is present
@@ -1361,7 +1471,9 @@ class TestCFSScheduleProductEndUseUpdateView:
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/gds_form.html")
 
-        expected_url = get_cfs_schedule_url("export:cfs-schedule-edit", self.app, self.schedule)
+        expected_url = get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-edit", self.app, self.schedule, self.product
+        )
         assert_back_link_url(response, expected_url)
 
         # Check custom header is present
