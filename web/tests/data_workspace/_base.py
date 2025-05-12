@@ -3,6 +3,9 @@ from typing import Any
 
 from web.tests.api_auth import make_testing_hawk_sender
 
+DT_STR_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+DT_STR_FORMAT_SECS = "%Y-%m-%dT%H:%M:%SZ"
+
 
 class BaseTestDataView:
     def test_authentication_failure(self):

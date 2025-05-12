@@ -54,6 +54,9 @@ class UserFeedbackSurveyDataView(DataViewBase):
     qs_serializer = serializers.UserFeedbackSurveys
     data_serializer = serializers.UserFeedbackSurveySerializer
 
+    def get_queryset_value_kwargs(self) -> dict[str, Any]:
+        return {"application_id": F("process_id")}
+
 
 class ImporterDataView(DataViewBase):
     model = Importer
@@ -71,11 +74,6 @@ class OfficeDataView(DataViewBase):
     model = Office
     qs_serializer = serializers.OfficeListSerializer
     data_serializer = serializers.OfficeSerializer
-
-    def get_queryset_values(self) -> list[str]:
-        data_serializer = self.get_data_serializer()
-        fields = data_serializer.model_fields.keys()
-        return [f for f in fields if f not in ["importer_id", "exporter_id"]]
 
     def get_queryset_value_kwargs(self) -> dict[str, Any]:
         return {"importer_id": F("importer__id"), "exporter_id": F("exporter__id")}

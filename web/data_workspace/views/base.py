@@ -2,7 +2,7 @@ import http
 from typing import Any, ClassVar
 
 import pydantic
-from django.db.models import QuerySet
+from django.db.models import Count, QuerySet
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.views.generic import ListView, View
 
@@ -77,7 +77,8 @@ class DataViewBase(HawkDataWorkspaceMixin, ListView):
     def get_queryset_values(self) -> list[str]:
         """Returns a list of values to restrict the fields returned by get_queryset"""
         data_serializer = self.get_data_serializer()
-        return list(data_serializer.model_fields.keys())
+        fields = data_serializer.model_fields.keys()
+        return [f for f in fields if f not in self.get_queryset_value_kwargs().keys()]
 
     def get_queryset_value_kwargs(self) -> dict[str, Any]:
         """Returns a dict of values to restrict the fields returned by get_queryset"""
@@ -96,3 +97,11 @@ class DataViewBase(HawkDataWorkspaceMixin, ListView):
             .order_by(self.order_by)
             .values(*self.get_queryset_values(), **self.get_queryset_value_kwargs())
         )
+
+
+class ApplicationDataViewBase(DataViewBase):
+    def get_queryset_annotations(self) -> dict[str, Any]:
+        return {"variation_number": Count("variation_requests")}
+
+    def get_queryset_filters(self) -> dict[str, Any]:
+        return {"submit_datetime__isnull": False}
