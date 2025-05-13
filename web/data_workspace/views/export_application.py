@@ -59,11 +59,17 @@ class COMApplicationDataView(DataViewBase):
     qs_serializer = serializers.COMApplicationListSerializer
     data_serializer = serializers.COMApplicationSerializer
 
+    def get_queryset_filters(self) -> dict[str, Any]:
+        return {"submit_datetime__isnull": False}
+
 
 class CFSScheduleDataView(DataViewBase):
     model = CFSSchedule
     qs_serializer = serializers.CFSScheduleListSerializer
     data_serializer = serializers.CFSScheduleSerializer
+
+    def get_queryset_filters(self) -> dict[str, Any]:
+        return {"application__submit_datetime__isnull": False}
 
     def get_queryset_value_kwargs(self) -> dict[str, Any]:
         return {
@@ -93,6 +99,9 @@ class CFSProductDataView(DataViewBase):
     model = CFSProduct
     qs_serializer = serializers.CFSProductListSerializer
     data_serializer = serializers.CFSProductSerializer
+
+    def get_queryset_filters(self) -> dict[str, Any]:
+        return {"schedule__application__submit_datetime__isnull": False}
 
     def get_queryset_annotations(self) -> dict[str, Any]:
         return {

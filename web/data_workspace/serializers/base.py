@@ -114,6 +114,9 @@ class ApplicationBaseSerializer(BaseSerializer):
 
     # Application fields
     status: str
+    applicant_reference: str
+    application_type_code: str
+    contact_id: int | None
     submit_datetime: dt.datetime
     last_submit_datetime: dt.datetime | None
     reassign_datetime: dt.datetime | None

@@ -14,6 +14,10 @@ from .export_application import (
     LegislationListSerializer,
     LegislationSerializer,
 )
+from .import_applicaiton import (
+    ImportApplicationListSerializer,
+    ImportApplicationSerializer,
+)
 from .user import (
     ExporterListSerializer,
     ExporterSerializer,
@@ -36,6 +40,7 @@ DATA_SERIALIZERS: list[type[BaseSerializer]] = [
     ExportApplicationSerializer,
     ExporterSerializer,
     GMPApplicationSerializer,
+    ImportApplicationSerializer,
     ImporterSerializer,
     LegislationSerializer,
     OfficeSerializer,
@@ -60,6 +65,8 @@ __all__ = [
     "ExporterSerializer",
     "GMPApplicationListSerializer",
     "GMPApplicationSerializer",
+    "ImportApplicationListSerializer",
+    "ImportApplicationSerializer",
     "ImporterListSerializer",
     "ImporterSerializer",
     "LegislationListSerializer",

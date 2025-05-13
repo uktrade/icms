@@ -12,6 +12,7 @@ urlpatterns = [
         "<dwversion:version>/",
         include(
             [
+                # User urls
                 path("exporters/", views.ExporterDataView.as_view(), name="exporter-data"),
                 path("importers/", views.ImporterDataView.as_view(), name="importer-data"),
                 path("offices/", views.OfficeDataView.as_view(), name="office-data"),
@@ -21,11 +22,13 @@ urlpatterns = [
                     views.UserFeedbackSurveyDataView.as_view(),
                     name="user-survey-data",
                 ),
+                # Case urls
                 path(
                     "case-documents/",
                     views.CaseDocumentDataView.as_view(),
                     name="case-document-data",
                 ),
+                # Export application urls
                 path(
                     "export-applications/",
                     views.ExportApplicationDataView.as_view(),
@@ -55,6 +58,12 @@ urlpatterns = [
                     "legislations/",
                     views.LegislationDataView.as_view(),
                     name="legislation-data",
+                ),
+                # Import application urls
+                path(
+                    "import-applications/",
+                    views.ImportApplicationDataView.as_view(),
+                    name="import-application-data",
                 ),
             ]
         ),
