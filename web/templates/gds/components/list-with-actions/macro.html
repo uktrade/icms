@@ -9,9 +9,13 @@
           <dt class="govuk-summary-list__key">{{ row.name }}</dt>
           <dd class="govuk-summary-list__actions">
             {% if row.actions %}
-              {% for action in row.actions %}
-                <a class="govuk-link govuk-link--no-visited-state" href="{{ action.url }}">{{ action.label }}<span class="govuk-visually-hidden">{{ action.label }} {{ row.name }}</span></a>
-              {% endfor %}
+              <ul class="govuk-summary-list__actions-list">
+                {% for action in row.actions %}
+                  <li class="govuk-summary-list__actions-list-item">
+                    <a class="govuk-link govuk-link--no-visited-state" href="{{ action.url }}">{{ action.label }}<span class="govuk-visually-hidden">{{ action.label }} {{ row.name }}</span></a>
+                  </li>
+                {% endfor %}
+              </ul>
             {% endif %}
           </dd>
         </div>

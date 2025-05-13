@@ -488,6 +488,29 @@ class CFSScheduleProductEndUseForm(gds_forms.GDSModelForm):
         self.fields["product_end_use"].required = required
 
 
+class CFSScheduleProductAddAnotherForm(gds_forms.GDSForm):
+    add_another = gds_forms.GovUKRadioInputField(
+        label="Do you need to add another product?",
+        choices=YesNoChoices.choices,
+        gds_field_kwargs={"fieldset": {"legend": {"classes": "govuk-fieldset__legend--m"}}},
+        error_messages={"required": "Select yes or no"},
+    )
+
+
+class CFSScheduleProductConfirmRemoveForm(gds_forms.GDSForm):
+    are_you_sure = gds_forms.GovUKRadioInputField(
+        choices=YesNoChoices.choices,
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
+        error_messages={"required": "Select yes or no"},
+    )
+
+    def __init__(self, *args: Any, product: CFSProduct, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["are_you_sure"].label = get_schedule_label(
+            product.schedule, f"Are you sure you want to remove {escape(product.product_name)}?"
+        )
+
+
 def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:
     """Return a schedule label.
 

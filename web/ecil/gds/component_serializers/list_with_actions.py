@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from markupsafe import Markup
+from pydantic import BaseModel, ConfigDict
 
 
 class ListRowAction(BaseModel):
@@ -7,7 +8,9 @@ class ListRowAction(BaseModel):
 
 
 class ListRow(BaseModel):
-    name: str
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    name: str | Markup
     actions: list[ListRowAction] | None = None
 
 

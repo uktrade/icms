@@ -77,29 +77,39 @@ urlpatterns = [
                             # Schedule product views
                             #
                             path(
-                                "products/",
+                                "product/",
                                 views.CFSScheduleProductStartTemplateView.as_view(),
                                 name="schedule-product-start",
                             ),
                             path(
-                                "products/upload-method/",
-                                views.CFSScheduleAddProductMethodFormView.as_view(),
+                                "product/upload-method/",
+                                views.CFSScheduleProductAddMethodFormView.as_view(),
                                 name="schedule-product-add-method",
                             ),
                             path(
-                                "products/add/",
+                                "product/add/",
                                 views.CFSScheduleProductCreateView.as_view(),
                                 name="schedule-product-add",
                             ),
                             path(
-                                "products/<int:product_pk>/edit/",
+                                "product/add-another/",
+                                views.CFSScheduleProductAddAnotherFormView.as_view(),
+                                name="schedule-product-add-another",
+                            ),
+                            path(
+                                "product/<int:product_pk>/edit/",
                                 views.CFSScheduleProductUpdateView.as_view(),
                                 name="schedule-product-edit",
                             ),
                             path(
-                                "products/<int:product_pk>/end-use/",
+                                "product/<int:product_pk>/end-use/",
                                 views.CFSScheduleProductEndUseUpdateView.as_view(),
                                 name="schedule-product-end-use",
+                            ),
+                            path(
+                                "product/<product_pk>/remove/",
+                                views.CFSScheduleProductConfirmRemoveFormView.as_view(),
+                                name="schedule-product-remove",
                             ),
                         ],
                     ),

@@ -8,8 +8,15 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, FormView, TemplateView, UpdateView
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    FormView,
+    TemplateView,
+    UpdateView,
+)
 from django.views.generic.detail import SingleObjectMixin
+from markupsafe import Markup, escape
 
 from web.domains.case.export.models import CFSSchedule
 from web.domains.case.services import case_progress
@@ -549,7 +556,7 @@ class CFSScheduleProductStartTemplateView(CFSScheduleBaseTemplateView):
         )
 
 
-class CFSScheduleAddProductMethodFormView(CFSScheduleBaseFormView):
+class CFSScheduleProductAddMethodFormView(CFSScheduleBaseFormView):
     # FormView config
     form_class = forms.CFSScheduleAddProductMethodForm
     template_name = "ecil/gds_form.html"
@@ -628,6 +635,89 @@ class CFSScheduleProductCreateView(
         )
 
 
+class CFSScheduleProductAddAnotherFormView(CFSScheduleBaseFormView):
+    # FormView config
+    form_class = forms.CFSScheduleProductAddAnotherForm
+    template_name = "ecil/cfs/schedule_product_add_another.html"
+
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        schedule_products = self.object.products.order_by("product_name")
+        product_count = schedule_products.count()
+
+        if product_count == 1:
+            product_heading = "You have added 1 product"
+        else:
+            # Correct message for 0 or greater than 1
+            product_heading = f"You have added {product_count} products"
+
+        context["product_heading"] = product_heading
+
+        rows = []
+
+        for product in schedule_products:
+            name = f"<strong>{escape(product.product_name)}</strong>"
+            if product.product_end_use:
+                name += f"<br>{escape(product.product_end_use)}"
+            if product.is_raw_material:
+                name += "<br>Raw material"
+
+            rows.append(
+                serializers.list_with_actions.ListRow(
+                    name=Markup(name),
+                    actions=[
+                        serializers.list_with_actions.ListRowAction(
+                            label="Remove",
+                            url=reverse(
+                                "ecil:export-cfs:schedule-product-remove",
+                                kwargs={
+                                    "application_pk": self.application.pk,
+                                    "schedule_pk": self.object.pk,
+                                    "product_pk": product.pk,
+                                },
+                            ),
+                        ),
+                        serializers.list_with_actions.ListRowAction(
+                            label="Change",
+                            url=reverse(
+                                "ecil:export-cfs:schedule-product-edit",
+                                kwargs={
+                                    "application_pk": self.application.pk,
+                                    "schedule_pk": self.object.pk,
+                                    "product_pk": product.pk,
+                                },
+                            ),
+                        ),
+                    ],
+                )
+            )
+
+        context["list_with_actions_kwargs"] = serializers.list_with_actions.ListWithActionsKwargs(
+            rows=rows
+        ).model_dump(exclude_defaults=True)
+
+        context["schedule_number"] = forms.get_schedule_number(self.object)
+
+        return context
+
+    def form_valid(self, form: forms.CFSScheduleAddAnotherLegislationForm) -> HttpResponseRedirect:
+        kwargs = {"application_pk": self.application.pk, "schedule_pk": self.object.pk}
+
+        if form.cleaned_data["add_another"] == YesNoChoices.yes:
+            redirect_to = reverse("ecil:export-cfs:schedule-product-add", kwargs=kwargs)
+        else:
+            redirect_to = reverse("export:cfs-schedule-edit", kwargs=kwargs)
+
+        return redirect(redirect_to)
+
+    def get_back_link_url(self) -> str | None:
+        return reverse(
+            "ecil:export-cfs:schedule-product-add-method",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": self.object.pk},
+        )
+
+
 #
 # Views relating to editing CFS Schedule product fields.
 #
@@ -663,9 +753,8 @@ class CFSScheduleProductUpdateView(CFSInProgressRelatedObjectViewBase, BackLinkM
     def get_back_link_url(self) -> str | None:
         schedule = self.object.schedule
 
-        # TODO: The back link will need to go to the product list view.
         return reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-product-add-another",
             kwargs={"application_pk": self.application.pk, "schedule_pk": schedule.pk},
         )
 
@@ -712,6 +801,56 @@ class CFSScheduleProductEndUseUpdateView(
         schedule = self.object.schedule
 
         return reverse(
-            "export:cfs-schedule-edit",
+            "ecil:export-cfs:schedule-product-add-another",
             kwargs={"application_pk": self.application.pk, "schedule_pk": schedule.pk},
+        )
+
+
+@method_decorator(transaction.atomic, name="post")
+class CFSScheduleProductConfirmRemoveFormView(
+    CFSInProgressRelatedObjectViewBase, BackLinkMixin, DeleteView
+):
+    # DeleteView config
+    pk_url_kwarg = "product_pk"
+    form_class = forms.CFSScheduleProductConfirmRemoveForm
+    template_name = "ecil/gds_form.html"
+    http_method_names = ["get", "post"]
+
+    def _get_schedule(self) -> CFSSchedule:
+        return get_object_or_404(self.application.schedules, pk=self.kwargs["schedule_pk"])
+
+    def get_queryset(self) -> QuerySet[CFSProduct]:
+        """Filter the queryset used in SingleObjectMixin that fetches the correct product."""
+        return self._get_schedule().products.all()
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["product"] = self.get_object()
+
+        return kwargs
+
+    def form_valid(self, form: forms.CFSScheduleProductConfirmRemoveForm) -> HttpResponseRedirect:
+        if form.cleaned_data["are_you_sure"] == YesNoChoices.yes:
+            self.object.delete()
+
+        return redirect(self.get_success_url())
+
+    def get_back_link_url(self) -> str | None:
+        schedule = self._get_schedule()
+
+        return reverse(
+            "ecil:export-cfs:schedule-product-add-another",
+            kwargs={"application_pk": self.application.pk, "schedule_pk": schedule.pk},
+        )
+
+    def get_success_url(self) -> str:
+        schedule = self._get_schedule()
+
+        if schedule.products.count() == 0:
+            view_name = "ecil:export-cfs:schedule-product-add"
+        else:
+            view_name = "ecil:export-cfs:schedule-product-add-another"
+
+        return reverse(
+            view_name, kwargs={"application_pk": self.application.pk, "schedule_pk": schedule.pk}
         )
