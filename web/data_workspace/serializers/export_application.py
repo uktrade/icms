@@ -7,11 +7,8 @@ from .base import ApplicationBaseSerializer, BaseResultsSerializer, BaseSerializ
 
 class ExportApplicationSerializer(ApplicationBaseSerializer):
     country_names: list[str]
-    applicant_reference: str
-    application_type_code: str
     exporter_id: int
     exporter_office_id: int | None
-    contact_id: int | None
 
 
 class ExportApplicationListSerializer(BaseResultsSerializer):

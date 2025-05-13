@@ -287,6 +287,19 @@ class TestMetaDataView(BaseTestDataView):
                             "type": "String",
                         },
                         {
+                            "name": "applicant_reference",
+                            "type": "String",
+                        },
+                        {
+                            "name": "application_type_code",
+                            "type": "String",
+                        },
+                        {
+                            "name": "contact_id",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
                             "name": "submit_datetime",
                             "type": "Datetime",
                         },
@@ -349,24 +362,11 @@ class TestMetaDataView(BaseTestDataView):
                             "type": "ArrayString",
                         },
                         {
-                            "name": "applicant_reference",
-                            "type": "String",
-                        },
-                        {
-                            "name": "application_type_code",
-                            "type": "String",
-                        },
-                        {
                             "name": "exporter_id",
                             "type": "Integer",
                         },
                         {
                             "name": "exporter_office_id",
-                            "nullable": True,
-                            "type": "Integer",
-                        },
-                        {
-                            "name": "contact_id",
                             "nullable": True,
                             "type": "Integer",
                         },
@@ -478,6 +478,174 @@ class TestMetaDataView(BaseTestDataView):
                     ],
                     "indexes": [],
                     "table_name": "gmpapplication",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/import-applications/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "process_type",
+                            "type": "String",
+                        },
+                        {
+                            "name": "is_active",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "created",
+                            "type": "Datetime",
+                        },
+                        {
+                            "name": "finished",
+                            "nullable": True,
+                            "type": "Datetime",
+                        },
+                        {
+                            "name": "status",
+                            "type": "String",
+                        },
+                        {
+                            "name": "applicant_reference",
+                            "type": "String",
+                        },
+                        {
+                            "name": "application_type_code",
+                            "type": "String",
+                        },
+                        {
+                            "name": "contact_id",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "submit_datetime",
+                            "type": "Datetime",
+                        },
+                        {
+                            "name": "last_submit_datetime",
+                            "nullable": True,
+                            "type": "Datetime",
+                        },
+                        {
+                            "name": "reassign_datetime",
+                            "nullable": True,
+                            "type": "Datetime",
+                        },
+                        {
+                            "name": "reference",
+                            "type": "String",
+                        },
+                        {
+                            "name": "decision",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "refuse_reason",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "agent_id",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "agent_office_id",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "last_update_datetime",
+                            "type": "Datetime",
+                        },
+                        {
+                            "name": "last_updated_by_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "variation_number",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "created_by_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "submitted_by_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "application_sub_type",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "importer_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "importer_office_id",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "legacy_case_flag",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "chief_usage_status",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "variation_decision",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "variation_refuse_reason",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "origin_country_name",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "consignment_country_name",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "commodity_group_id",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "cover_letter_text",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "imi_submitted_by_id",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "imi_submit_datetime",
+                            "nullable": True,
+                            "type": "Datetime",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "importapplication",
                 },
                 {
                     "table_name": "importer",

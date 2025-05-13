@@ -104,4 +104,4 @@ class ApplicationDataViewBase(DataViewBase):
         return {"variation_number": Count("variation_requests")}
 
     def get_queryset_filters(self) -> dict[str, Any]:
-        return {"submit_datetime__isnull": False}
+        return {"submit_datetime__isnull": False, "application_type__is_active": True}
