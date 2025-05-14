@@ -16,64 +16,6 @@ class TestMetaDataView(BaseTestDataView):
         assert result == {
             "tables": [
                 {
-                    "endpoint": "/data-workspace/v0/case-documents/",
-                    "fields": [
-                        {
-                            "name": "id",
-                            "primary_key": True,
-                            "type": "Integer",
-                        },
-                        {
-                            "name": "application_id",
-                            "type": "Integer",
-                        },
-                        {
-                            "name": "document_pack_id",
-                            "type": "Integer",
-                        },
-                        {
-                            "name": "document_pack_status",
-                            "type": "String",
-                        },
-                        {
-                            "name": "issue_date",
-                            "nullable": True,
-                            "type": "Datetime",
-                        },
-                        {
-                            "name": "document_type",
-                            "type": "String",
-                        },
-                        {
-                            "name": "reference",
-                            "nullable": True,
-                            "type": "String",
-                        },
-                        {
-                            "name": "country",
-                            "nullable": True,
-                            "type": "String",
-                        },
-                        {
-                            "name": "issue_paper_licence_only",
-                            "nullable": True,
-                            "type": "Boolean",
-                        },
-                        {
-                            "name": "licence_start_date",
-                            "nullable": True,
-                            "type": "Date",
-                        },
-                        {
-                            "name": "licence_end_date",
-                            "nullable": True,
-                            "type": "Date",
-                        },
-                    ],
-                    "indexes": [],
-                    "table_name": "casedocument",
-                },
-                {
                     "endpoint": "/data-workspace/v0/cfs-products/",
                     "fields": [
                         {
@@ -288,6 +230,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                         {
                             "name": "applicant_reference",
+                            "nullable": True,
                             "type": "String",
                         },
                         {
@@ -373,6 +316,49 @@ class TestMetaDataView(BaseTestDataView):
                     ],
                     "indexes": [],
                     "table_name": "exportapplication",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/export-certificate-documents/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "application_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "document_pack_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "document_pack_status",
+                            "type": "String",
+                        },
+                        {
+                            "name": "issue_date",
+                            "nullable": True,
+                            "type": "Datetime",
+                        },
+                        {
+                            "name": "document_type",
+                            "type": "String",
+                        },
+                        {
+                            "name": "reference",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "country",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "exportcertificatedocument",
                 },
                 {
                     "table_name": "exporter",
@@ -510,6 +496,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                         {
                             "name": "applicant_reference",
+                            "nullable": True,
                             "type": "String",
                         },
                         {
@@ -646,6 +633,59 @@ class TestMetaDataView(BaseTestDataView):
                     ],
                     "indexes": [],
                     "table_name": "importapplication",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/import-licence-documents/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "application_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "document_pack_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "document_pack_status",
+                            "type": "String",
+                        },
+                        {
+                            "name": "issue_date",
+                            "nullable": True,
+                            "type": "Datetime",
+                        },
+                        {
+                            "name": "document_type",
+                            "type": "String",
+                        },
+                        {
+                            "name": "reference",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "issue_paper_licence_only",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "licence_start_date",
+                            "nullable": True,
+                            "type": "Date",
+                        },
+                        {
+                            "name": "licence_end_date",
+                            "nullable": True,
+                            "type": "Date",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "importlicencedocument",
                 },
                 {
                     "table_name": "importer",

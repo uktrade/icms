@@ -6,6 +6,7 @@ from django.db.models import Exists, F, OuterRef, Value
 
 from web.data_workspace import serializers
 from web.models import (
+    CaseDocumentReference,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     CFSProduct,
@@ -36,6 +37,24 @@ class ExportApplicationDataView(ApplicationDataViewBase):
     def get_queryset_value_kwargs(self) -> dict[str, Any]:
         return super().get_queryset_value_kwargs() | {
             "application_type_code": F("application_type__type_code")
+        }
+
+
+class ExportCertificateDocumentDataView(DataViewBase):
+    model = CaseDocumentReference
+    qs_serializer = serializers.ExportDocumentListSerializer
+    data_serializer = serializers.ExportCertificateDocumentSerializer
+
+    def get_queryset_filters(self) -> dict[str, Any]:
+        return {"export_application_certificates__isnull": False}
+
+    def get_queryset_value_kwargs(self) -> dict[str, Any]:
+        return {
+            "application_id": F("export_application_certificates__export_application_id"),
+            "country": F("reference_data__country__name"),
+            "document_pack_id": F("export_application_certificates__id"),
+            "document_pack_status": F("export_application_certificates__status"),
+            "issue_date": F("export_application_certificates__case_completion_datetime"),
         }
 
 

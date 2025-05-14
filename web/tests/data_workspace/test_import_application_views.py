@@ -263,3 +263,48 @@ class TestImportApplicationDataView(BaseTestDataView):
                 "variation_refuse_reason": None,
             },
         ]
+
+
+class TestImportLicenceDocumentDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(
+        self,
+        cw_client,
+        completed_gmp_app,
+        cfs_app_pre_sign,
+        completed_com_app,
+        opt_app_submitted,
+        sps_app_submitted,
+        fa_dfl_app_pre_sign,
+        fa_oil_app_processing,
+        fa_sil_app_processing,
+        fa_sil_app_submitted,
+        nuclear_app_completed,
+        completed_sanctions_app,
+    ):
+        self.client = cw_client
+        self.url = reverse("data-workspace:import-licence-document-data", kwargs={"version": "v0"})
+        self.dfl = fa_dfl_app_pre_sign
+        self.dfl_licence = self.dfl.licences.first()
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert len(result["results"]) == 8
+        assert result["results"][0] == {
+            "application_id": self.dfl.pk,
+            "document_pack_id": self.dfl_licence.pk,
+            "document_pack_status": "DR",
+            "document_type": "COVER_LETTER",
+            "id": self.dfl_licence.document_references.get(document_type="COVER_LETTER").pk,
+            "issue_date": "2020-01-01T00:00:00Z",
+            "reference": None,
+        }
+        assert result["results"][1] == {
+            "application_id": self.dfl.pk,
+            "document_pack_id": self.dfl_licence.pk,
+            "document_pack_status": "DR",
+            "document_type": "LICENCE",
+            "id": self.dfl_licence.document_references.get(document_type="LICENCE").pk,
+            "issue_date": "2020-01-01T00:00:00Z",
+            "reference": "GBSIL0000001B",
+        }

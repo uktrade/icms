@@ -23,16 +23,16 @@ urlpatterns = [
                     name="user-survey-data",
                 ),
                 # Case urls
-                path(
-                    "case-documents/",
-                    views.CaseDocumentDataView.as_view(),
-                    name="case-document-data",
-                ),
                 # Export application urls
                 path(
                     "export-applications/",
                     views.ExportApplicationDataView.as_view(),
                     name="export-application-data",
+                ),
+                path(
+                    "export-certificate-documents/",
+                    views.ExportCertificateDocumentDataView.as_view(),
+                    name="export-certificate-document-data",
                 ),
                 path(
                     "com-applications/",
@@ -64,6 +64,11 @@ urlpatterns = [
                     "import-applications/",
                     views.ImportApplicationDataView.as_view(),
                     name="import-application-data",
+                ),
+                path(
+                    "import-licence-documents/",
+                    views.ImportLicenceDocumentDataView.as_view(),
+                    name="import-licence-document-data",
                 ),
             ]
         ),
