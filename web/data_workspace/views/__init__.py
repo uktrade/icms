@@ -1,14 +1,14 @@
 from .base import MetadataView
-from .case import CaseDocumentDataView
 from .export_application import (
     CFSProductDataView,
     CFSScheduleDataView,
     COMApplicationDataView,
     ExportApplicationDataView,
+    ExportCertificateDocumentDataView,
     GMPApplicationDataView,
     LegislationDataView,
 )
-from .import_application import ImportApplicationDataView
+from .import_application import ImportApplicationDataView, ImportLicenceDocumentDataView
 from .user import (
     ExporterDataView,
     ImporterDataView,
@@ -21,11 +21,12 @@ __all__ = [
     "CFSProductDataView",
     "CFSScheduleDataView",
     "COMApplicationDataView",
-    "CaseDocumentDataView",
     "ExportApplicationDataView",
+    "ExportCertificateDocumentDataView",
     "ExporterDataView",
     "GMPApplicationDataView",
     "ImportApplicationDataView",
+    "ImportLicenceDocumentDataView",
     "ImporterDataView",
     "LegislationDataView",
     "MetadataView",

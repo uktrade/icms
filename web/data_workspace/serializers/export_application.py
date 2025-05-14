@@ -3,6 +3,7 @@ import datetime as dt
 from django.urls import reverse
 
 from .base import ApplicationBaseSerializer, BaseResultsSerializer, BaseSerializer
+from .case import CaseDocumentSerializer
 
 
 class ExportApplicationSerializer(ApplicationBaseSerializer):
@@ -13,6 +14,20 @@ class ExportApplicationSerializer(ApplicationBaseSerializer):
 
 class ExportApplicationListSerializer(BaseResultsSerializer):
     results: list[ExportApplicationSerializer]
+
+
+class ExportCertificateDocumentSerializer(CaseDocumentSerializer):
+    application_id: int
+    document_pack_id: int
+    document_pack_status: str
+    issue_date: dt.datetime | None
+    document_type: str
+    reference: str | None
+    country: str | None
+
+
+class ExportDocumentListSerializer(BaseResultsSerializer):
+    results: list[ExportCertificateDocumentSerializer]
 
 
 class GMPApplicationSerializer(BaseSerializer):

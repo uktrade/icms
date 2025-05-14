@@ -1,6 +1,7 @@
 import datetime as dt
 
 from .base import ApplicationBaseSerializer, BaseResultsSerializer
+from .case import CaseDocumentSerializer
 
 
 class ImportApplicationSerializer(ApplicationBaseSerializer):
@@ -21,3 +22,13 @@ class ImportApplicationSerializer(ApplicationBaseSerializer):
 
 class ImportApplicationListSerializer(BaseResultsSerializer):
     results: list[ImportApplicationSerializer]
+
+
+class ImportLicenceDocumentSerializer(CaseDocumentSerializer):
+    issue_paper_licence_only: bool | None
+    licence_start_date: dt.date | None
+    licence_end_date: dt.date | None
+
+
+class ImportLicenceDocumentListSerializer(BaseResultsSerializer):
+    results: list[CaseDocumentSerializer]

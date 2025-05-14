@@ -1,6 +1,6 @@
 import datetime as dt
 
-from .base import BaseResultsSerializer, BaseSerializer
+from .base import BaseSerializer
 
 
 class CaseDocumentSerializer(BaseSerializer):
@@ -10,18 +10,6 @@ class CaseDocumentSerializer(BaseSerializer):
     issue_date: dt.datetime | None
     document_type: str
     reference: str | None
-
-    # Export certificates only
-    country: str | None
-
-    # Import licences only
-    issue_paper_licence_only: bool | None
-    licence_start_date: dt.date | None
-    licence_end_date: dt.date | None
-
-
-class CaseDocumentListSerializer(BaseResultsSerializer):
-    results: list[CaseDocumentSerializer]
 
 
 # TODO ECIL-630:

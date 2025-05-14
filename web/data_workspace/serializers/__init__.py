@@ -1,5 +1,4 @@
 from .base import BaseResultsSerializer, BaseSerializer, MetadataListSerializer
-from .case import CaseDocumentListSerializer, CaseDocumentSerializer
 from .export_application import (
     CFSProductListSerializer,
     CFSProductSerializer,
@@ -9,14 +8,18 @@ from .export_application import (
     COMApplicationSerializer,
     ExportApplicationListSerializer,
     ExportApplicationSerializer,
+    ExportCertificateDocumentSerializer,
+    ExportDocumentListSerializer,
     GMPApplicationListSerializer,
     GMPApplicationSerializer,
     LegislationListSerializer,
     LegislationSerializer,
 )
-from .import_applicaiton import (
+from .import_application import (
     ImportApplicationListSerializer,
     ImportApplicationSerializer,
+    ImportLicenceDocumentListSerializer,
+    ImportLicenceDocumentSerializer,
 )
 from .user import (
     ExporterListSerializer,
@@ -33,14 +36,15 @@ from .user import (
 
 # Used to determine which tables get listed on the table-metadata data workspace api
 DATA_SERIALIZERS: list[type[BaseSerializer]] = [
-    CaseDocumentSerializer,
     CFSProductSerializer,
     CFSScheduleSerializer,
     COMApplicationSerializer,
     ExportApplicationSerializer,
+    ExportCertificateDocumentSerializer,
     ExporterSerializer,
     GMPApplicationSerializer,
     ImportApplicationSerializer,
+    ImportLicenceDocumentSerializer,
     ImporterSerializer,
     LegislationSerializer,
     OfficeSerializer,
@@ -61,12 +65,16 @@ __all__ = [
     "COMApplicationSerializer",
     "ExportApplicationListSerializer",
     "ExportApplicationSerializer",
+    "ExportCertificateDocumentSerializer",
+    "ExportDocumentListSerializer",
     "ExporterListSerializer",
     "ExporterSerializer",
     "GMPApplicationListSerializer",
     "GMPApplicationSerializer",
     "ImportApplicationListSerializer",
     "ImportApplicationSerializer",
+    "ImportLicenceDocumentListSerializer",
+    "ImportLicenceDocumentSerializer",
     "ImporterListSerializer",
     "ImporterSerializer",
     "LegislationListSerializer",
