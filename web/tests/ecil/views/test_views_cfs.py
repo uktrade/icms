@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 import pytest
+from django.db.models import QuerySet
 from django.http import HttpResponse
 from django.urls import reverse
 from pytest_django.asserts import assertInHTML, assertTemplateUsed
@@ -9,11 +10,32 @@ from web.ecil.gds.forms import fields
 from web.models import (
     CertificateOfFreeSaleApplication,
     CFSProduct,
+    CFSProductType,
     CFSSchedule,
     Country,
     ProductLegislation,
 )
 from web.models.shared import AddressEntryType, YesNoChoices
+
+
+@pytest.fixture()
+def gb_legislations() -> QuerySet[ProductLegislation]:
+    return ProductLegislation.objects.filter(is_active=True, gb_legislation=True)
+
+
+@pytest.fixture()
+def gb_legislation(gb_legislations) -> ProductLegislation:
+    return gb_legislations.first()
+
+
+@pytest.fixture()
+def gb_biocidal_legislation(gb_legislations) -> ProductLegislation:
+    return gb_legislations.filter(is_biocidal=True).first()
+
+
+@pytest.fixture()
+def gb_eu_cosmetic_legislation(gb_legislations) -> ProductLegislation:
+    return gb_legislations.filter(is_eu_cosmetics_regulation=True).first()
 
 
 def assert_back_link_url(
@@ -47,6 +69,24 @@ def get_cfs_schedule_product_url(
     return reverse(
         view_name,
         kwargs={"application_pk": app.pk, "schedule_pk": schedule.pk, "product_pk": product.pk},
+    )
+
+
+def get_cfs_schedule_product_type_url(
+    view_name: str,
+    app: CertificateOfFreeSaleApplication,
+    schedule: CFSSchedule,
+    product: CFSProduct,
+    product_type: CFSProductType,
+) -> str:
+    return reverse(
+        view_name,
+        kwargs={
+            "application_pk": app.pk,
+            "schedule_pk": schedule.pk,
+            "product_pk": product.pk,
+            "product_type_pk": product_type.pk,
+        },
     )
 
 
@@ -437,7 +477,7 @@ class TestCFSScheduleCountryOfManufactureUpdateView:
             html,
         )
 
-    def test_post(self):
+    def test_post(self, gb_legislation):
         # Test error message
         form_data = {"country_of_manufacture": ""}
         response = self.client.post(self.url, data=form_data)
@@ -464,9 +504,7 @@ class TestCFSScheduleCountryOfManufactureUpdateView:
         assert self.schedule.country_of_manufacture == valid_country
 
         # Test having an existing legislation changes the post redirect.
-        self.schedule.legislations.add(
-            ProductLegislation.objects.filter(is_active=True, gb_legislation=True).first()
-        )
+        self.schedule.legislations.add(gb_legislation)
         response = self.client.post(self.url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
         assert response.url == get_cfs_schedule_url(
@@ -491,7 +529,7 @@ class TestCFSScheduleAddLegislationUpdateView:
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
-    def test_get(self, exporter_site):
+    def test_get(self, exporter_site, gb_legislation):
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/cfs/schedule_legislation.html")
@@ -524,9 +562,7 @@ class TestCFSScheduleAddLegislationUpdateView:
         assert response.context["back_link_kwargs"]["href"] == referrer
 
         # Test having an existing legislation changes the title.
-        self.schedule.legislations.add(
-            ProductLegislation.objects.filter(is_active=True, gb_legislation=True).first()
-        )
+        self.schedule.legislations.add(gb_legislation)
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
         html = response.content.decode("utf-8")
@@ -589,12 +625,10 @@ class TestCFSScheduleAddLegislationUpdateView:
 
 class TestCFSScheduleAddAnotherLegislationFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress, gb_legislations):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
-        self.available_legislations = ProductLegislation.objects.filter(
-            is_active=True, gb_legislation=True
-        )
+        self.available_legislations = gb_legislations
         self.schedule.legislations.add(*self.available_legislations[:2])
         self.url = get_cfs_schedule_url(
             "ecil:export-cfs:schedule-legislation-add-another", self.app, self.schedule
@@ -697,13 +731,10 @@ class TestCFSScheduleAddAnotherLegislationFormView:
 
 class TestCFSScheduleConfirmRemoveLegislationFormView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
+    def setup(self, prototype_export_client, prototype_cfs_app_in_progress, gb_legislations):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
-        available_legislations = ProductLegislation.objects.filter(
-            is_active=True, gb_legislation=True
-        )
-        self.schedule.legislations.add(*available_legislations[:2])
+        self.schedule.legislations.add(*gb_legislations[:2])
         self.client = prototype_export_client
         self.legislation = self.schedule.legislations.first()
         self.url = reverse(
@@ -811,7 +842,7 @@ class TestCFSScheduleProductStandardUpdateView:
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
-    def test_get(self):
+    def test_get(self, gb_legislation):
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/gds_form.html")
@@ -833,9 +864,7 @@ class TestCFSScheduleProductStandardUpdateView:
         )
 
         # Having existing legislation should change the back link.
-        self.schedule.legislations.add(
-            ProductLegislation.objects.filter(is_active=True, gb_legislation=True).first()
-        )
+        self.schedule.legislations.add(gb_legislation)
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
@@ -844,7 +873,7 @@ class TestCFSScheduleProductStandardUpdateView:
         )
         assert_back_link_url(response, expected_url)
 
-    def test_post(self):
+    def test_post(self, gb_eu_cosmetic_legislation):
         # Test error message
         form_data = {"product_standard": ""}
         response = self.client.post(self.url, data=form_data)
@@ -911,13 +940,7 @@ class TestCFSScheduleProductStandardUpdateView:
         assert self.schedule.goods_export_only == YesNoChoices.yes
 
         # Test eu_cosmetic_regulation redirects to correct schedule statement view.
-        self.schedule.legislations.add(
-            ProductLegislation.objects.filter(
-                is_active=True,
-                gb_legislation=True,
-                is_eu_cosmetics_regulation=True,
-            ).first()
-        )
+        self.schedule.legislations.add(gb_eu_cosmetic_legislation)
 
         form_data = {"product_standard": CFSSchedule.ProductStandards.PRODUCT_SOLD_ON_UK_MARKET}
         response = self.client.post(self.url, data=form_data)
@@ -929,7 +952,9 @@ class TestCFSScheduleProductStandardUpdateView:
 
 class TestCFSScheduleStatementIsResponsiblePersonUpdateView:
     @pytest.fixture(autouse=True)
-    def setup(self, prototype_export_client, prototype_cfs_app_in_progress):
+    def setup(
+        self, prototype_export_client, prototype_cfs_app_in_progress, gb_eu_cosmetic_legislation
+    ):
         self.app = prototype_cfs_app_in_progress
         self.schedule = prototype_cfs_app_in_progress.schedules.first()
         self.schedule.goods_export_only = YesNoChoices.no
@@ -939,9 +964,7 @@ class TestCFSScheduleStatementIsResponsiblePersonUpdateView:
             "ecil:export-cfs:schedule-is-responsible-person", self.app, self.schedule
         )
         self.client = prototype_export_client
-        self.gb_eu_cosmetic_legislation = ProductLegislation.objects.filter(
-            is_active=True, gb_legislation=True, is_eu_cosmetics_regulation=True
-        ).first()
+        self.gb_eu_cosmetic_legislation = gb_eu_cosmetic_legislation
 
     def test_permission(self, exporter_two_client):
         response = exporter_two_client.get(self.url)
@@ -1043,7 +1066,7 @@ class TestCFSScheduleStatementAccordanceWithStandardsUpdateView:
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
-    def test_get(self):
+    def test_get(self, gb_eu_cosmetic_legislation):
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "ecil/gds_form.html")
@@ -1066,11 +1089,7 @@ class TestCFSScheduleStatementAccordanceWithStandardsUpdateView:
         )
 
         # Check adding a cosmetic legislation changes the back link.
-        self.schedule.legislations.add(
-            ProductLegislation.objects.filter(
-                is_active=True, gb_legislation=True, is_eu_cosmetics_regulation=True
-            ).first()
-        )
+        self.schedule.legislations.add(gb_eu_cosmetic_legislation)
         self.schedule.goods_export_only = YesNoChoices.no
         self.schedule.save()
 
@@ -1521,6 +1540,27 @@ class TestCFSScheduleProductEndUseUpdateView:
         self.product.refresh_from_db()
         assert self.product.product_end_use == "Test product end use."
 
+    def test_post_biocidal_legislation(self, gb_biocidal_legislation):
+        self.schedule.legislations.add(gb_biocidal_legislation)
+        # Having a biocidal legislation should change the redirect for this view.
+        form_data = {"product_end_use": "Test product end use."}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-type-add", self.app, self.schedule, self.product
+        )
+
+        # Having at least one product type number should redirect to list view.
+        self.product.product_type_numbers.create(product_type_number=1)
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-type-add-another",
+            self.app,
+            self.schedule,
+            self.product,
+        )
+
 
 class TestCFSScheduleProductAddAnotherFormView:
     @pytest.fixture(autouse=True)
@@ -1754,3 +1794,336 @@ class TestCFSScheduleProductConfirmRemoveFormView:
             "ecil:export-cfs:schedule-product-add", self.app, self.schedule
         )
         assert self.schedule.products.count() == 0
+
+
+class TestCFSScheduleProductTypeCreateView:
+    @pytest.fixture(autouse=True)
+    def setup(
+        self, prototype_export_client, prototype_cfs_app_in_progress, gb_biocidal_legislation
+    ):
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.schedule.legislations.add(gb_biocidal_legislation)
+        self.product = self.schedule.products.create(product_name="Test product")
+        self.url = get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-type-add", self.app, self.schedule, self.product
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        # Test correct client doesn't have permission without the requited legislation.
+        self.schedule.legislations.clear()
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+
+        expected_url = get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-end-use", self.app, self.schedule, self.product
+        )
+        assert_back_link_url(response, expected_url)
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+            <h1 class="govuk-label-wrapper">
+              <label class="govuk-label govuk-label--l" for="id_product_type_number">
+                <span class="govuk-caption-l">Product schedule 1</span>What is the product type number for Test product?
+              </label>
+            </h1>
+            """,
+            html,
+        )
+
+    def test_post(self):
+        # Test error message
+        form_data = {"product_type_number": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {"product_type_number": ["Enter a product type number"]}
+
+        # Check no product type numbers exist yet
+        assert self.product.product_type_numbers.count() == 0
+
+        # Test post success
+        form_data = {"product_type_number": "1"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        # Check a product has been added
+        assert self.product.product_type_numbers.count() == 1
+        ptn = self.product.product_type_numbers.first()
+        assert ptn.product_type_number == 1
+
+        assert response.url == get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-type-add-another",
+            self.app,
+            self.schedule,
+            self.product,
+        )
+
+    def test_duplicate_product_type_number_error(self):
+        form_data = {"product_type_number": "1"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        # Check a product has been added
+        assert self.schedule.products.count() == 1
+
+        form_data = {"product_type_number": "1"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "product_type_number": ["PT1 has already been added to this product."]
+        }
+
+    def test_invalid_product_type_number_error(self):
+        form_data = {"product_type_number": "99"}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "product_type_number": ["Enter a product type number between 1 and 22"]
+        }
+
+
+class TestCFSScheduleProductTypeAddAnotherFormView:
+    @pytest.fixture(autouse=True)
+    def setup(
+        self, prototype_export_client, prototype_cfs_app_in_progress, gb_biocidal_legislation
+    ):
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.schedule.legislations.add(gb_biocidal_legislation)
+        self.product = self.schedule.products.create(product_name="Test product")
+        self.ptn1 = self.product.product_type_numbers.create(product_type_number=1)
+        self.ptn2 = self.product.product_type_numbers.create(product_type_number=22)
+        self.url = get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-type-add-another",
+            self.app,
+            self.schedule,
+            self.product,
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        # Test correct client doesn't have permission without the requited legislation.
+        self.schedule.legislations.clear()
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/cfs/schedule_product_type_add_another.html")
+
+        expected_url = get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-end-use", self.app, self.schedule, self.product
+        )
+        assert_back_link_url(response, expected_url)
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+              <h1 class="govuk-heading-l">
+                <span class="govuk-caption-l">Product schedule 1</span>
+                You have added 2 product type numbers for Test product
+              </h1>
+            """,
+            html,
+        )
+
+        # Check list_with_actions_kwargs
+        assert response.context["list_with_actions_kwargs"] == {
+            "rows": [
+                {
+                    "name": "PT 1",
+                    "actions": [
+                        {
+                            "label": "Remove",
+                            "url": reverse(
+                                "ecil:export-cfs:schedule-product-type-remove",
+                                kwargs={
+                                    "application_pk": self.app.pk,
+                                    "schedule_pk": self.schedule.pk,
+                                    "product_pk": self.product.pk,
+                                    "product_type_pk": self.ptn1.pk,
+                                },
+                            ),
+                        },
+                    ],
+                },
+                {
+                    "name": "PT 22",
+                    "actions": [
+                        {
+                            "label": "Remove",
+                            "url": reverse(
+                                "ecil:export-cfs:schedule-product-type-remove",
+                                kwargs={
+                                    "application_pk": self.app.pk,
+                                    "schedule_pk": self.schedule.pk,
+                                    "product_pk": self.product.pk,
+                                    "product_type_pk": self.ptn2.pk,
+                                },
+                            ),
+                        },
+                    ],
+                },
+            ]
+        }
+
+    def test_post(self):
+        # Test error message
+        form_data = {"add_another": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "add_another": ["Select yes or no"],
+        }
+
+        # Test post success (yes)
+        form_data = {"add_another": YesNoChoices.yes}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-type-add", self.app, self.schedule, self.product
+        )
+
+        # Test post success (no)
+        form_data = {"add_another": YesNoChoices.no}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == get_cfs_schedule_url(
+            "export:cfs-schedule-edit", self.app, self.schedule
+        )
+
+
+class TestCFSScheduleProductTypeConfirmRemoveFormView:
+    @pytest.fixture(autouse=True)
+    def setup(
+        self, prototype_export_client, prototype_cfs_app_in_progress, gb_biocidal_legislation
+    ):
+        self.app = prototype_cfs_app_in_progress
+        self.schedule = prototype_cfs_app_in_progress.schedules.first()
+        self.schedule.legislations.add(gb_biocidal_legislation)
+        self.product = self.schedule.products.create(product_name="Test product")
+        self.ptn1 = self.product.product_type_numbers.create(product_type_number=1)
+        self.ptn2 = self.product.product_type_numbers.create(product_type_number=22)
+        self.url = get_cfs_schedule_product_type_url(
+            "ecil:export-cfs:schedule-product-type-remove",
+            self.app,
+            self.schedule,
+            self.product,
+            self.ptn1,
+        )
+        self.client = prototype_export_client
+
+    def test_permission(self, exporter_two_client):
+        response = exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        # Test correct client doesn't have permission without the requited legislation.
+        self.schedule.legislations.clear()
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_get(self):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "ecil/gds_form.html")
+
+        expected_url = get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-type-add-another",
+            self.app,
+            self.schedule,
+            self.product,
+        )
+        assert_back_link_url(response, expected_url)
+
+        # Check custom header is present
+        html = response.content.decode("utf-8")
+        assertInHTML(
+            """
+              <h1 class="govuk-fieldset__heading">
+                <span class="govuk-caption-l">Product schedule 1</span>Are you sure you want to remove product type number PT 1?
+              </h1>
+            """,
+            html,
+        )
+
+    def test_post(self):
+        # Test error message
+        form_data = {"are_you_sure": ""}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        form = response.context["form"]
+        assert form.errors == {
+            "are_you_sure": ["Select yes or no"],
+        }
+
+        # Test post success (no)
+        assert self.product.product_type_numbers.count() == 2
+        form_data = {"are_you_sure": YesNoChoices.no}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-type-add-another",
+            self.app,
+            self.schedule,
+            self.product,
+        )
+        assert self.product.product_type_numbers.count() == 2
+
+        # Test post success (yes)
+        form_data = {"are_you_sure": YesNoChoices.yes}
+        response = self.client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-type-add-another",
+            self.app,
+            self.schedule,
+            self.product,
+        )
+        assert self.product.product_type_numbers.count() == 1
+
+        # Test removing last product redirects to correct view.
+        url = reverse(
+            "ecil:export-cfs:schedule-product-type-remove",
+            kwargs={
+                "application_pk": self.app.pk,
+                "schedule_pk": self.schedule.pk,
+                "product_pk": self.product.pk,
+                "product_type_pk": self.ptn2.pk,
+            },
+        )
+        form_data = {"are_you_sure": YesNoChoices.yes}
+        response = self.client.post(url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == get_cfs_schedule_product_url(
+            "ecil:export-cfs:schedule-product-type-add", self.app, self.schedule, self.product
+        )
+        assert self.product.product_type_numbers.count() == 0

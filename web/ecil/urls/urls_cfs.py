@@ -97,19 +97,43 @@ urlpatterns = [
                                 name="schedule-product-add-another",
                             ),
                             path(
-                                "product/<int:product_pk>/edit/",
-                                views.CFSScheduleProductUpdateView.as_view(),
-                                name="schedule-product-edit",
-                            ),
-                            path(
-                                "product/<int:product_pk>/end-use/",
-                                views.CFSScheduleProductEndUseUpdateView.as_view(),
-                                name="schedule-product-end-use",
-                            ),
-                            path(
-                                "product/<product_pk>/remove/",
-                                views.CFSScheduleProductConfirmRemoveFormView.as_view(),
-                                name="schedule-product-remove",
+                                "product/<int:product_pk>/",
+                                include(
+                                    [
+                                        path(
+                                            "edit/",
+                                            views.CFSScheduleProductUpdateView.as_view(),
+                                            name="schedule-product-edit",
+                                        ),
+                                        path(
+                                            "end-use/",
+                                            views.CFSScheduleProductEndUseUpdateView.as_view(),
+                                            name="schedule-product-end-use",
+                                        ),
+                                        path(
+                                            "remove/",
+                                            views.CFSScheduleProductConfirmRemoveFormView.as_view(),
+                                            name="schedule-product-remove",
+                                        ),
+                                        #
+                                        # Product type number urls
+                                        path(
+                                            "type/add/",
+                                            views.CFSScheduleProductTypeCreateView.as_view(),
+                                            name="schedule-product-type-add",
+                                        ),
+                                        path(
+                                            "type/add-another/",
+                                            views.CFSScheduleProductTypeAddAnotherFormView.as_view(),
+                                            name="schedule-product-type-add-another",
+                                        ),
+                                        path(
+                                            "type/<int:product_type_pk>/remove/",
+                                            views.CFSScheduleProductTypeConfirmRemoveFormView.as_view(),
+                                            name="schedule-product-type-remove",
+                                        ),
+                                    ]
+                                ),
                             ),
                         ],
                     ),

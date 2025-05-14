@@ -10,6 +10,7 @@ from web.ecil.gds import forms as gds_forms
 from web.models import (
     CertificateOfFreeSaleApplication,
     CFSProduct,
+    CFSProductType,
     CFSSchedule,
     Country,
     ProductLegislation,
@@ -508,6 +509,87 @@ class CFSScheduleProductConfirmRemoveForm(gds_forms.GDSForm):
         super().__init__(*args, **kwargs)
         self.fields["are_you_sure"].label = get_schedule_label(
             product.schedule, f"Are you sure you want to remove {escape(product.product_name)}?"
+        )
+
+
+class CFSScheduleProductTypeForm(gds_forms.GDSModelForm):
+    product_type_number = gds_forms.GovUKIntegerField(
+        help_text=(
+            "A product type number indicates what product type group biocide chemicals are in."
+            " They always start with PT."
+            " For example, the product type number for human hygiene products is PT 1."
+        ),
+        gds_field_kwargs=gds_forms.LABEL_HEADER
+        | {"prefix": {"text": "PT"}, "classes": "govuk-input--width-10"},
+        error_messages={
+            "required": "Enter a product type number",
+            "invalid_choice": "Enter a product type number between 1 and 22",
+        },
+    )
+
+    instance: CFSProductType
+
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = CFSProductType
+        fields = ["product_type_number"]
+
+    def __init__(self, *args: Any, product: CFSProduct, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.product = product
+
+        if self.product.product_type_numbers.exists():
+            label = f"Add another product type number for {escape(product.product_name)}"
+        else:
+            label = f"What is the product type number for {escape(product.product_name)}?"
+
+        self.fields["product_type_number"].label = get_schedule_label(product.schedule, label)
+
+    def clean_product_type_number(self) -> str:
+        product_type_number = self.cleaned_data["product_type_number"]
+
+        if (
+            self.product.product_type_numbers.filter(product_type_number=product_type_number)
+            .exclude(pk=self.instance.pk)
+            .exists()
+        ):
+            self.add_error(
+                "product_type_number",
+                f"PT{product_type_number} has already been added to this product.",
+            )
+
+        return product_type_number
+
+    def save(self, commit: bool = True) -> CFSProductType:
+        self.instance.product = self.product
+        self.instance = super().save(commit)
+
+        if commit:
+            self.instance.save()
+
+        return self.instance
+
+
+class CFSScheduleProductTypeAddAnotherForm(gds_forms.GDSForm):
+    add_another = gds_forms.GovUKRadioInputField(
+        label="Do you need to add another product type number?",
+        choices=YesNoChoices.choices,
+        gds_field_kwargs={"fieldset": {"legend": {"classes": "govuk-fieldset__legend--m"}}},
+        error_messages={"required": "Select yes or no"},
+    )
+
+
+class CFSScheduleProductTypeConfirmRemoveForm(gds_forms.GDSForm):
+    are_you_sure = gds_forms.GovUKRadioInputField(
+        choices=YesNoChoices.choices,
+        gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
+        error_messages={"required": "Select yes or no"},
+    )
+
+    def __init__(self, *args: Any, product_type: CFSProductType, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["are_you_sure"].label = get_schedule_label(
+            product_type.product.schedule,
+            f"Are you sure you want to remove product type number PT {escape(product_type.product_type_number)}?",
         )
 
 
