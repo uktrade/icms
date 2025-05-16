@@ -70,6 +70,26 @@ urlpatterns = [
                     views.ImportLicenceDocumentDataView.as_view(),
                     name="import-licence-document-data",
                 ),
+                path(
+                    "nuclear-material-applications/",
+                    views.NuclearMaterialApplicationDataView.as_view(),
+                    name="nuclear-material-application-data",
+                ),
+                path(
+                    "nuclear-material-goods/",
+                    views.NuclearMaterialGoodsDataView.as_view(),
+                    name="nuclear-material-goods-data",
+                ),
+                path(
+                    "sanctions-applications/",
+                    views.SanctionsApplicationDataView.as_view(),
+                    name="sanctions-application-data",
+                ),
+                path(
+                    "sanctions-goods/",
+                    views.SanctionsGoodsDataView.as_view(),
+                    name="sanctions-goods-data",
+                ),
             ]
         ),
     ),

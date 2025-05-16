@@ -1,9 +1,16 @@
 from typing import Any
 
-from django.db.models import F
+from django.db.models import Count, F
 
 from web.data_workspace import serializers
-from web.models import CaseDocumentReference, ImportApplication
+from web.models import (
+    CaseDocumentReference,
+    ImportApplication,
+    NuclearMaterialApplication,
+    NuclearMaterialApplicationGoods,
+    SanctionsAndAdhocApplication,
+    SanctionsAndAdhocApplicationGoods,
+)
 
 from .base import ApplicationDataViewBase, DataViewBase
 
@@ -41,4 +48,47 @@ class ImportLicenceDocumentDataView(DataViewBase):
             "issue_paper_licence_only": F("import_application_licences__issue_paper_licence_only"),
             "licence_start_date": F("import_application_licences__licence_start_date"),
             "licence_end_date": F("import_application_licences__licence_end_date"),
+        }
+
+
+class SanctionsApplicationDataView(DataViewBase):
+    model = SanctionsAndAdhocApplication
+    qs_serializer = serializers.SanctionsApplicationListSerializer
+    data_serializer = serializers.SanctionsApplicationSerializer
+
+    def get_queryset_annotations(self) -> dict[str, Any]:
+        return {"supporting_documents_count": Count("supporting_documents")}
+
+
+class SanctionsGoodsDataView(DataViewBase):
+    model = SanctionsAndAdhocApplicationGoods
+    qs_serializer = serializers.SanctionsGoodsListSerializer
+    data_serializer = serializers.SanctionsGoodsSerializer
+
+    def get_queryset_value_kwargs(self) -> dict[str, Any]:
+        return {
+            "application_id": F("import_application_id"),
+            "commodity_code": F("commodity__commodity_code"),
+        }
+
+
+class NuclearMaterialApplicationDataView(DataViewBase):
+    model = NuclearMaterialApplication
+    qs_serializer = serializers.NuclearMaterialApplicationListSerializer
+    data_serializer = serializers.NuclearMaterialApplicationSerializer
+
+    def get_queryset_annotations(self) -> dict[str, Any]:
+        return {"supporting_documents_count": Count("supporting_documents")}
+
+
+class NuclearMaterialGoodsDataView(DataViewBase):
+    model = NuclearMaterialApplicationGoods
+    qs_serializer = serializers.NuclearMaterialGoodsListSerializer
+    data_serializer = serializers.NuclearMaterialGoodsSerializer
+
+    def get_queryset_value_kwargs(self) -> dict[str, Any]:
+        return {
+            "application_id": F("import_application_id"),
+            "commodity_code": F("commodity__commodity_code"),
+            "unit": F("quantity_unit__description"),
         }

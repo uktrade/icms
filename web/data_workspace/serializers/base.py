@@ -11,8 +11,8 @@ from pydantic import BaseModel
 ANNOTATION_CONF: dict[type | UnionType, tuple[str, bool]] = {
     bool: ("Boolean", False),
     bool | None: ("Boolean", True),
-    Decimal: ("Decimal", False),
-    Decimal | None: ("Decimal", True),
+    Decimal: ("Float", False),
+    Decimal | None: ("Float", True),
     dt.date | None: ("Date", True),
     dt.date: ("Date", False),
     dt.datetime | None: ("Datetime", True),
@@ -25,12 +25,15 @@ ANNOTATION_CONF: dict[type | UnionType, tuple[str, bool]] = {
     str | None: ("String", True),
 }
 
+ASDECIMAL_ANNOTATIONS = (Decimal, Decimal | None)
+
 
 class FieldMetadataSerializer(BaseModel):
     name: str
     type: str
     primary_key: bool = False
     nullable: bool = False
+    asdecimal: bool = False
 
 
 class MetadataSerializer(BaseModel):
@@ -68,12 +71,15 @@ class BaseSerializer(BaseModel):
             if not data_type:
                 raise ValueError(f"Unmapped data type: {str(field.annotation)}")
 
+            asdecimal = field.annotation in ASDECIMAL_ANNOTATIONS
+
             metadata.append(
                 FieldMetadataSerializer(
                     name=field_name,
                     type=data_type,
                     primary_key=field_name == cls.pk_name(),
                     nullable=nullable,
+                    asdecimal=asdecimal,
                 )
             )
 

@@ -308,3 +308,109 @@ class TestImportLicenceDocumentDataView(BaseTestDataView):
             "issue_date": "2020-01-01T00:00:00Z",
             "reference": "GBSIL0000001B",
         }
+
+
+class TestNuclearMaterialApplicationDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, nuclear_app_completed):
+        self.client = cw_client
+        self.url = reverse(
+            "data-workspace:nuclear-material-application-data", kwargs={"version": "v0"}
+        )
+        self.nmil = nuclear_app_completed
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert result["results"] == [
+            {
+                "consignor_address": "Test consignor address",
+                "consignor_name": "Test consignor name",
+                "end_user_address": "Test end user address",
+                "end_user_name": "Test end user name",
+                "id": self.nmil.pk,
+                "intended_use_of_shipment": "Test intended use of shipment",
+                "licence_type": "S",
+                "nature_of_business": "Test nature of business",
+                "security_team_contact_information": "Test security team contact information",
+                "shipment_end_date": None,
+                "shipment_start_date": "2025-05-16T00:00:00",
+                "supporting_documents_count": 1,
+            },
+        ]
+
+
+class TestNuclearMaterialGoodsDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, nuclear_app_completed):
+        self.client = cw_client
+        self.url = reverse("data-workspace:nuclear-material-goods-data", kwargs={"version": "v0"})
+        self.nmil = nuclear_app_completed
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert len(result["results"]) == 3
+        assert result["results"][0] == {
+            "application_id": self.nmil.pk,
+            "commodity_code": "2612101000",
+            "goods_description": "Test Goods",
+            "goods_description_original": "Test Goods",
+            "id": self.nmil.nuclear_goods.first().pk,
+            "quantity_amount": "1000.000",
+            "quantity_amount_original": "1000.000",
+            "unit": "Kilogramme",
+            "unlimited_quantity": False,
+        }
+
+
+class TestSanctionsApplicationDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, completed_sanctions_app):
+        self.client = cw_client
+        self.url = reverse("data-workspace:sanctions-application-data", kwargs={"version": "v0"})
+        self.sanctions = completed_sanctions_app
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert result["results"] == [
+            {
+                "exporter_address": "Test Address",
+                "exporter_name": "Test Exporter",
+                "id": self.sanctions.pk,
+                "supporting_documents_count": 1,
+            },
+        ]
+
+
+class TestSanctionsGoodsDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, completed_sanctions_app):
+        self.client = cw_client
+        self.url = reverse("data-workspace:sanctions-goods-data", kwargs={"version": "v0"})
+        self.sanctions = completed_sanctions_app
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert result["results"] == [
+            {
+                "application_id": self.sanctions.pk,
+                "commodity_code": "4202199090",
+                "goods_description": "Test Goods",
+                "goods_description_original": "Test Goods",
+                "id": self.sanctions.sanctions_goods.first().pk,
+                "quantity_amount": "1000.000",
+                "quantity_amount_original": "1000.000",
+                "value": "10500.00",
+                "value_original": "10500.00",
+            },
+            {
+                "application_id": self.sanctions.pk,
+                "commodity_code": "9013109000",
+                "goods_description": "More Commoditites",
+                "goods_description_original": "More Commoditites",
+                "id": self.sanctions.sanctions_goods.last().pk,
+                "quantity_amount": "56.780",
+                "quantity_amount_original": "56.780",
+                "value": "789.00",
+                "value_original": "789.00",
+            },
+        ]

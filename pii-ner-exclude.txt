@@ -5500,3 +5500,5 @@ CA/2024/00002
 Reuse xxx_add.html
 DeleteView
 ImportApplicationSerializer
+NuclearMaterialApplicationListSerializer
+Float
