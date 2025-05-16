@@ -745,6 +745,112 @@ class TestMetaDataView(BaseTestDataView):
                     "table_name": "legislation",
                 },
                 {
+                    "endpoint": "/data-workspace/v0/nuclear-material-applications/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "nature_of_business",
+                            "type": "String",
+                        },
+                        {
+                            "name": "consignor_name",
+                            "type": "String",
+                        },
+                        {
+                            "name": "consignor_address",
+                            "type": "String",
+                        },
+                        {
+                            "name": "end_user_name",
+                            "type": "String",
+                        },
+                        {
+                            "name": "end_user_address",
+                            "type": "String",
+                        },
+                        {
+                            "name": "intended_use_of_shipment",
+                            "type": "String",
+                        },
+                        {
+                            "name": "shipment_start_date",
+                            "nullable": True,
+                            "type": "Datetime",
+                        },
+                        {
+                            "name": "shipment_end_date",
+                            "nullable": True,
+                            "type": "Datetime",
+                        },
+                        {
+                            "name": "security_team_contact_information",
+                            "type": "String",
+                        },
+                        {
+                            "name": "licence_type",
+                            "type": "String",
+                        },
+                        {
+                            "name": "supporting_documents_count",
+                            "type": "Integer",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "nuclearmaterialapplication",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/nuclear-material-goods/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "application_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "commodity_code",
+                            "type": "String",
+                        },
+                        {
+                            "name": "goods_description",
+                            "type": "String",
+                        },
+                        {
+                            "asdecimal": True,
+                            "name": "quantity_amount",
+                            "nullable": True,
+                            "type": "Float",
+                        },
+                        {
+                            "name": "unit",
+                            "type": "String",
+                        },
+                        {
+                            "name": "unlimited_quantity",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "goods_description_original",
+                            "type": "String",
+                        },
+                        {
+                            "asdecimal": True,
+                            "name": "quantity_amount_original",
+                            "nullable": True,
+                            "type": "Float",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "nuclearmaterialgoods",
+                },
+                {
                     "table_name": "office",
                     "endpoint": "/data-workspace/v0/offices/",
                     "indexes": [],
@@ -762,6 +868,80 @@ class TestMetaDataView(BaseTestDataView):
                         {"name": "importer_id", "type": "Integer", "nullable": True},
                         {"name": "exporter_id", "type": "Integer", "nullable": True},
                     ],
+                },
+                {
+                    "endpoint": "/data-workspace/v0/sanctions-applications/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "exporter_name",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "exporter_address",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "supporting_documents_count",
+                            "type": "Integer",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "sanctionsapplication",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/sanctions-goods/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "application_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "commodity_code",
+                            "type": "String",
+                        },
+                        {
+                            "name": "goods_description",
+                            "type": "String",
+                        },
+                        {
+                            "asdecimal": True,
+                            "name": "quantity_amount",
+                            "type": "Float",
+                        },
+                        {
+                            "asdecimal": True,
+                            "name": "value",
+                            "type": "Float",
+                        },
+                        {
+                            "name": "goods_description_original",
+                            "type": "String",
+                        },
+                        {
+                            "asdecimal": True,
+                            "name": "quantity_amount_original",
+                            "type": "Float",
+                        },
+                        {
+                            "asdecimal": True,
+                            "name": "value_original",
+                            "type": "Float",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "sanctionsgoods",
                 },
                 {
                     "table_name": "userfeedbacksurvey",

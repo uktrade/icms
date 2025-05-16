@@ -8,7 +8,14 @@ from .export_application import (
     GMPApplicationDataView,
     LegislationDataView,
 )
-from .import_application import ImportApplicationDataView, ImportLicenceDocumentDataView
+from .import_application import (
+    ImportApplicationDataView,
+    ImportLicenceDocumentDataView,
+    NuclearMaterialApplicationDataView,
+    NuclearMaterialGoodsDataView,
+    SanctionsApplicationDataView,
+    SanctionsGoodsDataView,
+)
 from .user import (
     ExporterDataView,
     ImporterDataView,
@@ -30,7 +37,11 @@ __all__ = [
     "ImporterDataView",
     "LegislationDataView",
     "MetadataView",
+    "NuclearMaterialApplicationDataView",
+    "NuclearMaterialGoodsDataView",
     "OfficeDataView",
+    "SanctionsApplicationDataView",
+    "SanctionsGoodsDataView",
     "UserDataView",
     "UserFeedbackSurveyDataView",
 ]
