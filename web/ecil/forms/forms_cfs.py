@@ -1,5 +1,7 @@
+import re
 from typing import Any, Literal
 
+from django import forms
 from django.conf import settings
 from django.db.models import QuerySet
 from django.template.loader import render_to_string
@@ -10,6 +12,7 @@ from web.ecil.gds import forms as gds_forms
 from web.models import (
     CertificateOfFreeSaleApplication,
     CFSProduct,
+    CFSProductActiveIngredient,
     CFSProductType,
     CFSSchedule,
     Country,
@@ -512,6 +515,9 @@ class CFSScheduleProductConfirmRemoveForm(gds_forms.GDSForm):
         )
 
 
+#
+# Product Type forms
+#
 class CFSScheduleProductTypeForm(gds_forms.GDSModelForm):
     product_type_number = gds_forms.GovUKIntegerField(
         help_text=(
@@ -591,6 +597,110 @@ class CFSScheduleProductTypeConfirmRemoveForm(gds_forms.GDSForm):
             product_type.product.schedule,
             f"Are you sure you want to remove product type number PT {escape(product_type.product_type_number)}?",
         )
+
+
+#
+# Active ingredient forms
+#
+class CFSScheduleProductActiveIngredientForm(gds_forms.GDSModelForm):
+    name = gds_forms.GovUKTextareaField(
+        label="Active Ingredient",
+        error_messages={"required": "Enter an active ingredient"},
+        gds_field_kwargs={"rows": 2},
+    )
+
+    instance: CFSProductActiveIngredient
+
+    class Meta(gds_forms.GDSModelForm.Meta):
+        model = CFSProductActiveIngredient
+        fields = ["name", "cas_number"]
+        labels = {"cas_number": "CAS number"}
+        error_messages = {"cas_number": {"required": "Enter a CAS number"}}
+
+    def __init__(self, *args: Any, product: CFSProduct, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.product = product
+        # Override default defined on model
+        self.fields["cas_number"].help_text = None
+
+    def clean_cas_number(self):
+        """Clean the CAS Number.
+
+        See validation here:
+        https://www.cas.org/support/documentation/chemical-substances/checkdig
+
+        A CAS Registry Number includes up to 10 digits which are separated into 3 groups by hyphens.
+        The first part of the number, starting from the left, has 2 to 7 digits;
+        the second part has 2 digits.
+        The final part consists of a single check digit.
+        This method does not currently do the check digit checking as described in the above link.
+        """
+
+        cas_number = self.cleaned_data["cas_number"]
+
+        if not re.match("^[0-9]{2,7}-[0-9]{2}-[0-9]{1}$", cas_number):
+            raise forms.ValidationError(
+                "Enter in the correct format. The first part of the number has 2 to 7 digits;"
+                " the second part has 2 digits. The final part consists of a single check digit"
+            )
+
+        # CAS number is valid so perform check digit validation
+        first, second, check_digit = cas_number.split("-")
+        cas_digits = first + second
+
+        check_sum = 0
+        for pos, digit in enumerate(cas_digits[::-1], start=1):
+            check_sum += pos * int(digit)
+
+        if check_sum % 10 != int(check_digit):
+            raise forms.ValidationError(
+                "This is not a valid CAS number (check digit validation has failed)."
+            )
+
+        if (
+            self.product.active_ingredients.filter(cas_number=cas_number)
+            .exclude(pk=self.instance.pk)
+            .exists()
+        ):
+            self.add_error(
+                "cas_number",
+                f"CAS number {cas_number} has already been added to this product.",
+            )
+
+        return cas_number
+
+    def save(self, commit: bool = True) -> CFSProductActiveIngredient:
+        self.instance.product = self.product
+        self.instance = super().save(commit)
+
+        if commit:
+            self.instance.save()
+
+        return self.instance
+
+
+# class CFSScheduleProductActiveIngredientAddAnotherForm(gds_forms.GDSForm):
+#     add_another = gds_forms.GovUKRadioInputField(
+#         label="Do you need to add another product type number?",
+#         choices=YesNoChoices.choices,
+#         gds_field_kwargs={"fieldset": {"legend": {"classes": "govuk-fieldset__legend--m"}}},
+#         error_messages={"required": "Select yes or no"},
+#     )
+#
+#
+# class CFSScheduleProductActiveIngredientConfirmRemoveForm(gds_forms.GDSForm):
+#     are_you_sure = gds_forms.GovUKRadioInputField(
+#         choices=YesNoChoices.choices,
+#         gds_field_kwargs=gds_forms.FIELDSET_LEGEND_HEADER,
+#         error_messages={"required": "Select yes or no"},
+#     )
+#
+#     def __init__(self, *args: Any, product_type: CFSProductActiveIngredient, **kwargs: Any) -> None:
+#         super().__init__(*args, **kwargs)
+#         self.fields["are_you_sure"].label = get_schedule_label(
+#             product_type.product.schedule,
+#             f"Are you sure you want to remove product type number PT {escape(product_type.product_type_number)}?",
+#         )
 
 
 def get_schedule_label(schedule: CFSSchedule, label: str) -> Markup:

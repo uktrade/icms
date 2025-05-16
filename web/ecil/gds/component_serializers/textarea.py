@@ -16,7 +16,7 @@ class TextareaKwargs(BaseModel):
     # Optional field to enable or disable the spellcheck attribute on the textarea.
     spellcheck: bool | None = None
     # Optional number of textarea rows (default is 5 rows).
-    rows: str | None = None
+    rows: str | int | None = None
     # Optional initial value of the textarea.
     value: str | None = None
     # If true, textarea will be disabled.

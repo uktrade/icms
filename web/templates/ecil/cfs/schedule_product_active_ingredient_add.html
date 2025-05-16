@@ -1,0 +1,15 @@
+{% extends "ecil/gds_form.html" %}
+{% from "ecil/cfs/macros.html" import product_schedule_h1 %}
+
+{% block ecil_content_before_form %}
+  {{ product_schedule_h1(schedule_number, sub_heading) }}
+  <p class="govuk-body">
+    Add active ingredients and their related CAS (Chemical Abstracts Service) Registry Numbers.
+    An active ingredient is any substance in a product that has an effect on the body.
+  </p>
+  <p class="govuk-body">
+    A CAS number is a unique chemical identifier.
+    It can contain up to 10 numbers separated by hyphens.
+    For example, the CAS number for beeswax is 8012-89-3.
+  </p>
+{% endblock %}

@@ -132,6 +132,23 @@ urlpatterns = [
                                             views.CFSScheduleProductTypeConfirmRemoveFormView.as_view(),
                                             name="schedule-product-type-remove",
                                         ),
+                                        #
+                                        # Active ingredient urls
+                                        path(
+                                            "active-ingredient/add/",
+                                            views.CFSScheduleProductActiveIngredientCreateView.as_view(),
+                                            name="schedule-product-active-ingredient-add",
+                                        ),
+                                        # path(
+                                        #     "active-ingredient/add-another/",
+                                        #     views.CFSScheduleProductActiveIngredientAddAnotherFormView.as_view(),
+                                        #     name="schedule-product-active-ingredient-add-another",
+                                        # ),
+                                        # path(
+                                        #     "active-ingredient/<int:active_ingredient_pk>/remove/",
+                                        #     views.CFSScheduleProductActiveIngredientConfirmRemoveFormView.as_view(),
+                                        #     name="schedule-product-active-ingredient-remove",
+                                        # ),
                                     ]
                                 ),
                             ),
