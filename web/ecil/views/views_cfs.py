@@ -26,6 +26,7 @@ from web.ecil.gds.views import BackLinkMixin
 from web.models import (
     CertificateOfFreeSaleApplication,
     CFSProduct,
+    CFSProductActiveIngredient,
     CFSProductType,
     CFSSchedule,
     User,
@@ -883,6 +884,9 @@ class CFSScheduleProductConfirmRemoveFormView(CFSScheduleProductBaseView, Delete
         )
 
 
+#
+# CFS Product Type views.
+#
 @method_decorator(transaction.atomic, name="post")
 class CFSScheduleProductTypeCreateView(CFSScheduleProductBaseView, CreateView):
     # CreateView config
@@ -981,13 +985,18 @@ class CFSScheduleProductTypeAddAnotherFormView(CFSScheduleProductBaseFormView):
         return context
 
     def form_valid(self, form: forms.CFSScheduleAddAnotherLegislationForm) -> HttpResponseRedirect:
-        kwargs = {"application_pk": self.application.pk, "schedule_pk": self.get_schedule().pk}
+        kwargs = {
+            "application_pk": self.application.pk,
+            "schedule_pk": self.get_schedule().pk,
+            "product_pk": self.object.pk,
+        }
 
         if form.cleaned_data["add_another"] == YesNoChoices.yes:
-            kwargs["product_pk"] = self.object.pk
             redirect_to = reverse("ecil:export-cfs:schedule-product-type-add", kwargs=kwargs)
         else:
-            redirect_to = reverse("export:cfs-schedule-edit", kwargs=kwargs)
+            redirect_to = reverse(
+                "ecil:export-cfs:schedule-product-active-ingredient-add", kwargs=kwargs
+            )
 
         return redirect(redirect_to)
 
@@ -1067,6 +1076,206 @@ class CFSScheduleProductTypeConfirmRemoveFormView(
                 "product_pk": product.pk,
             },
         )
+
+
+#
+# CFS Product Active Ingredient views.
+#
+@method_decorator(transaction.atomic, name="post")
+class CFSScheduleProductActiveIngredientCreateView(CFSScheduleProductBaseView, CreateView):
+    # CreateView config
+    form_class = forms.CFSScheduleProductActiveIngredientForm
+    template_name = "ecil/cfs/schedule_product_active_ingredient_add.html"
+    http_method_names = ["get", "post"]
+
+    # Once the form is saved the view will have access to self.object
+    object: CFSProductActiveIngredient
+
+    def has_object_permission(self) -> bool:
+        has_op = super().has_object_permission()
+        return has_op and has_biocidal_legislation(self.get_schedule())
+
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        product = self.get_object()
+
+        context = super().get_context_data(**kwargs)
+        context["schedule_number"] = forms.get_schedule_number(product.schedule)
+        context["sub_heading"] = (
+            f"What are the active ingredients for {escape(product.product_name)}?"
+        )
+
+        return context
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+        kwargs["product"] = self.get_object()
+
+        return kwargs
+
+    def get_back_link_url(self) -> str | None:
+        return reverse(
+            "ecil:export-cfs:schedule-product-end-use",
+            kwargs={
+                "application_pk": self.application.pk,
+                "schedule_pk": self.get_schedule().pk,
+                "product_pk": self.get_object().pk,
+            },
+        )
+
+    def get_success_url(self) -> str:
+        return reverse(
+            "ecil:export-cfs:schedule-product-active-ingredient-add-another",
+            kwargs={
+                "application_pk": self.application.pk,
+                "schedule_pk": self.get_schedule().pk,
+                "product_pk": self.get_object().pk,
+            },
+        )
+
+
+# @method_decorator(transaction.atomic, name="post")
+# class CFSScheduleProductActiveIngredientAddAnotherFormView(CFSScheduleProductBaseFormView):
+#     # FormView config
+#     form_class = forms.CFSScheduleProductActiveIngredientAddAnotherForm
+#     template_name = "ecil/cfs/schedule_product_type_add_another.html"
+#
+#     def has_object_permission(self) -> bool:
+#         has_op = super().has_object_permission()
+#         return has_op and has_biocidal_legislation(self.get_schedule())
+#
+#     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+#         context = super().get_context_data(**kwargs)
+#
+#         product = self.object
+#
+#         product_type_numbers = product.product_type_numbers.order_by("product_type_number")
+#         ptn_count = product_type_numbers.count()
+#
+#         if ptn_count == 1:
+#             sub_heading = f"You have added 1 product type number for {escape(product.product_name)}"
+#         else:
+#             # Correct message for 0 or greater than 1
+#             sub_heading = f"You have added {ptn_count} product type numbers for {escape(product.product_name)}"
+#
+#         context["sub_heading"] = sub_heading
+#         rows = []
+#
+#         for ptn in product_type_numbers:
+#             rows.append(
+#                 serializers.list_with_actions.ListRow(
+#                     name=f"PT {ptn.product_type_number}",
+#                     actions=[
+#                         serializers.list_with_actions.ListRowAction(
+#                             label="Remove",
+#                             url=reverse(
+#                                 "ecil:export-cfs:schedule-product-active-ingredient-remove",
+#                                 kwargs={
+#                                     "application_pk": self.application.pk,
+#                                     "schedule_pk": self.get_schedule().pk,
+#                                     "product_pk": product.pk,
+#                                     "active_ingredient_pk": ptn.pk,
+#                                 },
+#                             ),
+#                         ),
+#                     ],
+#                 )
+#             )
+#
+#         context["list_with_actions_kwargs"] = serializers.list_with_actions.ListWithActionsKwargs(
+#             rows=rows
+#         ).model_dump(exclude_defaults=True)
+#
+#         context["schedule_number"] = forms.get_schedule_number(self.object.schedule)
+#
+#         return context
+#
+#     def form_valid(self, form: forms.CFSScheduleAddAnotherLegislationForm) -> HttpResponseRedirect:
+#         kwargs = {"application_pk": self.application.pk, "schedule_pk": self.get_schedule().pk}
+#
+#         if form.cleaned_data["add_another"] == YesNoChoices.yes:
+#             kwargs["product_pk"] = self.object.pk
+#             redirect_to = reverse("ecil:export-cfs:schedule-product-active-ingredient-add", kwargs=kwargs)
+#         else:
+#             redirect_to = reverse("export:cfs-schedule-edit", kwargs=kwargs)
+#
+#         return redirect(redirect_to)
+#
+#     def get_back_link_url(self) -> str | None:
+#         return reverse(
+#             "ecil:export-cfs:schedule-product-end-use",
+#             kwargs={
+#                 "application_pk": self.application.pk,
+#                 "schedule_pk": self.get_schedule().pk,
+#                 "product_pk": self.get_object().pk,
+#             },
+#         )
+#
+#
+# @method_decorator(transaction.atomic, name="post")
+# class CFSScheduleProductActiveIngredientConfirmRemoveFormView(
+#     CFSInProgressRelatedObjectViewBase, BackLinkMixin, DeleteView
+# ):
+#     # DeleteView config
+#     pk_url_kwarg = "active_ingredient_pk"
+#     model = CFSProductActiveIngredient
+#     form_class = forms.CFSScheduleProductActiveIngredientConfirmRemoveForm
+#     template_name = "ecil/gds_form.html"
+#     http_method_names = ["get", "post"]
+#
+#     # Extra typing for clarity
+#     object: CFSProductActiveIngredient
+#
+#     def has_object_permission(self) -> bool:
+#         has_op = super().has_object_permission()
+#         return has_op and has_biocidal_legislation(self.get_schedule())
+#
+#     def get_schedule(self) -> CFSSchedule:
+#         return get_object_or_404(self.application.schedules, pk=self.kwargs["schedule_pk"])
+#
+#     def get_product(self) -> CFSProduct:
+#         return get_object_or_404(self.get_schedule().products, pk=self.kwargs["product_pk"])
+#
+#     def get_form_kwargs(self) -> dict[str, Any]:
+#         kwargs = super().get_form_kwargs()
+#         kwargs["product_type"] = self.get_object()
+#
+#         return kwargs
+#
+#     def form_valid(self, form: forms.CFSScheduleProductConfirmRemoveForm) -> HttpResponseRedirect:
+#         if form.cleaned_data["are_you_sure"] == YesNoChoices.yes:
+#             self.object.delete()
+#
+#         return redirect(self.get_success_url())
+#
+#     def get_back_link_url(self) -> str | None:
+#         schedule = self.get_schedule()
+#         product = self.get_product()
+#
+#         return reverse(
+#             "ecil:export-cfs:schedule-product-active-ingredient-add-another",
+#             kwargs={
+#                 "application_pk": self.application.pk,
+#                 "schedule_pk": schedule.pk,
+#                 "product_pk": product.pk,
+#             },
+#         )
+#
+#     def get_success_url(self) -> str:
+#         product = self.get_product()
+#
+#         if product.product_type_numbers.count() == 0:
+#             view_name = "ecil:export-cfs:schedule-product-active-ingredient-add"
+#         else:
+#             view_name = "ecil:export-cfs:schedule-product-active-ingredient-add-another"
+#
+#         return reverse(
+#             view_name,
+#             kwargs={
+#                 "application_pk": self.application.pk,
+#                 "schedule_pk": self.get_schedule().pk,
+#                 "product_pk": product.pk,
+#             },
+#         )
 
 
 def has_biocidal_legislation(schedule: CFSSchedule) -> bool:
