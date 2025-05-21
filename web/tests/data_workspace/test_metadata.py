@@ -375,6 +375,518 @@ class TestMetaDataView(BaseTestDataView):
                     ],
                 },
                 {
+                    "endpoint": "/data-workspace/v0/fa-dfl-applications/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "deactivated_firearm",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "proof_checked",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "commodity_code",
+                            "type": "String",
+                        },
+                        {
+                            "name": "constabulary_name",
+                            "type": "String",
+                        },
+                        {
+                            "name": "know_bought_from",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "fadflapplication",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/fa-dfl-goods/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "application_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "goods_description",
+                            "type": "String",
+                        },
+                        {
+                            "name": "goods_description_original",
+                            "type": "String",
+                        },
+                        {
+                            "name": "deactivated_certificate_reference",
+                            "type": "String",
+                        },
+                        {
+                            "name": "issuing_country_name",
+                            "type": "String",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "fadflgoods",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/fa-oil-applications/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "section1",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "section2",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "know_bought_from",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "verified_certificates_count",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "user_imported_certificates_count",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "commodity_code",
+                            "type": "String",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "faoilapplication",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/fa-sil-applications/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "section1",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "section2",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "section5",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "section58_obsolete",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "section58_other",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "section_legacy",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "other_description",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "military_police",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "eu_single_market",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "manufactured",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "commodity_code",
+                            "type": "String",
+                        },
+                        {
+                            "name": "know_bought_from",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "additional_comments",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "verified_section5_count",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "user_section5_count",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "verified_certificates_count",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "user_imported_certificates_count",
+                            "type": "Integer",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "fasilapplication",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/fa-sil-goods-section1/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "application_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "description",
+                            "type": "String",
+                        },
+                        {
+                            "name": "quantity",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "description_original",
+                            "type": "String",
+                        },
+                        {
+                            "name": "quantity_original",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "unlimited_quantity",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "manufacture",
+                            "type": "Boolean",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "fasilgoodssection1",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/fa-sil-goods-section2/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "application_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "description",
+                            "type": "String",
+                        },
+                        {
+                            "name": "quantity",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "description_original",
+                            "type": "String",
+                        },
+                        {
+                            "name": "quantity_original",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "unlimited_quantity",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "manufacture",
+                            "type": "Boolean",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "fasilgoodssection2",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/fa-sil-goods-section5/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "application_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "description",
+                            "type": "String",
+                        },
+                        {
+                            "name": "quantity",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "description_original",
+                            "type": "String",
+                        },
+                        {
+                            "name": "quantity_original",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "unlimited_quantity",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "manufacture",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "section_5_clause_name",
+                            "type": "String",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "fasilgoodssection5",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/fa-sil-goods-section-legacy/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "application_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "description",
+                            "type": "String",
+                        },
+                        {
+                            "name": "quantity",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "description_original",
+                            "type": "String",
+                        },
+                        {
+                            "name": "quantity_original",
+                            "nullable": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "unlimited_quantity",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "obsolete_calibre",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "fasilgoodssectionlegacy",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/fa-sil-goods-section-obsolete/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "application_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "description",
+                            "type": "String",
+                        },
+                        {
+                            "name": "quantity",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "description_original",
+                            "type": "String",
+                        },
+                        {
+                            "name": "quantity_original",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "curiosity_ornament",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "acknowledgement",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "centrefire",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "manufacture",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "original_chambering",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "obsolete_calibre",
+                            "type": "String",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "fasilgoodssectionobsolete",
+                },
+                {
+                    "endpoint": "/data-workspace/v0/fa-sil-goods-section-other/",
+                    "fields": [
+                        {
+                            "name": "id",
+                            "primary_key": True,
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "application_id",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "description",
+                            "type": "String",
+                        },
+                        {
+                            "name": "quantity",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "description_original",
+                            "type": "String",
+                        },
+                        {
+                            "name": "quantity_original",
+                            "type": "Integer",
+                        },
+                        {
+                            "name": "curiosity_ornament",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "acknowledgement",
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "manufacture",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "muzzle_loading",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "rimfire",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "rimfire_details",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "ignition",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "ignition_details",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "ignition_other",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                        {
+                            "name": "chamber",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "bore",
+                            "nullable": True,
+                            "type": "Boolean",
+                        },
+                        {
+                            "name": "bore_details",
+                            "nullable": True,
+                            "type": "String",
+                        },
+                    ],
+                    "indexes": [],
+                    "table_name": "fasilgoodssectionother",
+                },
+                {
                     "endpoint": "/data-workspace/v0/gmp-applications/",
                     "fields": [
                         {

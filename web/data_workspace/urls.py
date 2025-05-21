@@ -71,6 +71,56 @@ urlpatterns = [
                     name="import-licence-document-data",
                 ),
                 path(
+                    "fa-dfl-applications/",
+                    views.FaDflApplicationDataView.as_view(),
+                    name="fa-dfl-application-data",
+                ),
+                path(
+                    "fa-dfl-goods/",
+                    views.FaDflGoodsDataView.as_view(),
+                    name="fa-dfl-goods-data",
+                ),
+                path(
+                    "fa-oil-applications/",
+                    views.FaOilApplicationDataView.as_view(),
+                    name="fa-oil-application-data",
+                ),
+                path(
+                    "fa-sil-applications/",
+                    views.FaSilApplicationDataView.as_view(),
+                    name="fa-sil-application-data",
+                ),
+                path(
+                    "fa-sil-goods-section1/",
+                    views.FaSilGoodsSection1DataView.as_view(),
+                    name="fa-sil-goods-section1-data",
+                ),
+                path(
+                    "fa-sil-goods-section2/",
+                    views.FaSilGoodsSection2DataView.as_view(),
+                    name="fa-sil-goods-section2-data",
+                ),
+                path(
+                    "fa-sil-goods-section5/",
+                    views.FaSilGoodsSection5DataView.as_view(),
+                    name="fa-sil-goods-section5-data",
+                ),
+                path(
+                    "fa-sil-goods-section-legacy/",
+                    views.FaSilGoodsSectionLegacyDataView.as_view(),
+                    name="fa-sil-goods-section-legacy-data",
+                ),
+                path(
+                    "fa-sil-goods-section-obsolete/",
+                    views.FaSilGoodsSectionObsoleteDataView.as_view(),
+                    name="fa-sil-goods-section-obsolete-data",
+                ),
+                path(
+                    "fa-sil-goods-section-other/",
+                    views.FaSilGoodsSectionOtherDataView.as_view(),
+                    name="fa-sil-goods-section-other-data",
+                ),
+                path(
                     "nuclear-material-applications/",
                     views.NuclearMaterialApplicationDataView.as_view(),
                     name="nuclear-material-application-data",
