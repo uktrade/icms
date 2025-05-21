@@ -1,4 +1,5 @@
 import http
+from itertools import chain
 from typing import Any, ClassVar
 
 import pydantic
@@ -88,7 +89,7 @@ class DataViewBase(HawkDataWorkspaceMixin, ListView):
         """Returns a dict of filters to be used in get_queryset"""
         return {}
 
-    def get_queryset(self) -> QuerySet[Any]:
+    def get_queryset(self) -> QuerySet[Any] | chain:
         """Returns the queryset"""
         qs = super().get_queryset()
         return (

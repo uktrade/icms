@@ -35,6 +35,151 @@ class ImportLicenceDocumentListSerializer(BaseResultsSerializer):
     results: list[CaseDocumentSerializer]
 
 
+class FaDflApplicationSerializer(BaseSerializer):
+    deactivated_firearm: bool
+    proof_checked: bool
+    commodity_code: str
+    constabulary_name: str
+    know_bought_from: bool | None
+
+
+class FaDflApplicationListSerializer(BaseResultsSerializer):
+    results: list[FaDflApplicationSerializer]
+
+
+class FaDflGoodsSerializer(BaseSerializer):
+    application_id: int
+    goods_description: str
+    goods_description_original: str
+    deactivated_certificate_reference: str
+    issuing_country_name: str
+
+
+class FaDflGoodsListSerializer(BaseResultsSerializer):
+    results: list[FaDflGoodsSerializer]
+
+
+class FaOilApplicationSerializer(BaseSerializer):
+    section1: bool
+    section2: bool
+    know_bought_from: bool | None
+    verified_certificates_count: int
+    user_imported_certificates_count: int
+    commodity_code: str
+
+
+class FaOilApplicationListSerializer(BaseResultsSerializer):
+    results: list[FaOilApplicationSerializer]
+
+
+class FaSilApplicationSerializer(BaseSerializer):
+    section1: bool
+    section2: bool
+    section5: bool
+    section58_obsolete: bool
+    section58_other: bool
+    section_legacy: bool
+    other_description: str | None
+    military_police: bool | None
+    eu_single_market: bool | None
+    manufactured: bool | None
+    commodity_code: str
+    know_bought_from: bool | None
+    additional_comments: str | None
+    verified_section5_count: int
+    user_section5_count: int
+    verified_certificates_count: int
+    user_imported_certificates_count: int
+
+
+class FaSilApplicationListSerializer(BaseResultsSerializer):
+    results: list[FaSilApplicationSerializer]
+
+
+class FaSilGoodsBaseSerializer(BaseSerializer):
+    application_id: int
+    description: str
+    quantity: int | None
+    description_original: str
+    quantity_original: int | None
+    unlimited_quantity: bool
+
+
+class FaSilGoodsSection1Serializer(FaSilGoodsBaseSerializer):
+    manufacture: bool
+
+
+class FaSilGoodsSection1ListSerializer(BaseResultsSerializer):
+    results: list[FaSilGoodsSection1Serializer]
+
+
+class FaSilGoodsSection2Serializer(FaSilGoodsBaseSerializer):
+    manufacture: bool
+
+
+class FaSilGoodsSection2ListSerializer(BaseResultsSerializer):
+    results: list[FaSilGoodsSection2Serializer]
+
+
+class FaSilGoodsSection5Serializer(FaSilGoodsBaseSerializer):
+    manufacture: bool
+    section_5_clause_name: str
+
+
+class FaSilGoodsSection5ListSerializer(BaseResultsSerializer):
+    results: list[FaSilGoodsSection5Serializer]
+
+
+class FaSilGoodsSectionObsoleteSerializer(BaseSerializer):
+    application_id: int
+    description: str
+    quantity: int
+    description_original: str
+    quantity_original: int
+    curiosity_ornament: bool | None
+    acknowledgement: bool
+    centrefire: bool | None
+    manufacture: bool | None
+    original_chambering: bool | None
+    obsolete_calibre: str
+
+
+class FaSilGoodsSectionObsoleteListSerializer(BaseResultsSerializer):
+    results: list[FaSilGoodsSectionObsoleteSerializer]
+
+
+class FaSilGoodsSectionOtherSerializer(BaseSerializer):
+    application_id: int
+    description: str
+    quantity: int
+    description_original: str
+    quantity_original: int
+    curiosity_ornament: bool | None
+    acknowledgement: bool
+    manufacture: bool | None
+    muzzle_loading: bool | None
+    rimfire: bool | None
+    rimfire_details: str | None
+    ignition: bool | None
+    ignition_details: str | None
+    ignition_other: str | None
+    chamber: bool | None
+    bore: bool | None
+    bore_details: str | None
+
+
+class FaSilGoodsSectionOtherListSerializer(BaseResultsSerializer):
+    results: list[FaSilGoodsSectionOtherSerializer]
+
+
+class FaSilGoodsSectionLegacySerializer(FaSilGoodsBaseSerializer):
+    obsolete_calibre: str | None
+
+
+class FaSilGoodsSectionLegacyListSerializer(BaseResultsSerializer):
+    results: list[FaSilGoodsSectionLegacySerializer]
+
+
 class NuclearMaterialApplicationSerializer(BaseSerializer):
     nature_of_business: str
     consignor_name: str

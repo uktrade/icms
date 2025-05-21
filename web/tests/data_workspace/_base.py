@@ -3,8 +3,9 @@ from typing import Any
 
 from web.tests.api_auth import make_testing_hawk_sender
 
-DT_STR_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-DT_STR_FORMAT_SECS = "%Y-%m-%dT%H:%M:%SZ"
+DATE_STR_FORMAT = "%Y-%m-%dT%H:%M:%S"
+DT_STR_FORMAT = f"{DATE_STR_FORMAT}.%fZ"
+DT_STR_FORMAT_SECS = f"{DATE_STR_FORMAT}Z"
 
 
 class BaseTestDataView:

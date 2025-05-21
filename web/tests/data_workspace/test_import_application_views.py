@@ -3,7 +3,9 @@ from typing import Any
 import pytest
 from django.urls import reverse
 
-from ._base import DT_STR_FORMAT, DT_STR_FORMAT_SECS, BaseTestDataView
+from web.models import SILLegacyGoods
+
+from ._base import DATE_STR_FORMAT, DT_STR_FORMAT, DT_STR_FORMAT_SECS, BaseTestDataView
 
 
 class TestImportApplicationDataView(BaseTestDataView):
@@ -310,6 +312,288 @@ class TestImportLicenceDocumentDataView(BaseTestDataView):
         }
 
 
+class TestFaDflApplicationDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, completed_dfl_app):
+        self.client = cw_client
+        self.url = reverse("data-workspace:fa-dfl-application-data", kwargs={"version": "v0"})
+        self.dfl = completed_dfl_app
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert result["results"] == [
+            {
+                "commodity_code": "ex Chapter 93",
+                "constabulary_name": "Derbyshire",
+                "deactivated_firearm": True,
+                "id": self.dfl.pk,
+                "know_bought_from": False,
+                "proof_checked": True,
+            },
+        ]
+
+
+class TestFaDflGoodsDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, completed_dfl_app):
+        self.client = cw_client
+        self.url = reverse("data-workspace:fa-dfl-goods-data", kwargs={"version": "v0"})
+        self.dfl = completed_dfl_app
+        self.goods = self.dfl.goods_certificates.first()
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert result["results"] == [
+            {
+                "application_id": self.dfl.pk,
+                "deactivated_certificate_reference": "deactivated_certificate_reference value",
+                "goods_description": "goods_description value",
+                "goods_description_original": "goods_description value",
+                "id": self.goods.pk,
+                "issuing_country_name": "Austria",
+            }
+        ]
+
+
+class TestFaOilApplicationDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, completed_oil_app):
+        self.client = cw_client
+        self.url = reverse("data-workspace:fa-oil-application-data", kwargs={"version": "v0"})
+        self.oil = completed_oil_app
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert result["results"] == [
+            {
+                "commodity_code": "ex Chapter 93",
+                "id": self.oil.pk,
+                "know_bought_from": False,
+                "section1": True,
+                "section2": True,
+                "user_imported_certificates_count": 1,
+                "verified_certificates_count": 0,
+            }
+        ]
+
+
+class TestFaSilApplicationDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, completed_sil_app):
+        self.client = cw_client
+        self.url = reverse("data-workspace:fa-sil-application-data", kwargs={"version": "v0"})
+        self.sil = completed_sil_app
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert result["results"] == [
+            {
+                "additional_comments": "",
+                "commodity_code": "ex Chapter 93",
+                "eu_single_market": True,
+                "id": self.sil.pk,
+                "know_bought_from": False,
+                "manufactured": False,
+                "military_police": True,
+                "other_description": "other_description",
+                "section1": True,
+                "section2": True,
+                "section5": True,
+                "section58_obsolete": True,
+                "section58_other": True,
+                "section_legacy": False,
+                "user_imported_certificates_count": 1,
+                "user_section5_count": 1,
+                "verified_certificates_count": 0,
+                "verified_section5_count": 0,
+            }
+        ]
+
+
+class TestFaSilGoodsSection1DataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, completed_sil_app):
+        self.client = cw_client
+        self.url = reverse("data-workspace:fa-sil-goods-section1-data", kwargs={"version": "v0"})
+        self.sil = completed_sil_app
+        self.section1 = self.sil.goods_section1.first()
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert result["results"] == [
+            {
+                "application_id": self.sil.pk,
+                "description": "Section 1 goods",
+                "description_original": "Section 1 goods",
+                "id": self.section1.pk,
+                "manufacture": False,
+                "quantity": 111,
+                "quantity_original": 111,
+                "unlimited_quantity": False,
+            }
+        ]
+
+
+class TestFaSilGoodsSection2DataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, completed_sil_app):
+        self.client = cw_client
+        self.url = reverse("data-workspace:fa-sil-goods-section2-data", kwargs={"version": "v0"})
+        self.sil = completed_sil_app
+        self.section2 = self.sil.goods_section2.first()
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert result["results"] == [
+            {
+                "application_id": self.sil.pk,
+                "description": "Section 2 goods",
+                "description_original": "Section 2 goods",
+                "id": self.section2.pk,
+                "manufacture": False,
+                "quantity": 222,
+                "quantity_original": 222,
+                "unlimited_quantity": False,
+            }
+        ]
+
+
+class TestFaSilGoodsSection5DataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, completed_sil_app):
+        self.client = cw_client
+        self.url = reverse("data-workspace:fa-sil-goods-section5-data", kwargs={"version": "v0"})
+        self.sil = completed_sil_app
+        self.section5 = self.sil.goods_section5.get(unlimited_quantity=False)
+        self.section5_uq = self.sil.goods_section5.get(unlimited_quantity=True)
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert result["results"] == [
+            {
+                "application_id": self.sil.pk,
+                "description": "Section 5 goods",
+                "description_original": "Section 5 goods",
+                "id": self.section5.pk,
+                "manufacture": False,
+                "quantity": 333,
+                "quantity_original": 333,
+                "section_5_clause_name": "5(A)",
+                "unlimited_quantity": False,
+            },
+            {
+                "application_id": self.sil.pk,
+                "description": "Unlimited Section 5 goods",
+                "description_original": "Unlimited Section 5 goods",
+                "id": self.section5_uq.pk,
+                "manufacture": False,
+                "quantity": None,
+                "quantity_original": None,
+                "section_5_clause_name": "5(A)",
+                "unlimited_quantity": True,
+            },
+        ]
+
+
+class TestFaSilGoodsSectionObsoleteDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, completed_sil_app):
+        self.client = cw_client
+        self.url = reverse(
+            "data-workspace:fa-sil-goods-section-obsolete-data", kwargs={"version": "v0"}
+        )
+        self.sil = completed_sil_app
+        self.section_obsolete = self.sil.goods_section582_obsoletes.first()
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert result["results"] == [
+            {
+                "application_id": self.sil.pk,
+                "acknowledgement": True,
+                "centrefire": True,
+                "curiosity_ornament": True,
+                "description": "Section 58 obsoletes goods",
+                "description_original": "Section 58 obsoletes goods",
+                "id": self.section_obsolete.pk,
+                "manufacture": True,
+                "obsolete_calibre": ".22 Extra Long Maynard",
+                "original_chambering": True,
+                "quantity": 444,
+                "quantity_original": 444,
+            }
+        ]
+
+
+class TestFaSilGoodsSectionOtherDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, completed_sil_app):
+        self.client = cw_client
+        self.url = reverse(
+            "data-workspace:fa-sil-goods-section-other-data", kwargs={"version": "v0"}
+        )
+        self.sil = completed_sil_app
+        self.section_other = self.sil.goods_section582_others.first()
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert result["results"] == [
+            {
+                "application_id": self.sil.pk,
+                "acknowledgement": True,
+                "bore": False,
+                "bore_details": "",
+                "chamber": False,
+                "curiosity_ornament": True,
+                "description": "Section 58 other goods",
+                "description_original": "Section 58 other goods",
+                "id": self.section_other.pk,
+                "ignition": False,
+                "ignition_details": "",
+                "ignition_other": "",
+                "manufacture": True,
+                "muzzle_loading": True,
+                "quantity": 555,
+                "quantity_original": 555,
+                "rimfire": False,
+                "rimfire_details": "",
+            }
+        ]
+
+
+class TestFaSilGoodsSectionLegacyDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(self, cw_client, completed_sil_app):
+        self.client = cw_client
+        self.url = reverse(
+            "data-workspace:fa-sil-goods-section-legacy-data", kwargs={"version": "v0"}
+        )
+        self.sil = completed_sil_app
+        self.goods = SILLegacyGoods.objects.create(
+            import_application=self.sil,
+            description="Test legacy",
+            description_original="Test legacy",
+            quantity=100,
+            quantity_original=100,
+            obsolete_calibre="Test OC",
+        )
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["next"] == ""
+        assert result["results"] == [
+            {
+                "application_id": self.sil.pk,
+                "description": "Test legacy",
+                "description_original": "Test legacy",
+                "id": self.goods.pk,
+                "obsolete_calibre": "Test OC",
+                "quantity": 100,
+                "quantity_original": 100,
+                "unlimited_quantity": False,
+            }
+        ]
+
+
 class TestNuclearMaterialApplicationDataView(BaseTestDataView):
     @pytest.fixture(autouse=True)
     def _setup(self, cw_client, nuclear_app_completed):
@@ -333,7 +617,7 @@ class TestNuclearMaterialApplicationDataView(BaseTestDataView):
                 "nature_of_business": "Test nature of business",
                 "security_team_contact_information": "Test security team contact information",
                 "shipment_end_date": None,
-                "shipment_start_date": "2025-05-16T00:00:00",
+                "shipment_start_date": self.nmil.shipment_start_date.strftime(DATE_STR_FORMAT),
                 "supporting_documents_count": 1,
             },
         ]
