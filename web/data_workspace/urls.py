@@ -24,6 +24,11 @@ urlpatterns = [
                 ),
                 # Case urls
                 path(
+                    "case-notes/",
+                    views.CaseNoteDataView.as_view(),
+                    name="case-note-data",
+                ),
+                path(
                     "variation-requests/",
                     views.VariationRequestDataView.as_view(),
                     name="variation-request-data",

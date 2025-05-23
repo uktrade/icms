@@ -12,6 +12,20 @@ class CaseDocumentSerializer(BaseSerializer):
     reference: str | None
 
 
+class CaseNoteSerializer(BaseSerializer):
+    application_id: int
+    note: str | None
+    file_count: int
+    create_datetime: dt.datetime
+    created_by_id: int
+    updated_at: dt.datetime
+    updated_by_id: int | None
+
+
+class CaseNoteListSerializer(BaseResultsSerializer):
+    results: list[CaseNoteSerializer]
+
+
 class VariationRequestSerializer(BaseSerializer):
     application_id: int
     status: str

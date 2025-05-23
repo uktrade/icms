@@ -1,5 +1,10 @@
 from .base import BaseResultsSerializer, BaseSerializer, MetadataListSerializer
-from .case import VariationRequestListSerializer, VariationRequestSerializer
+from .case import (
+    CaseNoteListSerializer,
+    CaseNoteSerializer,
+    VariationRequestListSerializer,
+    VariationRequestSerializer,
+)
 from .export_application import (
     CFSProductListSerializer,
     CFSProductSerializer,
@@ -65,6 +70,7 @@ from .user import (
 
 # Used to determine which tables get listed on the table-metadata data workspace api
 DATA_SERIALIZERS: list[type[BaseSerializer]] = [
+    CaseNoteSerializer,
     CFSProductSerializer,
     CFSScheduleSerializer,
     COMApplicationSerializer,
@@ -99,6 +105,8 @@ DATA_SERIALIZERS: list[type[BaseSerializer]] = [
 __all__ = [
     "BaseResultsSerializer",
     "BaseSerializer",
+    "CaseNoteListSerializer",
+    "CaseNoteSerializer",
     "CFSProductListSerializer",
     "CFSProductSerializer",
     "CFSScheduleListSerializer",

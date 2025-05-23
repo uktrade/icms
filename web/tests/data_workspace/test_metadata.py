@@ -16,6 +16,21 @@ class TestMetaDataView(BaseTestDataView):
         assert result == {
             "tables": [
                 {
+                    "table_name": "case-note",
+                    "endpoint": "/data-workspace/v0/case-notes/",
+                    "indexes": [],
+                    "fields": [
+                        {"name": "id", "type": "Integer", "primary_key": True},
+                        {"name": "application_id", "type": "Integer"},
+                        {"name": "note", "type": "String", "nullable": True},
+                        {"name": "file_count", "type": "Integer"},
+                        {"name": "create_datetime", "type": "Datetime"},
+                        {"name": "created_by_id", "type": "Integer"},
+                        {"name": "updated_at", "type": "Datetime"},
+                        {"name": "updated_by_id", "type": "Integer", "nullable": True},
+                    ],
+                },
+                {
                     "endpoint": "/data-workspace/v0/cfs-products/",
                     "fields": [
                         {

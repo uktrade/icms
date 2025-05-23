@@ -5508,3 +5508,4 @@ user_section5_count
 f"{DATE_STR_FORMAT}Z
 fasilgoodssection1
 fasilgoodssection5
+CaseNoteDataView
