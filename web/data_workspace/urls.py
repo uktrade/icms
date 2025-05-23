@@ -20,9 +20,14 @@ urlpatterns = [
                 path(
                     "user-surveys/",
                     views.UserFeedbackSurveyDataView.as_view(),
-                    name="user-survey-data",
+                    name="user-feedback-survey-data",
                 ),
                 # Case urls
+                path(
+                    "variation-requests/",
+                    views.VariationRequestDataView.as_view(),
+                    name="variation-request-data",
+                ),
                 # Export application urls
                 path(
                     "export-applications/",

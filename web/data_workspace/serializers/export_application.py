@@ -1,7 +1,5 @@
 import datetime as dt
 
-from django.urls import reverse
-
 from .base import ApplicationBaseSerializer, BaseResultsSerializer, BaseSerializer
 from .case import CaseDocumentSerializer
 
@@ -50,8 +48,8 @@ class GMPApplicationSerializer(BaseSerializer):
     supporting_documents_types: list[str]
 
     @classmethod
-    def url(cls) -> str:
-        return reverse("data-workspace:gmp-application-data", kwargs={"version": "v0"})
+    def table_name(cls) -> str:
+        return "gmp-application"
 
 
 class GMPApplicationListSerializer(BaseResultsSerializer):
@@ -66,8 +64,8 @@ class COMApplicationSerializer(BaseSerializer):
     manufacturing_process: str
 
     @classmethod
-    def url(cls) -> str:
-        return reverse("data-workspace:com-application-data", kwargs={"version": "v0"})
+    def table_name(cls) -> str:
+        return "com-application"
 
 
 class COMApplicationListSerializer(BaseResultsSerializer):
@@ -99,8 +97,8 @@ class CFSScheduleSerializer(BaseSerializer):
     is_biocidal_claim: bool
 
     @classmethod
-    def url(cls) -> str:
-        return reverse("data-workspace:cfs-schedule-data", kwargs={"version": "v0"})
+    def table_name(cls) -> str:
+        return "cfs-schedule"
 
 
 class CFSScheduleListSerializer(BaseResultsSerializer):
@@ -117,8 +115,8 @@ class CFSProductSerializer(BaseSerializer):
     cas_number_list: list[str]
 
     @classmethod
-    def url(cls) -> str:
-        return reverse("data-workspace:cfs-product-data", kwargs={"version": "v0"})
+    def table_name(cls) -> str:
+        return "cfs-product"
 
 
 class CFSProductListSerializer(BaseResultsSerializer):

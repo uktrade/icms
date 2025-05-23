@@ -1,6 +1,6 @@
 import datetime as dt
 
-from .base import BaseSerializer
+from .base import BaseResultsSerializer, BaseSerializer
 
 
 class CaseDocumentSerializer(BaseSerializer):
@@ -12,8 +12,26 @@ class CaseDocumentSerializer(BaseSerializer):
     reference: str | None
 
 
+class VariationRequestSerializer(BaseSerializer):
+    application_id: int
+    status: str
+    extension_flag: bool
+    requested_datetime: dt.datetime
+    requested_by_id: int
+    what_varied: str
+    why_varied: str | None
+    when_varied: dt.date | None
+    reject_cancellation_reason: str | None
+    update_request_reason: str | None
+    closed_datetime: dt.datetime | None
+    closed_by_id: int | None
+
+
+class VariationRequestListSerializer(BaseResultsSerializer):
+    results: list[VariationRequestSerializer]
+
+
 # TODO ECIL-630:
-# VariationRequest
 # CaseNote
 # FIR
 # UpdateRequest

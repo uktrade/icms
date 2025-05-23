@@ -53,7 +53,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "cfsproduct",
+                    "table_name": "cfs-product",
                 },
                 {
                     "endpoint": "/data-workspace/v0/cfs-schedules/",
@@ -165,7 +165,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "cfsschedule",
+                    "table_name": "cfs-schedule",
                 },
                 {
                     "endpoint": "/data-workspace/v0/com-applications/",
@@ -197,7 +197,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "comapplication",
+                    "table_name": "com-application",
                 },
                 {
                     "endpoint": "/data-workspace/v0/export-applications/",
@@ -315,7 +315,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "exportapplication",
+                    "table_name": "export-application",
                 },
                 {
                     "endpoint": "/data-workspace/v0/export-certificate-documents/",
@@ -358,7 +358,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "exportcertificatedocument",
+                    "table_name": "export-certificate-document",
                 },
                 {
                     "table_name": "exporter",
@@ -405,7 +405,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "fadflapplication",
+                    "table_name": "fa-dfl-application",
                 },
                 {
                     "endpoint": "/data-workspace/v0/fa-dfl-goods/",
@@ -437,7 +437,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "fadflgoods",
+                    "table_name": "fa-dfl-goods",
                 },
                 {
                     "endpoint": "/data-workspace/v0/fa-oil-applications/",
@@ -474,7 +474,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "faoilapplication",
+                    "table_name": "fa-oil-application",
                 },
                 {
                     "endpoint": "/data-workspace/v0/fa-sil-applications/",
@@ -560,7 +560,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "fasilapplication",
+                    "table_name": "fa-sil-application",
                 },
                 {
                     "endpoint": "/data-workspace/v0/fa-sil-goods-section1/",
@@ -602,7 +602,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "fasilgoodssection1",
+                    "table_name": "fa-sil-goods-section1",
                 },
                 {
                     "endpoint": "/data-workspace/v0/fa-sil-goods-section2/",
@@ -644,7 +644,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "fasilgoodssection2",
+                    "table_name": "fa-sil-goods-section2",
                 },
                 {
                     "endpoint": "/data-workspace/v0/fa-sil-goods-section5/",
@@ -690,7 +690,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "fasilgoodssection5",
+                    "table_name": "fa-sil-goods-section5",
                 },
                 {
                     "endpoint": "/data-workspace/v0/fa-sil-goods-section-legacy/",
@@ -733,7 +733,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "fasilgoodssectionlegacy",
+                    "table_name": "fa-sil-goods-section-legacy",
                 },
                 {
                     "endpoint": "/data-workspace/v0/fa-sil-goods-section-obsolete/",
@@ -793,7 +793,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "fasilgoodssectionobsolete",
+                    "table_name": "fa-sil-goods-section-obsolete",
                 },
                 {
                     "endpoint": "/data-workspace/v0/fa-sil-goods-section-other/",
@@ -884,7 +884,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "fasilgoodssectionother",
+                    "table_name": "fa-sil-goods-section-other",
                 },
                 {
                     "endpoint": "/data-workspace/v0/gmp-applications/",
@@ -975,7 +975,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "gmpapplication",
+                    "table_name": "gmp-application",
                 },
                 {
                     "endpoint": "/data-workspace/v0/import-applications/",
@@ -1144,7 +1144,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "importapplication",
+                    "table_name": "import-application",
                 },
                 {
                     "endpoint": "/data-workspace/v0/import-licence-documents/",
@@ -1197,7 +1197,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "importlicencedocument",
+                    "table_name": "import-licence-document",
                 },
                 {
                     "table_name": "importer",
@@ -1312,7 +1312,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "nuclearmaterialapplication",
+                    "table_name": "nuclear-material-application",
                 },
                 {
                     "endpoint": "/data-workspace/v0/nuclear-material-goods/",
@@ -1360,7 +1360,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "nuclearmaterialgoods",
+                    "table_name": "nuclear-material-goods",
                 },
                 {
                     "table_name": "office",
@@ -1405,7 +1405,7 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "sanctionsapplication",
+                    "table_name": "sanctions-application",
                 },
                 {
                     "endpoint": "/data-workspace/v0/sanctions-goods/",
@@ -1453,10 +1453,10 @@ class TestMetaDataView(BaseTestDataView):
                         },
                     ],
                     "indexes": [],
-                    "table_name": "sanctionsgoods",
+                    "table_name": "sanctions-goods",
                 },
                 {
-                    "table_name": "userfeedbacksurvey",
+                    "table_name": "user-feedback-survey",
                     "endpoint": "/data-workspace/v0/user-surveys/",
                     "indexes": [],
                     "fields": [
@@ -1495,6 +1495,26 @@ class TestMetaDataView(BaseTestDataView):
                         {"name": "exporter_ids", "type": "ArrayInteger"},
                         {"name": "importer_ids", "type": "ArrayInteger"},
                         {"name": "group_names", "type": "ArrayString"},
+                    ],
+                },
+                {
+                    "table_name": "variation-request",
+                    "endpoint": "/data-workspace/v0/variation-requests/",
+                    "indexes": [],
+                    "fields": [
+                        {"name": "id", "type": "Integer", "primary_key": True},
+                        {"name": "application_id", "type": "Integer"},
+                        {"name": "status", "type": "String"},
+                        {"name": "extension_flag", "type": "Boolean"},
+                        {"name": "requested_datetime", "type": "Datetime"},
+                        {"name": "requested_by_id", "type": "Integer"},
+                        {"name": "what_varied", "type": "String"},
+                        {"name": "why_varied", "type": "String", "nullable": True},
+                        {"name": "when_varied", "type": "Date", "nullable": True},
+                        {"name": "reject_cancellation_reason", "type": "String", "nullable": True},
+                        {"name": "update_request_reason", "type": "String", "nullable": True},
+                        {"name": "closed_datetime", "type": "Datetime", "nullable": True},
+                        {"name": "closed_by_id", "type": "Integer", "nullable": True},
                     ],
                 },
             ]

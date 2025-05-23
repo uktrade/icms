@@ -91,10 +91,8 @@ class BaseSerializer(BaseModel):
 
     @classmethod
     def table_name(cls) -> str:
-        name = cls.__name__.lower()
-        if name.endswith("serializer"):
-            return f"{name.split('serializer')[0]}"
-        return f"{name}"
+        split_name = re.findall(r"[A-Z][^A-Z]*", cls.__name__)
+        return "-".join(s.lower() for s in split_name if s.lower() != "serializer")
 
     @staticmethod
     def table_indexes() -> list:
@@ -102,8 +100,7 @@ class BaseSerializer(BaseModel):
 
     @classmethod
     def url(cls) -> str:
-        split_name = re.findall(r"[A-Z][^A-Z]*", cls.__name__)
-        slug_name = "-".join(s.lower() for s in split_name if s.lower() != "serializer")
+        slug_name = cls.table_name()
         return reverse(f"data-workspace:{slug_name}-data", kwargs={"version": "v0"})
 
 

@@ -1,4 +1,5 @@
 from .base import BaseResultsSerializer, BaseSerializer, MetadataListSerializer
+from .case import VariationRequestListSerializer, VariationRequestSerializer
 from .export_application import (
     CFSProductListSerializer,
     CFSProductSerializer,
@@ -92,6 +93,7 @@ DATA_SERIALIZERS: list[type[BaseSerializer]] = [
     SanctionsGoodsSerializer,
     UserFeedbackSurveySerializer,
     UserSerializer,
+    VariationRequestSerializer,
 ]
 
 __all__ = [
@@ -159,4 +161,6 @@ __all__ = [
     "UserFeedbackSurveys",
     "UserListSerializer",
     "UserSerializer",
+    "VariationRequestListSerializer",
+    "VariationRequestSerializer",
 ]
