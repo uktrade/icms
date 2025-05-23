@@ -4,7 +4,7 @@ from typing import Any
 import pytest
 from django.urls import reverse
 
-from web.models import CaseNote, VariationRequest
+from web.models import CaseNote, UpdateRequest, VariationRequest
 
 from ._base import DT_STR_FORMAT, BaseTestDataView
 
@@ -49,6 +49,69 @@ class TestCaseNoteDataView(BaseTestDataView):
                 "created_by_id": self.dfl_cn.created_by_id,
                 "updated_at": self.dfl_cn.updated_at.strftime(DT_STR_FORMAT),
                 "updated_by_id": None,
+            },
+        ]
+
+
+class TestUpdateRequestDataView(BaseTestDataView):
+    @pytest.fixture(autouse=True)
+    def _setup(
+        self,
+        cw_client,
+        exporter_one_contact,
+        com_app_submitted,
+        importer_one_contact,
+        fa_dfl_app_pre_sign,
+    ):
+        self.client = cw_client
+        self.url = reverse("data-workspace:update-request-data", kwargs={"version": "v0"})
+        self.com = com_app_submitted
+        self.com_ur = UpdateRequest.objects.create(
+            request_subject="test subject",
+            request_detail="test detail",
+            requested_by=exporter_one_contact,
+            request_datetime=dt.datetime.now(tz=dt.UTC),
+            response_detail="test response",
+            response_by=exporter_one_contact,
+            response_datetime=dt.datetime.now(tz=dt.UTC),
+        )
+        self.com.update_requests.add(self.com_ur)
+        self.dfl = fa_dfl_app_pre_sign
+        self.dfl_ur = UpdateRequest.objects.create(
+            request_subject="test subject",
+            request_detail="test detail",
+            requested_by=importer_one_contact,
+            request_datetime=dt.datetime.now(tz=dt.UTC),
+        )
+        self.dfl.update_requests.add(self.dfl_ur)
+
+    def check_result(self, result: list[dict[str, Any]]) -> None:
+        assert result["results"] == [
+            {
+                "application_id": self.com.pk,
+                "closed_by_id": None,
+                "closed_datetime": None,
+                "id": self.com_ur.pk,
+                "request_datetime": self.com_ur.request_datetime.strftime(DT_STR_FORMAT),
+                "request_detail": "test detail",
+                "request_subject": "test subject",
+                "requested_by_id": 8,
+                "response_by_id": 8,
+                "response_datetime": self.com_ur.response_datetime.strftime(DT_STR_FORMAT),
+                "response_detail": "test response",
+            },
+            {
+                "application_id": self.dfl.pk,
+                "closed_by_id": None,
+                "closed_datetime": None,
+                "id": self.dfl_ur.pk,
+                "request_datetime": self.dfl_ur.request_datetime.strftime(DT_STR_FORMAT),
+                "request_detail": "test detail",
+                "request_subject": "test subject",
+                "requested_by_id": 2,
+                "response_by_id": None,
+                "response_datetime": None,
+                "response_detail": None,
             },
         ]
 

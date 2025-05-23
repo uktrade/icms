@@ -26,6 +26,23 @@ class CaseNoteListSerializer(BaseResultsSerializer):
     results: list[CaseNoteSerializer]
 
 
+class UpdateRequestSerializer(BaseSerializer):
+    application_id: int
+    request_subject: str | None
+    request_detail: str | None
+    response_detail: str | None
+    request_datetime: dt.datetime | None
+    requested_by_id: int | None
+    response_datetime: dt.datetime | None
+    response_by_id: int | None
+    closed_datetime: dt.datetime | None
+    closed_by_id: int | None
+
+
+class UpdateRequestListSerializer(BaseResultsSerializer):
+    results: list[UpdateRequestSerializer]
+
+
 class VariationRequestSerializer(BaseSerializer):
     application_id: int
     status: str
@@ -46,7 +63,5 @@ class VariationRequestListSerializer(BaseResultsSerializer):
 
 
 # TODO ECIL-630:
-# CaseNote
 # FIR
-# UpdateRequest
 # CaseEmail

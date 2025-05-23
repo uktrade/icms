@@ -29,6 +29,11 @@ urlpatterns = [
                     name="case-note-data",
                 ),
                 path(
+                    "update-requests/",
+                    views.UpdateRequestDataView.as_view(),
+                    name="update-request-data",
+                ),
+                path(
                     "variation-requests/",
                     views.VariationRequestDataView.as_view(),
                     name="variation-request-data",

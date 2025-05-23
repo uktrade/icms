@@ -2,6 +2,8 @@ from .base import BaseResultsSerializer, BaseSerializer, MetadataListSerializer
 from .case import (
     CaseNoteListSerializer,
     CaseNoteSerializer,
+    UpdateRequestListSerializer,
+    UpdateRequestSerializer,
     VariationRequestListSerializer,
     VariationRequestSerializer,
 )
@@ -97,6 +99,7 @@ DATA_SERIALIZERS: list[type[BaseSerializer]] = [
     OfficeSerializer,
     SanctionsApplicationSerializer,
     SanctionsGoodsSerializer,
+    UpdateRequestSerializer,
     UserFeedbackSurveySerializer,
     UserSerializer,
     VariationRequestSerializer,
@@ -165,6 +168,8 @@ __all__ = [
     "SanctionsApplicationSerializer",
     "SanctionsGoodsListSerializer",
     "SanctionsGoodsSerializer",
+    "UpdateRequestListSerializer",
+    "UpdateRequestSerializer",
     "UserFeedbackSurveySerializer",
     "UserFeedbackSurveys",
     "UserListSerializer",
