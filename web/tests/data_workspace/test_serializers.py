@@ -138,7 +138,7 @@ class TestUserFeedbackSerializer:
         self.serializer = serializers.UserFeedbackSurveySerializer
 
     def test_table_name(self):
-        assert self.serializer.table_name() == "userfeedbacksurvey"
+        assert self.serializer.table_name() == "user-feedback-survey"
 
     def test_pk_name(self):
         assert self.serializer.pk_name() == "id"
@@ -214,5 +214,5 @@ class TestUserFeedbackSerializer:
                 },
             ],
             "indexes": [],
-            "table_name": "userfeedbacksurvey",
+            "table_name": "user-feedback-survey",
         }

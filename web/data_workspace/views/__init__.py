@@ -1,4 +1,5 @@
 from .base import MetadataView
+from .case import CaseNoteDataView, UpdateRequestDataView, VariationRequestDataView
 from .export_application import (
     CFSProductDataView,
     CFSScheduleDataView,
@@ -35,6 +36,7 @@ from .user import (
 )
 
 __all__ = [
+    "CaseNoteDataView",
     "CFSProductDataView",
     "CFSScheduleDataView",
     "COMApplicationDataView",
@@ -62,6 +64,8 @@ __all__ = [
     "OfficeDataView",
     "SanctionsApplicationDataView",
     "SanctionsGoodsDataView",
+    "UpdateRequestDataView",
     "UserDataView",
     "UserFeedbackSurveyDataView",
+    "VariationRequestDataView",
 ]

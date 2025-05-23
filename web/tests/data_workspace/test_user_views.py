@@ -166,7 +166,7 @@ class TestUserFeedbackSurveyDataView(BaseTestDataView):
     @pytest.fixture(autouse=True)
     def _setup(self, cw_client, cfs_app_submitted, exporter_one_contact):
         self.client = cw_client
-        self.url = reverse("data-workspace:user-survey-data", kwargs={"version": "v0"})
+        self.url = reverse("data-workspace:user-feedback-survey-data", kwargs={"version": "v0"})
         self.app = cfs_app_submitted
         self.user = exporter_one_contact
         self.survey = UserFeedbackSurvey.objects.create(

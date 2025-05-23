@@ -1,7 +1,5 @@
 import datetime as dt
 
-from django.urls import reverse
-
 from .base import BaseResultsSerializer, BaseSerializer
 
 
@@ -39,10 +37,6 @@ class UserFeedbackSurveySerializer(BaseSerializer):
     application_id: int | None
     created_by_id: int
     created_datetime: dt.datetime
-
-    @classmethod
-    def url(cls) -> str:
-        return reverse("data-workspace:user-survey-data", kwargs={"version": "v0"})
 
 
 class UserFeedbackSurveys(BaseResultsSerializer):
